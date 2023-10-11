@@ -7,3 +7,5 @@ https://paulparkinson.github.io/developer/openai-with-oracle/workshops/freetier/
 
 The forthcoming workshop also includes aspects from this blog along with a number of other use cases and tech aspects such as OML, etc.:
 https://blogs.oracle.com/developers/post/how-to-call-hugging-face-ai-from-within-an-oracle-database-using-javascript-store-and-access-results-using-sql-json-and-rest
+
+Current WIP doc: https://hannahn1214.github.io/developer/openai-with-oracle/workshops/freetier/index.html?lab=deploy-model-oci
