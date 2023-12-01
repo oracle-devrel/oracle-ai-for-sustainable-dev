@@ -7,6 +7,8 @@
 ## Introduction
 MISSING
 
+https://paulparkinson.github.io/developer/oracle-ai-for-sustainable-dev/workshops/freetier/index.html?lab=oml-healthcare
+
 ## Getting Started
 MISSING
 

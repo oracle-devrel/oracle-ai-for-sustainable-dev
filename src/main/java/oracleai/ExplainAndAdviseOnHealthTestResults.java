@@ -1,5 +1,6 @@
 package oracleai;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.oracle.bmc.aivision.AIServiceVisionClient;
@@ -9,58 +10,111 @@ import com.oracle.bmc.aivision.responses.AnalyzeImageResponse;
 import com.oracle.bmc.auth.AuthenticationDetailsProvider;
 import com.oracle.bmc.auth.ConfigFileAuthenticationDetailsProvider;
 import com.oracle.bmc.auth.InstancePrincipalsAuthenticationDetailsProvider;
+import com.oracle.bmc.generativeai.GenerativeAiClient;
+import com.oracle.bmc.generativeai.model.GenerateTextDetails;
+import com.oracle.bmc.generativeai.model.GenerateTextResult;
+import com.oracle.bmc.generativeai.model.OnDemandServingMode;
+import com.oracle.bmc.generativeai.requests.GenerateTextRequest;
+import com.oracle.bmc.generativeai.responses.GenerateTextResponse;
 import com.theokanning.openai.completion.chat.ChatCompletionChoice;
 import com.theokanning.openai.completion.chat.ChatCompletionRequest;
 import com.theokanning.openai.completion.chat.ChatMessage;
 import com.theokanning.openai.completion.chat.ChatMessageRole;
 import com.theokanning.openai.service.OpenAiService;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+import org.springframework.ui.Model;
 
-@RestController
+@Controller
 @RequestMapping("/health")
 public class ExplainAndAdviseOnHealthTestResults {
 
     private static Logger log = LoggerFactory.getLogger(ExplainAndAdviseOnHealthTestResults.class);
 
-    @GetMapping("/form")
-    public String form(){
-        return "                <html><form method=\"post\" action=\"/health/analyzedoc\" enctype=\"multipart/form-data\">\n" +
-                "                    Select an image file to conduct object detection upon...\n" +
-                "                    <input type=\"file\" name=\"file\" accept=\"image/*\">\n" +
-                "                    <br>\n" +
-                "                    <br>Hit submit and a raw JSON return of objects detected and other info will be returned...\n" +
-                "                    <br><input type=\"submit\" value=\"Send Request to Vision AI\">\n" +
-                "                </form></html>";
-    }
 
     @PostMapping("/analyzedoc")
-    public String analyzedoc(@RequestParam("file") MultipartFile file)
+    public String analyzedoc(@RequestParam("file") MultipartFile file, Model model)
             throws Exception {
         log.info("analyzing image file:" + file);
         String objectDetectionResults = processImage(file.getBytes(), true);
-        ImageAnalysis imageAnalysis = parseJsonToImageAnalysis(objectDetectionResults);
-        List<Line> lines = imageAnalysis.getImageText().getLines();
-        String fullText = "";
-        for (Line line : lines) fullText += line.getText();
-        log.info("fullText = " + fullText);
-        String explanationOfResults = chat("explain these test results in simple terms " +
-                        "and tell me what should I do to get better results: \"" + fullText + "\"");
-        return "<html><br><br>explanationOfResults:" + explanationOfResults + "</html>";
+        ObjectMapper mapper = new ObjectMapper();
+            ImageData imageData = mapper.readValue(objectDetectionResults, ImageData.class);
+            String concatenatedText = concatenateText(imageData);
+            System.out.println(concatenatedText);
+        log.info("fullText = " + concatenatedText);
+        String explanationOfResults = chat("explain these test results in simple terms, in less than 100 words, " +
+                        "and tell me what should I do to get better results: \"" + concatenatedText + "\"");
+        System.out.println("ExplainAndAdviseOnHealthTestResults.analyzedoc explanationOfResults:" + explanationOfResults);
+        model.addAttribute("results", explanationOfResults);
+        return "resultspage";
+    }
+
+    private static String concatenateText(ImageData imageData) {
+        if (imageData.getImageText() == null || imageData.getImageText().getWords() == null) return "";
+        StringBuilder sb = new StringBuilder();
+        for (Word word : imageData.getImageText().getWords()) {
+            sb.append(word.getText()).append(" ");
+        }
+        return sb.toString().trim();
     }
 
     String chat(String textcontent) throws Exception {
+        boolean isConfigFileAuth = true;
+        GenerativeAiClient generativeAiClient;
+        AuthenticationDetailsProvider provider;
+        if (isConfigFileAuth) {
+            provider = new ConfigFileAuthenticationDetailsProvider(
+                    System.getenv("OCICONFIG_FILE"),System.getenv("OCICONFIG_PROFILE"));
+            generativeAiClient = GenerativeAiClient.builder().build(provider);
+        } else {
+            generativeAiClient = new GenerativeAiClient(InstancePrincipalsAuthenticationDetailsProvider.builder().build());
+        }
+        List<String> prompts = Arrays.asList(textcontent);
+        GenerateTextDetails generateTextDetails = GenerateTextDetails.builder()
+                .servingMode(OnDemandServingMode.builder().modelId("cohere.command").build()) // "cohere.command-light" is also available to use
+                // .servingMode(DedicatedServingMode.builder().endpointId("custom-model-endpoint").build()) // for custom model from Dedicated AI Cluster
+                .compartmentId(AIApplication.COMPARTMENT_ID)
+                .prompts(prompts)
+                .maxTokens(300)
+                .temperature(0.75)
+                .frequencyPenalty(1.0)
+                .topP(0.7)
+                .isStream(false)
+                .isEcho(false)
+                .build();
+
+        GenerateTextRequest generateTextRequest = GenerateTextRequest.builder()
+                .generateTextDetails(generateTextDetails)
+                .build();
+
+        GenerateTextResponse generateTextResponse = generativeAiClient.generateText(generateTextRequest);
+        GenerateTextResult result = generateTextResponse.getGenerateTextResult();
+        if(result !=null && result.getGeneratedTexts().size() > 0 ) {
+            String all_results ="";
+            for (List<com.oracle.bmc.generativeai.model.GeneratedText> list : result.getGeneratedTexts()) {
+                for (com.oracle.bmc.generativeai.model.GeneratedText text:list){
+                    all_results = all_results+text.getText();
+                }
+            }
+            return all_results;
+        }
+        return "We could not find a result for your text. Try a different image.";
+    }
+
+
+    String chatOpenAI(String textcontent) throws Exception {
         OpenAiService service =
                 new OpenAiService(System.getenv("OPENAI_KEY"), Duration.ofSeconds(60));
         System.out.println("Streaming chat completion... textcontent:" + textcontent);
@@ -96,6 +150,9 @@ public class ExplainAndAdviseOnHealthTestResults {
             aiServiceVisionClient = new AIServiceVisionClient(InstancePrincipalsAuthenticationDetailsProvider.builder().build());
         }
         List<ImageFeature> features = new ArrayList<>();
+        ImageFeature faceDetectionFeature = FaceDetectionFeature.builder()
+                .maxResults(10)
+                .build();
         ImageFeature classifyFeature = ImageClassificationFeature.builder()
                 .maxResults(10)
                 .build();
@@ -103,8 +160,9 @@ public class ExplainAndAdviseOnHealthTestResults {
                 .maxResults(10)
                 .build();
         ImageFeature textDetectImageFeature = ImageTextDetectionFeature.builder().build();
-        features.add(classifyFeature);
-        features.add(detectImageFeature);
+//        features.add(faceDetectionFeature);
+//        features.add(classifyFeature);
+//        features.add(detectImageFeature);
         features.add(textDetectImageFeature);
         InlineImageDetails inlineImageDetails = InlineImageDetails.builder()
                 .data(bytes)
@@ -125,6 +183,31 @@ public class ExplainAndAdviseOnHealthTestResults {
         System.out.println(json);
         return json;
     }
+
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @Getter
+    @Setter
+    static public class ImageData {
+        private ImageText imageText;
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @Getter
+    @Setter
+    static class ImageText {
+        private List<Word> words;
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @Getter
+    @Setter
+    static class Word {
+        private String text;
+    }
+/**
+
+
 
     @Data
     class ImageObject {
@@ -316,7 +399,68 @@ public class ExplainAndAdviseOnHealthTestResults {
 
         return imageAnalysis;
     }
+    */
 }
 
 
+/**
+ {
+ "ontologyClasses": [],
+ "detectedFaces": [
+ {
+ "confidence": 0.9453162,
+ "boundingPolygon": {
+ "normalizedVertices": [
+ {
+ "x": 0.43885306576845223,
+ "y": 0.33600531005859374
+ },
+ {
+ "x": 0.5433995575670001,
+ "y": 0.33600531005859374
+ },
+ {
+ "x": 0.5433995575670001,
+ "y": 0.404624267578125
+ },
+ {
+ "x": 0.43885306576845223,
+ "y": 0.404624267578125
+ }
+ ]
+ },
+ "qualityScore": 0.887661,
+ "landmarks": [
+ {
+ "type": "LEFT_EYE",
+ "x": 0.46573874,
+ "y": 0.36125
+ },
+ {
+ "type": "RIGHT_EYE",
+ "x": 0.5149893,
+ "y": 0.36175
+ },
+ {
+ "type": "NOSE_TIP",
+ "x": 0.4898287,
+ "y": 0.37575
+ },
+ {
+ "type": "LEFT_EDGE_OF_MOUTH",
+ "x": 0.46734476,
+ "y": 0.3845
+ },
+ {
+ "type": "RIGHT_EDGE_OF_MOUTH",
+ "x": 0.51338327,
+ "y": 0.38475
+ }
+ ]
+ }
+ ],
+ "faceDetectionModelVersion": "1.0.29",
+ "errors": []
+ }
+ */
 

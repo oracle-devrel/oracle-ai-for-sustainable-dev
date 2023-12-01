@@ -42,22 +42,6 @@ public class WriteAStoryAboutAPictureAndGiveItsSentiments {
 
     private static Logger log = LoggerFactory.getLogger(WriteAStoryAboutAPictureAndGiveItsSentiments.class);
 
-    @GetMapping("/form")
-    public String form()
-            throws Exception {
-        return "                <html><form method=\"post\" action=\"/tellastory/tellastory\" enctype=\"multipart/form-data\">\n" +
-                "                    Select an image file to create story from...\n" +
-                "                    <input type=\"file\" name=\"file\" accept=\"image/*\">\n" +
-                "                    <br>" +
-                "<br> Some additional options..." +
-                "<br><input type=\"radio\" id=\"genopts\" name=\"genopts\" value=\"an adventure\" checked >an adventure" +
-                "<br><input type=\"radio\" id=\"genopts\" name=\"genopts\" value=\"romantic\">romantic" +
-                "<br><input type=\"radio\" id=\"genopts\" name=\"genopts\" value=\"a dystopia\">a dystopia" +
-                "<br><input type=\"radio\" id=\"genopts\" name=\"genopts\" value=\"a documentary\">a documentary" +
-                "<br><input type=\"radio\" id=\"genopts\" name=\"genopts\" value=\"an anime movie\">an anime movie" +
-                "                    <br><input type=\"submit\" value=\"Send Request to Vision AI\">\n" +
-                "                </form></html>";
-    }
 
     @PostMapping("/tellastory")
     public String tellastory(@RequestParam("file") MultipartFile file , @RequestParam("genopts") String genopts)

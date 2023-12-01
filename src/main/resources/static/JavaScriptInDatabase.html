@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+
+<html />
+<title>Oracle AI</title>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script>
+    fetch('sidebar.html')
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('content').innerHTML = data;
+        });
+</script>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+</head>
+<body>
+<div class="w3-sidebar w3-light-grey w3-bar-block" style="width:25%">
+    <h3 class="w3-bar-item">Menu</h3>
+    <div id="content"></div>
+</div>
+<div style="margin-left:25%">
+
+    <div class="w3-container w3-blue">
+        <h2>Develop with Oracle AI Services and Oracle Database</h2>
+    </div>
+
+    <!--    <img src="images/bloodsugarreport.jpeg" alt="blood sugar report" style="width:50%">-->
+    <div class="w3-container">
+        <h3>Make AI Calls From Within the Oracle Database Using JavaScript</h3>
+
+
+        <h4>Lab 2 Provide a question.
+            <br>&nbsp; &nbsp; The question is inserted in a database table using JSON/Duality feature.
+            <br>&nbsp; &nbsp; A JavaScript call is made from the database to get the answer.
+            <br>&nbsp; &nbsp; The answer is then inserted it in the same table using JSON.
+            <br>&nbsp; &nbsp; The JSON reply is the queried and returned.</h4>
+        <h5>&nbsp; &nbsp; Uses Oracle Database MLE Javascript support and JSON Duality query and Open AI Chat
+            <a href="/databasejs/form">App</a>
+            <a href="https://paulparkinson.github.io/developer/openai-with-oracle/workshops/freetier/index.html?lab=waystocall-openai">Doc</a></h5>
+
+    </div>
+
+</div>
+
+</body>
+</html>

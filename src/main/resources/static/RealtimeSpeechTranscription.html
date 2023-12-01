@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+
+<html />
+<title>Oracle AI</title>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script>
+    fetch('sidebar.html')
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('content').innerHTML = data;
+        });
+</script>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+</head>
+<body>
+<div class="w3-sidebar w3-light-grey w3-bar-block" style="width:25%">
+    <h3 class="w3-bar-item">Menu</h3>
+    <div id="content"></div>
+</div>
+<div style="margin-left:25%">
+
+    <div class="w3-container w3-blue">
+        <h2>Develop with Oracle AI Services and Oracle Database</h2>
+    </div>
+
+    <!--    <img src="images/bloodsugarreport.jpeg" alt="blood sugar report" style="width:50%">-->
+    <div class="w3-container">
+        <h3>Obtain a summary of medical report using Oracle Vision AI Document/Text Detections and Oracle Gen AI</h3>
+        <br>
+        <h4>Provide a picture of a health report and receive an explanation in layman's terms along with advice.</h4>
+        <br>
+        <form method="post" action="/health/analyzedoc" enctype="multipart/form-data">
+            Select an image file to conduct object detection upon...<br>
+            <input type="file" name="file" accept="image/*" />
+            <br>You can use the sample image found <a href="images/bloodsugarreport.jpeg">here</a>
+            <br>
+            <br>
+            <br><input type="submit" value="Submit"><br>
+    </div>
+
+</div>
+
+</body>
+</html>
