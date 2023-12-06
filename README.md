@@ -8,6 +8,8 @@
 MISSING
 
 https://paulparkinson.github.io/developer/oracle-ai-for-sustainable-dev/workshops/freetier/index.html?lab=oml-healthcare
+https://sdgs.un.org/goals
+https://huggingface.co/DeepFloyd/IF-I-XL-v1.0
 
 ## Getting Started
 MISSING

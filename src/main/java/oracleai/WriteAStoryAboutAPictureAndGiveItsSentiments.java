@@ -47,12 +47,22 @@ public class WriteAStoryAboutAPictureAndGiveItsSentiments {
     public String tellastory(@RequestParam("file") MultipartFile file , @RequestParam("genopts") String genopts)
             throws Exception {
         log.info("got image file, now analyze, file = " + file);
-        String objectDetectionResults = processImage(file.getBytes(), true);
+        String objectDetectionResults = ORDSCalls.callAnalyzeImageApi(
+                AIApplication.ORDS_ENDPOINT_ANALYZE_IMAGE_INLINE,
+                AIApplication.OCI_VISION_SERVICE_ENDPOINT,
+                AIApplication.COMPARTMENT_ID,
+                file);
+        ORDSCalls.analyzeImageInObjectStore(
+                AIApplication.ORDS_ENDPOINT_ANALYZE_IMAGE_OBJECTSTORE,
+                AIApplication.OCI_VISION_SERVICE_ENDPOINT,
+                AIApplication.COMPARTMENT_ID,
+                "doc", "oradbclouducm", "objectdetectiontestimage.jpg");
+//        String objectDetectionResults = processImage(file.getBytes(), true);
         ImageAnalysis imageAnalysis = parseJsonToImageAnalysis(objectDetectionResults);
         List<ImageObject> images = imageAnalysis.getImageObjects();
         String fullText = "";
         for (ImageObject image : images)  fullText += image.getName() + ", ";
-        log.info("fullText = " + fullText);
+        log.info("tellastory images = " + fullText);
         String generatedstory =
                 chat("using strong negative and positive sentiments, " +
                         "write a story that is " + genopts + " and includes  "  + fullText );
