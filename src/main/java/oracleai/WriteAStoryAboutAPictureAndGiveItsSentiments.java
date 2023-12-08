@@ -16,11 +16,6 @@ import com.oracle.bmc.auth.AuthenticationDetailsProvider;
 import com.oracle.bmc.auth.ConfigFileAuthenticationDetailsProvider;
 import com.oracle.bmc.auth.InstancePrincipalsAuthenticationDetailsProvider;
 import com.oracle.bmc.model.BmcException;
-import com.theokanning.openai.completion.chat.ChatCompletionChoice;
-import com.theokanning.openai.completion.chat.ChatCompletionRequest;
-import com.theokanning.openai.completion.chat.ChatMessage;
-import com.theokanning.openai.completion.chat.ChatMessageRole;
-import com.theokanning.openai.service.OpenAiService;
 import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,9 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.time.Duration;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -64,34 +57,10 @@ public class WriteAStoryAboutAPictureAndGiveItsSentiments {
         for (ImageObject image : images)  fullText += image.getName() + ", ";
         log.info("tellastory images = " + fullText);
         String generatedstory =
-                chat("using strong negative and positive sentiments, " +
+                OracleGenAI.chat("using strong negative and positive sentiments, " +
                         "write a story that is " + genopts + " and includes  "  + fullText );
         return "<html><br><br>story:" + generatedstory +
                 "<br><br>sentiment analysis:" + sentiments(generatedstory) + "</html>";
-    }
-   String chat(String textcontent) throws Exception {
-        OpenAiService service =
-                new OpenAiService(System.getenv("OPENAI_KEY"), Duration.ofSeconds(60));
-        System.out.println("Streaming chat completion... textcontent:" + textcontent);
-        final List<ChatMessage> messages = new ArrayList<>();
-        final ChatMessage systemMessage = new ChatMessage(ChatMessageRole.SYSTEM.value(), textcontent);
-        messages.add(systemMessage);
-        ChatCompletionRequest chatCompletionRequest = ChatCompletionRequest
-                .builder()
-                .model("gpt-3.5-turbo")
-                .messages(messages)
-                .n(1)
-                .maxTokens(300)
-                .logitBias(new HashMap<>())
-                .build();
-        String replyString = "";
-        String content;
-        for (ChatCompletionChoice choice : service.createChatCompletion(chatCompletionRequest).getChoices()) {
-            content = choice.getMessage().getContent();
-            replyString += (content == null ? " " : content);
-        }
-        service.shutdownExecutor();
-        return replyString;
     }
 
     String processImage(byte[] bytes, boolean isConfigFileAuth) throws Exception {

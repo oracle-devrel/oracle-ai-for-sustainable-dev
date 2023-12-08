@@ -16,11 +16,6 @@ import com.oracle.bmc.generativeai.model.GenerateTextResult;
 import com.oracle.bmc.generativeai.model.OnDemandServingMode;
 import com.oracle.bmc.generativeai.requests.GenerateTextRequest;
 import com.oracle.bmc.generativeai.responses.GenerateTextResponse;
-import com.theokanning.openai.completion.chat.ChatCompletionChoice;
-import com.theokanning.openai.completion.chat.ChatCompletionRequest;
-import com.theokanning.openai.completion.chat.ChatMessage;
-import com.theokanning.openai.completion.chat.ChatMessageRole;
-import com.theokanning.openai.service.OpenAiService;
 import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
@@ -29,10 +24,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.ui.Model;
@@ -54,7 +47,7 @@ public class ExplainAndAdviseOnHealthTestResults {
             String concatenatedText = concatenateText(imageData);
             System.out.println(concatenatedText);
         log.info("fullText = " + concatenatedText);
-        String explanationOfResults = chat("explain these test results in simple terms, in less than 100 words, " +
+        String explanationOfResults = OracleGenAI.chat("explain these test results in simple terms, in less than 100 words, " +
                         "and tell me what should I do to get better results: \"" + concatenatedText + "\"");
         System.out.println("ExplainAndAdviseOnHealthTestResults.analyzedoc explanationOfResults:" + explanationOfResults);
         model.addAttribute("results", explanationOfResults);
@@ -70,74 +63,6 @@ public class ExplainAndAdviseOnHealthTestResults {
         return sb.toString().trim();
     }
 
-    String chat(String textcontent) throws Exception {
-        boolean isConfigFileAuth = true;
-        GenerativeAiClient generativeAiClient;
-        AuthenticationDetailsProvider provider;
-        if (isConfigFileAuth) {
-            provider = new ConfigFileAuthenticationDetailsProvider(
-                    System.getenv("OCICONFIG_FILE"),System.getenv("OCICONFIG_PROFILE"));
-            generativeAiClient = GenerativeAiClient.builder().build(provider);
-        } else {
-            generativeAiClient = new GenerativeAiClient(InstancePrincipalsAuthenticationDetailsProvider.builder().build());
-        }
-        List<String> prompts = Arrays.asList(textcontent);
-        GenerateTextDetails generateTextDetails = GenerateTextDetails.builder()
-                .servingMode(OnDemandServingMode.builder().modelId("cohere.command").build()) // "cohere.command-light" is also available to use
-                // .servingMode(DedicatedServingMode.builder().endpointId("custom-model-endpoint").build()) // for custom model from Dedicated AI Cluster
-                .compartmentId(AIApplication.COMPARTMENT_ID)
-                .prompts(prompts)
-                .maxTokens(300)
-                .temperature(0.75)
-                .frequencyPenalty(1.0)
-                .topP(0.7)
-                .isStream(false)
-                .isEcho(false)
-                .build();
-
-        GenerateTextRequest generateTextRequest = GenerateTextRequest.builder()
-                .generateTextDetails(generateTextDetails)
-                .build();
-
-        GenerateTextResponse generateTextResponse = generativeAiClient.generateText(generateTextRequest);
-        GenerateTextResult result = generateTextResponse.getGenerateTextResult();
-        if(result !=null && result.getGeneratedTexts().size() > 0 ) {
-            String all_results ="";
-            for (List<com.oracle.bmc.generativeai.model.GeneratedText> list : result.getGeneratedTexts()) {
-                for (com.oracle.bmc.generativeai.model.GeneratedText text:list){
-                    all_results = all_results+text.getText();
-                }
-            }
-            return all_results;
-        }
-        return "We could not find a result for your text. Try a different image.";
-    }
-
-
-    String chatOpenAI(String textcontent) throws Exception {
-        OpenAiService service =
-                new OpenAiService(System.getenv("OPENAI_KEY"), Duration.ofSeconds(60));
-        System.out.println("Streaming chat completion... textcontent:" + textcontent);
-        final List<ChatMessage> messages = new ArrayList<>();
-        final ChatMessage systemMessage = new ChatMessage(ChatMessageRole.SYSTEM.value(), textcontent);
-        messages.add(systemMessage);
-        ChatCompletionRequest chatCompletionRequest = ChatCompletionRequest
-                .builder()
-                .model("gpt-3.5-turbo")
-                .messages(messages)
-                .n(1)
-                .maxTokens(300) //was 50
-                .logitBias(new HashMap<>())
-                .build();
-        String replyString = "";
-        String content;
-        for (ChatCompletionChoice choice : service.createChatCompletion(chatCompletionRequest).getChoices()) {
-            content = choice.getMessage().getContent();
-            replyString += (content == null?" ": content);
-        }
-        service.shutdownExecutor();
-        return replyString;
-    }
 
     String processImage(byte[] bytes, boolean isConfigFileAuth) throws Exception {
         AIServiceVisionClient aiServiceVisionClient;
@@ -179,8 +104,8 @@ public class ExplainAndAdviseOnHealthTestResults {
         mapper.setFilterProvider(new SimpleFilterProvider().setFailOnUnknownId(false));
 
         String json = mapper.writeValueAsString(response.getAnalyzeImageResult());
-        System.out.println("AnalyzeImage Result");
-        System.out.println(json);
+//        System.out.println("AnalyzeImage Result");
+//        System.out.println(json);
         return json;
     }
 
