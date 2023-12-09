@@ -1,3 +1,4 @@
+--This is a work in progress and only applicable to smaller image sizes
 create or replace FUNCTION call_analyze_image_api_inline (
     p_endpoint VARCHAR2,
     p_compartment_ocid VARCHAR2,
