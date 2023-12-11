@@ -24,14 +24,14 @@
     </div>
 
     <div class="w3-container">
-        <h3>Obtain a summary of medical report using Oracle Vision AI Document/Text Detections and Oracle Gen AI</h3>
+        <h3>Obtain facial recognition information using Oracle Vision AI Document</h3>
         <br>
-        <h4>Provide a picture of a health report and receive an explanation in layman's terms along with advice.</h4>
+        <h4>Provide a picture containing faces and receive a return of the faces recognized and location of various facial features.</h4>
         <br>
-        <form method="post" action="/health/analyzedoc" enctype="multipart/form-data">
-            Select an image file to conduct object detection upon...<br>
+        <form method="post" action="/facerecognition/facerecognition" enctype="multipart/form-data">
+            Select an image file to conduct face recognition upon...<br>
             <input type="file" name="file" accept="image/*" />
-            <br>You can use the sample image found <a href="images/bloodsugarreport.jpeg">here</a>
+            <br>You can use the sample image found <a href="images/faces.jpeg">here</a>
             <br>
             <br>
             <br><input type="submit" value="Submit"><br>

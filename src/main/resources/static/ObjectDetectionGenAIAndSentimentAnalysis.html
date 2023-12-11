@@ -25,11 +25,12 @@
 
     <div class="w3-container">
         <h4>Provide a picture and receive a generated story with sentiment analysis based on the picture</h4>
-        <h5>&nbsp; &nbsp; Uses Oracle Vision AI, Oracle Language AI, and Open AI Chat</h5>
+        <h5>&nbsp; &nbsp; Uses Oracle Vision AI, Oracle Language AI, and Oracle Gen AI</h5>
 
             <form method="post" action="/tellastory/tellastory" enctype="multipart/form-data">
                 Select an image file to create story from...
                 <input type="file" name="file" accept="image/*">
+                <br>(You can download and use the sample image found <a href="images/objectdetectiontestimage.jpg">here</a>)
                 <br>
                 <br><b>Options...</b>
                 <br><input type="radio"  name="genopts" value="an adventure" checked >an adventure
@@ -37,7 +38,7 @@
                 <br><input type="radio"  name="genopts" value="a dystopia">a dystopia
                 <br><input type="radio"  name="genopts" value="a documentary">a documentary
                 <br><input type="radio"  name="genopts" value="an anime movie">an anime movie
-                <br><input type="submit" value="Send Request to Vision AI">
+                <br><input type="submit" value="Submit">
             </form>
     </div>
 

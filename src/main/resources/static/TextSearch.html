@@ -14,8 +14,7 @@
 </head>
 <body>
 <div class="w3-sidebar w3-light-grey w3-bar-block" style="width:25%">
-<!--    <h3 class="w3-bar-item">Menu</h3>-->
-    <a href="/index.html" class="w3-bar-item w3-button">Home</a><br>
+    <a href="/index.html" class="w3-bar-item w3-button"><b>Home</b></a><br>
     <div id="content"></div>
 </div>
 <div style="margin-left:25%">
@@ -25,7 +24,7 @@
     </div>
 
     <div class="w3-container">
-        <h4>Text Search</h4>
+        <h4>Oracle Database Text Search</h4>
         <br>
         <h5>Search Tables Storing Results of AI Operations.</h5>
         <h5>Uses Oracle Text Indexing Searches (and in 23c DBMS_SEARCH multi-table search)</h5>
@@ -33,25 +32,23 @@
         <form method="post" action="/textsearch/textsearch" enctype="multipart/form-data">
             Enter SQL for text search...
             <br>
-            <textarea  name="sql" rows="4" cols="50">select jsondata from aispeech_results
+            <textarea  name="sql" rows="3" cols="60">select jsondata from aivision_results
             </textarea>
-            <br>
             <br><b>Examples...</b>
             <br>CONTAINS operator
-            <br>&nbsp;&nbsp;&nbsp;&nbsp;select jsondata from aispeech_results where contains ( jsondata, 'john' ) > 0
+            <br>&nbsp;&nbsp;&nbsp;&nbsp;select jsondata from aivision_results where contains ( jsondata, 'john' ) > 0
             <br>Mixed Queries
-            <br>&nbsp;&nbsp;&nbsp;&nbsp;select jsondata from aispeech_results   where amount < 100 and   contains ( jsondata, 'smith' ) > 0
+            <br>&nbsp;&nbsp;&nbsp;&nbsp;select jsondata from aivision_results   where amount < 100 and   contains ( jsondata, 'smith' ) > 0
             <br>OR search
-            <br>&nbsp;&nbsp;&nbsp;&nbsp;select jsondata from aispeech_results where contains ( jsondata, 'john OR johnny' ) > 0
+            <br>&nbsp;&nbsp;&nbsp;&nbsp;select jsondata from aivision_results where contains ( jsondata, 'john OR johnny' ) > 0
             <br>Wildcards (% matches any string of characters, and an underscore _ character matches any single character)
-            <br>&nbsp;&nbsp;&nbsp;&nbsp;select jsondata from aispeech_results where contains ( jsondata, 'john%' ) > 0
+            <br>&nbsp;&nbsp;&nbsp;&nbsp;select jsondata from aivision_results where contains ( jsondata, 'john%' ) > 0
             <br>Phrase searches (an AND search similar to OR but implicit)
-            <br>&nbsp;&nbsp;&nbsp;&nbsp;select jsondata from aispeech_results where contains ( jsondata, 'first order' ) > 0
+            <br>&nbsp;&nbsp;&nbsp;&nbsp;select jsondata from aivision_results where contains ( jsondata, 'first order' ) > 0
             <br>Fuzzy searches (find not only the original search word, but also all those similar to it)
-            <br>&nbsp;&nbsp;&nbsp;&nbsp;select jsondata from aispeech_results where contains ( jsondata, 'fuzzy(popins)' ) > 0
+            <br>&nbsp;&nbsp;&nbsp;&nbsp;select jsondata from aivision_results where contains ( jsondata, 'fuzzy(popins)' ) > 0
             <br>Near searches (words within specified distance of each other)
-            <br>&nbsp;&nbsp;&nbsp;&nbsp;select jsondata from aispeech_results where contains ( jsondata, 'near((order, smith), 1)' ) > 0"/>
-            <br>
+            <br>&nbsp;&nbsp;&nbsp;&nbsp;select jsondata from aivision_results where contains ( jsondata, 'near((order, smith), 1)' ) > 0
             <br>
             <br><input type="submit" value="Submit"><br>
         </form>

@@ -13,6 +13,8 @@ public class AIApplication {
     public static final String ORDS_ENDPOINT_ANALYZE_IMAGE_INLINE = System.getenv("ORDS_ENDPOINT_ANALYZE_IMAGE_INLINE");
     public static final String ORDS_ENDPOINT_EXECUTE_DYNAMIC_SQL = System.getenv("ORDS_ENDPOINT_EXECUTE_DYNAMIC_SQL");
     public static final String OCI_VISION_SERVICE_ENDPOINT = System.getenv("OCI_VISION_SERVICE_ENDPOINT");
+    public static final String OCI_SPEECH_SERVICE_ENDPOINT = System.getenv("OCI_SPEECH_SERVICE_ENDPOINT");
+    public static final String OCI_GENAI_SERVICE_ENDPOINT = System.getenv("OCI_GENAI_SERVICE_ENDPOINT");
 
     static {
         System.out.println("AIApplication.static initializer COMPARTMENT_ID:" + COMPARTMENT_ID);

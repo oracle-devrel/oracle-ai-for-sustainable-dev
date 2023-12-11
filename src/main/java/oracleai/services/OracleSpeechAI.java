@@ -16,7 +16,6 @@ import java.util.Arrays;
 
 public class OracleSpeechAI {
 
-
     public static String getTranscriptFromOCISpeech(String fileName) throws IOException {
         AuthenticationDetailsProvider provider = AuthProvider.getAuthenticationDetailsProvider();
         AIServiceSpeechClient client =
