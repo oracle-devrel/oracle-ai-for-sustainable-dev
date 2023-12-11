@@ -36,44 +36,44 @@
             <br>
 
             <input type="radio"  name="opts" value="contains" checked >CONTAINS operator
-            <br><input type="text"  name="textsearchfield" value="select * from user_data
+            <br><input type="text"  name="textsearchfield" value="select * from aispeech_results_json
             where contains ( jsondata, 'john' ) > 0"/>
             <br>
             <br>
 
             <input type="radio"  name="opts" value="mixedqueries">Mixed Queries
-            <br><input type="text"  name="textsearchfield" value="select * from user_data
+            <br><input type="text"  name="textsearchfield" value="select * from aispeech_results_json
             where amount < 100
             and   contains ( jsondata, 'smith' ) > 0"/>
             <br>
             <br>
 
             <input type="radio"  name="opts" value="orsearch">OR search
-            <br><input type="text"  name="textsearchfield" value="select * from user_data
+            <br><input type="text"  name="textsearchfield" value="select * from aispeech_results_json
             where contains ( jsondata, 'john OR johnny' ) > 0"/>
             <br>
             <br>
 
             <input type="radio"  name="opts" value="wildcards">Wildcards (% matches any string of characters, and an underscore _ character matches any single character)
-            <br><input type="text"  name="textsearchfield" value="select * from user_data
+            <br><input type="text"  name="textsearchfield" value="select * from aispeech_results_json
             where contains ( jsondata, 'john%' ) > 0"/>
             <br>
             <br>
 
             <input type="radio"  name="opts" value="phrasesearch">Phrase searches (an AND search similar to OR but implicit)
-            <br><input type="text"  name="textsearchfield" value="select * from user_data
+            <br><input type="text"  name="textsearchfield" value="select * from aispeech_results_json
             where contains ( jsondata, 'first order' ) > 0"/>
             <br>
             <br>
 
             <input type="radio"  name="opts" value="fuzzysearch">Fuzzy searches (find not only the original search word, but also all those similar to it)
-            <br><input type="text"  name="textsearchfield" value="select * from user_data
+            <br><input type="text"  name="textsearchfield" value="select * from aispeech_results_json
             where contains ( jsondata, 'fuzzy(popins)' ) > 0"/>
             <br>
             <br>
 
             <input type="radio"  name="opts" value="nearsearch">Near searches (words within specified distance of each other)
-            <br><input type="text"  name="textsearchfield" value="select * from user_data
+            <br><input type="text"  name="textsearchfield" value="select * from aispeech_results_json
             where contains ( jsondata, 'near((order, smith), 1)' ) > 0"/>
             <br>
             <br>
