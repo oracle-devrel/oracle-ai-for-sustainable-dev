@@ -1,61 +1,69 @@
-CREATE USER aiuser identified BY [Yourpassword];
-grant CREATE session TO aiuser;
-grant RESOURCE, db_developer_role TO aiuser;
-grant unlimited tablespace TO aiuser;
-grant EXECUTE ON javascript TO aiuser;
-grant EXECUTE dynamic mle TO aiuser;
-grant execute on DBMS_CLOUD to aiuser;
---switch to aiuser
+--run as aiuser
 
---CREATE TABLE metering
---    (id RAW (16) NOT NULL,
---     date_loaded TIMESTAMP WITH TIME ZONE,
---     label varchar2(20),
---     jsondata CLOB
---     CONSTRAINT ensure_metering_json CHECK (jsondata IS JSON));
---
 CREATE TABLE aivision_results
     (id RAW (16) NOT NULL,
      date_loaded TIMESTAMP WITH TIME ZONE,
      label varchar2(20),
      jsondata CLOB
      CONSTRAINT ensure_aivision_results_json CHECK (jsondata IS JSON));
-
-create index airesultsindex on aivision_results(jsondata) indextype is ctxsys.context;
-
-select index_name, index_type, status from user_indexes where index_name = 'AIRESULTSINDEX';
+create index aivisionresultsindex on aivision_results(jsondata) indextype is ctxsys.context;
+select index_name, index_type, status from user_indexes where index_name = 'AIVISIONAIRESULTSINDEX';
 select idx_name, idx_table, idx_text_name from ctx_user_indexes;
-select token_text from dr$airesultsindex$i;
+select token_text from dr$aivisionresultsindex$i;
 
-select * from user_data
+
+CREATE TABLE aispeech_results
+    (id RAW (16) NOT NULL,
+     date_loaded TIMESTAMP WITH TIME ZONE,
+     label varchar2(20),
+     jsondata CLOB
+     CONSTRAINT aispeech_results_json CHECK (jsondata IS JSON));
+create index aispeechresultsindex on aispeech_results(jsondata) indextype is ctxsys.context;
+select index_name, index_type, status from user_indexes where index_name = 'AISPEECHRESULTSINDEX';
+select idx_name, idx_table, idx_text_name from ctx_user_indexes;
+select token_text from dr$aispeechresultsindex$i;
+
+CREATE OR REPLACE FUNCTION execute_dynamic_sql(p_sql IN VARCHAR2) RETURN VARCHAR2 IS
+    v_result VARCHAR2(4000);
+BEGIN
+    EXECUTE IMMEDIATE p_sql INTO v_result;
+    RETURN v_result;
+EXCEPTION
+    WHEN OTHERS THEN
+        RETURN SQLERRM;
+END execute_dynamic_sql;
+/
+
+
+select * from aispeech_results_json
 
 --CONTAINS operator
-select * from user_data
+select * from aispeech_results_json
     where contains ( jsondata, 'john' ) > 0
 
 --Mixed Queries
-select * from user_data
+select * from aispeech_results_json
     where amount < 100
     and   contains ( jsondata, 'smith' ) > 0
 
 --An OR search
-select * from user_data
+select * from aispeech_results_json
     where contains ( jsondata, 'john OR johnny' ) > 0
 
 --Wildcards (% matches any string of characters, and an underscore _ character matches any single character)
-select * from user_data
+select * from aispeech_results_json
   where contains ( jsondata, 'john%' ) > 0
 
 --Phrase searches (an AND search similar to OR but implicit)
-select * from user_data
+select * from aispeech_results_json
   where contains ( jsondata, 'first order' ) > 0
 
 --Fuzzy searches (find not only the original search word, but also all those similar to it)
-select * from user_data
+select * from aispeech_results_json
   where contains ( jsondata, 'fuzzy(popins)' ) > 0
 
 --Near searches (words within specified distance of each other)
-select * from user_data
+select * from aispeech_results_json
   where contains ( jsondata, 'near((order, smith), 1)' ) > 0
 
 --Easy Text Search over Multiple Tables and Views with DBMS_SEARCH in 23c

@@ -26,22 +26,28 @@
     <!--    <img src="images/bloodsugarreport.jpeg" alt="blood sugar report" style="width:50%">-->
     <div class="w3-container">
         <h3>Provide Story Board Generation Using Oracle Speech AI and Image Generation (such as Stable Diffusion)</h3>
-        <h4>Provide a verbal description of a scene.
+        <h4>Provide the audio file of a verbal description of a scene.
             <br>&nbsp; &nbsp; An image is generated for it.
             <br>&nbsp; &nbsp; Iterate to create a storyboard.</h4>
         <h5>&nbsp; &nbsp; Uses Oracle Speech AI Transcription and Image Generation </h5>
 
                 <form action="/picturestory/picturestory">
-                <input type="submit" value="Click here and record (up to 10 seconds of audio) describing next scene.">
-                <br> Some additional options...
-                <br><input type="radio" id="genopts" name="genopts" value=", using only one line" checked >using only one line
-                <br><input type="radio" id="genopts" name="genopts" value=", photo taken on a Pentax k1000">photo taken on a Pentax k1000
-                <br><input type="radio" id="genopts" name="genopts" value=", pixel art">pixel art
-                <br><input type="radio" id="genopts" name="genopts" value=", digital art">digital art
-                <br><input type="radio" id="genopts" name="genopts" value=", 3d render">3d render
-                </form><br><br>
+                    <br>
+                <input type="file" name="file" accept="image/*">
+                    <br><br>
+<!--                <input type="submit" value="Click here and record (up to 10 seconds of audio) describing next scene.">-->
+                <br><br> Additional options...
+                <br><input type="radio"  name="genopts" value=", using only one line" checked >using only one line
+                <br><input type="radio"  name="genopts" value=", photo taken on a Pentax k1000">photo taken on a Pentax k1000
+                <br><input type="radio"  name="genopts" value=", pixel art">pixel art
+                <br><input type="radio"  name="genopts" value=", digital art">digital art
+                <br><input type="radio"  name="genopts" value=", 3d render">3d render
+               <br><br>
+        <input type="submit" value="Submit to add to story">
+                </form>
+        <br><br>
                 <form action="/picturestory/reset">
-                <input type="submit" value="Or click here to start a new story">
+                <input type="submit" value="Or click here to clear story">
                 </form>
     </div>
 

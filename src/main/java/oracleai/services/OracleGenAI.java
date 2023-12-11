@@ -1,4 +1,4 @@
-package oracleai;
+package oracleai.services;
 
 import com.oracle.bmc.auth.AuthenticationDetailsProvider;
 import com.oracle.bmc.auth.ConfigFileAuthenticationDetailsProvider;
@@ -9,6 +9,7 @@ import com.oracle.bmc.generativeai.model.GenerateTextResult;
 import com.oracle.bmc.generativeai.model.OnDemandServingMode;
 import com.oracle.bmc.generativeai.requests.GenerateTextRequest;
 import com.oracle.bmc.generativeai.responses.GenerateTextResponse;
+import oracleai.AIApplication;
 
 import java.util.Arrays;
 import java.util.List;
@@ -16,7 +17,7 @@ import java.util.List;
 public class OracleGenAI {
 
 
-    static String chat(String textcontent) throws Exception {
+    public static String chat(String textcontent) throws Exception {
         boolean isConfigFileAuth = true;
         GenerativeAiClient generativeAiClient;
         AuthenticationDetailsProvider provider;

@@ -3,7 +3,8 @@ create or replace FUNCTION call_analyze_image_api_objectstore (
     p_compartment_ocid VARCHAR2,
     p_namespaceName VARCHAR2,
     p_bucketName VARCHAR2,
-    p_objectName VARCHAR2
+    p_objectName VARCHAR2,
+    p_label VARCHAR2
 ) RETURN CLOB IS
     resp DBMS_CLOUD_TYPES.resp;
     json_response CLOB;
@@ -29,15 +30,15 @@ BEGIN
     );
 
     json_response := DBMS_CLOUD.get_response_text(resp);
-     dbms_output.put_line('json_response: ' || json_response);
-     INSERT INTO metering VALUES (SYS_GUID(), SYSTIMESTAMP, 'test', json_response );
-
+    dbms_output.put_line('json_response: ' || json_response);
+    INSERT INTO aivision_results VALUES (SYS_GUID(), SYSTIMESTAMP, p_label, json_response );
     RETURN json_response;
 EXCEPTION
     WHEN OTHERS THEN
         -- Handle exceptions if needed and return an error message or raise
         RAISE;
 END call_analyze_image_api_objectstore;
+/
 
 BEGIN
     ORDS.ENABLE_OBJECT(

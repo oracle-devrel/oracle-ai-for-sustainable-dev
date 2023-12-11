@@ -1,32 +1,13 @@
 package oracleai;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
-import com.oracle.bmc.aivision.AIServiceVisionClient;
-import com.oracle.bmc.aivision.model.*;
-import com.oracle.bmc.aivision.requests.AnalyzeImageRequest;
-import com.oracle.bmc.aivision.responses.AnalyzeImageResponse;
-import com.oracle.bmc.auth.AuthenticationDetailsProvider;
-import com.oracle.bmc.auth.ConfigFileAuthenticationDetailsProvider;
-import com.oracle.bmc.auth.InstancePrincipalsAuthenticationDetailsProvider;
-import com.oracle.bmc.generativeai.GenerativeAiClient;
-import com.oracle.bmc.generativeai.model.GenerateTextDetails;
-import com.oracle.bmc.generativeai.model.GenerateTextResult;
-import com.oracle.bmc.generativeai.model.OnDemandServingMode;
-import com.oracle.bmc.generativeai.requests.GenerateTextRequest;
-import com.oracle.bmc.generativeai.responses.GenerateTextResponse;
-import lombok.Getter;
-import lombok.Setter;
+import oracleai.services.OracleGenAI;
+import oracleai.services.OracleVisionAI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import org.springframework.ui.Model;
 
@@ -41,95 +22,31 @@ public class ExplainAndAdviseOnHealthTestResults {
     public String analyzedoc(@RequestParam("file") MultipartFile file, Model model)
             throws Exception {
         log.info("analyzing image file:" + file);
-        String objectDetectionResults = processImage(file.getBytes(), true);
+        String objectDetectionResults = OracleVisionAI.processImage(file.getBytes(), true);
         ObjectMapper mapper = new ObjectMapper();
-            ImageData imageData = mapper.readValue(objectDetectionResults, ImageData.class);
+            OracleVisionAI.ImageData imageData = mapper.readValue(objectDetectionResults, OracleVisionAI.ImageData.class);
             String concatenatedText = concatenateText(imageData);
             System.out.println(concatenatedText);
         log.info("fullText = " + concatenatedText);
-        String explanationOfResults = OracleGenAI.chat("explain these test results in simple terms, in less than 100 words, " +
+        String explanationOfResults =
+                OracleGenAI.chat("explain these test results in simple terms, in less than 100 words, " +
                         "and tell me what should I do to get better results: \"" + concatenatedText + "\"");
         System.out.println("ExplainAndAdviseOnHealthTestResults.analyzedoc explanationOfResults:" + explanationOfResults);
         model.addAttribute("results", explanationOfResults);
         return "resultspage";
     }
 
-    private static String concatenateText(ImageData imageData) {
+    private static String concatenateText(OracleVisionAI.ImageData imageData) {
         if (imageData.getImageText() == null || imageData.getImageText().getWords() == null) return "";
         StringBuilder sb = new StringBuilder();
-        for (Word word : imageData.getImageText().getWords()) {
+        for (OracleVisionAI.Word word : imageData.getImageText().getWords()) {
             sb.append(word.getText()).append(" ");
         }
         return sb.toString().trim();
     }
 
 
-    String processImage(byte[] bytes, boolean isConfigFileAuth) throws Exception {
-        AIServiceVisionClient aiServiceVisionClient;
-        AuthenticationDetailsProvider provider;
-        if (isConfigFileAuth) {
-            provider = new ConfigFileAuthenticationDetailsProvider(
-                     System.getenv("OCICONFIG_FILE"),System.getenv("OCICONFIG_PROFILE"));
-            aiServiceVisionClient = AIServiceVisionClient.builder().build(provider);
-        } else {
-            aiServiceVisionClient = new AIServiceVisionClient(InstancePrincipalsAuthenticationDetailsProvider.builder().build());
-        }
-        List<ImageFeature> features = new ArrayList<>();
-        ImageFeature faceDetectionFeature = FaceDetectionFeature.builder()
-                .maxResults(10)
-                .build();
-        ImageFeature classifyFeature = ImageClassificationFeature.builder()
-                .maxResults(10)
-                .build();
-        ImageFeature detectImageFeature = ImageObjectDetectionFeature.builder()
-                .maxResults(10)
-                .build();
-        ImageFeature textDetectImageFeature = ImageTextDetectionFeature.builder().build();
-//        features.add(faceDetectionFeature);
-//        features.add(classifyFeature);
-//        features.add(detectImageFeature);
-        features.add(textDetectImageFeature);
-        InlineImageDetails inlineImageDetails = InlineImageDetails.builder()
-                .data(bytes)
-                .build();
-        AnalyzeImageDetails analyzeImageDetails = AnalyzeImageDetails.builder()
-                .image(inlineImageDetails)
-                .features(features)
-                .build();
-        AnalyzeImageRequest request = AnalyzeImageRequest.builder()
-                .analyzeImageDetails(analyzeImageDetails)
-                .build();
-        AnalyzeImageResponse response = aiServiceVisionClient.analyzeImage(request);
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.setFilterProvider(new SimpleFilterProvider().setFailOnUnknownId(false));
 
-        String json = mapper.writeValueAsString(response.getAnalyzeImageResult());
-//        System.out.println("AnalyzeImage Result");
-//        System.out.println(json);
-        return json;
-    }
-
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    @Getter
-    @Setter
-    static public class ImageData {
-        private ImageText imageText;
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    @Getter
-    @Setter
-    static class ImageText {
-        private List<Word> words;
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    @Getter
-    @Setter
-    static class Word {
-        private String text;
-    }
 /**
 
 

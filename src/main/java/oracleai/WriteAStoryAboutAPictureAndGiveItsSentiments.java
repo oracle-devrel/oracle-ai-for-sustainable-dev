@@ -17,6 +17,8 @@ import com.oracle.bmc.auth.ConfigFileAuthenticationDetailsProvider;
 import com.oracle.bmc.auth.InstancePrincipalsAuthenticationDetailsProvider;
 import com.oracle.bmc.model.BmcException;
 import lombok.Data;
+import oracleai.services.ORDSCalls;
+import oracleai.services.OracleGenAI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
@@ -40,16 +42,14 @@ public class WriteAStoryAboutAPictureAndGiveItsSentiments {
     public String tellastory(@RequestParam("file") MultipartFile file , @RequestParam("genopts") String genopts)
             throws Exception {
         log.info("got image file, now analyze, file = " + file);
-        String objectDetectionResults = ORDSCalls.callAnalyzeImageApi(
-                AIApplication.ORDS_ENDPOINT_ANALYZE_IMAGE_INLINE,
-                AIApplication.OCI_VISION_SERVICE_ENDPOINT,
-                AIApplication.COMPARTMENT_ID,
-                file);
-        ORDSCalls.analyzeImageInObjectStore(
+        String objectDetectionResults = ORDSCalls.analyzeImageInObjectStore(
                 AIApplication.ORDS_ENDPOINT_ANALYZE_IMAGE_OBJECTSTORE,
                 AIApplication.OCI_VISION_SERVICE_ENDPOINT,
                 AIApplication.COMPARTMENT_ID,
-                "doc", "oradbclouducm", "objectdetectiontestimage.jpg");
+                AIApplication.OBJECTSTORAGE_BUCKETNAME,
+                AIApplication.OBJECTSTORAGE_NAMESPACE,
+                file.getOriginalFilename(), //"objectdetectiontestimage.jpg"
+                "tellastory");
 //        String objectDetectionResults = processImage(file.getBytes(), true);
         ImageAnalysis imageAnalysis = parseJsonToImageAnalysis(objectDetectionResults);
         List<ImageObject> images = imageAnalysis.getImageObjects();
