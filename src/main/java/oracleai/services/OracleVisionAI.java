@@ -8,8 +8,6 @@ import com.oracle.bmc.aivision.model.*;
 import com.oracle.bmc.aivision.requests.AnalyzeImageRequest;
 import com.oracle.bmc.aivision.responses.AnalyzeImageResponse;
 import com.oracle.bmc.auth.AuthenticationDetailsProvider;
-import com.oracle.bmc.auth.ConfigFileAuthenticationDetailsProvider;
-import com.oracle.bmc.auth.InstancePrincipalsAuthenticationDetailsProvider;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,16 +16,10 @@ import java.util.List;
 
 public class OracleVisionAI {
 
-    public static String processImage(byte[] bytes, boolean isConfigFileAuth) throws Exception {
-        AIServiceVisionClient aiServiceVisionClient;
-        AuthenticationDetailsProvider provider;
-        if (isConfigFileAuth) {
-            provider = new ConfigFileAuthenticationDetailsProvider(
-                    System.getenv("OCICONFIG_FILE"),System.getenv("OCICONFIG_PROFILE"));
-            aiServiceVisionClient = AIServiceVisionClient.builder().build(provider);
-        } else {
-            aiServiceVisionClient = new AIServiceVisionClient(InstancePrincipalsAuthenticationDetailsProvider.builder().build());
-        }
+    public static String processImage(byte[] bytes) throws Exception {
+
+        AuthenticationDetailsProvider provider = AuthProvider.getAuthenticationDetailsProvider();
+        AIServiceVisionClient aiServiceVisionClient = AIServiceVisionClient.builder().build(provider);
         List<ImageFeature> features = new ArrayList<>();
         ImageFeature faceDetectionFeature = FaceDetectionFeature.builder()
                 .maxResults(10)

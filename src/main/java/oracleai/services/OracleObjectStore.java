@@ -2,7 +2,6 @@ package oracleai.services;
 
 import com.oracle.bmc.Region;
 import com.oracle.bmc.auth.AuthenticationDetailsProvider;
-import com.oracle.bmc.auth.ConfigFileAuthenticationDetailsProvider;
 import com.oracle.bmc.objectstorage.ObjectStorageClient;
 import com.oracle.bmc.objectstorage.requests.GetObjectRequest;
 import com.oracle.bmc.objectstorage.requests.PutObjectRequest;
@@ -20,22 +19,13 @@ public class OracleObjectStore {
 
     public static void sendToObjectStorage(String fileName, InputStream inputStreamForFile) throws Exception {
         System.out.println("GenerateAPictureStoryUsingOnlySpeech.sendToObjectStorage fileToUpload:" + fileName);
-        ObjectStorageClient client;
-        AuthenticationDetailsProvider provider;
-        if (true) {
-            provider = new ConfigFileAuthenticationDetailsProvider(
-                    System.getenv("OCICONFIG_FILE"), System.getenv("OCICONFIG_PROFILE"));
-            client =
-                    ObjectStorageClient.builder().region(Region.US_CHICAGO_1).build(provider);
-//                    ObjectStorageClient.builder().region(Region.US_CHICAGO_1.US_PHOENIX_1).build(provider);
-        } else {
-//            aiServiceVisionClient = new AIServiceVisionClient(InstancePrincipalsAuthenticationDetailsProvider.builder().build());
-        }
+        AuthenticationDetailsProvider provider = AuthProvider.getAuthenticationDetailsProvider();
+        //Beta Gen AI is only available in chicago, thus the override .region(Region.US_CHICAGO_1)
+        ObjectStorageClient client = ObjectStorageClient.builder().build(provider);
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .namespaceName(AIApplication.OBJECTSTORAGE_NAMESPACE)
                 .bucketName(AIApplication.OBJECTSTORAGE_BUCKETNAME)
                 .objectName(fileName)
-//                .objectName(audioFilePath.getFileName().toString())
                 .putObjectBody(inputStreamForFile) //InputStream
                 .build();
         PutObjectResponse response = client.putObject(putObjectRequest);
@@ -44,22 +34,13 @@ public class OracleObjectStore {
 
     public static String getFromObjectStorage(String transcriptionJobId, String objectName) throws Exception {
         System.out.println("GenerateAPictureStoryUsingOnlySpeech.getFromObjectStorage objectName:" + objectName);
-        ObjectStorageClient client;
-        AuthenticationDetailsProvider provider;
-        if (true) {
-            provider = new ConfigFileAuthenticationDetailsProvider(
-                    System.getenv("OCICONFIG_FILE"), System.getenv("OCICONFIG_PROFILE"));
-            client =
-                    ObjectStorageClient.builder().region(Region.US_CHICAGO_1).build(provider);
-        } else {
-//            aiServiceVisionClient = new AIServiceVisionClient(InstancePrincipalsAuthenticationDetailsProvider.builder().build());
-        }
+        AuthenticationDetailsProvider provider = AuthProvider.getAuthenticationDetailsProvider();
+        //Beta Gen AI is only available in chicago, thus the override .region(Region.US_CHICAGO_1)
+        ObjectStorageClient client = ObjectStorageClient.builder().build(provider);
         GetObjectRequest putObjectRequest = GetObjectRequest.builder()
                 .namespaceName(AIApplication.OBJECTSTORAGE_NAMESPACE)
                 .bucketName(AIApplication.OBJECTSTORAGE_BUCKETNAME)
                 .objectName(transcriptionJobId + "/" + objectName)
-//                .objectName(audioFilePath.getFileName().toString())
-//                .putObjectBody(new FileInputStream(fileToUpload)) //InputStream
                 .build();
         GetObjectResponse response = client.getObject(putObjectRequest);
         String responseString = "";

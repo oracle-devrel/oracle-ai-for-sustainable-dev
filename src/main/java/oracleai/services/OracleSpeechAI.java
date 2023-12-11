@@ -8,7 +8,6 @@ import com.oracle.bmc.aispeech.requests.GetTranscriptionJobRequest;
 import com.oracle.bmc.aispeech.responses.CreateTranscriptionJobResponse;
 import com.oracle.bmc.aispeech.responses.GetTranscriptionJobResponse;
 import com.oracle.bmc.auth.AuthenticationDetailsProvider;
-import com.oracle.bmc.auth.ConfigFileAuthenticationDetailsProvider;
 import oracleai.AIApplication;
 
 import java.io.IOException;
@@ -19,18 +18,9 @@ public class OracleSpeechAI {
 
 
     public static String getTranscriptFromOCISpeech(String fileName) throws IOException {
-
-        AIServiceSpeechClient client;
-        AuthenticationDetailsProvider provider;
-        if (true) {
-            provider = new ConfigFileAuthenticationDetailsProvider(
-                    System.getenv("OCICONFIG_FILE"), System.getenv("OCICONFIG_PROFILE"));
-            client =
-                    AIServiceSpeechClient.builder().region(Region.US_CHICAGO_1).build(provider);
-//                    ObjectStorageClient.builder().region(Region.US_CHICAGO_1.US_PHOENIX_1).build(provider);
-        } else {
-//            aiServiceVisionClient = new AIServiceVisionClient(InstancePrincipalsAuthenticationDetailsProvider.builder().build());
-        }
+        AuthenticationDetailsProvider provider = AuthProvider.getAuthenticationDetailsProvider();
+        AIServiceSpeechClient client =
+                AIServiceSpeechClient.builder().region(Region.US_CHICAGO_1).build(provider);
         CreateTranscriptionJobDetails createTranscriptionJobDetails = CreateTranscriptionJobDetails.builder()
                 //          .displayName("EXAMPLE-displayName-Value")
                 .compartmentId(AIApplication.COMPARTMENT_ID)
@@ -75,15 +65,10 @@ public class OracleSpeechAI {
 
         CreateTranscriptionJobRequest createTranscriptionJobRequest = CreateTranscriptionJobRequest.builder()
                 .createTranscriptionJobDetails(createTranscriptionJobDetails)
-//                    .opcRetryToken("EXAMPLE-opcRetryToken-Value")
-//                    .opcRequestId("VZSHXTPLTC8OHEXY2YDI<unique_ID>")
                 .build();
-
         CreateTranscriptionJobResponse response = client.createTranscriptionJob(createTranscriptionJobRequest);
-
         GetTranscriptionJobRequest getTranscriptionJobRequest = GetTranscriptionJobRequest.builder()
                 .transcriptionJobId(response.getTranscriptionJob().getId())
-//                .opcRequestId("4IZ7R3K1QROIUZD2TZGK<unique_ID>")
                 .build();
         GetTranscriptionJobResponse getTranscriptionJobResponseresponse = null;
         TranscriptionJob.LifecycleState transcriptJobState = null;
@@ -104,9 +89,7 @@ public class OracleSpeechAI {
         String fullString = getTranscriptionJobResponseresponse.getTranscriptionJob().getId();
         int lastIndex = fullString.lastIndexOf(".");
         String extractedString = "";
-        if (lastIndex != -1) { // Check if the dot was found
-            extractedString = fullString.substring(lastIndex + 1);
-        }
+        if (lastIndex != -1)   extractedString = fullString.substring(lastIndex + 1);
         return "job-" + extractedString;
     }
 

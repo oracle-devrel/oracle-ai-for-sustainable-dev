@@ -49,6 +49,7 @@ public class WriteAStoryAboutAPictureAndGiveItsSentiments {
                 AIApplication.OBJECTSTORAGE_BUCKETNAME,
                 AIApplication.OBJECTSTORAGE_NAMESPACE,
                 file.getOriginalFilename(), //"objectdetectiontestimage.jpg"
+                "OBJECT_DETECTION",
                 "tellastory");
 //        String objectDetectionResults = processImage(file.getBytes(), true);
         ImageAnalysis imageAnalysis = parseJsonToImageAnalysis(objectDetectionResults);

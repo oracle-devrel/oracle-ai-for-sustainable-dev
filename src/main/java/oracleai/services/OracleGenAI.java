@@ -19,15 +19,8 @@ public class OracleGenAI {
 
     public static String chat(String textcontent) throws Exception {
         boolean isConfigFileAuth = true;
-        GenerativeAiClient generativeAiClient;
-        AuthenticationDetailsProvider provider;
-        if (isConfigFileAuth) {
-            provider = new ConfigFileAuthenticationDetailsProvider(
-                    System.getenv("OCICONFIG_FILE"),System.getenv("OCICONFIG_PROFILE"));
-            generativeAiClient = GenerativeAiClient.builder().build(provider);
-        } else {
-            generativeAiClient = new GenerativeAiClient(InstancePrincipalsAuthenticationDetailsProvider.builder().build());
-        }
+        AuthenticationDetailsProvider provider = AuthProvider.getAuthenticationDetailsProvider();
+        GenerativeAiClient generativeAiClient = GenerativeAiClient.builder().build(provider);
         List<String> prompts = Arrays.asList(textcontent);
         GenerateTextDetails generateTextDetails = GenerateTextDetails.builder()
                 .servingMode(OnDemandServingMode.builder().modelId("cohere.command").build()) // "cohere.command-light" is also available to use
