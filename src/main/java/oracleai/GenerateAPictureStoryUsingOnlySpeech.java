@@ -26,7 +26,8 @@ public class GenerateAPictureStoryUsingOnlySpeech {
     }
 
     @GetMapping("/picturestory")
-    public String picturestory(@RequestParam("genopts") String genopts, MultipartFile multipartFile, Model model) throws Exception {
+    public String picturestory(@RequestParam("genopts") String genopts,
+                               MultipartFile multipartFile, Model model) throws Exception {
         OracleObjectStore.sendToObjectStorage(multipartFile.getOriginalFilename(), multipartFile.getInputStream());
         String transcriptionJobId = OracleSpeechAI.getTranscriptFromOCISpeech(multipartFile.getOriginalFilename());  //json file
 //        String transcriptionJobId = getTranscriptFromOCISpeech("testing123.wav");

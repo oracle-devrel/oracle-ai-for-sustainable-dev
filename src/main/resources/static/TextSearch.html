@@ -32,23 +32,23 @@
         <form method="post" action="/textsearch/textsearch" enctype="multipart/form-data">
             Enter SQL for text search...
             <br>
-            <textarea  name="sql" rows="3" cols="60">select jsondata from aivision_results
+            <textarea  name="sql" rows="3" cols="60">select textfromai from AIVISION_RESULTS where contains ( textfromai, 'Wine' ) > 0
             </textarea>
             <br><b>Examples...</b>
             <br>CONTAINS operator
-            <br>&nbsp;&nbsp;&nbsp;&nbsp;select jsondata from aivision_results where contains ( jsondata, 'john' ) > 0
+            <br>&nbsp;&nbsp;&nbsp;&nbsp;select textfromai from aivision_results where contains ( textfromai, 'john' ) > 0
             <br>Mixed Queries
-            <br>&nbsp;&nbsp;&nbsp;&nbsp;select jsondata from aivision_results   where amount < 100 and   contains ( jsondata, 'smith' ) > 0
+            <br>&nbsp;&nbsp;&nbsp;&nbsp;select textfromai from aivision_results where amount < 100 and contains ( textfromai, 'smith' ) > 0
             <br>OR search
-            <br>&nbsp;&nbsp;&nbsp;&nbsp;select jsondata from aivision_results where contains ( jsondata, 'john OR johnny' ) > 0
+            <br>&nbsp;&nbsp;&nbsp;&nbsp;select textfromai from aivision_results where contains ( textfromai, 'john OR johnny' ) > 0
             <br>Wildcards (% matches any string of characters, and an underscore _ character matches any single character)
-            <br>&nbsp;&nbsp;&nbsp;&nbsp;select jsondata from aivision_results where contains ( jsondata, 'john%' ) > 0
+            <br>&nbsp;&nbsp;&nbsp;&nbsp;select textfromai from aivision_results where contains ( textfromai, 'john%' ) > 0
             <br>Phrase searches (an AND search similar to OR but implicit)
-            <br>&nbsp;&nbsp;&nbsp;&nbsp;select jsondata from aivision_results where contains ( jsondata, 'first order' ) > 0
+            <br>&nbsp;&nbsp;&nbsp;&nbsp;select textfromai from aivision_results where contains ( textfromai, 'first order' ) > 0
             <br>Fuzzy searches (find not only the original search word, but also all those similar to it)
-            <br>&nbsp;&nbsp;&nbsp;&nbsp;select jsondata from aivision_results where contains ( jsondata, 'fuzzy(popins)' ) > 0
+            <br>&nbsp;&nbsp;&nbsp;&nbsp;select textfromai from aivision_results where contains ( textfromai, 'fuzzy(popins)' ) > 0
             <br>Near searches (words within specified distance of each other)
-            <br>&nbsp;&nbsp;&nbsp;&nbsp;select jsondata from aivision_results where contains ( jsondata, 'near((order, smith), 1)' ) > 0
+            <br>&nbsp;&nbsp;&nbsp;&nbsp;select textfromai from aivision_results where contains ( textfromai, 'near((order, smith), 1)' ) > 0
             <br>
             <br><input type="submit" value="Submit"><br>
         </form>

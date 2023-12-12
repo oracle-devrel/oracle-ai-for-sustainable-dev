@@ -25,14 +25,12 @@ public class ExplainAndAdviseOnHealthTestResults {
                              @RequestParam("opts") String opts, Model model)
             throws Exception {
         log.info("analyzing image file:" + multipartFile);
-        if (opts.equals("inline")) return analyzedocInline(multipartFile, model);
-        else return analyzeDocObjectStorage(multipartFile, model);
-    }
-
-    @NotNull
-    private static String analyzeDocObjectStorage(MultipartFile multipartFile, Model model) throws Exception {
-        //   OracleObjectStore.sendToObjectStorage(multipartFile.getOriginalFilename(), multipartFile.getInputStream());
-        String objectDetectionResults = ORDSCalls.analyzeImageInObjectStore(
+        String concatenatedText;
+        if (opts.equals("inline")) {
+            String objectDetectionResults = OracleVisionAI.processImage(multipartFile.getBytes(), ImageTextDetectionFeature.builder().build());
+            OracleVisionAI.ImageData imageData = new ObjectMapper().readValue(objectDetectionResults, OracleVisionAI.ImageData.class);
+            concatenatedText = concatenateText(imageData);
+        }  else concatenatedText = ORDSCalls.analyzeImageInObjectStore(
                 AIApplication.ORDS_ENDPOINT_ANALYZE_IMAGE_OBJECTSTORE,
                 AIApplication.OCI_VISION_SERVICE_ENDPOINT,
                 AIApplication.COMPARTMENT_ID,
@@ -41,33 +39,13 @@ public class ExplainAndAdviseOnHealthTestResults {
                 multipartFile.getOriginalFilename(), //"objectdetectiontestimage.jpg"
                 "TEXT_DETECTION",
                 "MedicalReportSummary");
-        ObjectMapper mapper = new ObjectMapper();
-        OracleVisionAI.ImageData imageData = mapper.readValue(objectDetectionResults, OracleVisionAI.ImageData.class);
-        String concatenatedText = concatenateText(imageData);
         System.out.println(concatenatedText);
         log.info("fullText = " + concatenatedText);
         String explanationOfResults =
                 OracleGenAI.chat("explain these test results in simple terms, in less than 100 words, " +
                         "and tell me what should I do to get better results: \"" + concatenatedText + "\"");
         System.out.println("ExplainAndAdviseOnHealthTestResults.analyzedoc explanationOfResults:" + explanationOfResults);
-        model.addAttribute("results", explanationOfResults);
-        return "resultspage";
-    }
-
-    public String analyzedocInline(MultipartFile file, Model model)
-            throws Exception {
-        log.info("analyzing image file:" + file);
-        String objectDetectionResults = OracleVisionAI.processImage(file.getBytes(), ImageTextDetectionFeature.builder().build());
-        ObjectMapper mapper = new ObjectMapper();
-        OracleVisionAI.ImageData imageData = mapper.readValue(objectDetectionResults, OracleVisionAI.ImageData.class);
-        String concatenatedText = concatenateText(imageData);
-        System.out.println(concatenatedText);
-        log.info("fullText = " + concatenatedText);
-        String explanationOfResults =
-                OracleGenAI.chat("explain these test results in simple terms, in less than 100 words, " +
-                        "and tell me what should I do to get better results: \"" + concatenatedText + "\"");
-        System.out.println("ExplainAndAdviseOnHealthTestResults.analyzedoc explanationOfResults:" + explanationOfResults);
-        model.addAttribute("results", explanationOfResults);
+        model.addAttribute("results", "SUMMARY WITH ADVICE: " + explanationOfResults);
         return "resultspage";
     }
 

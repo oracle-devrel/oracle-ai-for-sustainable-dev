@@ -89,6 +89,8 @@ EXCEPTION
 END call_analyze_image_api_objectstore;
 /
 
+
+
 BEGIN
     ORDS.ENABLE_OBJECT(
         P_ENABLED      => TRUE,

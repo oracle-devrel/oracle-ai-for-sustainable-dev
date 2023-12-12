@@ -205,7 +205,7 @@ public class OracleVisionAI {
     @JsonIgnoreProperties(ignoreUnknown = true)
     @Getter
     @Setter
-    public class BoundingPolygon {
+    public static class BoundingPolygon {
         private List<Vertex> normalizedVertices;
     }
 
