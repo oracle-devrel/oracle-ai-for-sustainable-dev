@@ -32,7 +32,7 @@ public class WriteAStoryAboutAPictureAndGiveItsSentiments {
             System.out.println("WriteAStoryAboutAPictureAndGiveItsSentiments.tellastory images = " + fullText);
         }
         else fullText = ORDSCalls.analyzeImageInObjectStore(
-                AIApplication.ORDS_ENDPOINT_ANALYZE_IMAGE_OBJECTSTORE,
+                AIApplication.ORDS_ENDPOINT_URL + "call_analyze_image_api_objectstore",
                 AIApplication.OCI_VISION_SERVICE_ENDPOINT,
                 AIApplication.COMPARTMENT_ID,
                 AIApplication.OBJECTSTORAGE_BUCKETNAME,
@@ -42,8 +42,8 @@ public class WriteAStoryAboutAPictureAndGiveItsSentiments {
                 "TellAStory");
         String generatedstory = OracleGenAI.chat("using strong negative and positive sentiments, " +
                         "write a story that is " + genopts + " and includes  "  + fullText );
-        model.addAttribute("results", "STORY: " + generatedstory);
-        model.addAttribute("results2", "SENTIMENT ANALYSIS: " + OracleLanguageAI.sentimentAnalysis(generatedstory) );
+        model.addAttribute("results", "STORY: " + generatedstory +
+                "          --->SENTIMENT ANALYSIS: " + OracleLanguageAI.sentimentAnalysis(generatedstory) );
         return "resultspage";
     }
 

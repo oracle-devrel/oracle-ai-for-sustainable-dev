@@ -5,7 +5,6 @@ import com.oracle.bmc.aivision.model.ImageTextDetectionFeature;
 import oracleai.services.ORDSCalls;
 import oracleai.services.OracleGenAI;
 import oracleai.services.OracleVisionAI;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -27,11 +26,13 @@ public class ExplainAndAdviseOnHealthTestResults {
         log.info("analyzing image file:" + multipartFile);
         String concatenatedText;
         if (opts.equals("inline")) {
-            String objectDetectionResults = OracleVisionAI.processImage(multipartFile.getBytes(), ImageTextDetectionFeature.builder().build());
-            OracleVisionAI.ImageData imageData = new ObjectMapper().readValue(objectDetectionResults, OracleVisionAI.ImageData.class);
+            String objectDetectionResults = OracleVisionAI.processImage(
+                    multipartFile.getBytes(), ImageTextDetectionFeature.builder().build());
+            OracleVisionAI.ImageData imageData =
+                    new ObjectMapper().readValue(objectDetectionResults, OracleVisionAI.ImageData.class);
             concatenatedText = concatenateText(imageData);
         }  else concatenatedText = ORDSCalls.analyzeImageInObjectStore(
-                AIApplication.ORDS_ENDPOINT_ANALYZE_IMAGE_OBJECTSTORE,
+                AIApplication.ORDS_ENDPOINT_URL + "call_analyze_image_api_objectstore",
                 AIApplication.OCI_VISION_SERVICE_ENDPOINT,
                 AIApplication.COMPARTMENT_ID,
                 AIApplication.OBJECTSTORAGE_BUCKETNAME,

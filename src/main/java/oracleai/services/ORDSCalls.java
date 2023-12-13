@@ -1,5 +1,6 @@
 package oracleai.services;
 
+import org.jetbrains.annotations.Nullable;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -46,15 +47,21 @@ public class ORDSCalls {
         System.out.println("ORDSCalls.analyzeImageInObjectStore response.getBody():" + response.getBody());
         return response.getBody();
     }
-    public static String executeDynamicSQL(
-            String ordsEndpoint, String sql) {
-        System.out.println("executeDynamicSQL ordsEndpoint = " + ordsEndpoint + ", sql = " + sql);
-        RestTemplate restTemplate = new RestTemplate();
-        String jsonPayload = String.format( "{\"p_sql\": \"%s\"}",  sql);
+    public static String executeTextSearchContains(String ordsEndpoint, String sql) {
+        String jsonPayload = String.format( "{\"p_sql\": \"%s\"}", sql);
+        return callTextSearch(ordsEndpoint, jsonPayload);
+    }
+    public static String executeTextSearchOR(String ordsEndpoint, String sql, String sql2) {
+        String jsonPayload = String.format( "{\"p_sql\": \"%s\", \"p_sql\": \"%s\"}", sql, sql2);
+        return callTextSearch(ordsEndpoint, jsonPayload);
+    }
+
+    @Nullable
+    private static String callTextSearch(String ordsEndpoint, String jsonPayload) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> entity = new HttpEntity<>(jsonPayload, headers);
-        ResponseEntity<String> response = restTemplate.exchange(ordsEndpoint, HttpMethod.POST, entity, String.class);
+        ResponseEntity<String> response = new RestTemplate().exchange(ordsEndpoint, HttpMethod.POST, entity, String.class);
         System.out.println("ORDSCalls.analyzeImageInObjectStore response.getBody():" + response.getBody());
         return response.getBody();
     }

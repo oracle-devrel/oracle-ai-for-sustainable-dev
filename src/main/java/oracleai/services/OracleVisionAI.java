@@ -48,119 +48,11 @@ public class OracleVisionAI {
         ObjectMapper mapper = new ObjectMapper();
         mapper.setFilterProvider(new SimpleFilterProvider().setFailOnUnknownId(false));
         String json = mapper.writeValueAsString(response.getAnalyzeImageResult());
-//        System.out.println("AnalyzeImage Result");
-//        System.out.println(json);
         return json;
     }
 
 
     //For Text Detection....
-/**
-    {
-        "imageObjects": [
-        {
-            "name": "Wine Glass",
-                "confidence": 0.9297104,
-                "boundingPolygon": {
-            "normalizedVertices": [
-            {
-                "x": 0.6124005305039788,
-                    "y": 0.02100673801030519
-            },
-            {
-                "x": 0.7443633952254642,
-                    "y": 0.02100673801030519
-            },
-            {
-                "x": 0.7443633952254642,
-                    "y": 0.19421323820848196
-            },
-            {
-                "x": 0.6124005305039788,
-                    "y": 0.19421323820848196
-            }
-        ]
-        }
-        },
-        {
-            "name": "Spoon",
-                "confidence": 0.88298225,
-                "boundingPolygon": {
-            "normalizedVertices": [
-            {
-                "x": 0.6114058355437666,
-                    "y": 0.40745144669044786
-            },
-            {
-                "x": 0.919761273209549,
-                    "y": 0.40745144669044786
-            },
-            {
-                "x": 0.919761273209549,
-                    "y": 0.622671422909235
-            },
-            {
-                "x": 0.6114058355437666,
-                    "y": 0.622671422909235
-            }
-        ]
-        }
-        }
-  ],
-        "labels": null,
-            "ontologyClasses": [
-        {
-            "name": "Wine Glass",
-                "parentNames": [
-            "Tableware",
-                    "Glass"
-      ],
-            "synonymNames": []
-        },
-        {
-            "name": "Spoon",
-                "parentNames": [
-            "Tableware",
-                    "Cutlery",
-                    "Kitchen utensil"
-      ],
-            "synonymNames": []
-        },
-        {
-            "name": "Glass",
-                "parentNames": [],
-            "synonymNames": []
-        },
-        {
-            "name": "Kitchen utensil",
-                "parentNames": [
-            "Kitchenware"
-      ],
-            "synonymNames": []
-        },
-        {
-            "name": "Cutlery",
-                "parentNames": [],
-            "synonymNames": []
-        },
-        {
-            "name": "Kitchenware",
-                "parentNames": [],
-            "synonymNames": []
-        }
-  ],
-        "imageText": null,
-            "objectProposals": null,
-            "detectedFaces": null,
-            "imageClassificationModelVersion": null,
-            "objectDetectionModelVersion": "1.3.557",
-            "textDetectionModelVersion": null,
-            "objectProposalModelVersion": null,
-            "faceDetectionModelVersion": null,
-            "errors": []
-    }
- */
-
     @JsonIgnoreProperties(ignoreUnknown = true)
     @Getter
     @Setter

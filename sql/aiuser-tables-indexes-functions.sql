@@ -15,17 +15,27 @@ create index aivisionresultsindex on aivision_results(textfromai) indextype is c
 --select token_text from dr$aivisionresultsindex$i;
 /
 
+CREATE OR REPLACE FUNCTION VISIONAI_RESULTS_TEXT_SEARCH(p_sql IN VARCHAR2) RETURN SYS_REFCURSOR AS refcursor SYS_REFCURSOR;
+BEGIN
+    OPEN refcursor FOR
+        select textfromai from AIVISION_RESULTS where contains ( textfromai, p_sql ) > 0;
+    RETURN refcursor;
+END VISIONAI_RESULTS_TEXT_SEARCH;
+/
+
+
 BEGIN
     ORDS.ENABLE_OBJECT(
         P_ENABLED      => TRUE,
         P_SCHEMA      => 'AIUSER',
-        P_OBJECT      =>  'EXECUTE_DYNAMIC_SQL',
+        P_OBJECT      =>  'VISIONAI_RESULTS_TEXT_SEARCH',
         P_OBJECT_TYPE      => 'FUNCTION',
-        P_OBJECT_ALIAS      => 'EXECUTE_DYNAMIC_SQL',
+        P_OBJECT_ALIAS      => 'VISIONAI_RESULTS_TEXT_SEARCH',
         P_AUTO_REST_AUTH      => FALSE
     );
     COMMIT;
 END;
+/
 
 --Easy Text Search over Multiple Tables and Views with DBMS_SEARCH in 23c
 --workshop: https://apexapps.oracle.com/pls/apex/r/dbpm/livelabs/view-workshop?wid=3721
@@ -88,8 +98,6 @@ EXCEPTION
         RAISE;
 END call_analyze_image_api_objectstore;
 /
-
-
 
 BEGIN
     ORDS.ENABLE_OBJECT(

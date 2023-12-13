@@ -36,9 +36,9 @@ public class OracleLanguageAI {
         DetectLanguageSentimentsResult detectLanguageSentimentsResult = response.getDetectLanguageSentimentsResult();
         String sentimentReturn = "";
         for (SentimentAspect aspect : detectLanguageSentimentsResult.getAspects()) {
-            sentimentReturn += "<br>sentiment:" + aspect.getSentiment();
+            sentimentReturn += "  sentiment:" + aspect.getSentiment();
             sentimentReturn += " text:" + aspect.getText();
-            sentimentReturn += "\n";
+            sentimentReturn += ", ";
         }
         return sentimentReturn;
     }

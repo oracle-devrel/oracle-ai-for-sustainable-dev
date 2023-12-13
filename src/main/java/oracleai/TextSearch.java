@@ -15,8 +15,8 @@ public class TextSearch {
 
     @PostMapping("/textsearch")
     public String textsearch(@RequestParam("sql") String sql, Model model) {
-        String explanationOfResults = ORDSCalls.executeDynamicSQL(
-                AIApplication.ORDS_ENDPOINT_EXECUTE_DYNAMIC_SQL, sql);
+        String explanationOfResults = ORDSCalls.executeTextSearchContains(
+                        AIApplication.ORDS_ENDPOINT_URL + "VISIONAI_RESULTS_TEXT_SEARCH", sql);
         model.addAttribute("results", explanationOfResults);
         return "resultspage";
     }
