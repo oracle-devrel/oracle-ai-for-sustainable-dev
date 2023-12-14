@@ -27,7 +27,7 @@ public class ORDSCalls {
     }
 
 
-    //As written only supports on feature type per call
+    //As written only supports one feature type per call
     public static String analyzeImageInObjectStore(
             String ordsEndpoint, String visionServiceEndpoint, String compartmentOcid,
             String bucketName, String namespaceName, String objectName, String featureType, String label) {

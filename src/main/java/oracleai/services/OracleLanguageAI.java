@@ -6,8 +6,6 @@ import com.oracle.bmc.ailanguage.model.DetectLanguageSentimentsResult;
 import com.oracle.bmc.ailanguage.model.SentimentAspect;
 import com.oracle.bmc.ailanguage.requests.DetectLanguageSentimentsRequest;
 import com.oracle.bmc.ailanguage.responses.DetectLanguageSentimentsResponse;
-import com.oracle.bmc.auth.AuthenticationDetailsProvider;
-import com.oracle.bmc.auth.ConfigFileAuthenticationDetailsProvider;
 import com.oracle.bmc.model.BmcException;
 
 import java.io.IOException;

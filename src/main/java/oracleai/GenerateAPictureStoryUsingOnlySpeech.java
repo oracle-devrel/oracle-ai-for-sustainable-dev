@@ -25,16 +25,14 @@ public class GenerateAPictureStoryUsingOnlySpeech {
         return "resultspage";
     }
 
-    @GetMapping("/picturestory")
+    @PostMapping("/picturestory")
     public String picturestory(@RequestParam("genopts") String genopts,
-                               MultipartFile multipartFile, Model model) throws Exception {
+                               @RequestParam("file") MultipartFile multipartFile, Model model) throws Exception {
         OracleObjectStore.sendToObjectStorage(multipartFile.getOriginalFilename(), multipartFile.getInputStream());
-        String transcriptionJobId = OracleSpeechAI.getTranscriptFromOCISpeech(multipartFile.getOriginalFilename());  //json file
-//        String transcriptionJobId = getTranscriptFromOCISpeech("testing123.wav");
+        String transcriptionJobId = OracleSpeechAI.getTranscriptFromOCISpeech(multipartFile.getOriginalFilename());
         System.out.println("transcriptionJobId: " + transcriptionJobId);
         String jsonTranscriptFromObjectStorage =
                 OracleObjectStore.getFromObjectStorage(transcriptionJobId,
-//                        AIApplication.OBJECTSTORAGE_NAMESPACE + "_" + AIApplication.OBJECTSTORAGE_BUCKETNAME + "_" + "testing123.wav" + ".json"));
                         AIApplication.OBJECTSTORAGE_NAMESPACE + "_" + AIApplication.OBJECTSTORAGE_BUCKETNAME + "_" + multipartFile.getOriginalFilename() + ".json");
         System.out.println("jsonTranscriptFromObjectStorage: " + jsonTranscriptFromObjectStorage);
 //        System.out.println("getFromObjectStorage: " + getFromObjectStorage("leia.m4a"));

@@ -24,14 +24,15 @@
     </div>
 
     <div class="w3-container">
-        <h4>Text Detection And Summarization Generation</h4>
+
+        <h4>Obtain face recognition information from an image</h4>
         <br>
-        <h5>Provide an image of a health report and receive an explanation in simplified terms along with advice.</h5>
-        <h5>Uses Oracle Vision AI Document/Text Detection and Oracle Gen AI Services</h5>
+        <h5>Provide an image and receive the location of facial features.</h5>
+        <h5>Uses Oracle Vision AI</h5>
         <br>
-        <form method="post" action="/health/analyzedoc" enctype="multipart/form-data">
+        <form method="post" action="/facial/facial" enctype="multipart/form-data">
             Select an image file...<br>
-            <input type="file" name="file" accept="image/*" />
+            <input type="file" name="file" accept="video/*" />
             <br>You can download and use the sample audio found <a href="images/bloodsugarreport.jpeg">here</a>
             <br>
             <br>

@@ -1,6 +1,5 @@
 package oracleai.services;
 
-import com.oracle.bmc.Region;
 import com.oracle.bmc.aispeech.AIServiceSpeechClient;
 import com.oracle.bmc.aispeech.model.*;
 import com.oracle.bmc.aispeech.requests.CreateTranscriptionJobRequest;
@@ -16,7 +15,7 @@ import java.util.Arrays;
 
 public class OracleSpeechAI {
 
-    public static String getTranscriptFromOCISpeech(String fileName) throws IOException {
+    public static String getTranscriptFromOCISpeech(String fileName) throws IOException, InterruptedException {
         AuthenticationDetailsProvider provider = AuthProvider.getAuthenticationDetailsProvider();
         AIServiceSpeechClient client =
                 AIServiceSpeechClient.builder().build(provider);
@@ -71,16 +70,21 @@ public class OracleSpeechAI {
                 .build();
         GetTranscriptionJobResponse getTranscriptionJobResponseresponse = null;
         TranscriptionJob.LifecycleState transcriptJobState = null;
+        TranscriptionJob.LifecycleState lastState;
         while (
                 transcriptJobState == null ||
                         (
                                 !transcriptJobState.equals(TranscriptionJob.LifecycleState.Succeeded) &&
+                                        !transcriptJobState.equals(TranscriptionJob.LifecycleState.Canceling) &&
                                         !transcriptJobState.equals(TranscriptionJob.LifecycleState.Canceled) &&
                                         !transcriptJobState.equals(TranscriptionJob.LifecycleState.Failed))
         ) {
+            Thread.currentThread().sleep(1000);
+            lastState = transcriptJobState;
             getTranscriptionJobResponseresponse =
                     client.getTranscriptionJob(getTranscriptionJobRequest);
             transcriptJobState = getTranscriptionJobResponseresponse.getTranscriptionJob().getLifecycleState();
+            if(lastState != null && lastState.equals(transcriptJobState)) System.out.print(".");
             System.out.println("transcriptJobState:" + transcriptJobState);
         }
         System.out.println("getInputLocation:" +
