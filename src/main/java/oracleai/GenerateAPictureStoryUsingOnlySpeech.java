@@ -1,35 +1,52 @@
 package oracleai;
 
-import com.theokanning.openai.image.CreateImageRequest;
-import com.theokanning.openai.service.OpenAiService;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.*;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
+import oracleai.services.ImageGeneration;
+import oracleai.services.OracleObjectStore;
+import oracleai.services.OracleSpeechAI;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.sound.sampled.*;
 import java.io.*;
-import java.time.Duration;
 import java.util.*;
 
-@RestController
+@Controller
 @RequestMapping("/picturestory")
 public class GenerateAPictureStoryUsingOnlySpeech {
 
-    static List<String> storyImages = new ArrayList();
+    static List<String> imageLocations = new ArrayList();
 
-    @GetMapping("/form")
-    public String newstory(
-            HttpServletRequest request) throws Exception {
-        storyImages = new ArrayList();
-        return getHtmlString("");
+    @GetMapping("/reset")
+    public String reset(Model model) {
+        imageLocations = new ArrayList();
+        model.addAttribute("results", "story board cleared successfully");
+        return "resultspage";
     }
 
     @GetMapping("/picturestory")
-    public String picturestory(@RequestParam("genopts") String genopts) throws Exception {
+    public String picturestory(@RequestParam("genopts") String genopts,
+                               MultipartFile multipartFile, Model model) throws Exception {
+        OracleObjectStore.sendToObjectStorage(multipartFile.getOriginalFilename(), multipartFile.getInputStream());
+        String transcriptionJobId = OracleSpeechAI.getTranscriptFromOCISpeech(multipartFile.getOriginalFilename());  //json file
+//        String transcriptionJobId = getTranscriptFromOCISpeech("testing123.wav");
+        System.out.println("transcriptionJobId: " + transcriptionJobId);
+        String jsonTranscriptFromObjectStorage =
+                OracleObjectStore.getFromObjectStorage(transcriptionJobId,
+//                        AIApplication.OBJECTSTORAGE_NAMESPACE + "_" + AIApplication.OBJECTSTORAGE_BUCKETNAME + "_" + "testing123.wav" + ".json"));
+                        AIApplication.OBJECTSTORAGE_NAMESPACE + "_" + AIApplication.OBJECTSTORAGE_BUCKETNAME + "_" + multipartFile.getOriginalFilename() + ".json");
+        System.out.println("jsonTranscriptFromObjectStorage: " + jsonTranscriptFromObjectStorage);
+//        System.out.println("getFromObjectStorage: " + getFromObjectStorage("leia.m4a"));
+//        String pictureDescription  = parse(jsonTranscriptFromObjectStorage);
+        String pictureDescription = "man rowing a boat through the forest";
+        imageLocations.add(ImageGeneration.imagegeneration(pictureDescription + " " + genopts));
+        model.addAttribute("imageLocations", imageLocations.toArray(new String[0]));
+        return "resultswithimages";
+    }
+
+    @GetMapping("/picturestoryrecordlocally")
+    public String picturestoryrecordlocally(@RequestParam("genopts") String genopts, Model model) throws Exception {
         AudioFormat format =
                 new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, 44100.0f, 16, 1,
                         (16 / 8) * 1, 44100.0f, true);
@@ -40,7 +57,7 @@ public class GenerateAPictureStoryUsingOnlySpeech {
         Thread.sleep(8000);
         soundRecorder.stop();
         System.out.println("Stopped recording ....");
-        Thread.sleep(3000); //give the process time
+        Thread.sleep(5000); //give the process time
         String name = "AISoundClip";
         AudioFileFormat.Type fileType = AudioFileFormat.Type.WAVE;
         AudioInputStream audioInputStream = soundRecorder.audioInputStream;
@@ -49,94 +66,25 @@ public class GenerateAPictureStoryUsingOnlySpeech {
         audioInputStream.reset();
         AudioSystem.write(audioInputStream, fileType, file);
         System.out.println("Saved " + file.getAbsolutePath());
-        String transcription = transcribe(file) + genopts;
-        System.out.println("transcription " + transcription);
-        String imageLocation = imagegeneration(transcription);
-        System.out.println("imageLocation " + imageLocation);
-        storyImages.add(imageLocation);
-        String htmlStoryFrames = "";
-        Iterator<String> iterator = storyImages.iterator();
-        while(iterator.hasNext()) {
-            htmlStoryFrames += "<td><img src=\"" + iterator.next() +"\" width=\"400\" height=\"400\"></td>";
-        }
-        return getHtmlString(htmlStoryFrames);
+        OracleObjectStore.sendToObjectStorage(file.getName(), new FileInputStream(file));
 
-    }
-
-    private static String getHtmlString(String htmlStoryFrames) {
-        return "<html><table>" +
-                "  <tr>" +
-                htmlStoryFrames +
-                "  </tr>" +
-                "</table><br><br>" +
-                "<form action=\"/picturestory/picturestory\">" +
-                "  <input type=\"submit\" value=\"Click here and record (up to 10 seconds of audio) describing next scene.\">" +
-                "<br> Some additional options..." +
-                "<br><input type=\"radio\" id=\"genopts\" name=\"genopts\" value=\", using only one line\" checked >using only one line" +
-                "<br><input type=\"radio\" id=\"genopts\" name=\"genopts\" value=\", photo taken on a Pentax k1000\">photo taken on a Pentax k1000" +
-                "<br><input type=\"radio\" id=\"genopts\" name=\"genopts\" value=\", pixel art\">pixel art" +
-                "<br><input type=\"radio\" id=\"genopts\" name=\"genopts\" value=\", digital art\">digital art" +
-                "<br><input type=\"radio\" id=\"genopts\" name=\"genopts\" value=\", 3d render\">3d render" +
-                "</form><br><br>" +
-                "<form action=\"/picturestory/form\">" +
-                "  <input type=\"submit\" value=\"Or click here to start a new story\">\n" +
-                "</form>" +
-                "</html>";
-    }
-
-    public String imagegeneration(String imagedescription) throws Exception {
-        OpenAiService service =
-                new OpenAiService(System.getenv("OPENAI_KEY"), Duration.ofSeconds(60));
-        CreateImageRequest openairequest = CreateImageRequest.builder()
-                .prompt(imagedescription)
-                .build();
-
-        System.out.println("\nImage is located at:");
-        String imageLocation = service.createImage(openairequest).getData().get(0).getUrl();
-        service.shutdownExecutor();
-     return imageLocation;
+        String transcriptionJobId = OracleSpeechAI.getTranscriptFromOCISpeech(file.getName());  //json file
+//        String transcriptionJobId = getTranscriptFromOCISpeech("testing123.wav");
+        System.out.println("transcriptionJobId: " + transcriptionJobId);
+        String jsonTranscriptFromObjectStorage =
+                OracleObjectStore.getFromObjectStorage(transcriptionJobId,
+//                        AIApplication.OBJECTSTORAGE_NAMESPACE + "_" + AIApplication.OBJECTSTORAGE_BUCKETNAME + "_" + "testing123.wav" + ".json"));
+                        AIApplication.OBJECTSTORAGE_NAMESPACE + "_" + AIApplication.OBJECTSTORAGE_BUCKETNAME + "_" + file.getName() + ".json");
+        System.out.println("jsonTranscriptFromObjectStorage: " + jsonTranscriptFromObjectStorage);
+//        System.out.println("getFromObjectStorage: " + getFromObjectStorage("leia.m4a"));
+//        String pictureDescription  = parse(jsonTranscriptFromObjectStorage);
+        String pictureDescription = "man rowing a boat through the forest";
+        imageLocations.add(ImageGeneration.imagegeneration(pictureDescription + " " + genopts));
+        model.addAttribute("imageLocations", imageLocations.toArray(new String[0]));
+        return "resultswithimages";
     }
 
 
-    public String transcribe(File file) throws Exception {
-        OpenAiService service =
-                new OpenAiService(System.getenv("OPENAI_KEY"), Duration.ofSeconds(60));
-        String audioTranscription = transcribeFile(file, service);
-        service.shutdownExecutor();
-        return audioTranscription;
-    }
-    private String transcribeFile(File file, OpenAiService service) throws Exception
-    {
-        String endpoint = "https://api.openai.com/v1/audio/transcriptions";
-        String modelName = "whisper-1";
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-        headers.setBearerAuth(System.getenv("OPENAI_KEY"));
-        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-        byte[] fileBytes = new byte[0];
-        try (FileInputStream fis = new FileInputStream(file);
-             ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
-            byte[] buffer = new byte[1024];
-            int bytesRead;
-            while ((bytesRead = fis.read(buffer)) != -1) {
-                bos.write(buffer, 0, bytesRead);
-            }
-            fileBytes = bos.toByteArray();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        body.add("file", new ByteArrayResource(fileBytes) {
-            @Override
-            public String getFilename() {
-                return file.getName();
-            }
-        });
-        body.add("model", modelName);
-        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<String> response = restTemplate.exchange(endpoint, HttpMethod.POST, requestEntity, String.class);
-        return response.getBody();
-    }
 
     public class SoundRecorder implements Runnable {
         AudioInputStream audioInputStream;
@@ -205,7 +153,7 @@ public class GenerateAPictureStoryUsingOnlySpeech {
             TargetDataLine line;
             DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
             if (!AudioSystem.isLineSupported(info)) {
-                return null;
+                throw new UnsupportedOperationException("Line not supported");
             }
             try {
                 line = (TargetDataLine) AudioSystem.getLine(info);
