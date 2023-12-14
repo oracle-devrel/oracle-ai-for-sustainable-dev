@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oracle.bmc.aivision.model.ImageTextDetectionFeature;
 import oracleai.services.ORDSCalls;
 import oracleai.services.OracleGenAI;
+import oracleai.services.OracleObjectStore;
 import oracleai.services.OracleVisionAI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,22 +32,26 @@ public class ExplainAndAdviseOnHealthTestResults {
             OracleVisionAI.ImageData imageData =
                     new ObjectMapper().readValue(objectDetectionResults, OracleVisionAI.ImageData.class);
             concatenatedText = concatenateText(imageData);
-        }  else concatenatedText = ORDSCalls.analyzeImageInObjectStore(
-                AIApplication.ORDS_ENDPOINT_URL + "call_analyze_image_api_objectstore",
-                AIApplication.OCI_VISION_SERVICE_ENDPOINT,
-                AIApplication.COMPARTMENT_ID,
-                AIApplication.OBJECTSTORAGE_BUCKETNAME,
-                AIApplication.OBJECTSTORAGE_NAMESPACE,
-                multipartFile.getOriginalFilename(), //"objectdetectiontestimage.jpg"
-                "TEXT_DETECTION",
-                "MedicalReportSummary");
+        }  else {
+            OracleObjectStore.sendToObjectStorage(multipartFile.getOriginalFilename(), multipartFile.getInputStream());
+            concatenatedText = ORDSCalls.analyzeImageInObjectStore(
+                    AIApplication.ORDS_ENDPOINT_URL + "VISIONAI_TEXTDETECTION/",
+                    AIApplication.OCI_VISION_SERVICE_ENDPOINT,
+                    AIApplication.COMPARTMENT_ID,
+                    AIApplication.OBJECTSTORAGE_BUCKETNAME,
+                    AIApplication.OBJECTSTORAGE_NAMESPACE,
+                    multipartFile.getOriginalFilename(), //"objectdetectiontestimage.jpg"
+                    "TEXT_DETECTION",
+                    "MedicalReportSummary");
+        }
         System.out.println(concatenatedText);
         log.info("fullText = " + concatenatedText);
         String explanationOfResults =
                 OracleGenAI.chat("explain these test results in simple terms, in less than 100 words, " +
                         "and tell me what should I do to get better results: \"" + concatenatedText + "\"");
         System.out.println("ExplainAndAdviseOnHealthTestResults.analyzedoc explanationOfResults:" + explanationOfResults);
-        model.addAttribute("results", "SUMMARY WITH ADVICE: " + explanationOfResults);
+        model.addAttribute("results", "SUMMARY WITH ADVICE: " + explanationOfResults +
+                " ...This is of course not a substitute for actual medical advice from a professional.");
         return "resultspage";
     }
 

@@ -1,5 +1,6 @@
 package oracleai.services;
 
+import com.oracle.bmc.Region;
 import com.oracle.bmc.auth.AuthenticationDetailsProvider;
 import com.oracle.bmc.auth.ConfigFileAuthenticationDetailsProvider;
 import com.oracle.bmc.auth.InstancePrincipalsAuthenticationDetailsProvider;
@@ -18,9 +19,9 @@ public class OracleGenAI {
 
 
     public static String chat(String textcontent) throws Exception {
-        boolean isConfigFileAuth = true;
         AuthenticationDetailsProvider provider = AuthProvider.getAuthenticationDetailsProvider();
-        GenerativeAiClient generativeAiClient = GenerativeAiClient.builder().build(provider);
+        //GenAI is only available in US_CHICAGO_1 for current beta, thus the override
+        GenerativeAiClient generativeAiClient = GenerativeAiClient.builder().region(Region.US_CHICAGO_1).build(provider);
         List<String> prompts = Arrays.asList(textcontent);
         GenerateTextDetails generateTextDetails = GenerateTextDetails.builder()
                 .servingMode(OnDemandServingMode.builder().modelId("cohere.command").build()) // "cohere.command-light" is also available to use
@@ -34,11 +35,9 @@ public class OracleGenAI {
                 .isStream(false)
                 .isEcho(false)
                 .build();
-
         GenerateTextRequest generateTextRequest = GenerateTextRequest.builder()
                 .generateTextDetails(generateTextDetails)
                 .build();
-
         GenerateTextResponse generateTextResponse = generativeAiClient.generateText(generateTextRequest);
         GenerateTextResult result = generateTextResponse.getGenerateTextResult();
         if(result !=null && result.getGeneratedTexts().size() > 0 ) {

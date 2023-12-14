@@ -1,6 +1,5 @@
 package oracleai.services;
 
-import com.oracle.bmc.Region;
 import com.oracle.bmc.auth.AuthenticationDetailsProvider;
 import com.oracle.bmc.objectstorage.ObjectStorageClient;
 import com.oracle.bmc.objectstorage.requests.GetObjectRequest;
@@ -20,7 +19,6 @@ public class OracleObjectStore {
     public static void sendToObjectStorage(String fileName, InputStream inputStreamForFile) throws Exception {
         System.out.println("GenerateAPictureStoryUsingOnlySpeech.sendToObjectStorage fileToUpload:" + fileName);
         AuthenticationDetailsProvider provider = AuthProvider.getAuthenticationDetailsProvider();
-        //Beta Gen AI is only available in chicago, thus the override .region(Region.US_CHICAGO_1)
         ObjectStorageClient client = ObjectStorageClient.builder().build(provider);
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .namespaceName(AIApplication.OBJECTSTORAGE_NAMESPACE)
@@ -35,7 +33,6 @@ public class OracleObjectStore {
     public static String getFromObjectStorage(String transcriptionJobId, String objectName) throws Exception {
         System.out.println("GenerateAPictureStoryUsingOnlySpeech.getFromObjectStorage objectName:" + objectName);
         AuthenticationDetailsProvider provider = AuthProvider.getAuthenticationDetailsProvider();
-        //Beta Gen AI is only available in chicago, thus the override .region(Region.US_CHICAGO_1)
         ObjectStorageClient client = ObjectStorageClient.builder().build(provider);
         GetObjectRequest putObjectRequest = GetObjectRequest.builder()
                 .namespaceName(AIApplication.OBJECTSTORAGE_NAMESPACE)

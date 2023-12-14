@@ -19,7 +19,7 @@ public class OracleSpeechAI {
     public static String getTranscriptFromOCISpeech(String fileName) throws IOException {
         AuthenticationDetailsProvider provider = AuthProvider.getAuthenticationDetailsProvider();
         AIServiceSpeechClient client =
-                AIServiceSpeechClient.builder().region(Region.US_CHICAGO_1).build(provider);
+                AIServiceSpeechClient.builder().build(provider);
         CreateTranscriptionJobDetails createTranscriptionJobDetails = CreateTranscriptionJobDetails.builder()
                 //          .displayName("EXAMPLE-displayName-Value")
                 .compartmentId(AIApplication.COMPARTMENT_ID)

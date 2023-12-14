@@ -2,10 +2,7 @@ package oracleai;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oracle.bmc.aivision.model.*;
-import oracleai.services.ORDSCalls;
-import oracleai.services.OracleGenAI;
-import oracleai.services.OracleLanguageAI;
-import oracleai.services.OracleVisionAI;
+import oracleai.services.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,15 +28,18 @@ public class WriteAStoryAboutAPictureAndGiveItsSentiments {
             for (OracleVisionAI.ImageObject image : imageAnalysis.getImageObjects())  fullText += image.getName() + ", ";
             System.out.println("WriteAStoryAboutAPictureAndGiveItsSentiments.tellastory images = " + fullText);
         }
-        else fullText = ORDSCalls.analyzeImageInObjectStore(
-                AIApplication.ORDS_ENDPOINT_URL + "call_analyze_image_api_objectstore",
-                AIApplication.OCI_VISION_SERVICE_ENDPOINT,
-                AIApplication.COMPARTMENT_ID,
-                AIApplication.OBJECTSTORAGE_BUCKETNAME,
-                AIApplication.OBJECTSTORAGE_NAMESPACE,
-                multipartFile.getOriginalFilename(), //"objectdetectiontestimage.jpg"
-                "OBJECT_DETECTION",
-                "TellAStory");
+        else {
+            OracleObjectStore.sendToObjectStorage(multipartFile.getOriginalFilename(), multipartFile.getInputStream());
+            fullText = ORDSCalls.analyzeImageInObjectStore(
+                    AIApplication.ORDS_ENDPOINT_URL + "VISIONAI_OBJECTDETECTION/",
+                    AIApplication.OCI_VISION_SERVICE_ENDPOINT,
+                    AIApplication.COMPARTMENT_ID,
+                    AIApplication.OBJECTSTORAGE_BUCKETNAME,
+                    AIApplication.OBJECTSTORAGE_NAMESPACE,
+                    multipartFile.getOriginalFilename(), //"objectdetectiontestimage.jpg"
+                    "OBJECT_DETECTION",
+                    "TellAStory");
+        }
         String generatedstory = OracleGenAI.chat("using strong negative and positive sentiments, " +
                         "write a story that is " + genopts + " and includes  "  + fullText );
         model.addAttribute("results", "STORY: " + generatedstory +

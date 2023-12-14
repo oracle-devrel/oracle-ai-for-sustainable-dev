@@ -31,7 +31,7 @@
         <br>
         <form method="post" action="/textsearch/textsearch" enctype="multipart/form-data">
             Enter SQL for text search...
-            <br>&nbsp;&nbsp;&nbsp;&nbsp;select textfromai from aivision_results where CONTAINS ( textfromai, '<input type="text"  name="containssql" value="Wine">' ) > 0
+            <br>&nbsp;&nbsp;&nbsp;&nbsp;select textfromai from aivision_results where CONTAINS ( textfromai, '<input type="text"  name="sql" value="Wine">' ) > 0
             <br><input type="submit" value="Submit"><br>
             <br><b>Example values...</b>
             <br>AND/phrase search: 'Wine Glass'
