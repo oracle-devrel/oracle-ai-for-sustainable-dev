@@ -7,13 +7,6 @@
 ## Introduction
 MISSING
 
-https://paulparkinson.github.io/developer/oracle-ai-for-sustainable-dev/workshops/freetier/index.html?lab=oml-healthcare
-https://sdgs.un.org/goals
-https://huggingface.co/DeepFloyd/IF-I-XL-v1.0
-https://docs.oracle.com/en-us/iaas/api/#/en/vision/20220125/
-https://docs.public.oneportal.content.oci.oraclecloud.com/en-us/iaas/autonomous-database/doc/dbms_cloud-package-reference.html
-
-
 ## Getting Started
 MISSING
 
