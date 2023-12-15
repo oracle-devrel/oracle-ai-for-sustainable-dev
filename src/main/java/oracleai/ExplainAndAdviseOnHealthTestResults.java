@@ -18,13 +18,12 @@ import org.springframework.ui.Model;
 @RequestMapping("/health")
 public class ExplainAndAdviseOnHealthTestResults {
 
-    private static Logger log = LoggerFactory.getLogger(ExplainAndAdviseOnHealthTestResults.class);
 
     @PostMapping("/analyzedoc")
     public String analyzedoc(@RequestParam("file") MultipartFile multipartFile,
                              @RequestParam("opts") String opts, Model model)
             throws Exception {
-        log.info("analyzing image file:" + multipartFile);
+        System.out.println("analyzedocmultipartFile = " + multipartFile + ", opts = " + opts);
         String concatenatedText;
         if (opts.equals("inline")) {
             String objectDetectionResults = OracleVisionAI.processImage(
@@ -45,7 +44,7 @@ public class ExplainAndAdviseOnHealthTestResults {
                     "MedicalReportSummary");
         }
         System.out.println(concatenatedText);
-        log.info("fullText = " + concatenatedText);
+        System.out.println("analyzedoc fullText = " + concatenatedText);
         String explanationOfResults =
                 OracleGenAI.chat("explain these test results in simple terms, in less than 100 words, " +
                         "and tell me what should I do to get better results: \"" + concatenatedText + "\"");

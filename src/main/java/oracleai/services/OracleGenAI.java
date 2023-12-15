@@ -2,8 +2,6 @@ package oracleai.services;
 
 import com.oracle.bmc.Region;
 import com.oracle.bmc.auth.AuthenticationDetailsProvider;
-import com.oracle.bmc.auth.ConfigFileAuthenticationDetailsProvider;
-import com.oracle.bmc.auth.InstancePrincipalsAuthenticationDetailsProvider;
 import com.oracle.bmc.generativeai.GenerativeAiClient;
 import com.oracle.bmc.generativeai.model.GenerateTextDetails;
 import com.oracle.bmc.generativeai.model.GenerateTextResult;

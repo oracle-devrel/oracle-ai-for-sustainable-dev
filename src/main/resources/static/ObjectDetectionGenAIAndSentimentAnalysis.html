@@ -24,13 +24,17 @@
     </div>
 
     <div class="w3-container">
-        <h4>Provide a picture and receive a generated story with sentiment analysis based on the picture</h4>
-        <h5>&nbsp; &nbsp; Uses Oracle Vision AI, Oracle Language AI, and Oracle Gen AI</h5>
+
+        <h4>Generate a story with sentiment analysis from a picture</h4>
+        <br>
+        <h5>Provide a picture and receive a generated story with sentiment analysis based on the picture<.</h5>
+        <h5>Uses Oracle Vision AI, Oracle Gen AI, and Oracle Language AI</h5>
+        <br>
 
             <form method="post" action="/tellastory/tellastory" enctype="multipart/form-data">
                 Select an image file to create story from...
                 <input type="file" name="file" accept="image/*">
-                <br>(You can download and use the sample image found <a href="images/objectdetectiontestimage.jpg">here</a>)
+                <br>You can download and use the sample image found <a href="images/objectdetectiontestimage.jpg">here</a>
                 <br>
                 <br><b>Options for story generation...</b>
                 <br><input type="radio"  name="genopts" value="an adventure" checked >an adventure

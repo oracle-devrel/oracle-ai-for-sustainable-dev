@@ -1,7 +1,7 @@
 package oracleai;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.oracle.bmc.aivision.model.FaceDetectionFeature;
+import oracleai.services.OracleVisionAI;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,12 +14,12 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/facerecognition")
 public class FaceRecognition {
 
-    private static Logger log = LoggerFactory.getLogger(ExplainAndAdviseOnHealthTestResults.class);
 
     @PostMapping("/facerecognition")
     public String facerecognition(@RequestParam("file") MultipartFile multipartFile, Model model)
             throws Exception {
-        model.addAttribute("results", "facerecognition");
+        model.addAttribute("results",
+                OracleVisionAI.processImage(multipartFile.getBytes(), FaceDetectionFeature.builder().shouldReturnLandmarks(true).build()));
         return "resultspage";
     }
     }
