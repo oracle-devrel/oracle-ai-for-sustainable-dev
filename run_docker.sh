@@ -1,7 +1,5 @@
 #!/bin/bash
 
-source env.properties
-
 export IMAGE_NAME=oracleai
 export IMAGE_VERSION=0.1
 
