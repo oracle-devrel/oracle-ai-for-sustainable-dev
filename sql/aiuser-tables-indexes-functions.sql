@@ -1,5 +1,3 @@
---run as aiuser
-
 CREATE TABLE aivision_results
     (id RAW (16) NOT NULL,
      date_loaded TIMESTAMP WITH TIME ZONE,
@@ -10,10 +8,12 @@ CREATE TABLE aivision_results
 /
 
 create index aivisionresultsindex on aivision_results(textfromai) indextype is ctxsys.context;
+/
+
 --select index_name, index_type, status from user_indexes where index_name = 'AIVISIONAIRESULTSINDEX';
 --select idx_name, idx_table, idx_text_name from ctx_user_indexes;
 --select token_text from dr$aivisionresultsindex$i;
-/
+
 
 CREATE OR REPLACE FUNCTION VISIONAI_RESULTS_TEXT_SEARCH(p_sql IN VARCHAR2) RETURN SYS_REFCURSOR AS refcursor SYS_REFCURSOR;
 BEGIN
@@ -50,10 +50,10 @@ dbms_cloud.create_credential (
 );
 END;
 
---The following two functions (text and object detection) are indentical
+--The following two functions (text and object detection) are identical
 --except for the json_table parsing for the textfromai field,
 --and so technically the p_featureType is not necessary and the function could be made to handle/parse both types,
---however, for readability they are broken into two distinct functions
+--however, for readability they are broken into two distinct functions.
 
 
 CREATE OR REPLACE FUNCTION VISIONAI_TEXTDETECTION (

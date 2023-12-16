@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#source ~/Downloads/env.properties
-source env.properties
+export `cat env.properties`
+#export `cat ~/Downloads/env.properties`
 
-mvn clean package ; java -Djava.security.debug="access,failure"  -jar target/oracleai-0.0.1-SNAPSHOT.jar
+mvn clean package ; java -jar target/oracleai-0.0.1-SNAPSHOT.jar

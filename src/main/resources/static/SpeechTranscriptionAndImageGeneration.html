@@ -28,24 +28,26 @@
         <h4>Generate a picture story board from voice recordings</h4>
         <br>
         <h5>Provide the audio file of a verbal description of a scene.</h5>
-        <h5>Uses Oracle Vision AI, Oracle Gen AI, and Oracle Language AI</h5>
+        <h5>Uses Oracle Speech AI and Image Generation AI (eg DALL-E, Stable Diffusion, DeepFloyd IF, ...)</h5>
         <br>
 
                 <form  method="post" action="/picturestory/picturestory" enctype="multipart/form-data">
-                    <br>
-                    <input type="file" name="file" accept="audio/*" />
+                    <b>Audio Recording Options...</b>
+                    <br><input type="radio"  name="opts" value="fileaudio" checked>Audio from file (select this to use audio file)
+                    <br><input type="file" name="file" accept="audio/*" />
                     <br>You can download and use the sample audio here:
                     <br><a href="audio/shipwrecked.m4a">shipwrecked</a>
                     <br><a href="audio/paradise.m4a">paradise</a>
-                    <br><a href="audio/shipwrecked.m4a">shipwrecked</a>
-                    <br><br>
-<!--                <input type="submit" value="Click here and record (up to 10 seconds of audio) describing next scene.">-->
-                <br><br> <b>Options...</b>
+                    <br><a href="audio/invaded.m4a">invaded</a>
+                    <br>
+                    <br><input type="radio"  name="opts" value="recordedaudio">Audio from live recording (select this to record 8 seconds of audio from mic - process must be running on local machine)
+                <br><br> <b>Image Options...</b>
                 <br><input type="radio"  name="genopts" value=", photo taken on a Pentax k1000" checked>photo taken on a Pentax k1000
                 <br><input type="radio"  name="genopts" value=", pixel art">pixel art
                 <br><input type="radio"  name="genopts" value=", digital art">digital art
                 <br><input type="radio"  name="genopts" value=", 3d render">3d render
                <br><br>
+                    <!--                <input type="submit" value="Click here and record (up to 10 seconds of audio) describing next scene.">-->
                     <input type="submit" value="Submit to add to story">
                 </form>
         <br><br>

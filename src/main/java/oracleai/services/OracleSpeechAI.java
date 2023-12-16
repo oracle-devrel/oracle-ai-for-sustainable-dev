@@ -1,5 +1,6 @@
 package oracleai.services;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.oracle.bmc.aispeech.AIServiceSpeechClient;
 import com.oracle.bmc.aispeech.model.*;
 import com.oracle.bmc.aispeech.requests.CreateTranscriptionJobRequest;
@@ -7,11 +8,14 @@ import com.oracle.bmc.aispeech.requests.GetTranscriptionJobRequest;
 import com.oracle.bmc.aispeech.responses.CreateTranscriptionJobResponse;
 import com.oracle.bmc.aispeech.responses.GetTranscriptionJobResponse;
 import com.oracle.bmc.auth.AuthenticationDetailsProvider;
+import lombok.Getter;
+import lombok.Setter;
 import oracleai.AIApplication;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class OracleSpeechAI {
 
@@ -84,19 +88,38 @@ public class OracleSpeechAI {
             getTranscriptionJobResponseresponse =
                     client.getTranscriptionJob(getTranscriptionJobRequest);
             transcriptJobState = getTranscriptionJobResponseresponse.getTranscriptionJob().getLifecycleState();
-            if(lastState != null && lastState.equals(transcriptJobState)) System.out.print(".");
-            System.out.println("transcriptJobState:" + transcriptJobState);
+            if (lastState != null && lastState.equals(transcriptJobState)) System.out.print(".");
+            else System.out.println("transcriptJobState:" + transcriptJobState);
         }
         System.out.println("getInputLocation:" +
                 getTranscriptionJobResponseresponse.getTranscriptionJob().getInputLocation());
         String fullString = getTranscriptionJobResponseresponse.getTranscriptionJob().getId();
         int lastIndex = fullString.lastIndexOf(".");
         String extractedString = "";
-        if (lastIndex != -1)   extractedString = fullString.substring(lastIndex + 1);
+        if (lastIndex != -1) extractedString = fullString.substring(lastIndex + 1);
         return "job-" + extractedString;
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @Getter
+    @Setter
+    public static class TranscriptionResponse {
+        private List<Transcription> transcriptions;
 
+        @JsonIgnoreProperties(ignoreUnknown = true)
+        @Getter
+        @Setter
+        public static class Transcription {
+            private List<Token> tokens;
+
+            @JsonIgnoreProperties(ignoreUnknown = true)
+            @Getter
+            @Setter
+            public static class Token {
+                private String token;
+            }
+        }
+    }
 
 
 }
