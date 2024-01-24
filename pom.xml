@@ -22,7 +22,6 @@
 		<oci.sdk.version>3.29.0</oci.sdk.version>
 		<jib-maven-plugin.version>3.3.1</jib-maven-plugin.version>
 		<liquibase.version>4.17.2</liquibase.version>
-		<docker.registry>${env.DOCKER_REGISTRY}</docker.registry>
 	</properties>
 
 	<dependencies>
@@ -50,30 +49,11 @@
 			<artifactId>oci-java-sdk-common-httpclient-jersey</artifactId>
 			<version>${oci.sdk.version}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>com.oracle.oci.sdk</groupId>
-			<artifactId>oci-java-sdk-generativeai</artifactId>
-			<!-- <version>3.25.1-preview1-20230906.204234-1</version> -->
-			<version>3.25.1-preview1-SNAPSHOT</version>
-			<!-- <systemPath>${basedir}/../genai-sdk/oci-java-sdk-generativeai-3.25.1-preview1-20230906.204234-1.jar</systemPath> -->
-			<!-- <scope>system</scope> -->
+			<artifactId>oci-java-sdk-generativeaiinference</artifactId>
+			<version>3.32.1</version>
 		</dependency>
-<!--		<dependency>-->
-<!--			<groupId>com.oracle.oci.sdk</groupId>-->
-<!--			<artifactId>oci-java-sdk-artifacts</artifactId>-->
-<!--			<version>${oci.sdk.version}</version>-->
-<!--		</dependency>-->
-<!--		<dependency>-->
-<!--			<groupId>com.oracle.oci.sdk</groupId>-->
-<!--			<artifactId>oci-java-sdk-vault</artifactId>-->
-<!--			<version>${oci.sdk.version}</version>-->
-<!--		</dependency>-->
-<!--		<dependency>-->
-<!--			<groupId>com.oracle.oci.sdk</groupId>-->
-<!--			<artifactId>oci-java-sdk-secrets</artifactId>-->
-<!--			<version>${oci.sdk.version}</version>-->
-<!--		</dependency>-->
 		<dependency>
 			<groupId>com.oracle.oci.sdk</groupId>
 			<artifactId>oci-java-sdk-aivision</artifactId>
@@ -105,31 +85,6 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 			<version>${spring.boot.version}</version>
 		</dependency>
-<!--		<dependency>-->
-<!--			<groupId>com.oracle.database.jdbc</groupId>-->
-<!--			<artifactId>ojdbc8</artifactId>-->
-<!--			<version>${oracle.jdbc.version}</version>-->
-<!--		</dependency>-->
-<!--		<dependency>-->
-<!--			<groupId>com.oracle.database.jdbc</groupId>-->
-<!--			<artifactId>ucp</artifactId>-->
-<!--			<version>${oracle.jdbc.version}</version>-->
-<!--		</dependency>-->
-<!--		<dependency>-->
-<!--			<groupId>com.oracle.database.security</groupId>-->
-<!--			<artifactId>oraclepki</artifactId>-->
-<!--			<version>${oracle.jdbc.version}</version>-->
-<!--		</dependency>-->
-<!--		<dependency>-->
-<!--			<groupId>com.oracle.database.security</groupId>-->
-<!--			<artifactId>osdt_core</artifactId>-->
-<!--			<version>${oracle.jdbc.version}</version>-->
-<!--		</dependency>-->
-<!--		<dependency>-->
-<!--			<groupId>com.oracle.database.security</groupId>-->
-<!--			<artifactId>osdt_cert</artifactId>-->
-<!--			<version>${oracle.jdbc.version}</version>-->
-<!--		</dependency>-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>

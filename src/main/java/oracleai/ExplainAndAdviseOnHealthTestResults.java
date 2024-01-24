@@ -6,8 +6,6 @@ import oracleai.services.ORDSCalls;
 import oracleai.services.OracleGenAI;
 import oracleai.services.OracleObjectStore;
 import oracleai.services.OracleVisionAI;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
