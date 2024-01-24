@@ -2,7 +2,8 @@
 
 [![License: UPL](https://img.shields.io/badge/license-UPL-green)](https://img.shields.io/badge/license-UPL-green) [![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=oracle-devrel_oracle-ai-for-sustainable-dev)](https://sonarcloud.io/dashboard?id=oracle-devrel_oracle-ai-for-sustainable-dev)
 
-## This is the source repos for the Develop with Oracle AI and Database Services: Gen, Vision, Speech, Language, and OML
+## This is the source repos for the 
+## "Develop with Oracle AI and Database Services: Gen, Vision, Speech, Language, and OML" workshop
 
 ## Introduction
 See workshop at https://apexapps.oracle.com/pls/apex/r/dbpm/livelabs/view-workshop?wid=3874
