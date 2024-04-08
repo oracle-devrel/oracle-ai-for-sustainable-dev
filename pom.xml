@@ -50,19 +50,11 @@
 			<artifactId>oci-java-sdk-common-httpclient-jersey</artifactId>
 			<version>${oci.sdk.version}</version>
 		</dependency>
-		<!-- https://mavenlibs.com/maven/dependency/com.oracle.oci.sdk/oci-java-sdk-generativeaiinference -->
 		<dependency>
 			<groupId>com.oracle.oci.sdk</groupId>
 			<artifactId>oci-java-sdk-generativeaiinference</artifactId>
 			<version>3.32.1</version>
 		</dependency>
-<!--		<dependency>-->
-<!--			<groupId>com.oracle.oci.sdk</groupId>-->
-<!--			<artifactId>oci-java-sdk-shaded-full</artifactId>-->
-<!--			<version>3.31.1-preview1-20231221.155414-7</version>-->
-<!--			<systemPath>${basedir}/lib/oci-java-sdk-full-3.31.1-preview1-SNAPSHOT.jar</systemPath>-->
-<!--			<scope>system</scope>-->
-<!--		</dependency>-->
 		<dependency>
 			<groupId>com.oracle.oci.sdk</groupId>
 			<artifactId>oci-java-sdk-aivision</artifactId>
