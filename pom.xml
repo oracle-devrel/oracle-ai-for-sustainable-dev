@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.1</version>
+		<version>3.1.4</version>
 		<relativePath/>
 	</parent>
 	<groupId>oracleai</groupId>
@@ -17,7 +17,8 @@
 	<properties>
 		<spring-cloud.version>2021.0.5</spring-cloud.version>
 		<oracle.jdbc.version>21.7.0.0</oracle.jdbc.version>
-		<spring.boot.version>2.7.6</spring.boot.version>
+		<spring.boot.version>3.1.2</spring.boot.version>
+		<snakeyaml.version>1.31</snakeyaml.version>
 		<spring.vault.version>3.1.1</spring.vault.version>
 		<oci.sdk.version>3.29.0</oci.sdk.version>
 		<jib-maven-plugin.version>3.3.1</jib-maven-plugin.version>
@@ -49,11 +50,19 @@
 			<artifactId>oci-java-sdk-common-httpclient-jersey</artifactId>
 			<version>${oci.sdk.version}</version>
 		</dependency>
+		<!-- https://mavenlibs.com/maven/dependency/com.oracle.oci.sdk/oci-java-sdk-generativeaiinference -->
 		<dependency>
 			<groupId>com.oracle.oci.sdk</groupId>
 			<artifactId>oci-java-sdk-generativeaiinference</artifactId>
 			<version>3.32.1</version>
 		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>com.oracle.oci.sdk</groupId>-->
+<!--			<artifactId>oci-java-sdk-shaded-full</artifactId>-->
+<!--			<version>3.31.1-preview1-20231221.155414-7</version>-->
+<!--			<systemPath>${basedir}/lib/oci-java-sdk-full-3.31.1-preview1-SNAPSHOT.jar</systemPath>-->
+<!--			<scope>system</scope>-->
+<!--		</dependency>-->
 		<dependency>
 			<groupId>com.oracle.oci.sdk</groupId>
 			<artifactId>oci-java-sdk-aivision</artifactId>
