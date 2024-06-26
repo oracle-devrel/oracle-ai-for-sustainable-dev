@@ -1,8 +1,11 @@
 # Integrate OCI Generative AI with LangChain
 This repo contains all the work done to develop demos on the integration between [**LangChain**](https://www.langchain.com/) and Oracle [**OCI GenAI**](https://www.oracle.com/artificial-intelligence/generative-ai/large-language-models/) Service.
 
-## OCI Generative AI Service is in Limited Availability
+## OCI Generative AI Service is in GENERAL AVAILABILITY
 Consider that OCI Generative AI Service (based on Cohere models) is now (July ) 
+
+## Oracle 23ai is in GENERAL AVAILABILITY
+Consider that Oracle 23 ai database is available now
 
 ## Documentation
 The development of the proposed integration is based on the example, from LangChain, provided [here](https://python.langchain.com/docs/modules/model_io/models/llms/custom_llm)
@@ -20,13 +23,19 @@ The development of the proposed integration is based on the example, from LangCh
 * How-to add Cohere reranker to the chain
 * How to integrate OCI GenAI Service with LangChain
 * How to define the LangChain
+* How to use the Oracle vector Db capabilities
+* How to use in-memory database capability
 
 ## Oracle BOT
-Using the script [run_oracle_bot.sh](./run_oracle_bot.sh) you can launch a simple ChatBot that showcase Oracle GenAI service. The demo is based on docs from Oracle Database pdf documentation.
+Using the script [run_oracle_bot_exp.sh](./run_oracle_bot_exp.sh) you can launch a simple ChatBot that showcase Oracle GenAI service. The demo is based on docs from Oracle Database pdf documentation.
 
 You need to put in the local directory:
-* oracle-database-23c-new-features-guide.pdf
-* database-concepts.pdf
+* Trobleshooting.pdf
+* globally-distributed-autonomous-database.pdf
+* Oracle True cache.pdf
+* oracle-database-23c.pdf
+* oracle-globally-distributed-database-guide.pdf
+* sharding-adg-addshard-cookbook-3610618.pdf
 
 You can add more pdf. Edit [config_rag.py](./config_rag.py)
 
