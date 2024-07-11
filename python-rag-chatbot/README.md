@@ -7,7 +7,14 @@
 [**LangChain**](https://www.langchain.com/) 
  
 
+## TODO instructions
 
+- setup ~/.oci/config
+- set yourcompartmentid
+- podman run -d --name 23ai -p 1521:1521 -e ORACLE_PWD=Welcome12345 -v oracle-volume:/Users/pparkins/oradata container-registry.oracle.com/database/free:latest
+- create/config vector tablespace and user
+- add oracle database info for use in init_rag_streamlit.py / init_rag_streamlit_exp.py
+- run run_oracle_bot.sh /run_oracle_bot_exp.sh
 
 
 ## Documentation

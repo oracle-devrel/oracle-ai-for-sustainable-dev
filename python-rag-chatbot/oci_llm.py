@@ -99,7 +99,7 @@ class OCIGenAILLM(LLM):
             print(prompt)
             print()
 
-        print("Calling OCI genai...pankssssss")
+        print("Calling OCI genai...")
         generate_text_response = self.generative_ai_client.generate_text(
             generate_text_detail
         )
