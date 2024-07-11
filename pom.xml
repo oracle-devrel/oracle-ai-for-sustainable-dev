@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.1.4</version>
+		<version>3.3.1</version>
 		<relativePath/>
 	</parent>
 	<groupId>oracleai</groupId>
@@ -15,26 +15,13 @@
 	<description>Oracle AI Demos</description>
 
 	<properties>
-		<spring-cloud.version>2021.0.5</spring-cloud.version>
-		<oracle.jdbc.version>21.7.0.0</oracle.jdbc.version>
-		<spring.boot.version>3.1.2</spring.boot.version>
-		<snakeyaml.version>1.31</snakeyaml.version>
-		<spring.vault.version>3.1.1</spring.vault.version>
-		<oci.sdk.version>3.29.0</oci.sdk.version>
-		<jib-maven-plugin.version>3.3.1</jib-maven-plugin.version>
-		<liquibase.version>4.17.2</liquibase.version>
+		<oci.sdk.version>3.44.2</oci.sdk.version>
 	</properties>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>org.yaml</groupId>
-					<artifactId>snakeyaml</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -45,11 +32,10 @@
 			<artifactId>json</artifactId>
 			<version>20231013</version>
 		</dependency>
-
 		<dependency>
-			<groupId>com.oracle.oci.sdk</groupId>
-			<artifactId>oci-java-sdk-common</artifactId>
-			<version>${oci.sdk.version}</version>
+			<groupId>com.oracle.cloud.spring</groupId>
+			<artifactId>spring-cloud-oci-starter</artifactId>
+			<version>1.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.oracle.oci.sdk</groupId>
@@ -59,7 +45,7 @@
 		<dependency>
 			<groupId>com.oracle.oci.sdk</groupId>
 			<artifactId>oci-java-sdk-generativeaiinference</artifactId>
-			<version>3.32.1</version>
+			<version>${oci.sdk.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.oracle.oci.sdk</groupId>
@@ -88,20 +74,6 @@
 			<version>2.0.6</version>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-			<version>${spring.boot.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<version>${spring.boot.version}</version>
-			<scope>test</scope>
-		</dependency>
-
-
-
-		<dependency>
 			<groupId>javax.xml.bind</groupId>
 			<artifactId>jaxb-api</artifactId>
 			<version>2.4.0-b180830.0359</version>
@@ -122,18 +94,7 @@
 			<artifactId>service</artifactId>
 			<version>0.12.0</version>
 		</dependency>
-    </dependencies>
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.springframework.cloud</groupId>
-				<artifactId>spring-cloud-dependencies</artifactId>
-				<version>${spring-cloud.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
+	</dependencies>
 	<build>
 		<plugins>
 			<plugin>
