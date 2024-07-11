@@ -1,16 +1,17 @@
-# Integrate OCI Generative AI with LangChain
-This repo contains all the work done to develop demos on the integration between [**LangChain**](https://www.langchain.com/) and Oracle [**OCI GenAI**](https://www.oracle.com/artificial-intelligence/generative-ai/large-language-models/) Service.
+# Integrating Oracle Database 23ai RAG and OCI Generative AI with LangChain
 
-## OCI Generative AI Service is in GENERAL AVAILABILITY
-Consider that OCI Generative AI Service (based on Cohere models) is now (July ) 
+[**Oracle Database 23ai**](https://www.oracle.com/database/free-1/)
 
-## Oracle 23ai is in GENERAL AVAILABILITY
-Consider that Oracle 23 ai database is available now
+[**OCI GenAI**](https://www.oracle.com/artificial-intelligence/generative-ai/large-language-models/)
+
+[**LangChain**](https://www.langchain.com/) 
+ 
+
+
+
 
 ## Documentation
 The development of the proposed integration is based on the example, from LangChain, provided [here](https://python.langchain.com/docs/modules/model_io/models/llms/custom_llm)
-
-**RAG** has been first described in the following [arXiv paper](https://arxiv.org/pdf/2005.11401.pdf)
 
 ## Features
 * How-to build a complete, end-2-end RAG solution using LangChain and Oracle GenAI Service.
@@ -27,7 +28,7 @@ The development of the proposed integration is based on the example, from LangCh
 * How to use in-memory database capability
 
 ## Oracle BOT
-Using the script [run_oracle_bot_exp.sh](./run_oracle_bot_exp.sh) you can launch a simple ChatBot that showcase Oracle GenAI service. The demo is based on docs from Oracle Database pdf documentation.
+Using the script [run_oracle_bot_exp.sh](run_oracle_bot_exp.sh) you can launch a simple ChatBot that showcase Oracle GenAI service. The demo is based on docs from Oracle Database pdf documentation.
 
 You need to put in the local directory:
 * Trobleshooting.pdf
@@ -37,10 +38,7 @@ You need to put in the local directory:
 * oracle-globally-distributed-database-guide.pdf
 * sharding-adg-addshard-cookbook-3610618.pdf
 
-You can add more pdf. Edit [config_rag.py](./config_rag.py)
-
-## Video
-
+You can add more pdf. Edit [config_rag.py](config_rag.py)
 
 
 
