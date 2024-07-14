@@ -1,5 +1,8 @@
 package oracleai.services;
 
+import oracleai.AIApplication;
+import oracleai.ImageStore;
+import oracleai.ImageStoreWrapper;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -8,6 +11,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Base64;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class ORDSCalls {
@@ -66,6 +71,37 @@ public class ORDSCalls {
         return response.getBody();
     }
 
+  public static ResponseEntity<String> uploadImage(MultipartFile image) {
+        try {
+            String base64Image = Base64.getEncoder().encodeToString(image.getBytes());
+            Map<String, String> payload = new HashMap<>();
+            payload.put("p_image_name", image.getOriginalFilename());
+            payload.put("p_image", base64Image);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(payload, headers);
+            RestTemplate restTemplate = new RestTemplate();
+            String uploadUrl = AIApplication.ORDS_ENDPOINT_URL + "insert_image/";
+            return restTemplate.exchange(uploadUrl, HttpMethod.POST, requestEntity, String.class);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to upload image", e);
+        }
+    }
 
+
+    public static ImageStore[] getImageStoreData() {
+        String url = AIApplication.ORDS_ENDPOINT_URL + "image_store/";
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<ImageStoreWrapper> response = restTemplate.getForEntity(url, ImageStoreWrapper.class);
+        ImageStoreWrapper wrapper = response.getBody();
+        if (wrapper != null) {
+            for (ImageStore imageStore : wrapper.getItems()) {
+                System.out.println("Image Name: " + imageStore.getImageName());
+            }
+            return wrapper.getItems().toArray(new ImageStore[0]);
+        } else {
+            return new ImageStore[0];
+        }
+    }
 }
 
