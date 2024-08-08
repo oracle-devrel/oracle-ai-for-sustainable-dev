@@ -144,21 +144,17 @@ def executeSelectAI():
 
     try:
         with connection.cursor() as cursor:
-            # Execute AI query
             cursor.execute(query, prompt=cummulativeResult)
             result = cursor.fetchone()
-
             if result and isinstance(result[0], oracledb.LOB):
                 text_result = result[0].read()
                 print(text_result)
 
-                # Update the global variables
                 latest_thetime = datetime.now()
                 latest_question = cummulativeResult
                 latest_answer = text_result[:3000]  # Truncate if necessary
                 cummulativeResult = ""
 
-                # Insert the prompt and result into the table if isInsertResults is True
                 if isInsertResults:
                     insert_query = """
                     INSERT INTO selectai_data (thetime, question, answer)
@@ -176,7 +172,6 @@ def executeSelectAI():
     except Exception as e:
         print(f"An error occurred: {e}")
 
-    # Reset cumulativeResult after execution
     cummulativeResult = ""
 
 async def handle_request(request):
@@ -233,4 +228,4 @@ if __name__ == "__main__":
     if stream.is_active():
         stream.close()
 
-    print("Closed now")
+    print("Closed")
