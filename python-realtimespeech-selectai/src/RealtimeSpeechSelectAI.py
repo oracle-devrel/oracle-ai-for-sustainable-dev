@@ -1,8 +1,10 @@
 import asyncio
 import getpass
-
+import os
+import json
 import pyaudio
 import oracledb
+from datetime import datetime
 import oci
 from oci.config import from_file
 from oci.auth.signers.security_token_signer import SecurityTokenSigner
@@ -11,7 +13,14 @@ from oci.ai_speech_realtime import (
     RealtimeClientListener,
     RealtimeParameters,
 )
+from aiohttp import web
 
+# Global variables to store the latest data
+latest_thetime = None
+latest_question = None
+latest_answer = None
+compartment_id = os.getenv('COMPARTMENT_ID')
+print(f"compartment_id: {compartment_id}")
 pw = getpass.getpass("Enter database user password:")
 
 # Use this when making a connection with a wallet
@@ -19,11 +28,10 @@ connection = oracledb.connect(
     user="moviestream",
     password=pw,
     dsn="selectaidb_high",
-    config_dir="/Users/pparkins/Downloads/Wallet_SelectAIDB",
-    wallet_location="/Users/pparkins/Downloads/Wallet_SelectAIDB"
+    config_dir=r"C:\Users\paulp\Downloads\Wallet_SelectAIDB",
+    wallet_location=r"C:\Users\paulp\Downloads\Wallet_SelectAIDB"
 )
-print("Successfully connected to Oracle Database")
-print(f"Connection details: {connection}")
+print(f"Successfully connected to Oracle Database Connection: {connection}")
 
 # Create a FIFO queue
 queue = asyncio.Queue()
@@ -43,7 +51,7 @@ isSelect = False
 last_result_time = None
 
 def authenticator():
-    config = from_file("~/.oci/config", "paulspeechai")
+    config = from_file("~/.oci/config", "MYSPEECHAIPROFILE")
     with open(config["security_token_file"], "r") as f:
         token = f.readline()
     private_key = oci.signer.load_private_key_from_file(config["key_file"])
@@ -69,6 +77,7 @@ stream = p.open(
 
 stream.start_stream()
 config = from_file()
+isInsertResults = True
 
 async def send_audio(client):
     while True:
@@ -86,9 +95,14 @@ class SpeechListener(RealtimeClientListener):
             print(f"Current cummulative result: {cummulativeResult}")
             if cummulativeResult.lower().startswith("select ai"):
                 isSelect = True
+            elif cummulativeResult.lower().startswith("Select the eye"):
+                isSelect = True
+            else:
+                cummulativeResult = ""
             last_result_time = asyncio.get_event_loop().time()
         else:
             print(f"Received partial results: {result['transcriptions'][0]['transcription']}")
+
 
     def on_ack_message(self, ackmessage):
         return super().on_ack_message(ackmessage)
@@ -113,54 +127,72 @@ async def check_idle():
             isSelect = False
         await asyncio.sleep(1)
 
+# Function to execute AI query and optionally insert results into the table
+# For example Select AI I am looking for the top five selling movies for the latest month please
 def executeSelectAI():
-    global cummulativeResult
+    global cummulativeResult, isInsertResults, latest_thetime, latest_question, latest_answer
     print(f"executeSelectAI called cummulative result: {cummulativeResult}")
-    # for example prompt => 'select ai I am looking for the top 5 selling movies for the latest month please',
+
+    # AI query
     query = """SELECT DBMS_CLOUD_AI.GENERATE(
                 prompt       => :prompt,
                 profile_name => 'openai_gpt35',
                 action       => 'narrate')
             FROM dual"""
-    with connection.cursor() as cursor:
-        cursor.execute(query, prompt=cummulativeResult)
-        result = cursor.fetchone()
-        if result and isinstance(result[0], oracledb.LOB):
-            text_result = result[0].read()
-            print(text_result)
-        else:
-            print(result)
+
+    try:
+        with connection.cursor() as cursor:
+            # Execute AI query
+            cursor.execute(query, prompt=cummulativeResult)
+            result = cursor.fetchone()
+
+            if result and isinstance(result[0], oracledb.LOB):
+                text_result = result[0].read()
+                print(text_result)
+
+                # Update the global variables
+                latest_thetime = datetime.now()
+                latest_question = cummulativeResult
+                latest_answer = text_result[:3000]  # Truncate if necessary
+                cummulativeResult = ""
+
+                # Insert the prompt and result into the table if isInsertResults is True
+                if isInsertResults:
+                    insert_query = """
+                    INSERT INTO selectai_data (thetime, question, answer)
+                    VALUES (:thetime, :question, :answer)
+                    """
+                    cursor.execute(insert_query, {
+                        'thetime': latest_thetime,
+                        'question': latest_question,
+                        'answer': latest_answer
+                    })
+                    connection.commit()
+                    print("Insert successful.")
+            else:
+                print(result)
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
     # Reset cumulativeResult after execution
     cummulativeResult = ""
 
+async def handle_request(request):
+    global latest_thetime, latest_question, latest_answer
+    data = {
+        "thetime": latest_thetime.isoformat() if latest_thetime else None,  # Convert datetime to ISO format
+        "question": latest_question,
+        "answer": latest_answer
+    }
+    return web.json_response(data)
 
-    # logic such as the following could be added to make the app further dynamic as far as action type...
-    # actionValue = 'narrate'
-    # if cummulativeResult.lower().startswith("select ai narrate"):
-    #     actionValue = "narrate"
-    # elif cummulativeResult.lower().startswith("select ai chat"):
-    #     actionValue = "chat"
-    # elif cummulativeResult.lower().startswith("select ai showsql"):
-    #     actionValue = "showsql"
-    # elif cummulativeResult.lower().startswith("select ai show sql"):
-    #     actionValue = "showsql"
-    # elif cummulativeResult.lower().startswith("select ai runsql"):
-    #     actionValue = "runsql"
-    # elif cummulativeResult.lower().startswith("select ai run sql"):
-    #     actionValue = "runsql"
-    # # Note that "runsql" is not currently supported as action value
-    # query = """SELECT DBMS_CLOUD_AI.GENERATE(
-    #             prompt       => :prompt,
-    #             profile_name => 'openai_gpt35',
-    #             action       => :actionValue)
-    #         FROM dual"""
 
 if __name__ == "__main__":
     # Run the event loop
     def message_callback(message):
         print(f"Received message: {message}")
 
-    realtime_speech_parameters: RealtimeParameters = RealtimeParameters()
+    realtime_speech_parameters = RealtimeParameters()
     realtime_speech_parameters.language_code = "en-US"
     realtime_speech_parameters.model_domain = (
         realtime_speech_parameters.MODEL_DOMAIN_GENERIC
@@ -179,12 +211,21 @@ if __name__ == "__main__":
         listener=SpeechListener(),
         service_endpoint=realtime_speech_url,
         signer=authenticator(),
-        compartment_id="ocid1.compartment.oc1..MYCOMPARMENTID",
+        compartment_id=compartment_id,
     )
 
     loop = asyncio.get_event_loop()
     loop.create_task(send_audio(client))
     loop.create_task(check_idle())
+
+    # Set up the HTTP server
+    app = web.Application()
+    app.router.add_get('/selectai_data', handle_request)
+    runner = web.AppRunner(app)
+    loop.run_until_complete(runner.setup())
+    site = web.TCPSite(runner, 'localhost', 8080)
+    loop.run_until_complete(site.start())
+
     loop.run_until_complete(client.connect())
 
     if stream.is_active():
