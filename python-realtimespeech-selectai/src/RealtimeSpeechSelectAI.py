@@ -94,8 +94,10 @@ class SpeechListener(RealtimeClientListener):
             print(f"Received final results: {transcription}")
             print(f"Current cummulative result: {cummulativeResult}")
             if cummulativeResult.lower().startswith("select ai"):
+                cummulativeResult = cummulativeResult[len("select ai"):].strip()
                 isSelect = True
-            elif cummulativeResult.lower().startswith("Select the eye"):
+            elif cummulativeResult.lower().startswith("select the eye"):
+                cummulativeResult = cummulativeResult[len("select the eye"):].strip()
                 isSelect = True
             else:
                 cummulativeResult = ""
