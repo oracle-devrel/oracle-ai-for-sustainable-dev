@@ -135,10 +135,10 @@ def executeSelectAI():
     global cummulativeResult, isInsertResults, latest_thetime, latest_question, latest_answer
     print(f"executeSelectAI called cummulative result: {cummulativeResult}")
 
-    # AI query
+    # AI query - todo use openai_gpt4o
     query = """SELECT DBMS_CLOUD_AI.GENERATE(
                 prompt       => :prompt,
-                profile_name => 'openai_gpt35',
+                profile_name => 'openai_gpt35', 
                 action       => 'narrate')
             FROM dual"""
 
