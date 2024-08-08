@@ -94,8 +94,10 @@ class SpeechListener(RealtimeClientListener):
             print(f"Received final results: {transcription}")
             print(f"Current cummulative result: {cummulativeResult}")
             if cummulativeResult.lower().startswith("select ai"):
+                cummulativeResult = cummulativeResult[len("select ai"):].strip()
                 isSelect = True
-            elif cummulativeResult.lower().startswith("Select the eye"):
+            elif cummulativeResult.lower().startswith("select the eye"):
+                cummulativeResult = cummulativeResult[len("select the eye"):].strip()
                 isSelect = True
             else:
                 cummulativeResult = ""
@@ -133,30 +135,26 @@ def executeSelectAI():
     global cummulativeResult, isInsertResults, latest_thetime, latest_question, latest_answer
     print(f"executeSelectAI called cummulative result: {cummulativeResult}")
 
-    # AI query
+    # AI query - todo use openai_gpt4o
     query = """SELECT DBMS_CLOUD_AI.GENERATE(
                 prompt       => :prompt,
-                profile_name => 'openai_gpt35',
+                profile_name => 'openai_gpt35', 
                 action       => 'narrate')
             FROM dual"""
 
     try:
         with connection.cursor() as cursor:
-            # Execute AI query
             cursor.execute(query, prompt=cummulativeResult)
             result = cursor.fetchone()
-
             if result and isinstance(result[0], oracledb.LOB):
                 text_result = result[0].read()
                 print(text_result)
 
-                # Update the global variables
                 latest_thetime = datetime.now()
                 latest_question = cummulativeResult
                 latest_answer = text_result[:3000]  # Truncate if necessary
                 cummulativeResult = ""
 
-                # Insert the prompt and result into the table if isInsertResults is True
                 if isInsertResults:
                     insert_query = """
                     INSERT INTO selectai_data (thetime, question, answer)
@@ -174,7 +172,6 @@ def executeSelectAI():
     except Exception as e:
         print(f"An error occurred: {e}")
 
-    # Reset cumulativeResult after execution
     cummulativeResult = ""
 
 async def handle_request(request):
@@ -231,4 +228,4 @@ if __name__ == "__main__":
     if stream.is_active():
         stream.close()
 
-    print("Closed now")
+    print("Closed")
