@@ -37,7 +37,7 @@ colorama==0.4.6
 coloredlogs==15.0.1
 comm==0.1.4
 contourpy==1.2.1
-cryptography==38.0.0
+cryptography==42.0.4
 cycler==0.12.1
 dataclasses-json==0.6.1
 debugpy==1.8.0
