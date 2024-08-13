@@ -63,7 +63,7 @@ from config_rag import (
 
 # private configs
 CONFIG_PROFILE = "DEFAULT"
-COMPARTMENT_OCID = "ocid1.compartment.oc1..yourcompartmentid"
+COMPARTMENT_OCID = "ocid1.compartment.oc1..aaaaaaaajdyhd7dqnix2avhlckbhhkkcl3cujzyuz6jzyzonadca3i66pqjq"
 oci_config = oci.config.from_file("~/.oci/config", CONFIG_PROFILE)
 COHERE_API_KEY = oci_config['security_token_file']
 
@@ -134,6 +134,7 @@ def split_in_chunks(all_pages):
     splits = post_process(splits)
 
     print(f"Splitted the pdf in {len(splits)} chunks...")
+    print("Size of splits: " + str(text_splitter.__sizeof__()) + "bytes")
 
     return splits
 
@@ -252,7 +253,7 @@ def build_llm(llm_type):
         llm = OCIGenAI(
             model_id="cohere.command",
             service_endpoint="https://inference.generativeai.us-chicago-1.oci.oraclecloud.com",
-            compartment_id="ocid1.compartment.oc1..yourcompartmentid",
+            compartment_id="ocid1.compartment.oc1..aaaaaaaajdyhd7dqnix2avhlckbhhkkcl3cujzyuz6jzyzonadca3i66pqjq",
             model_kwargs={"max_tokens": 200},
             auth_type='SECURITY_TOKEN',
         )
@@ -284,13 +285,14 @@ def initialize_rag_chain():
 
     # 3. Load embeddings model
     embedder = create_cached_embedder()
-
+    print("Size of splits---: " + str(document_splits.__sizeof__()) + "bytes")
     # 4. Create a Vectore Store and store embeddings
     vectorstore = create_vector_store(VECTOR_STORE_NAME, document_splits, embedder)
 
     # 5. Create a retriever
     # increased num. of docs to 5 (default to 4)
     # added optionally a reranker
+
     retriever = create_retriever(vectorstore)
 
     # 6. Build the LLM

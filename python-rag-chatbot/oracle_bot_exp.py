@@ -1,5 +1,5 @@
 import streamlit as st
-import time
+
 import traceback
 import sys
 
@@ -7,15 +7,18 @@ from init_rag_streamlit_exp import initialize_rag_chain, get_answer
 
 from streamlit_feedback import streamlit_feedback
 
+
 def process_feedback(feedback_value):
     st.write("Feedback value:", feedback_value)
     with open("feedback.txt", "a", encoding="utf-8") as f:
         f.write(f"{feedback_value}\n")
 
+
 def reset_conversation():
     st.session_state.messages = []
     st.session_state.feedback_rendered = False
     st.session_state.feedback_key = 0
+
 
 st.title("Developing an AI bot powered by RAG and Oracle Database")
 
@@ -55,6 +58,7 @@ if question := st.chat_input("Hello, how can I help you?"):
                         print("Feedback submitted:", feedback_value, file=sys.stderr)  # Redirect to stderr
                         process_feedback(feedback_value)
                         st.session_state.feedback_rendered = False
+
 
                     feedback_component = streamlit_feedback(
                         feedback_type="faces",
