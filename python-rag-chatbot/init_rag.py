@@ -155,7 +155,7 @@ def initialize_rag_chain():
 
         llm = OCIGenAI(
             service_endpoint="https://inference.generativeai.us-chicago-1.oci.oraclecloud.com",
-            compartment_id="ocid1.compartment.oc1..aaaaaaaajdyhd7dqnix2avhlckbhhkkcl3cujzyuz6jzyzonadca3i66pqjq",
+            compartment_id="ocid1.compartment.oc1..yourcompartment",
             model_kwargs={"max_tokens": 1000},
             auth_type='SECURITY_TOKEN',
         )

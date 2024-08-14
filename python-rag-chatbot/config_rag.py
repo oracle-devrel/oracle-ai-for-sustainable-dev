@@ -4,18 +4,14 @@
 DEBUG = False
 
 # book to use for augmentation
-# BOOK1 = "APISpec.pdf"
+
 BOOK1 = "pdfFiles/sharding-adg-addshard-cookbook-3610618.pdf"
 BOOK2 = "pdfFiles/globally-distributed-autonomous-database.pdf"
-# BOOK4 = "OnBoardingGuide.pdf"
-# BOOK5 = "CreateWorkFlow.pdf"
-# BOOK6 = "Team Onboarding.pdf"
-# BOOK7 = "workflow.pdf"
 BOOK3 = "pdfFiles/oracle-database-23c.pdf"
 BOOK4 = "pdfFiles/oracle-globally-distributed-database-guide.pdf"
 BOOK5 = "pdfFiles/Oracle True cache.pdf"
 BOOK6 = "pdfFiles/Trobleshooting.pdf"
-# BOOK12 = "OsdCode.pdf"
+
 
 BOOK_LIST = [BOOK1, BOOK2, BOOK3, BOOK4, BOOK5, BOOK6]
 
