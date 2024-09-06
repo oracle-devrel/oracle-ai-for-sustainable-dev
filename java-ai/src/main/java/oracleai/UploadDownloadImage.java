@@ -55,9 +55,9 @@ public class UploadDownloadImage {
             file.transferTo(path);
             String fbxUrl = ORDSCalls.convertImage("http://129.80.168.144/transferimage/images/" +
                     file.getOriginalFilename());
-            String html = "<a href=\""+fbxUrl+"\">Click here for your FBX 3D model is here.</a>";
-            model.addAttribute("results", html);
-            return "resultspage";
+            model.addAttribute("resultlink", fbxUrl);
+            model.addAttribute("resulttext", "Click here for your FBX 3D model");
+            return "resultswithlinkpage";
 //            return ResponseEntity.ok(
 //                    ORDSCalls.convertImage("http://129.80.168.144/transferimage/images/" + file.getOriginalFilename())
 //            );
