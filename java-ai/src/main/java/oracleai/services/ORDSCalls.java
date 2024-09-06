@@ -124,7 +124,7 @@ public class ORDSCalls {
     }
 
 
-    public static String convertImage(String imageLocation) {
+    public static String convertImage(String imageLocation, String fileName) {
         String apiUrl = "https://api.meshy.ai/v1/image-to-3d";
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
@@ -132,7 +132,7 @@ public class ORDSCalls {
         headers.set("Authorization", "Bearer " + AIApplication.THREEDEY);
         String requestJson =
 //                "{\"image_url\": \"https://upload.wikimedia.org/wikipedia/commons/e/e1/Face_%E2%80%93_Alexander.jpg\", " +
-                "{\"image_url\": \""+imageLocation+"\", " +
+                "{\"image_url\": \""+imageLocation + fileName +"\", " +
                         "\"enable_pbr\": true, \"surface_mode\": \"hard\"}";
         HttpEntity<String> entity = new HttpEntity<>(requestJson, headers);
         ResponseEntity<String> response = restTemplate.postForEntity(apiUrl, entity, String.class);
@@ -140,13 +140,13 @@ public class ORDSCalls {
         try {
             JsonNode root = mapper.readTree(response.getBody());
             String theResultString =  root.path("result").asText();
-            return pollApiUntilSuccess(theResultString);
+            return pollApiUntilSuccess(fileName, theResultString);
         } catch (IOException e) {
             e.printStackTrace();
             return "Error parsing JSON";
         }
     }
-    public static String pollApiUntilSuccess(String theResultString) {
+    public static String pollApiUntilSuccess(String fileName, String theResultString) {
             RestTemplate restTemplate = new RestTemplate();
             HttpHeaders headers = new HttpHeaders();
             headers.set("Authorization", "Bearer " + AIApplication.THREEDEY);
@@ -162,7 +162,7 @@ public class ORDSCalls {
                                     HttpMethod.GET, entity, String.class);
                     JsonNode rootNode = mapper.readTree(response.getBody());
                     String status = rootNode.path("status").asText();
-                    System.out.println("ORDSCalls.pollApiUntilSuccess status:" + status);
+                    System.out.println(fileName + " status:" + status);
                     if ("SUCCEEDED".equals(status)) {
 //                        String modelUrl = rootNode.path("model_url").asText();
 //                        String modelGlbUrl = rootNode.path("model_urls").path("glb").asText();
