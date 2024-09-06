@@ -20,7 +20,7 @@ import org.springframework.http.MediaType;
 @RequestMapping("/digitaldoubles")
 public class DigitalDoubles {
 
-    @PostMapping("/uploadordownload")
+    @GetMapping("/uploadordownload")
     public String digitaldouble(@RequestParam("action") String action, Model model) {
         return action.equals("uploading")?"digitaldoubleupload":"digitaldoubledownload";
     }
