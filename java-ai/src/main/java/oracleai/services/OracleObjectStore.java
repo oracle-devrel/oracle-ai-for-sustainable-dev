@@ -1,6 +1,6 @@
 package oracleai.services;
 
-import com.oracle.bmc.auth.AuthenticationDetailsProvider;
+import com.oracle.bmc.auth.BasicAuthenticationDetailsProvider;
 import com.oracle.bmc.objectstorage.ObjectStorageClient;
 import com.oracle.bmc.objectstorage.requests.GetObjectRequest;
 import com.oracle.bmc.objectstorage.requests.PutObjectRequest;
@@ -18,7 +18,7 @@ public class OracleObjectStore {
 
     public static void sendToObjectStorage(String fileName, InputStream inputStreamForFile) throws Exception {
         System.out.println("GenerateAPictureStoryUsingOnlySpeech.sendToObjectStorage fileToUpload:" + fileName);
-        AuthenticationDetailsProvider provider = AuthProvider.getAuthenticationDetailsProvider();
+        BasicAuthenticationDetailsProvider provider = AuthProvider.getAuthenticationDetailsProvider();
         ObjectStorageClient client = ObjectStorageClient.builder().build(provider);
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .namespaceName(AIApplication.OBJECTSTORAGE_NAMESPACE)
@@ -32,7 +32,7 @@ public class OracleObjectStore {
 
     public static String getFromObjectStorage(String transcriptionJobId, String objectName) throws Exception {
         System.out.println("GenerateAPictureStoryUsingOnlySpeech.getFromObjectStorage objectName:" + objectName);
-        AuthenticationDetailsProvider provider = AuthProvider.getAuthenticationDetailsProvider();
+        BasicAuthenticationDetailsProvider provider = AuthProvider.getAuthenticationDetailsProvider();
         ObjectStorageClient client = ObjectStorageClient.builder().build(provider);
         GetObjectRequest putObjectRequest = GetObjectRequest.builder()
                 .namespaceName(AIApplication.OBJECTSTORAGE_NAMESPACE)

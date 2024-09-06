@@ -1,16 +1,6 @@
 package oracleai.services;
 
-import com.oracle.bmc.ClientConfiguration;
-import com.oracle.bmc.ConfigFileReader;
 import com.oracle.bmc.Region;
-import com.oracle.bmc.auth.AuthenticationDetailsProvider;
-import com.oracle.bmc.auth.ConfigFileAuthenticationDetailsProvider;
-import com.oracle.bmc.retrier.RetryConfiguration;
-import com.oracle.bmc.ClientConfiguration;
-import com.oracle.bmc.ConfigFileReader;
-import com.oracle.bmc.Region;
-import com.oracle.bmc.auth.AuthenticationDetailsProvider;
-import com.oracle.bmc.auth.ConfigFileAuthenticationDetailsProvider;
 import com.oracle.bmc.generativeaiinference.GenerativeAiInferenceClient;
 import com.oracle.bmc.generativeaiinference.model.CohereLlmInferenceRequest;
 import com.oracle.bmc.generativeaiinference.model.GenerateTextDetails;
@@ -22,8 +12,6 @@ import com.oracle.bmc.generativeaiinference.responses.GenerateTextResponse;
 
 import oracleai.AIApplication;
 
-import java.util.Arrays;
-import java.util.List;
 
 public class OracleGenAI {
 

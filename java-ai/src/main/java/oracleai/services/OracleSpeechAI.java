@@ -7,7 +7,7 @@ import com.oracle.bmc.aispeech.requests.CreateTranscriptionJobRequest;
 import com.oracle.bmc.aispeech.requests.GetTranscriptionJobRequest;
 import com.oracle.bmc.aispeech.responses.CreateTranscriptionJobResponse;
 import com.oracle.bmc.aispeech.responses.GetTranscriptionJobResponse;
-import com.oracle.bmc.auth.AuthenticationDetailsProvider;
+import com.oracle.bmc.auth.BasicAuthenticationDetailsProvider;
 import lombok.Getter;
 import lombok.Setter;
 import oracleai.AIApplication;
@@ -20,7 +20,7 @@ import java.util.List;
 public class OracleSpeechAI {
 
     public static String getTranscriptFromOCISpeech(String fileName) throws IOException, InterruptedException {
-        AuthenticationDetailsProvider provider = AuthProvider.getAuthenticationDetailsProvider();
+        BasicAuthenticationDetailsProvider provider = AuthProvider.getAuthenticationDetailsProvider();
         AIServiceSpeechClient client =
                 AIServiceSpeechClient.builder().build(provider);
         CreateTranscriptionJobDetails createTranscriptionJobDetails = CreateTranscriptionJobDetails.builder()

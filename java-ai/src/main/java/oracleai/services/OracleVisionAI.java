@@ -7,7 +7,7 @@ import com.oracle.bmc.aivision.AIServiceVisionClient;
 import com.oracle.bmc.aivision.model.*;
 import com.oracle.bmc.aivision.requests.AnalyzeImageRequest;
 import com.oracle.bmc.aivision.responses.AnalyzeImageResponse;
-import com.oracle.bmc.auth.AuthenticationDetailsProvider;
+import com.oracle.bmc.auth.BasicAuthenticationDetailsProvider;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -30,7 +30,7 @@ public class OracleVisionAI {
      *
      */
     public static String processImage(byte[] bytes, ImageFeature feature) throws Exception {
-        AuthenticationDetailsProvider provider = AuthProvider.getAuthenticationDetailsProvider();
+        BasicAuthenticationDetailsProvider provider = AuthProvider.getAuthenticationDetailsProvider();
         AIServiceVisionClient aiServiceVisionClient = AIServiceVisionClient.builder().build(provider);
         List<ImageFeature> features = new ArrayList<>();
         features.add(feature);

@@ -1,5 +1,7 @@
 package oracleai.services;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import oracleai.AIApplication;
 import oracleai.ImageStore;
 import oracleai.ImageStoreWrapper;
@@ -9,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
+
+import java.io.IOException;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
@@ -103,5 +107,79 @@ public class ORDSCalls {
             return new ImageStore[0];
         }
     }
+
+    public static ImageStore[] make3Drequest() {
+        String url = AIApplication.ORDS_ENDPOINT_URL + "image_store/";
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<ImageStoreWrapper> response = restTemplate.getForEntity(url, ImageStoreWrapper.class);
+        ImageStoreWrapper wrapper = response.getBody();
+        if (wrapper != null) {
+            for (ImageStore imageStore : wrapper.getItems()) {
+                System.out.println("Image Name: " + imageStore.getImageName());
+            }
+            return wrapper.getItems().toArray(new ImageStore[0]);
+        } else {
+            return new ImageStore[0];
+        }
+    }
+
+
+    public static String convertImage(String imageLocation, String fileName) {
+        String apiUrl = "https://api.meshy.ai/v1/image-to-3d";
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Authorization", "Bearer " + AIApplication.THREEDEY);
+        String requestJson =
+//                "{\"image_url\": \"https://upload.wikimedia.org/wikipedia/commons/e/e1/Face_%E2%80%93_Alexander.jpg\", " +
+                "{\"image_url\": \""+imageLocation + fileName +"\", " +
+                        "\"enable_pbr\": true, \"surface_mode\": \"hard\"}";
+        HttpEntity<String> entity = new HttpEntity<>(requestJson, headers);
+        ResponseEntity<String> response = restTemplate.postForEntity(apiUrl, entity, String.class);
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            JsonNode root = mapper.readTree(response.getBody());
+            String theResultString =  root.path("result").asText();
+            return pollApiUntilSuccess(fileName, theResultString);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "Error parsing JSON";
+        }
+    }
+    public static String pollApiUntilSuccess(String fileName, String theResultString) {
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Authorization", "Bearer " + AIApplication.THREEDEY);
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+
+            ObjectMapper mapper = new ObjectMapper();
+            while (true) {
+                try {
+                    ResponseEntity<String> response =
+                            restTemplate.exchange(
+                                    "https://api.meshy.ai/v1/image-to-3d/" + theResultString,
+                                    HttpMethod.GET, entity, String.class);
+                    JsonNode rootNode = mapper.readTree(response.getBody());
+                    String status = rootNode.path("status").asText();
+                    System.out.println(fileName + " status:" + status);
+                    if ("SUCCEEDED".equals(status)) {
+//                        String modelUrl = rootNode.path("model_url").asText();
+//                        String modelGlbUrl = rootNode.path("model_urls").path("glb").asText();
+                        String modelFbxUrl = rootNode.path("model_urls").path("fbx").asText();
+//                        String modelUsdzUrl = rootNode.path("model_urls").path("usdz").asText();
+//                        String thumbnailUrl = rootNode.path("thumbnail_url").asText();
+                        return modelFbxUrl;
+//                        return String.format("Model URL: %s\nGLB URL: %s\nFBX URL: %s\nUSDZ URL: %s\nThumbnail URL: %s",
+//                                modelUrl, modelGlbUrl, modelFbxUrl, modelUsdzUrl, thumbnailUrl);
+                    }
+                    Thread.sleep(1000);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return "Failed to retrieve data: " + e.getMessage();
+                }
+            }
+        }
+
 }
 

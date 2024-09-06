@@ -1,4 +1,12 @@
 spring:
+  servlet:
+    multipart:
+      max-file-size: 200MB
+      max-request-size: 200MB
+  cloud:
+    oci:
+      config:
+        type: INSTANCE_PRINCIPAL
   datasource:
     #    Example where a wallet is used (TNS_ADMIN is the location of the wallet).
     #     Eg if using Oracle Cloud ADB (autonomous database) Always Free.
