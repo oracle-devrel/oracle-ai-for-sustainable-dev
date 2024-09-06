@@ -45,7 +45,9 @@ public class DigitalDoubles {
                 ", jobRole = " + jobRole + ", tshirtSize = " + tshirtSize +
                 ", comments = " + comments + ", model = " + model);
         if (!image.isEmpty()) {
-            ORDSCalls.uploadImage(image);
+//            ORDSCalls.uploadImage(image);
+            ORDSCalls.insertDigitalDoubleData(
+                    image,video,firstName,lastName, email, company,jobRole, tshirtSize, comments);
 //            byte[] imageBytes = image.getBytes();
 
             if (!video.isEmpty()) {

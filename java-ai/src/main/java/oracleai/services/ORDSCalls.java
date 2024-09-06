@@ -2,9 +2,7 @@ package oracleai.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import oracleai.AIApplication;
-import oracleai.ImageStore;
-import oracleai.ImageStoreWrapper;
+import oracleai.*;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -180,6 +178,31 @@ public class ORDSCalls {
                 }
             }
         }
+
+    public static void insertDigitalDoubleData(MultipartFile image, MultipartFile video,
+                                               String firstName, String lastName, String email,
+                                               String company, String jobRole, String tshirtSize,
+                                               String comments) throws IOException {
+
+
+        DigitalDoubleORDS client = new DigitalDoubleORDS();
+
+        // Prepare request data
+        DigitalDoubleDataRequest request = new DigitalDoubleDataRequest();
+        request.p_participant_firstname = firstName;
+        request.p_participant_lastname=lastName;
+        request.p_participant_email=email;
+        request.p_participant_company=company;
+        request.p_participant_role=jobRole;
+        request.p_participant_tshirt = tshirtSize;
+        request.p_participant_comments = comments
+//        request.p_id_image_in = idimage;
+        request.p_image_in = Base64.getEncoder().encodeToString(image.getBytes());;
+        request.p_video_in = Base64.getEncoder().encodeToString(video.getBytes());;
+        client.insertDigitalDoubleData(request);
+        System.out.println("ORDSCalls.insertDigitalDoubleData insert complete");
+    }
+
 
 }
 
