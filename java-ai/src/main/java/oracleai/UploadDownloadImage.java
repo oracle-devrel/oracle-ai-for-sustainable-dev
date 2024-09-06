@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.apache.commons.io.FileUtils;
 import org.springframework.http.MediaType;
 
 @Controller
@@ -50,7 +49,7 @@ public class UploadDownloadImage {
         }
 
         try {
-            FileUtils.forceMkdir(new File(DIRECTORY));
+            org.apache.commons.io.FileUtils.forceMkdir(new File(DIRECTORY));
             Path path = Paths.get(DIRECTORY + file.getOriginalFilename());
             file.transferTo(path);
 
@@ -64,7 +63,7 @@ public class UploadDownloadImage {
     public ResponseEntity<byte[]> getImage(@PathVariable String filename) throws IOException {
         try {
             File file = new File(DIRECTORY, filename);
-            byte[] fileContent = FileUtils.readFileToByteArray(file);
+            byte[] fileContent = org.apache.commons.io.FileUtils.readFileToByteArray(file);
             return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(fileContent);
         } catch (IOException e) {
             return ResponseEntity.notFound().build();
