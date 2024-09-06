@@ -19,4 +19,3 @@ podman build -t=$IMAGE .
 
 #docker push --platform linux/amd64  "$IMAGE"
 podman push "$IMAGE"
-                                                                              7,31          Top
