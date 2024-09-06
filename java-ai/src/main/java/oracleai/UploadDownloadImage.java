@@ -53,7 +53,7 @@ public class UploadDownloadImage {
             org.apache.commons.io.FileUtils.forceMkdir(new File(DIRECTORY));
             Path path = Paths.get(DIRECTORY + file.getOriginalFilename());
             file.transferTo(path);
-            String fbxUrl = ORDSCalls.convertImage("http://129.80.168.144/transferimage/images/" +
+            String fbxUrl = ORDSCalls.convertImage("http://129.80.168.144/transferimage/images/" ,
                     file.getOriginalFilename());
             model.addAttribute("resultlink", fbxUrl);
             model.addAttribute("resulttext", "Click here for your FBX 3D model");
