@@ -187,7 +187,6 @@ public class ORDSCalls {
 
         DigitalDoubleORDS client = new DigitalDoubleORDS();
 
-        // Prepare request data
         DigitalDoubleDataRequest request = new DigitalDoubleDataRequest();
         request.p_participant_firstname = firstName;
         request.p_participant_lastname=lastName;
