@@ -29,15 +29,15 @@ public class UploadDownloadImage {
         return "images";
     }
 
-    @GetMapping("/uploadimageandvideo0")
-    public String uploadimageandvideo(@RequestParam("image") MultipartFile image, Model model) {
-//        ORDSCalls.uploadImage(image);
-//        System.out.println("Image upload complete for: " + image.getOriginalFilename());
-        System.out.println("convertImage(): " + ORDSCalls.convertImage());
-        ImageStore[] imageStores = ORDSCalls.getImageStoreData();
-        model.addAttribute("images", imageStores);
-        return "images";
-    }
+//    @GetMapping("/uploadimageandvideo0")
+//    public String uploadimageandvideo(@RequestParam("image") MultipartFile image, Model model) {
+////        ORDSCalls.uploadImage(image);
+////        System.out.println("Image upload complete for: " + image.getOriginalFilename());
+//        System.out.println("convertImage(): " + ORDSCalls.convertImage());
+//        ImageStore[] imageStores = ORDSCalls.getImageStoreData();
+//        model.addAttribute("images", imageStores);
+//        return "images";
+//    }
 
 
     private static final String DIRECTORY = "/tmp/images/";
@@ -52,8 +52,10 @@ public class UploadDownloadImage {
             org.apache.commons.io.FileUtils.forceMkdir(new File(DIRECTORY));
             Path path = Paths.get(DIRECTORY + file.getOriginalFilename());
             file.transferTo(path);
-
-            return ResponseEntity.ok("File uploaded and available at: " + "/images/" + file.getOriginalFilename());
+            return ResponseEntity.ok(
+                    ORDSCalls.convertImage("http://129.80.168.144/transferimage/images/" + file.getOriginalFilename())
+            );
+//            return ResponseEntity.ok("File uploaded and available at: " + "/images/" + file.getOriginalFilename());
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Could not upload the file: " + e.getMessage());
         }

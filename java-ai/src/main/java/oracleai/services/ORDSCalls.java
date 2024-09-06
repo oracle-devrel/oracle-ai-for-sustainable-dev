@@ -124,14 +124,15 @@ public class ORDSCalls {
     }
 
 
-    public static String convertImage() {
+    public static String convertImage(String imageLocation) {
         String apiUrl = "https://api.meshy.ai/v1/image-to-3d";
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Authorization", "Bearer " + AIApplication.THREEDEY);
         String requestJson =
-                "{\"image_url\": \"https://upload.wikimedia.org/wikipedia/commons/e/e1/Face_%E2%80%93_Alexander.jpg\", " +
+//                "{\"image_url\": \"https://upload.wikimedia.org/wikipedia/commons/e/e1/Face_%E2%80%93_Alexander.jpg\", " +
+                "{\"image_url\": \""+imageLocation+"\", " +
                         "\"enable_pbr\": true, \"surface_mode\": \"hard\"}";
         HttpEntity<String> entity = new HttpEntity<>(requestJson, headers);
         ResponseEntity<String> response = restTemplate.postForEntity(apiUrl, entity, String.class);
