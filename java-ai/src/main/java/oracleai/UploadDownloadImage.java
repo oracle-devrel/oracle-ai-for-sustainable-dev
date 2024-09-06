@@ -43,21 +43,28 @@ public class UploadDownloadImage {
     private static final String DIRECTORY = "/tmp/images/";
 
     @PostMapping("/uploadimageandvideo")
-    public ResponseEntity<String> uploadImage(@RequestParam("image") MultipartFile file) throws IOException {
-        if (file.isEmpty()) {
-            return ResponseEntity.badRequest().body("Cannot upload empty file");
-        }
+    public String uploadimageandvideo(@RequestParam("image") MultipartFile file, Model model) throws IOException {
+//    public ResponseEntity<String> uploadImage(@RequestParam("image") MultipartFile file, Model model) throws IOException {
+//        if (file.isEmpty()) {
+//            return ResponseEntity.badRequest().body("Cannot upload empty file");
+//        }
 
         try {
             org.apache.commons.io.FileUtils.forceMkdir(new File(DIRECTORY));
             Path path = Paths.get(DIRECTORY + file.getOriginalFilename());
             file.transferTo(path);
-            return ResponseEntity.ok(
-                    ORDSCalls.convertImage("http://129.80.168.144/transferimage/images/" + file.getOriginalFilename())
-            );
+            String fbxUrl = ORDSCalls.convertImage("http://129.80.168.144/transferimage/images/" +
+                    file.getOriginalFilename());
+            String html = "<a href=\""+fbxUrl+"\">Click here for your FBX 3D model is here.</a>";
+            model.addAttribute("results", html);
+            return "resultspage";
+//            return ResponseEntity.ok(
+//                    ORDSCalls.convertImage("http://129.80.168.144/transferimage/images/" + file.getOriginalFilename())
+//            );
 //            return ResponseEntity.ok("File uploaded and available at: " + "/images/" + file.getOriginalFilename());
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Could not upload the file: " + e.getMessage());
+            return e.toString();
+//            ResponseEntity.internalServerError().body("Could not upload the file: " + e.getMessage());
         }
     }
 

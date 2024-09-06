@@ -164,13 +164,14 @@ public class ORDSCalls {
                     String status = rootNode.path("status").asText();
                     System.out.println("ORDSCalls.pollApiUntilSuccess status:" + status);
                     if ("SUCCEEDED".equals(status)) {
-                        String modelUrl = rootNode.path("model_url").asText();
-                        String modelGlbUrl = rootNode.path("model_urls").path("glb").asText();
+//                        String modelUrl = rootNode.path("model_url").asText();
+//                        String modelGlbUrl = rootNode.path("model_urls").path("glb").asText();
                         String modelFbxUrl = rootNode.path("model_urls").path("fbx").asText();
-                        String modelUsdzUrl = rootNode.path("model_urls").path("usdz").asText();
-                        String thumbnailUrl = rootNode.path("thumbnail_url").asText();
-                        return String.format("Model URL: %s\nGLB URL: %s\nFBX URL: %s\nUSDZ URL: %s\nThumbnail URL: %s",
-                                modelUrl, modelGlbUrl, modelFbxUrl, modelUsdzUrl, thumbnailUrl);
+//                        String modelUsdzUrl = rootNode.path("model_urls").path("usdz").asText();
+//                        String thumbnailUrl = rootNode.path("thumbnail_url").asText();
+                        return modelFbxUrl;
+//                        return String.format("Model URL: %s\nGLB URL: %s\nFBX URL: %s\nUSDZ URL: %s\nThumbnail URL: %s",
+//                                modelUrl, modelGlbUrl, modelFbxUrl, modelUsdzUrl, thumbnailUrl);
                     }
                     Thread.sleep(1000);
                 } catch (Exception e) {
