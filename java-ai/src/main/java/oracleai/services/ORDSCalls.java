@@ -195,7 +195,7 @@ public class ORDSCalls {
         request.p_participant_company=company;
         request.p_participant_role=jobRole;
         request.p_participant_tshirt = tshirtSize;
-        request.p_participant_comments = comments
+        request.p_participant_comments = comments;
 //        request.p_id_image_in = idimage;
         request.p_image_in = Base64.getEncoder().encodeToString(image.getBytes());;
         request.p_video_in = Base64.getEncoder().encodeToString(video.getBytes());;
