@@ -177,7 +177,6 @@ public class ORDSCalls {
                     return "Failed to retrieve data: " + e.getMessage();
                 }
             }
-            return "Did not succeed";
         }
 
 }

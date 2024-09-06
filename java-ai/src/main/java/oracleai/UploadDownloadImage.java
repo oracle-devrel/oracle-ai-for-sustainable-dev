@@ -29,15 +29,15 @@ public class UploadDownloadImage {
         return "images";
     }
 
-//    @PostMapping("/uploadimageandvideo")
-//    public String uploadimageandvideo(@RequestParam("image") MultipartFile image, Model model) {
-////        ORDSCalls.uploadImage(image);
-////        System.out.println("Image upload complete for: " + image.getOriginalFilename());
-//        System.out.println("convertImage(): " + ORDSCalls.convertImage());
-//        ImageStore[] imageStores = ORDSCalls.getImageStoreData();
-//        model.addAttribute("images", imageStores);
-//        return "images";
-//    }
+    @GetMapping("/uploadimageandvideo0")
+    public String uploadimageandvideo(@RequestParam("image") MultipartFile image, Model model) {
+//        ORDSCalls.uploadImage(image);
+//        System.out.println("Image upload complete for: " + image.getOriginalFilename());
+        System.out.println("convertImage(): " + ORDSCalls.convertImage());
+        ImageStore[] imageStores = ORDSCalls.getImageStoreData();
+        model.addAttribute("images", imageStores);
+        return "images";
+    }
 
 
     private static final String DIRECTORY = "/tmp/images/";
