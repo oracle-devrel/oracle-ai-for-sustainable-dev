@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
+
 import java.io.IOException;
 import java.util.Base64;
 import java.util.Collections;
@@ -122,6 +123,7 @@ public class ORDSCalls {
         }
     }
 
+
     public static String convertImage() {
         String apiUrl = "https://api.meshy.ai/v1/image-to-3d";
         RestTemplate restTemplate = new RestTemplate();
@@ -136,18 +138,47 @@ public class ORDSCalls {
         ObjectMapper mapper = new ObjectMapper();
         try {
             JsonNode root = mapper.readTree(response.getBody());
-            return root.path("result").asText(); // Return the result value
+            String theResultString =  root.path("result").asText();
+            return pollApiUntilSuccess(theResultString);
         } catch (IOException e) {
             e.printStackTrace();
             return "Error parsing JSON";
         }
     }
+    public static String pollApiUntilSuccess(String theResultString) {
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Authorization", "Bearer " + AIApplication.THREEDEY);
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<String> entity = new HttpEntity<>(headers);
 
-    /**
+            ObjectMapper mapper = new ObjectMapper();
+            while (true) {
+                try {
+                    ResponseEntity<String> response =
+                            restTemplate.exchange(
+                                    "https://api.meshy.ai/v1/image-to-3d/" + theResultString,
+                                    HttpMethod.GET, entity, String.class);
+                    JsonNode rootNode = mapper.readTree(response.getBody());
+                    String status = rootNode.path("status").asText();
+                    System.out.println("ORDSCalls.pollApiUntilSuccess status:" + status);
+                    if ("SUCCEEDED".equals(status)) {
+                        String modelUrl = rootNode.path("model_url").asText();
+                        String modelGlbUrl = rootNode.path("model_urls").path("glb").asText();
+                        String modelFbxUrl = rootNode.path("model_urls").path("fbx").asText();
+                        String modelUsdzUrl = rootNode.path("model_urls").path("usdz").asText();
+                        String thumbnailUrl = rootNode.path("thumbnail_url").asText();
+                        return String.format("Model URL: %s\nGLB URL: %s\nFBX URL: %s\nUSDZ URL: %s\nThumbnail URL: %s",
+                                modelUrl, modelGlbUrl, modelFbxUrl, modelUsdzUrl, thumbnailUrl);
+                    }
+                    Thread.sleep(1000);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return "Failed to retrieve data: " + e.getMessage();
+                }
+            }
+            return "Did not succeed";
+        }
 
-     curl https://api.meshy.ai/v1/image-to-3d/01917ce6-09a1-7bf6-8240-ff5d77f01d97 \
-     -H "Authorization: Bearer msy_oCS1X5nuRxS06AjdlTJ0vCHg3OFyOhpaCMoa"
-
-     */
 }
 
