@@ -96,8 +96,8 @@ public class DigitalDoubles {
         model.addAttribute("fbxtest", "fbx link");
         model.addAttribute("mp4link", ImageProcessor.objectStoreLocation + email);
         model.addAttribute("mp4text", "mp4 link");
-        return "resultswithlinkpage";
-//        return "digitaldoubleresults";
+//        return "resultswithlinkpage";
+        return "digitaldoubleresults";
     }
 
 
