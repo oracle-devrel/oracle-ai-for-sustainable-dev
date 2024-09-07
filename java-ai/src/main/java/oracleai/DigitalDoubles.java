@@ -2,6 +2,7 @@ package oracleai;
 
 
 import oracleai.services.ORDSCalls;
+import oracleai.services.OracleObjectStore;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -30,6 +31,8 @@ public class DigitalDoubles {
     public String uploadimageandvideo(
             @RequestParam("image") MultipartFile image,
             @RequestParam("video") MultipartFile video,
+            @RequestParam("animstyle") String animstyle,
+            @RequestParam("animprompt") String animprompt,
             @RequestParam("firstName") String firstName,
             @RequestParam("lastName") String lastName,
             @RequestParam("email") String email,
@@ -39,21 +42,20 @@ public class DigitalDoubles {
             @RequestParam("comments") String comments,
             Model model) throws IOException {
 
-        System.out.println("image = " + image + ", video = " + video +
+        String commentsWithAnimStyleAndPrompt = animstyle + " " + animprompt + " " + comments;
+        System.out.println("image = " + image + ", video = " + video +", animstyle = " + animstyle +
                 ", firstName = " + firstName + ", lastName = " + lastName +
                 ", email = " + email + ", company = " + company +
                 ", jobRole = " + jobRole + ", tshirtSize = " + tshirtSize +
-                ", comments = " + comments + ", model = " + model);
+                ", comments = " + comments + ", model = " + model +
+                "\ncomments with animstyle and prompt = " + commentsWithAnimStyleAndPrompt);
         if (!image.isEmpty()) {
-//            ORDSCalls.uploadImage(image);
+            OracleObjectStore.sendToObjectStorage(
+                    email + "_" + video.getOriginalFilename(), video.getInputStream());
             ORDSCalls.insertDigitalDoubleData(
-                    image,video,firstName,lastName, email, company,jobRole, tshirtSize, comments);
-//            byte[] imageBytes = image.getBytes();
-
+                    image,null, firstName, lastName, email, company,jobRole, tshirtSize, commentsWithAnimStyleAndPrompt);
             if (!video.isEmpty()) {
-                // Do something with the video file
-                byte[] videoBytes = video.getBytes();
-                // Save or process the video
+//                byte[] videoBytes = video.getBytes();
             }
             try {
                 org.apache.commons.io.FileUtils.forceMkdir(new File(DIRECTORY));

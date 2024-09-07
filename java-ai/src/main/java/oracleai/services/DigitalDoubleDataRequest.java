@@ -1,4 +1,4 @@
-package oracleai;
+package oracleai.services;
 
 public class DigitalDoubleDataRequest {
     public String p_participant_firstname;

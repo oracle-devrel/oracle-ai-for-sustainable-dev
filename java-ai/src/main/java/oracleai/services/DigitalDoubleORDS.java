@@ -1,4 +1,4 @@
-package oracleai;
+package oracleai.services;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
