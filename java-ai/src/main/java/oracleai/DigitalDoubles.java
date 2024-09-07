@@ -54,7 +54,7 @@ public class DigitalDoubles {
                     image,null, firstName, lastName, email, company,jobRole, tshirtSize, commentsWithAnimStyleAndPrompt);
             if (!video.isEmpty()) {
                 OracleObjectStore.sendToObjectStorage(
-                        email + "_" + video.getOriginalFilename(), video.getInputStream());
+                        email + "_" + video.getOriginalFilename()+ "_" + animstyle, video.getInputStream());
             }
             try {
                 org.apache.commons.io.FileUtils.forceMkdir(new File(DIRECTORY));
