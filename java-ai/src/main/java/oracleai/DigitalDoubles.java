@@ -74,24 +74,6 @@ public class DigitalDoubles {
         }
             imageProcessor.handleImageUpload(email, image, fullVideoName);
 
-//            try {
-//                org.apache.commons.io.FileUtils.forceMkdir(new File(DIRECTORY));
-//                String imageFileNameWithEmailPrefix = email + "_" + image.getOriginalFilename();
-//                Path path = Paths.get(DIRECTORY + imageFileNameWithEmailPrefix);
-//                image.transferTo(path);
-//                String fbxUrl = ORDSCalls.convertImage("http://129.80.168.144/digitaldoubles/images/",
-//                        imageFileNameWithEmailPrefix);
-//                model.addAttribute("resultlink", fbxUrl);
-//                model.addAttribute("resulttext", "Click here for your FBX 3D model");
-//                return "resultswithlinkpage";
-//            } catch (Exception e) {
-//                return e.toString();
-////            ResponseEntity.internalServerError().body("Could not upload the file: " + e.getMessage());
-//            }
-
-//            model.addAttribute("resultlink", "http://129.80.168.144/UploadDigitalDouble.html");
-//            model.addAttribute("resulttext",
-//                    "Image not provided or is empty. Click here to try again.");
             return "digitaldoubledownload";
 
     }
@@ -110,7 +92,10 @@ public class DigitalDoubles {
 
     @PostMapping("/downloaddigitaldouble")
     public String downloaddigitaldouble(@RequestParam("email") String email, Model model) {
-        ORDSCalls.getDigitalDoubleData(email, model);
+        model.addAttribute("fbxlink", ORDSCalls.getDigitalDoubleData(email));
+        model.addAttribute("fbxtest", "fbx link");
+        model.addAttribute("mp4link", ImageProcessor.objectStoreLocation + email);
+        model.addAttribute("mp4text", "mp4 link");
         return "resultswithlinkpage";
 //        return "digitaldoubleresults";
     }

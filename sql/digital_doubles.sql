@@ -163,3 +163,43 @@ BEGIN
 END;
 /
 
+--query to just get the 3d urls...
+
+CREATE OR REPLACE FUNCTION get_model_urls (p_participant_email IN VARCHAR2)
+   RETURN SYS_REFCURSOR
+AS
+   l_cursor SYS_REFCURSOR;
+BEGIN
+   OPEN l_cursor FOR
+      SELECT MODELGLBURL_OUT,
+             MODELFBXURL_OUT,
+             MODELUSDZURL_OUT,
+             THUMBNAILURL_OUT
+        FROM DIGITAL_DOUBLE_DATA
+       WHERE PARTICIPANT_EMAIL = p_participant_email;
+
+   RETURN l_cursor;
+END get_model_urls;
+/
+
+
+
+BEGIN
+   ORDS.DEFINE_SERVICE(
+      p_module_name => 'ModelURLsService',
+      p_base_path   => 'modelurls/',
+      p_pattern     => 'geturls/:email',
+      p_method      => 'GET',
+      p_source_type => ORDS.SOURCE_TYPE_PLSQL,
+      p_source      => 'DECLARE
+                          l_cursor SYS_REFCURSOR;
+                       BEGIN
+                          l_cursor := get_model_urls(:email);
+                          ORDS.DEFINE_SERVICE_REF_CURSOR(p_cursor => l_cursor);
+                       END;'
+   );
+END;
+/
+
+
+

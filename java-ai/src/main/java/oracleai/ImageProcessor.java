@@ -40,7 +40,7 @@ public class ImageProcessor {
         return "Image is being processed";
     }
 
-    private static String objectStoreLocation =
+    public static String objectStoreLocation =
             "https://" + AIApplication.OBJECTSTORAGE_NAMESPACE + ".compat.objectstorage.us-ashburn-1.oraclecloud.com/" +
                     AIApplication.OBJECTSTORAGE_BUCKETNAME + "/anim/";
 

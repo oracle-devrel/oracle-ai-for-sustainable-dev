@@ -22,7 +22,7 @@ public class DigitalDoubleService {
 //    }
 
     public void updateDigitalDoubleData(DigitalDoubleDownloadInfo info) {
-        String url = "https://rddainsuh6u1okc-ragdb.adb.us-ashburn-1.oraclecloudapps.com/ords/omlopsuser/update_digital_double_data/";
+        String url = AIApplication.ORDS_OMLOPSENDPOINT_URL + "update_digital_double_data/";
 
         // Prepare headers
         HttpHeaders headers = new HttpHeaders();
