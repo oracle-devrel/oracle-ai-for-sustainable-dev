@@ -1,5 +1,6 @@
 package oracleai;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.HttpEntity;
@@ -13,11 +14,12 @@ import java.util.Map;
 @Service
 public class DigitalDoubleService {
 
-    private final RestTemplate restTemplate;
-
-    public DigitalDoubleService(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
+//    private final RestTemplate restTemplate;
+//
+//    @Autowired
+//    public DigitalDoubleService(RestTemplate restTemplate) {
+//        this.restTemplate = restTemplate;
+//    }
 
     public void updateDigitalDoubleData(DigitalDoubleDownloadInfo info) {
         String url = "https://rddainsuh6u1okc-ragdb.adb.us-ashburn-1.oraclecloudapps.com/ords/omlopsuser/update_digital_double_data/";
@@ -39,8 +41,7 @@ public class DigitalDoubleService {
 
         // Create the HttpEntity that includes headers and the body
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
-
-        // Make the POST request
+RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
 
         // Handle the response (optional)
