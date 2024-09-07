@@ -12,11 +12,12 @@ public class AuthProvider {
     public static BasicAuthenticationDetailsProvider getAuthenticationDetailsProvider() throws IOException {
         if (isRunningInOKE()) return InstancePrincipalsAuthenticationDetailsProvider.builder().build();
         else return new ConfigFileAuthenticationDetailsProvider(
-                AIApplication.OCICONFIG_FILE, AIApplication.OCICONFIG_PROFILE);
+                "~/.oci/config", "DEFAULT");
+//                AIApplication.OCICONFIG_FILE, AIApplication.OCICONFIG_PROFILE);
     }
 
     private static boolean isRunningInOKE() {
-        return false; //System.getenv("OCI_RESOURCE_PRINCIPAL_VERSION") != null;
+        return true; //System.getenv("OCI_RESOURCE_PRINCIPAL_VERSION") != null;
     }
 
 }
