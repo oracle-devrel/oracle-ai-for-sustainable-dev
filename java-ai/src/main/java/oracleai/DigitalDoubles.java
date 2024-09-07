@@ -91,7 +91,7 @@ public class DigitalDoubles {
 
 
     @PostMapping("/downloaddigitaldouble")
-    public String downloaddigitaldouble(@RequestParam("email") String email, Model model) {
+    public String downloaddigitaldouble(@RequestParam("email") String email, Model model) throws Exception {
         model.addAttribute("fbxlink", ORDSCalls.getDigitalDoubleData(email));
         model.addAttribute("fbxtest", "fbx link");
         model.addAttribute("mp4link", ImageProcessor.objectStoreLocation + email);
