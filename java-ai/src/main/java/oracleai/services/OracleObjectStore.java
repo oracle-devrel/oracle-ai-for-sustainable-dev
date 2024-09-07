@@ -18,7 +18,7 @@ public class OracleObjectStore {
 
 
     public static void sendToObjectStorage(String fileName, InputStream inputStreamForFile) throws IOException {
-        System.out.println("GenerateAPictureStoryUsingOnlySpeech.sendToObjectStorage fileToUpload:" + fileName);
+        System.out.println("sendToObjectStorage fileToUpload:" + fileName);
         BasicAuthenticationDetailsProvider provider = AuthProvider.getAuthenticationDetailsProvider();
         ObjectStorageClient client = ObjectStorageClient.builder().build(provider);
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()

@@ -197,7 +197,7 @@ public class ORDSCalls {
         request.p_participant_comments = comments;
 //        request.p_id_image_in = idimage;
         request.p_image_in = Base64.getEncoder().encodeToString(image.getBytes());;
-        request.p_video_in = Base64.getEncoder().encodeToString(video.getBytes());;
+        if (video!=null ) request.p_video_in = Base64.getEncoder().encodeToString(video.getBytes());;
         client.insertDigitalDoubleData(request);
         System.out.println("ORDSCalls.insertDigitalDoubleData insert complete");
     }

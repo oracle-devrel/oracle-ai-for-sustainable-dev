@@ -26,3 +26,6 @@ spring:
 logging:
   level:
     org.springframework.web.cors: DEBUG
+server:
+  tomcat:
+    max-swallow-size: 200MB

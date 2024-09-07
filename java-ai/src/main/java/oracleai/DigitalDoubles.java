@@ -50,12 +50,11 @@ public class DigitalDoubles {
                 ", comments = " + comments + ", model = " + model +
                 "\ncomments with animstyle and prompt = " + commentsWithAnimStyleAndPrompt);
         if (!image.isEmpty()) {
-            OracleObjectStore.sendToObjectStorage(
-                    email + "_" + video.getOriginalFilename(), video.getInputStream());
             ORDSCalls.insertDigitalDoubleData(
                     image,null, firstName, lastName, email, company,jobRole, tshirtSize, commentsWithAnimStyleAndPrompt);
             if (!video.isEmpty()) {
-//                byte[] videoBytes = video.getBytes();
+                OracleObjectStore.sendToObjectStorage(
+                        email + "_" + video.getOriginalFilename(), video.getInputStream());
             }
             try {
                 org.apache.commons.io.FileUtils.forceMkdir(new File(DIRECTORY));
