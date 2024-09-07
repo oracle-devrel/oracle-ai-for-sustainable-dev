@@ -1,6 +1,7 @@
 spring:
   servlet:
     multipart:
+      enabled: true
       max-file-size: 200MB
       max-request-size: 200MB
   cloud:
@@ -25,3 +26,6 @@ spring:
 logging:
   level:
     org.springframework.web.cors: DEBUG
+server:
+  tomcat:
+    max-swallow-size: 200MB
