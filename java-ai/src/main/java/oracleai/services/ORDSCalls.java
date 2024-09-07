@@ -6,6 +6,7 @@ import oracleai.*;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -122,14 +123,14 @@ public class ORDSCalls {
     }
 
 
-    public static String convertImage(String imageLocation, String fileName) {
+    public static DigitalDoubleDownloadInfo convertImageAndQueueResults(
+            String imageLocation, String fileName) {
         String apiUrl = "https://api.meshy.ai/v1/image-to-3d";
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Authorization", "Bearer " + AIApplication.THREEDEY);
         String requestJson =
-//                "{\"image_url\": \"https://upload.wikimedia.org/wikipedia/commons/e/e1/Face_%E2%80%93_Alexander.jpg\", " +
                 "{\"image_url\": \""+imageLocation + fileName +"\", " +
                         "\"enable_pbr\": true, \"surface_mode\": \"hard\"}";
         HttpEntity<String> entity = new HttpEntity<>(requestJson, headers);
@@ -141,10 +142,12 @@ public class ORDSCalls {
             return pollApiUntilSuccess(fileName, theResultString);
         } catch (IOException e) {
             e.printStackTrace();
-            return "Error parsing JSON";
+            return new DigitalDoubleDownloadInfo();
         }
     }
-    public static String pollApiUntilSuccess(String fileName, String theResultString) {
+
+    public static DigitalDoubleDownloadInfo pollApiUntilSuccess(
+            String fileName, String theResultString) {
             RestTemplate restTemplate = new RestTemplate();
             HttpHeaders headers = new HttpHeaders();
             headers.set("Authorization", "Bearer " + AIApplication.THREEDEY);
@@ -162,19 +165,19 @@ public class ORDSCalls {
                     String status = rootNode.path("status").asText();
                     System.out.println(fileName + " status:" + status);
                     if ("SUCCEEDED".equals(status)) {
-//                        String modelUrl = rootNode.path("model_url").asText();
-//                        String modelGlbUrl = rootNode.path("model_urls").path("glb").asText();
+                        String modelUrl = rootNode.path("model_url").asText();
+                        String modelGlbUrl = rootNode.path("model_urls").path("glb").asText();
                         String modelFbxUrl = rootNode.path("model_urls").path("fbx").asText();
-//                        String modelUsdzUrl = rootNode.path("model_urls").path("usdz").asText();
-//                        String thumbnailUrl = rootNode.path("thumbnail_url").asText();
-                        return modelFbxUrl;
+                        String modelUsdzUrl = rootNode.path("model_urls").path("usdz").asText();
+                        String thumbnailUrl = rootNode.path("thumbnail_url").asText();
 //                        return String.format("Model URL: %s\nGLB URL: %s\nFBX URL: %s\nUSDZ URL: %s\nThumbnail URL: %s",
 //                                modelUrl, modelGlbUrl, modelFbxUrl, modelUsdzUrl, thumbnailUrl);
+                        return new DigitalDoubleDownloadInfo(
+                                modelUrl, modelGlbUrl, modelFbxUrl, modelUsdzUrl, thumbnailUrl);
                     }
-                    Thread.sleep(1000);
+                    Thread.sleep(5000);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    return "Failed to retrieve data: " + e.getMessage();
                 }
             }
         }
@@ -183,10 +186,7 @@ public class ORDSCalls {
                                                String firstName, String lastName, String email,
                                                String company, String jobRole, String tshirtSize,
                                                String comments) throws IOException {
-
-
         DigitalDoubleORDS client = new DigitalDoubleORDS();
-
         DigitalDoubleDataRequest request = new DigitalDoubleDataRequest();
         request.p_participant_firstname = firstName;
         request.p_participant_lastname=lastName;
@@ -196,12 +196,31 @@ public class ORDSCalls {
         request.p_participant_tshirt = tshirtSize;
         request.p_participant_comments = comments;
 //        request.p_id_image_in = idimage;
-        request.p_image_in = Base64.getEncoder().encodeToString(image.getBytes());;
-        if (video!=null ) request.p_video_in = Base64.getEncoder().encodeToString(video.getBytes());;
+        if(image!=null) request.p_image_in = Base64.getEncoder().encodeToString(image.getBytes());
+        if (video!=null ) request.p_video_in = Base64.getEncoder().encodeToString(video.getBytes());
         client.insertDigitalDoubleData(request);
         System.out.println("ORDSCalls.insertDigitalDoubleData insert complete");
     }
 
+    public  static @Nullable void getDigitalDoubleData(String email, Model model) {
+        System.out.println("DigitalDoubles.downloaddigitaldouble lookup email:" + email);
+        String url = "https://rddainsuh6u1okc-ragdb.adb.us-ashburn-1.oraclecloudapps.com/ords/omlopsuser/get_digital_double_data/";
 
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        Map<String, String> requestBody = new HashMap<>();
+        requestBody.put("p_participant_email", email);
+        HttpEntity<Map<String, String>> entity = new HttpEntity<>(requestBody, headers);
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
+        if (response.getStatusCode().is2xxSuccessful()) {
+            System.out.println("ORDSCalls.getDigitalDoubleData response.getBody():" + response.getBody());
+            model.addAttribute("resultlink", response.getBody());
+            model.addAttribute("resulttext", "Click here for your FBX 3D model");
+
+        } else {
+            throw new RuntimeException("Failed to get digital double data. Status code: " + response.getStatusCode());
+        }
+    }
 }
 
