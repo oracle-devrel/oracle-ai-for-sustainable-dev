@@ -37,14 +37,7 @@
         input[type="company"],
         input[type="jobrole"],
         input[type="tshirtsize"],
-        input[type="comments"] {
-            width: 100%;
-            padding: 10px;
-            margin: 5px 0 20px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
-        }
+        input[type="comments"],
         select {
             width: 100%;
             padding: 10px;
@@ -52,6 +45,14 @@
             border: 1px solid #ccc;
             border-radius: 5px;
             box-sizing: border-box;
+        }
+        .row {
+            display: flex;
+            gap: 10px;
+        }
+        .row select,
+        .row input {
+            width: 48%;
         }
         input[type="submit"] {
             background-color: #007BFF;
@@ -83,45 +84,53 @@
         <label for="video">Select video:</label>
         <input type="file" id="video" name="video" accept="video/*" required>
 
-        <!-- Dropdown for Animation Style -->
-        <label for="animstyle">Select Animation Style:</label>
-        <select id="animstyle" name="animstyle">
-            <option value="style1">Style 1</option>
-            <option value="style2">Style 2</option>
-            <option value="style3">Style 3</option>
-            <option value="style4">Style 4</option>
-            <option value="style5">Style 5</option>
-            <option value="style6">Style 6</option>
-            <option value="style7">Style 7</option>
-            <option value="style8">Style 8</option>
-            <option value="style9">Style 9</option>
-            <option value="style10">Style 10</option>
-            <option value="style11">Style 11</option>
-            <option value="style12">Style 12</option>
-            <option value="style13">Style 13</option>
-            <option value="style14">Style 14</option>
-            <option value="style15">Style 15</option>
-            <option value="style16">Style 16</option>
-            <option value="style17">Style 17</option>
-            <option value="style18">Style 18</option>
-            <option value="style19">Style 19</option>
-            <option value="style20">Style 20</option>
-            <option value="style21">Style 21</option>
-            <option value="style22">Style 22</option>
-            <option value="style23">Style 23</option>
-            <option value="style24">Style 24</option>
-            <option value="style25">Style 25</option>
-            <option value="style26">Style 26</option>
-            <option value="style27">Style 27</option>
-            <option value="style28">Style 28</option>
-            <option value="style29">Style 29</option>
-            <option value="style30">Style 30</option>
-            <option value="style31">Style 31</option>
-            <option value="style32">Style 32</option>
-            <option value="style33">Style 33</option>
-            <option value="style34">Style 34</option>
-            <option value="style35">Style 35</option>
-        </select>
+        <!-- Dropdown for Animation Style and Text Field for Animation Prompt -->
+        <div class="row">
+            <div>
+                <label for="animstyle">Select Animation Style:</label>
+                <select id="animstyle" name="animstyle">
+                    <option value="style1">Style 1</option>
+                    <option value="style2">Style 2</option>
+                    <option value="style3">Style 3</option>
+                    <option value="style4">Style 4</option>
+                    <option value="style5">Style 5</option>
+                    <option value="style6">Style 6</option>
+                    <option value="style7">Style 7</option>
+                    <option value="style8">Style 8</option>
+                    <option value="style9">Style 9</option>
+                    <option value="style10">Style 10</option>
+                    <option value="style11">Style 11</option>
+                    <option value="style12">Style 12</option>
+                    <option value="style13">Style 13</option>
+                    <option value="style14">Style 14</option>
+                    <option value="style15">Style 15</option>
+                    <option value="style16">Style 16</option>
+                    <option value="style17">Style 17</option>
+                    <option value="style18">Style 18</option>
+                    <option value="style19">Style 19</option>
+                    <option value="style20">Style 20</option>
+                    <option value="style21">Style 21</option>
+                    <option value="style22">Style 22</option>
+                    <option value="style23">Style 23</option>
+                    <option value="style24">Style 24</option>
+                    <option value="style25">Style 25</option>
+                    <option value="style26">Style 26</option>
+                    <option value="style27">Style 27</option>
+                    <option value="style28">Style 28</option>
+                    <option value="style29">Style 29</option>
+                    <option value="style30">Style 30</option>
+                    <option value="style31">Style 31</option>
+                    <option value="style32">Style 32</option>
+                    <option value="style33">Style 33</option>
+                    <option value="style34">Style 34</option>
+                    <option value="style35">Style 35</option>
+                </select>
+            </div>
+            <div>
+                <label for="animprompt">Animation Prompt:</label>
+                <input type="text" id="animprompt" name="animprompt" placeholder="Describe your animation">
+            </div>
+        </div>
 
         <div class="form-group">
             <label for="firstName">First Name:</label>
