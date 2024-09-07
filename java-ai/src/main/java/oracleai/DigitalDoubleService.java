@@ -23,10 +23,8 @@ public class DigitalDoubleService {
 
     public void updateDigitalDoubleData(DigitalDoubleDownloadInfo info) {
         String url = AIApplication.ORDS_OMLOPSENDPOINT_URL + "update_digital_double_data/";
-
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("p_participant_email", info.getEmail());
         requestBody.put("p_modelglburl_out", info.getModelGlbUrl());
@@ -34,15 +32,11 @@ public class DigitalDoubleService {
         requestBody.put("p_modelusdzurl_out", info.getModelUsdzUrl());
         requestBody.put("p_thumbnailurl_out", info.getThumbnailUrl());
         requestBody.put("p_videourl_out", info.getAnimatedVideoLocation());
-        requestBody.put("p_video_out", null); // Optional field
-        requestBody.put("p_similar_image_out", null);
-
-        // Create the HttpEntity that includes headers and the body
+        requestBody.put("p_video_out", "");
+        requestBody.put("p_similar_image_out", "");
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
-RestTemplate restTemplate = new RestTemplate();
+        RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
-
-        // Handle the response (optional)
         if (response.getStatusCode().is2xxSuccessful()) {
             System.out.println("Request successful: " + response.getBody());
         } else {
