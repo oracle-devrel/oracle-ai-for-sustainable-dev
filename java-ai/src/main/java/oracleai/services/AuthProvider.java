@@ -17,7 +17,7 @@ public class AuthProvider {
     }
 
     private static boolean isRunningInOKE() {
-        return true; //System.getenv("OCI_RESOURCE_PRINCIPAL_VERSION") != null;
+        return false; //System.getenv("OCI_RESOURCE_PRINCIPAL_VERSION") != null;
     }
 
 }
