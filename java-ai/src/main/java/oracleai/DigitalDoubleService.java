@@ -24,11 +24,9 @@ public class DigitalDoubleService {
     public void updateDigitalDoubleData(DigitalDoubleDownloadInfo info) {
         String url = AIApplication.ORDS_OMLOPSENDPOINT_URL + "update_digital_double_data/";
 
-        // Prepare headers
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        // Prepare the payload
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("p_participant_email", info.getEmail());
         requestBody.put("p_modelglburl_out", info.getModelGlbUrl());
@@ -37,7 +35,7 @@ public class DigitalDoubleService {
         requestBody.put("p_thumbnailurl_out", info.getThumbnailUrl());
         requestBody.put("p_videourl_out", info.getAnimatedVideoLocation());
         requestBody.put("p_video_out", null); // Optional field
-        requestBody.put("p_similar_image_out", info.getSimilarImageUrl());
+        requestBody.put("p_similar_image_out", null);
 
         // Create the HttpEntity that includes headers and the body
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);

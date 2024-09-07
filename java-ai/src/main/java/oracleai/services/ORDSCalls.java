@@ -173,8 +173,7 @@ public class ORDSCalls {
                     String modelFbxUrl = rootNode.path("model_urls").path("fbx").asText();
                     String modelUsdzUrl = rootNode.path("model_urls").path("usdz").asText();
                     String thumbnailUrl = rootNode.path("thumbnail_url").asText();
-//                        return String.format("Model URL: %s\nGLB URL: %s\nFBX URL: %s\nUSDZ URL: %s\nThumbnail URL: %s",
-//                                modelUrl, modelGlbUrl, modelFbxUrl, modelUsdzUrl, thumbnailUrl);
+                    System.out.println("ORDSCalls.pollApiUntilSuccess modelFbxUrl:" + modelFbxUrl);
                     return new DigitalDoubleDownloadInfo(
                             modelUrl, modelGlbUrl, modelFbxUrl, modelUsdzUrl, thumbnailUrl);
                 }
