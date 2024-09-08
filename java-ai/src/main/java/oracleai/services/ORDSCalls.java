@@ -211,14 +211,13 @@ public class ORDSCalls {
     public static @Nullable String getDigitalDoubleData(String email) throws Exception {
         System.out.println("DigitalDoubles.downloaddigitaldouble lookup email:" + email);
 //        String url = AIApplication.ORDS_OMLOPSENDPOINT_URL +  "modelurls/geturls/" + email;
-        String baseUrl = AIApplication.ORDS_OMLOPSENDPOINT_URL +
-                "/digitaldouble/fbxurl/" ;
+        String baseUrl = AIApplication.ORDS_OMLOPSENDPOINT_URL + "/digitaldouble/fbxurl/" ;
 
-
-        // Use UriComponentsBuilder to append the email as a query parameter
+         // Use UriComponentsBuilder to append the email as a query parameter
         URI uri = UriComponentsBuilder.fromHttpUrl(baseUrl)
                 .queryParam("email", URLEncoder.encode(email, "UTF-8"))
                 .build(true).toUri();
+        System.out.println("ORDSCalls.getDigitalDoubleData uri=" + uri.toString());
 
         // Set the headers
         HttpHeaders headers = new HttpHeaders();
