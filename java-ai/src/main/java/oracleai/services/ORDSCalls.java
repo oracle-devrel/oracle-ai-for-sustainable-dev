@@ -212,26 +212,15 @@ public class ORDSCalls {
         System.out.println("DigitalDoubles.downloaddigitaldouble lookup email:" + email);
 //        String url = AIApplication.ORDS_OMLOPSENDPOINT_URL +  "modelurls/geturls/" + email;
         String baseUrl = AIApplication.ORDS_OMLOPSENDPOINT_URL + "/digitaldouble/fbxurl/" ;
-
-         // Use UriComponentsBuilder to append the email as a query parameter
         URI uri = UriComponentsBuilder.fromHttpUrl(baseUrl)
-                .queryParam("email", URLEncoder.encode(email, "UTF-8"))
+                .pathSegment(URLEncoder.encode(email, "UTF-8"))
                 .build(true).toUri();
-        System.out.println("ORDSCalls.getDigitalDoubleData uri=" + uri.toString());
-
-        // Set the headers
+        System.out.println("ORDSCalls.getDigitalDoubleData uri=" + uri);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-
-        // Prepare the request entity with headers
         HttpEntity<String> entity = new HttpEntity<>(headers);
-
-        // Execute the GET request
         ResponseEntity<String> response = new RestTemplate().exchange(uri, HttpMethod.GET, entity, String.class);
-
-        // Check if the response is successful (status code 200)
         if (response.getStatusCode().is2xxSuccessful()) {
-            // Get the body of the response, which is the FBX URL
             String modelFbxUrl = response.getBody();
             System.out.println("MODELFBXURL_OUT: " + modelFbxUrl);
             return modelFbxUrl;
