@@ -206,18 +206,13 @@ public class ORDSCalls {
 
     public static @Nullable String getDigitalDoubleData(String email) throws JsonProcessingException {
         System.out.println("DigitalDoubles.downloaddigitaldouble lookup email:" + email);
-        String url = AIApplication.ORDS_OMLOPSENDPOINT_URL +
-                "modelurls/geturls/" + email;
+        String url = AIApplication.ORDS_OMLOPSENDPOINT_URL +  "modelurls/geturls/" + email;
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-
         HttpEntity<String> entity = new HttpEntity<>(headers);
-
-        ResponseEntity<String> response = new RestTemplate().exchange(url, HttpMethod.GET, entity, String.class);
-
+        ResponseEntity<String> response = new RestTemplate().exchange(url, HttpMethod.POST, entity, String.class);
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode rootNode = objectMapper.readTree(response.getBody());
-
         String modelGlbUrl = rootNode.path("MODELGLBURL_OUT").asText();
         String modelFbxUrl = rootNode.path("MODELFBXURL_OUT").asText();
         String modelUsdzUrl = rootNode.path("MODELUSDZURL_OUT").asText();
