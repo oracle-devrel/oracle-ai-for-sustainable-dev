@@ -10,9 +10,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.UriComponentsBuilder;
 
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URLEncoder;
 import java.util.Base64;
 import java.util.Collections;
@@ -209,9 +211,16 @@ public class ORDSCalls {
     public static @Nullable String getDigitalDoubleData(String email) throws Exception {
         System.out.println("DigitalDoubles.downloaddigitaldouble lookup email:" + email);
 //        String url = AIApplication.ORDS_OMLOPSENDPOINT_URL +  "modelurls/geturls/" + email;
-        String url = AIApplication.ORDS_OMLOPSENDPOINT_URL +  "/digitaldouble/fbxurl/" + URLEncoder.encode(email, "UTF-8");
+        String baseUrl = AIApplication.ORDS_OMLOPSENDPOINT_URL +
+                "/digitaldouble/fbxurl/" ;
 
 
+        // Use UriComponentsBuilder to append the email as a query parameter
+        URI uri = UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .queryParam("email", URLEncoder.encode(email, "UTF-8"))
+                .build(true).toUri();
+
+        // Set the headers
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
@@ -219,7 +228,7 @@ public class ORDSCalls {
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
         // Execute the GET request
-        ResponseEntity<String> response = new RestTemplate().exchange(url, HttpMethod.GET, entity, String.class);
+        ResponseEntity<String> response = new RestTemplate().exchange(uri, HttpMethod.GET, entity, String.class);
 
         // Check if the response is successful (status code 200)
         if (response.getStatusCode().is2xxSuccessful()) {
