@@ -1,6 +1,5 @@
 package oracleai;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -10,13 +9,6 @@ import java.util.Map;
 
 @Service
 public class DigitalDoubleService {
-
-//    private final RestTemplate restTemplate;
-//
-//    @Autowired
-//    public DigitalDoubleService(RestTemplate restTemplate) {
-//        this.restTemplate = restTemplate;
-//    }
 
     public void updateDigitalDoubleData(DigitalDoubleDownloadInfo info) {
         String url = AIApplication.ORDS_OMLOPSENDPOINT_URL + "update_digital_double_data/";
