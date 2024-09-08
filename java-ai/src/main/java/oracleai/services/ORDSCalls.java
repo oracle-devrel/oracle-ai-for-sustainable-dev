@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
@@ -205,43 +206,32 @@ public class ORDSCalls {
     }
 
 
-    public static @Nullable String getDigitalDoubleData(String email) throws JsonProcessingException {
-        System.out.println("DigitalDoubles.downloaddigitaldouble lookup email: " + email);
+    public static @Nullable String getDigitalDoubleData(String email) throws Exception {
+        System.out.println("DigitalDoubles.downloaddigitaldouble lookup email:" + email);
+//        String url = AIApplication.ORDS_OMLOPSENDPOINT_URL +  "modelurls/geturls/" + email;
+        String url = AIApplication.ORDS_OMLOPSENDPOINT_URL +  "/digitaldouble/fbxurl/" + URLEncoder.encode(email, "UTF-8");
 
-        // Use POST instead of GET
-        String url = AIApplication.ORDS_OMLOPSENDPOINT_URL + "modelurls/geturls";
 
-        // Prepare headers
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        // Prepare the request body (email passed in the request body)
-        Map<String, String> requestBody = new HashMap<>();
-        requestBody.put("p_participant_email", email);
+        // Prepare the request entity with headers
+        HttpEntity<String> entity = new HttpEntity<>(headers);
 
-        // Wrap the request body and headers into an HttpEntity
-        HttpEntity<Map<String, String>> entity = new HttpEntity<>(requestBody, headers);
+        // Execute the GET request
+        ResponseEntity<String> response = new RestTemplate().exchange(url, HttpMethod.GET, entity, String.class);
 
-        // Execute the POST request using RestTemplate
-        ResponseEntity<String> response = new RestTemplate().exchange(url, HttpMethod.POST, entity, String.class);
+        // Check if the response is successful (status code 200)
+        if (response.getStatusCode().is2xxSuccessful()) {
+            // Get the body of the response, which is the FBX URL
+            String modelFbxUrl = response.getBody();
+            System.out.println("MODELFBXURL_OUT: " + modelFbxUrl);
+            return modelFbxUrl;
+        } else {
+            System.err.println("Failed to retrieve FBX URL. Status code: " + response.getStatusCode());
+            return null;
+        }
 
-        // Parse the JSON response using Jackson ObjectMapper
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode rootNode = objectMapper.readTree(response.getBody());
-
-        // Extract the fields
-        String modelGlbUrl = rootNode.path("MODELGLBURL_OUT").asText();
-        String modelFbxUrl = rootNode.path("MODELFBXURL_OUT").asText();
-        String modelUsdzUrl = rootNode.path("MODELUSDZURL_OUT").asText();
-        String thumbnailUrl = rootNode.path("THUMBNAILURL_OUT").asText();
-
-        // Print extracted URLs
-        System.out.println("MODELGLBURL_OUT: " + modelGlbUrl);
-        System.out.println("MODELFBXURL_OUT: " + modelFbxUrl);
-        System.out.println("MODELUSDZURL_OUT: " + modelUsdzUrl);
-        System.out.println("THUMBNAILURL_OUT: " + thumbnailUrl);
-
-        return modelFbxUrl;
     }
 }
 
