@@ -204,24 +204,43 @@ public class ORDSCalls {
         System.out.println("ORDSCalls.insertDigitalDoubleData insert complete");
     }
 
+
     public static @Nullable String getDigitalDoubleData(String email) throws JsonProcessingException {
-        System.out.println("DigitalDoubles.downloaddigitaldouble lookup email:" + email);
-        String url = AIApplication.ORDS_OMLOPSENDPOINT_URL +  "modelurls/geturls/" + email;
+        System.out.println("DigitalDoubles.downloaddigitaldouble lookup email: " + email);
+
+        // Use POST instead of GET
+        String url = AIApplication.ORDS_OMLOPSENDPOINT_URL + "modelurls/geturls";
+
+        // Prepare headers
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        // Prepare the request body (email passed in the request body)
+        Map<String, String> requestBody = new HashMap<>();
+        requestBody.put("p_participant_email", email);
+
+        // Wrap the request body and headers into an HttpEntity
+        HttpEntity<Map<String, String>> entity = new HttpEntity<>(requestBody, headers);
+
+        // Execute the POST request using RestTemplate
         ResponseEntity<String> response = new RestTemplate().exchange(url, HttpMethod.POST, entity, String.class);
+
+        // Parse the JSON response using Jackson ObjectMapper
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode rootNode = objectMapper.readTree(response.getBody());
+
+        // Extract the fields
         String modelGlbUrl = rootNode.path("MODELGLBURL_OUT").asText();
         String modelFbxUrl = rootNode.path("MODELFBXURL_OUT").asText();
         String modelUsdzUrl = rootNode.path("MODELUSDZURL_OUT").asText();
         String thumbnailUrl = rootNode.path("THUMBNAILURL_OUT").asText();
 
+        // Print extracted URLs
         System.out.println("MODELGLBURL_OUT: " + modelGlbUrl);
         System.out.println("MODELFBXURL_OUT: " + modelFbxUrl);
         System.out.println("MODELUSDZURL_OUT: " + modelUsdzUrl);
         System.out.println("THUMBNAILURL_OUT: " + thumbnailUrl);
+
         return modelFbxUrl;
     }
 }
