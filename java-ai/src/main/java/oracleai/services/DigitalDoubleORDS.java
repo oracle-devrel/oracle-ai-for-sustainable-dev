@@ -1,5 +1,6 @@
 package oracleai.services;
 
+import oracleai.AIApplication;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -10,7 +11,7 @@ import org.springframework.web.client.RestTemplate;
 public class DigitalDoubleORDS {
 
     public void insertDigitalDoubleData(DigitalDoubleDataRequest request) {
-        String url = "https://rddainsuh6u1okc-ragdb.adb.us-ashburn-1.oraclecloudapps.com/ords/omlopsuser/insert_digital_double_data/";
+        String url = AIApplication.ORDS_OMLOPSENDPOINT_URL +  "insert_digital_double_data/";
 
         RestTemplate restTemplate = new RestTemplate();
 

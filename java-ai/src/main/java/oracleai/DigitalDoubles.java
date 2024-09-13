@@ -4,6 +4,10 @@ package oracleai;
 import oracleai.services.ORDSCalls;
 import oracleai.services.OracleObjectStore;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
+import org.jetbrains.annotations.Nullable;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,6 +18,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.http.MediaType;
 
@@ -21,12 +27,21 @@ import org.springframework.http.MediaType;
 @RequestMapping("/digitaldoubles")
 public class DigitalDoubles {
 
+    private final ImageProcessor imageProcessor;
+
+    // Inject the ImageProcessor using constructor injection
+    @Autowired
+    public DigitalDoubles(ImageProcessor imageProcessor) {
+        this.imageProcessor = imageProcessor;
+    }
+    private static final String DIRECTORY = "/tmp/images/";
+
     @GetMapping("/uploadordownload")
     public String digitaldouble(@RequestParam("action") String action, Model model) {
-        return action.equals("uploading")?"digitaldoubleupload":"digitaldoubledownload";
+        return action.equals("uploading") ? "digitaldoubleupload" : "digitaldoubledownload";
     }
 
-    private static final String DIRECTORY = "/tmp/images/";
+
     @PostMapping("/uploadimageandvideo")
     public String uploadimageandvideo(
             @RequestParam("image") MultipartFile image,
@@ -43,43 +58,24 @@ public class DigitalDoubles {
             Model model) throws IOException {
 
         String commentsWithAnimStyleAndPrompt = animstyle + " " + animprompt + " " + comments;
-        System.out.println("image = " + image + ", video = " + video +", animstyle = " + animstyle +
+        System.out.println("image = " + image + ", video = " + video + ", animstyle = " + animstyle +
                 ", firstName = " + firstName + ", lastName = " + lastName +
                 ", email = " + email + ", company = " + company +
                 ", jobRole = " + jobRole + ", tshirtSize = " + tshirtSize +
                 ", comments = " + comments + ", model = " + model +
                 "\ncomments with animstyle and prompt = " + commentsWithAnimStyleAndPrompt);
-        if (!image.isEmpty()) {
-            ORDSCalls.insertDigitalDoubleData(
-                    image,null, firstName, lastName, email, company,jobRole, tshirtSize, commentsWithAnimStyleAndPrompt);
-            if (!video.isEmpty()) {
-                OracleObjectStore.sendToObjectStorage(
-                        email + "_" + animstyle + "_" + video.getOriginalFilename(), video.getInputStream());
-            }
-            try {
-                org.apache.commons.io.FileUtils.forceMkdir(new File(DIRECTORY));
-                Path path = Paths.get(DIRECTORY + image.getOriginalFilename());
-                image.transferTo(path);
-                String fbxUrl = ORDSCalls.convertImage("http://129.80.168.144/digitaldoubles/images/",
-                        image.getOriginalFilename());
-                model.addAttribute("resultlink", fbxUrl);
-                model.addAttribute("resulttext", "Click here for your FBX 3D model");
-                return "resultswithlinkpage";
-//            return ResponseEntity.ok(
-//                    ORDSCalls.convertImage("http://129.80.168.144/transferimage/images/" + file.getOriginalFilename())
-//            );
-//            return ResponseEntity.ok("File uploaded and available at: " + "/images/" + file.getOriginalFilename());
-            } catch (Exception e) {
-                return e.toString();
-//            ResponseEntity.internalServerError().body("Could not upload the file: " + e.getMessage());
-            }
-            // Save or process the image
-        } else {
-            model.addAttribute("resultlink", "http://129.80.168.144/UploadDigitalDouble.html");
-            model.addAttribute("resulttext",
-                    "Image not provided or is empty. Click here to try again.");
-            return "resultswithlinkpage";
+        ORDSCalls.insertDigitalDoubleData(
+                image, null, firstName, lastName, email, company, jobRole, tshirtSize, commentsWithAnimStyleAndPrompt);
+
+        String fullVideoName ="";
+        if (!video.isEmpty()) {
+            fullVideoName = email + "_" + animstyle + "_" + video.getOriginalFilename();
+            OracleObjectStore.sendToObjectStorage(fullVideoName, video.getInputStream());
         }
+            imageProcessor.handleImageUpload(email, image, fullVideoName);
+
+            return "digitaldoubledownload";
+
     }
 
     @GetMapping("/images/{filename:.+}")
@@ -95,12 +91,13 @@ public class DigitalDoubles {
 
 
     @PostMapping("/downloaddigitaldouble")
-    public String downloaddigitaldouble(@RequestParam("email") String email, Model model) {
-        System.out.println("DigitalDoubles.downloaddigitaldouble lookup email:" + email);
-        model.addAttribute("resultlink", email);
-        model.addAttribute("resulttext", "Click here for your FBX 3D model");
-        return "resultswithlinkpage";
-//        return "digitaldoubleresults";
+    public String downloaddigitaldouble(@RequestParam("email") String email, Model model) throws Exception {
+        model.addAttribute("fbxlink", ORDSCalls.getDigitalDoubleData(email));
+        model.addAttribute("fbxtext", "FBX 3D Model");
+        model.addAttribute("mp4link", ImageProcessor.objectStoreLocation + email + ".mp4");
+        model.addAttribute("mp4text", "MP4 Animation");
+        return "digitaldoubleresults";
     }
+
 
 }
