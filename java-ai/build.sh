@@ -1,21 +1,6 @@
 #!/bin/bash
 
-set -e
-
-IMAGE_NAME=podsofkon
-#IMAGE_VERSION=latest
-IMAGE_VERSION=sustainableaijava
-#DOCKER_REGISTRY=us-ashburn-1.ocir.io/oradbclouducm/gd74087885
-DOCKER_REGISTRY=us-ashburn-1.ocir.io/oradbclouducm/podsofkon
-
-export IMAGE=${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_VERSION}
-export IMAGE_VERSION=$IMAGE_VERSION
+#The following is temporary until release is available in maven and only required to be called once...
+#mvn org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file -Dfile=lib/oci-java-sdk-generativeai-3.25.1-preview1-20230906.204234-1.jar
 
 mvn clean package
-
-#docker buildx build --platform linux/amd64,linux/arm64 -t $IMAGE .
-podman build -t=$IMAGE .
-#docker buildx build --platform=linux/amd64 -t=$IMAGE .
-
-#docker push --platform linux/amd64  "$IMAGE"
-podman push "$IMAGE"

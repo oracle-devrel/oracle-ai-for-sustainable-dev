@@ -2,6 +2,7 @@ package oracleai;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oracle.bmc.aivision.model.ImageTextDetectionFeature;
+import com.oracle.bmc.generativeaiinference.model.OnDemandServingMode;
 import oracleai.services.ORDSCalls;
 import oracleai.services.OracleGenAI;
 import oracleai.services.OracleObjectStore;
@@ -43,8 +44,13 @@ public class ExplainAndAdviseOnHealthTestResults {
         }
         System.out.println(concatenatedText);
         System.out.println("analyzedoc fullText = " + concatenatedText);
+        OnDemandServingMode chatServingMode = OnDemandServingMode.builder()
+                .modelId("cohere.command-r-16k")
+                .build();
         String explanationOfResults =
-                OracleGenAI.chat("explain these test results in simple terms, in less than 100 words, " +
+                OracleGenAI.builder().compartment(AIApplication.COMPARTMENT_ID)
+                        .servingMode(chatServingMode)
+                        .build().chat("explain these test results in simple terms, in less than 100 words, " +
                         "and tell me what should I do to get better results: \"" + concatenatedText + "\"");
         System.out.println("ExplainAndAdviseOnHealthTestResults.analyzedoc explanationOfResults:" + explanationOfResults);
         model.addAttribute("results", "SUMMARY WITH ADVICE: " + explanationOfResults +

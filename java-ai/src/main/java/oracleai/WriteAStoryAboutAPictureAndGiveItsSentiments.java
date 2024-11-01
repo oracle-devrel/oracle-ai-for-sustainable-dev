@@ -40,7 +40,7 @@ public class WriteAStoryAboutAPictureAndGiveItsSentiments {
                     "OBJECT_DETECTION",
                     "TellAStory");
         }
-        String generatedstory = OracleGenAI.chat("using strong negative and positive sentiments, " +
+        String generatedstory = OracleGenAI.builder().build().chat("using strong negative and positive sentiments, " +
                         "write a story that is " + genopts + " and includes  "  + fullText );
         model.addAttribute("results", "STORY: " + generatedstory +
                 "          --->SENTIMENT ANALYSIS: " + OracleLanguageAI.sentimentAnalysis(generatedstory) );
