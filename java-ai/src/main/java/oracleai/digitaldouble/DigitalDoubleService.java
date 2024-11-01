@@ -1,5 +1,6 @@
-package oracleai;
+package oracleai.digitaldouble;
 
+import oracleai.AIApplication;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;

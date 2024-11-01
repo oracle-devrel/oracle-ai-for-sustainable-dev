@@ -1,4 +1,4 @@
-package oracleai;
+package oracleai.digitaldouble;
 
 public class DigitalDoubleDownloadInfo {
 

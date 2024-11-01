@@ -3,7 +3,9 @@ package oracleai.services;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import oracleai.*;
-import org.jetbrains.annotations.Nullable;
+import oracleai.digitaldouble.DigitalDoubleDownloadInfo;
+import oracleai.digitaldouble.ImageStore;
+import oracleai.digitaldouble.ImageStoreWrapper;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -68,7 +70,6 @@ public class ORDSCalls {
         return callTextSearch(ordsEndpoint, jsonPayload);
     }
 
-    @Nullable
     private static String callTextSearch(String ordsEndpoint, String jsonPayload) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -206,7 +207,7 @@ public class ORDSCalls {
     }
 
 
-    public static @Nullable String getDigitalDoubleData(String email) throws Exception {
+    public static String getDigitalDoubleData(String email) throws Exception {
         System.out.println("DigitalDoubles.downloaddigitaldouble lookup email:" + email);
 //        String url = AIApplication.ORDS_OMLOPSENDPOINT_URL +  "modelurls/geturls/" + email;
         String baseUrl = AIApplication.ORDS_OMLOPSENDPOINT_URL + "/digitaldouble/fbxurl/" ;

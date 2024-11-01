@@ -1,13 +1,9 @@
-package oracleai;
+package oracleai.digitaldouble;
 
 
 import oracleai.services.ORDSCalls;
 import oracleai.services.OracleObjectStore;
-import org.apache.tomcat.util.http.fileupload.FileUtils;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,22 +12,17 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.springframework.http.MediaType;
 
 @Controller
 @RequestMapping("/digitaldoubles")
-public class DigitalDoubles {
+public class DigitalDoublesController {
 
     private final ImageProcessor imageProcessor;
 
-    // Inject the ImageProcessor using constructor injection
     @Autowired
-    public DigitalDoubles(ImageProcessor imageProcessor) {
+    public DigitalDoublesController(ImageProcessor imageProcessor) {
         this.imageProcessor = imageProcessor;
     }
     private static final String DIRECTORY = "/tmp/images/";

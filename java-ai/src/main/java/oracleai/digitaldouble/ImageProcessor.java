@@ -1,5 +1,6 @@
-package oracleai;
+package oracleai.digitaldouble;
 
+import oracleai.AIApplication;
 import oracleai.services.ORDSCalls;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +52,7 @@ public class ImageProcessor {
                 DigitalDoubleDownloadInfo digitalDoubleDownloadInfo;
                 if (!task.getImageFileNameWithEmailPrefix().equals("")) {
                     digitalDoubleDownloadInfo = ORDSCalls.convertImageAndQueueResults(
-                            "http://129.80.168.144/digitaldoubles/images/",
+                            AIApplication.DIGITAL_DOUBLES_IMAGES_ENDPOINT,
                             task.getImageFileNameWithEmailPrefix());
                 } else {
                     digitalDoubleDownloadInfo = new DigitalDoubleDownloadInfo();

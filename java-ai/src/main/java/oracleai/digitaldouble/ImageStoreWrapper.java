@@ -1,4 +1,4 @@
-package oracleai;
+package oracleai.digitaldouble;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.List;
