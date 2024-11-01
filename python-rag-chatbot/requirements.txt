@@ -63,20 +63,31 @@ gitdb==4.0.11
 GitPython==3.1.41
 google-auth==2.29.0
 googleapis-common-protos==1.63.0
-httpcore==1.0.5
-httptools==0.6.0
-httpx==0.27.0
-httpx-sse==0.4.0
-ipython==8.16.1
-ipywidgets==8.1.1
-isoduration==20.11.0
-jedi==0.19.1
-jmespath==1.0.1
-joblib==1.3.2
-json5==0.9.14
-jsonpatch==1.33
-jsonpointer==2.4
-jsonschema==4.19.1
+greenlet==                                 3.0.3
+grpcio==                                   1.59.0
+h11==                                      0.14.0
+halo==                                     0.0.31
+httpcore==                                 1.0.5
+httptools==                                0.6.0
+httpx==                                    0.27.0
+httpx-sse==                                0.4.0
+huggingface-hub==                          0.23.2
+humanfriendly==                            10.0
+importlib-metadata==                       6.8.0
+importlib-resources==                      6.1.0
+inference-tools==                          0.13.0
+IProgress==                                0.4
+ipykernel==                                6.25.2
+ipython==                                  8.16.1
+ipywidgets==                               8.1.1
+isoduration==                              20.11.0
+jedi==                                     0.19.1
+jmespath==                                 1.0.1
+joblib==                                   1.3.2
+json5==                                    0.9.14
+jsonpatch==                                1.33
+jsonpointer==                              2.4
+jsonschema==                               4.19.1
 jsonschema-specifications==2023.7.1
 kiwisolver==1.4.5
 kubernetes==29.0.0
@@ -92,46 +103,92 @@ langserve==0.2.1
 langsmith==0.1.67
 libcst==1.4.0
 log-symbols==0.0.14
-oci==2.126.4
-onnxruntime==1.18.0
-oracledb==2.2.1
-orjson==3.10.3
-overrides==7.4.0
-packaging==23.2
-page==0.2
-pip==24.1.1
-platformdirs==3.11.0
-posthog==3.0.2
-prometheus-client==0.17.1
-prompt-toolkit==3.0.39
-protobuf==4.24.4
-psutil==5.9.6
-ptyprocess==0.7.0
-pulsar-client==3.5.0
-pure-eval==0.2.2
-pyarrow==16.1.0
-pyasn1==0.6.0
-pyasn1_modules==0.4.0
-pycparser==2.21
-pydantic==2.4.2
-pydantic_core==2.10.1
-pydeck==0.8.1b0
-Pygments==2.16.1
-pyOpenSSL==23.2.0
-pyparsing==3.1.2
-pypdf==3.17.0
-PyPika==0.48.9
-pyproject_hooks==1.1.0
-pyproject-toml==0.0.10
-python-dateutil==2.8.2
-python-dotenv==1.0.0
-python-iso639==2023.6.15
-python-json-logger==2.0.7
-python-magic==0.4.27
-python-multipart==0.0.9
-pytz==2023.3.post1
-PyYAML==6.0.1
-pyzmq==25.1.1
+loguru==                                   0.7.2
+lxml==                                     4.9.3
+markdown-it-py==                           3.0.0
+MarkupSafe==                               2.1.3
+marshmallow==                              3.20.1
+matplotlib==                               3.9.0
+matplotlib-inline==                        0.1.6
+mdurl==                                    0.1.2
+mention==                                  0.1
+mistune==                                  3.0.2
+mmh3==                                     4.1.0
+modules==                                  1.0.0
+monotonic==                                1.6
+mpmath==                                   1.3.0
+multidict==                                6.0.4
+mypy-extensions==                          1.0.0
+nbclient==                                 0.8.0
+nbconvert==                                7.9.2
+nbformat==                                 5.9.2
+nest-asyncio==                             1.5.8
+networkx==                                 3.1
+notebook_shim==                            0.2.3
+numpy==                                    1.26.1
+oauthlib==                                 3.2.2
+oci==                                      2.126.4
+onnxruntime==                              1.18.0
+openai==                                   0.28.1
+opentelemetry-api==                        1.24.0
+opentelemetry-exporter-otlp-proto-common== 1.24.0
+opentelemetry-exporter-otlp-proto-grpc==   1.24.0
+opentelemetry-instrumentation==            0.45b0
+opentelemetry-instrumentation-asgi==       0.45b0
+opentelemetry-instrumentation-fastapi==    0.45b0
+opentelemetry-proto==                      1.24.0
+opentelemetry-sdk==                        1.24.0
+opentelemetry-semantic-conventions==       0.45b0
+opentelemetry-util-http==                  0.45b0
+oracledb==                                 2.2.1
+orjson==                                   3.10.3
+overrides==                                7.4.0
+packaging==                                23.2
+page==                                     0.2
+pages==                                    0.3
+pandas==                                   2.1.1
+pandocfilters==                            1.5.0
+parso==                                    0.8.3
+path==                                     16.14.0
+pathspec==                                 0.11.2
+pexpect==                                  4.8.0
+pickleshare==                              0.7.5
+piglet-templates==                         1.3.1
+pip==                                      24.1.1
+platformdirs==                             3.11.0
+posthog==                                  3.0.2
+prometheus-client==                        0.17.1
+prompt-toolkit==                           3.0.39
+protobuf==                                 4.24.4
+psutil==                                   5.9.6
+ptyprocess==                               0.7.0
+pulsar-client==                            3.5.0
+pure-eval==                                0.2.2
+pyarrow==                                  16.1.0
+pyasn1==                                   0.6.0
+pyasn1_modules==                           0.4.0
+pycparser==                                2.21
+pydantic==                                2.4.2
+pydantic_core==                            2.10.1
+pydeck==                                   0.8.1b0
+Pygments==                                 2.16.1
+pyOpenSSL==                                23.2.0
+pyparsing==                                3.1.2
+pypdf==                                    3.17.0
+PyPika==                                   0.48.9
+pyproject_hooks==                          1.1.0
+pyproject-toml==                           0.0.10
+python-dateutil==                         2.8.2
+python-dotenv==                            1.0.0
+python-iso639==                            2023.6.15
+python-json-logger==                       2.0.7
+python-magic==                             0.4.27
+python-multipart==                         0.0.9
+pytz==                                     2023.3.post1
+PyYAML==                                   6.0.1
+pyzmq==                                    25.1.1
+rapidfuzz==                                3.4.0
+referencing==                              0.30.2
 regex==2023.10.3
 rfc3339-validator==0.1.4
 rfc3986-validator==0.1.1
@@ -191,3 +248,11 @@ watchfiles==0.21.0
 wcwidth==0.2.8
 webcolors==1.13
 webencodings==0.5.1
+websocket-client==1.6.4
+websockets==11.0.3
+wheel==0.43.0
+widgetsnbextension==4.0.9
+wrapt==1.16.0
+xmltodict==0.13.0
+yarl==1.9.2
+zipp==3.17.0

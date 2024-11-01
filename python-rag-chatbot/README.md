@@ -16,8 +16,9 @@
 - check you config_rag.py file and make sure your api endpoint belong to chicago region and db which you want to use like chroma db or oracle db
 - set your compartment_id ocid inside the file i.e. init_rag_streamlit_exp.py and init_rag.py file
 - Changing the db type you need to modify at config file and you see the logic inside create_vector_store
-- provide the username, password and dsn for the oracle 23ai DB
-- Inside the init_rag_streamlit_exp.py file method name i.e. OracleVS.from_documents, put your table name which you want. Currently the table name is oravs.
+- podman run -d --name 23ai -p 1521:1521 -e ORACLE_PWD=<password> -v oracle-volume:/Users/pparkins/oradata container-registry.oracle.com/database/free:latest
+- create/config vector tablespace and user
+- add oracle database info for use in init_rag_streamlit.py / init_rag_streamlit_exp.py
 - run ./run_oracle_bot_exp.sh
 
 
