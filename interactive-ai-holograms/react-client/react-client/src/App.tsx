@@ -86,21 +86,35 @@ function App() {
 
     console.log("handleCallSelectAI question:", question);
     const url = `https://130.61.51.75:8443/data?question=${encodeURIComponent(question)}`;
+    const urlJava = `https://130.61.51.75:8444/echo/set?value=question`;
     console.log("handleCallSelectAI url:", url);
     setIsLoading(true);
 
     try {
-      const response = await fetch(url, {
+    //   const response = await fetch(url, {
+    //     method: "GET",
+    //     headers: { Accept: "application/json" },
+    //   });
+
+    //   if (!response.ok) {
+    //     throw new Error(`HTTP error! Status: ${response.status}`);
+    //   }
+    //   const data = await response.json();
+
+
+      const responseUnreal = await fetch(urlJava, {
         method: "GET",
         headers: { Accept: "application/json" },
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+      if (!responseUnreal.ok) {
+        throw new Error(`HTTP error! Status: ${responseUnreal.status}`);
       }
+      const data2 = await responseUnreal; //currently just thrown away
 
-      const data = await response.json();
-      setAiResponse(JSON.stringify(data, null, 2));
+      
+
+      setAiResponse(JSON.stringify(data2, null, 2));
     } catch (error) {
       console.error("Error fetching AI data:", error.message);
       setAiResponse(`Error: ${error.message}`);

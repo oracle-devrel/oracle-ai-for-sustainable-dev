@@ -179,7 +179,7 @@ def doTTSAndAudio2Face(latest_answer, latest_question):
     }
     payload = {
         "a2f_player": "/World/audio2face/Player",
-        "dir_path": "C:/aiholo-app/python-realtimespeech-selectai"
+        "dir_path": "C:/Users/opc/src/github.com/paulparkinson/oracle-ai-for-sustainable-dev/interactive-ai-holograms/python-realtimespeech-selectai"
     }
     response = requests.post(url, json=payload, headers=headers)
     if response.status_code == 200:
@@ -205,8 +205,8 @@ def handleContainsLogic(cummulative_result, logic_array):
             latest_action = item["containsWord"]
             return True
         
-SSL_CERT_FILE = r"C:\aiholo-app\localhost.pem"  # Path to your certificate
-SSL_KEY_FILE = r"C:\aiholo-app\localhost-key.pem"  # Path to your private key
+SSL_CERT_FILE = r"C:\Users\opc\src\github.com\paulparkinson\oracle-ai-for-sustainable-dev\interactive-ai-holograms\localhost.pem"  # Path to your certificate
+SSL_KEY_FILE = r"C:\Users\opc\src\github.com\paulparkinson\oracle-ai-for-sustainable-dev\interactive-ai-holograms\localhost-key.pem"  # Path to your private key
 
 
 async def handle_request(request):

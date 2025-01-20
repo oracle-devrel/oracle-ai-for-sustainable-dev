@@ -1,36 +1,22 @@
 package oracleai;
 
-
-import com.oracle.bmc.aivision.model.FaceDetectionFeature;
-import oracleai.services.OracleVisionAI;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import oracleai.services.ORDSCalls;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-@Controller
+@RestController
 @RequestMapping("/echo")
 public class EchoController {
-    String theValue;
+    private String theValue = "init";
 
     @GetMapping("/set")
-    public String echo(String value) {
+    public String setValue(@RequestParam("value") String value) {
         theValue = value;
-        System.out.println("EchoController set:" + theValue);
-        return "set successfully:" + theValue;
+        System.out.println("EchoController set: " + theValue);
+        return "set successfully: " + theValue;
     }
 
     @GetMapping("/get")
-    public String echo() {
-        System.out.println("EchoController get:" + theValue);
+    public String getValue() {
+        System.out.println("EchoController get: " + theValue);
         return theValue;
     }
-
 }
