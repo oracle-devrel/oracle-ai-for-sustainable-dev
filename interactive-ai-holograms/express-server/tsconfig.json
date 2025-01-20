@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "lib": ["dom", "es2015", "es2016", "es5", "ES2021.String"],
+    "esModuleInterop": true,
+    "target": "es5",
+    "declaration": true,
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "noImplicitAny": true,
+    "outDir": "dist",
+    "jsx": "react",
+    "allowJs": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
+  },
+  "lib": ["es2016"],
+  "exclude": ["node_modules", "nodemon.config.js"]
+}
