@@ -35,6 +35,8 @@ isSelect = False
 isRag = False
 isChat = False
 isShowSQL = False
+isRunSQL = False
+isExplainSQL = False
 last_result_time = None
 is_connected = False
 isInsertResults = False
@@ -46,7 +48,7 @@ def executeSandbox(cummulativeResult: str = None,):
     data = {"message": cummulativeResult}
     headers = {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer 4ouI6wXqONQ4isEX1BUWmx6DiPyh09PPaPK8BjI93ww'
+        'Authorization': 'Bearer asdf'
     }
     response = requests.post(url, json=data, headers=headers)
     if response.status_code == 200:
@@ -62,7 +64,7 @@ def executeSandbox(cummulativeResult: str = None,):
     cummulativeResult = ""
 
 def executeSelectAI(cummulativeResult: str = None):
-    global isInsertResults, isShowSQL, latest_thetime, latest_question, latest_answer
+    global isInsertResults, isShowSQL, isRunSQL, isExplainSQL, latest_thetime, latest_question, latest_answer
     # if not cummulativeResult:
     #     cummulativeResult = latest_question or ""
     print(f"executeSelectAI called cummulative result: {cummulativeResult}")
@@ -89,16 +91,34 @@ def executeSelectAI(cummulativeResult: str = None):
                 profile_name => 'VIDEOGAMES_PROFILE', 
                 action       => 'narrate')
             FROM dual"""
+    
+    runsqlquery = """SELECT DBMS_CLOUD_AI.GENERATE(
+                prompt       => :prompt,
+                profile_name => 'VIDEOGAMES_PROFILE', 
+                action       => 'runsql')
+            FROM dual"""
 
     showssqlquery = """SELECT DBMS_CLOUD_AI.GENERATE(
                 prompt       => :prompt,
                 profile_name => 'VIDEOGAMES_PROFILE', 
                 action       => 'showsql')
             FROM dual"""
+    
+    explainsqlquery = """SELECT DBMS_CLOUD_AI.GENERATE(
+                prompt       => :prompt,
+                profile_name => 'VIDEOGAMES_PROFILE', 
+                action       => 'explainsql')
+            FROM dual"""
 
     if isShowSQL:
         query = showssqlquery
         print("showsql true")
+    elif isRunSQL:
+        query = runsqlquery
+        print("runsql true")
+    elif isExplainSQL:
+        query = explainsqlquery
+        print("isExplainSQL true")
     elif isChat:
         query = chatquery
         print("chat true")
@@ -106,6 +126,8 @@ def executeSelectAI(cummulativeResult: str = None):
         query = narratequery
 
     # cummulativeResult += " ignore case"
+    cummulativeResult += " . Make answer one sentence that is shorter than 50 words"
+
     try:
         with connection.cursor() as cursor:
             try:
@@ -115,6 +137,7 @@ def executeSelectAI(cummulativeResult: str = None):
                     return
                 else:
                     start_time = time.time()
+                    print(f"Query : {query} ")
                     cursor.execute(query, {'prompt': cummulativeResult})
                     result = cursor.fetchone()
                     if result and isinstance(result[0], oracledb.LOB):
@@ -210,7 +233,7 @@ SSL_KEY_FILE = r"C:\Users\opc\src\github.com\paulparkinson\oracle-ai-for-sustain
 
 
 async def handle_request(request):
-    global latest_thetime, latest_question, isSelect, isRag, isShowSQL, isChat, last_result_time, cummulativeResult
+    global latest_thetime, latest_question, isSelect, isRag, isShowSQL, isRunSQL, isExplainSQL, isChat, last_result_time, cummulativeResult
     print("Received request to handle.")
     # latest_question = request.query.get("question", "default question")
     
@@ -250,31 +273,51 @@ async def handle_request(request):
     if "use rag" in lowered_cumulative_result:
         cummulativeResult = cummulativeResult.replace("use rag", "")
         isRag = True
+    if "use database" in lowered_cumulative_result:
+        cummulativeResult = cummulativeResult.replace("use database", "")
+        isRag = True
     elif "use chat" in lowered_cumulative_result:
         cummulativeResult = cummulativeResult.replace("use chat", "")
         isChat = True
+        isSelect = True
+    elif "run sql" in lowered_cumulative_result:
+        cummulativeResult = cummulativeResult.replace("run sql", "")
+        isRunSQL = True
         isSelect = True
     elif "show sql" in lowered_cumulative_result:
         cummulativeResult = cummulativeResult.replace("show sql", "")
         isShowSQL = True
         isSelect = True
+    elif "explain sql" in lowered_cumulative_result:
+        cummulativeResult = cummulativeResult.replace("explain sql", "")
+        isExplainSQL = True
+        isSelect = True
     else:
         isChat = True
         isSelect = True
+
+    print(f"Current cummulative result: {cummulativeResult}")
+    print(f"isSelect: {isSelect}")
+    print(f"isShowSQL: {isShowSQL}")
+    print(f"isRunSQL: {isRunSQL}")
+    print(f"isExplainSQL: {isExplainSQL}")
+    print(f"isRag: {isRag}")
 
     if isSelect:
         executeSelectAI(cummulativeResult)
         isSelect = False
         isShowSQL = False
+        isRunSQL = False
+        isExplainSQL = False
         isChat = False
     elif isRag:
         executeSelectAI(cummulativeResult)
         # executeSandbox(cummulativeResult)
-        isRag = False
-
-    print(f"Current cummulative result: {cummulativeResult}")
-    print(f"isSelect: {isSelect}")
-    print(f"isRag: {isRag}")
+        isSelect = False
+        isShowSQL = False
+        isRunSQL = False
+        isExplainSQL = False
+        isChat = False
 
     data = {
         "thetime": latest_thetime.isoformat() if latest_thetime else None,

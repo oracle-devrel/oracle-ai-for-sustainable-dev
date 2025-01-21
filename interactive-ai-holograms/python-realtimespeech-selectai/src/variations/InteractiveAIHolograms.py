@@ -7,42 +7,35 @@ import requests
 import time
 from datetime import datetime
 import oracledb
-from datetime import datetime
 import oci
 from oci.config import from_file
 from oci.auth.signers.security_token_signer import SecurityTokenSigner
-from oci.ai_speech_realtime import (
-    RealtimeClient,
-    RealtimeClientListener,
-    RealtimeParameters,
+
+from oci_ai_speech_realtime import (
+    RealtimeSpeechClient,
+    RealtimeSpeechClientListener
 )
+
+from oci.ai_speech.models import RealtimeParameters
 from aiohttp import web
 
 from oci.ai_speech import AIServiceSpeechClient
 from oci.ai_speech.models import SynthesizeSpeechDetails
 
-# r.Streaming.PoolSize <new_size> 8000
 latest_thetime = None
 latest_question = None
 latest_answer = None
+latest_action = None
 narrate_sorry_noselect_message = "Sorry, unfortunately a valid SELECT statement could not be generated for your natural language prompt. Here is some more information to help you further:"
 compartment_id = os.getenv('COMPARTMENT_ID')
 print(f"compartment_id: {compartment_id}")
 
-# connection = oracledb.connect(
-#     user="moviestream",
-#     password="Welcome12345",
-#     dsn="selectaidb_high",
-#     config_dir=r"C:\Users\paulp\Downloads\Wallet_SelectAIDB",
-#     wallet_location=r"C:\Users\paulp\Downloads\Wallet_SelectAIDB",
-#     wallet_password="Welcome12345"
-# )
 connection = oracledb.connect(
     user="moviestream",
     password="Welcome12345",
     dsn="selectaidb_high",
-    config_dir=r"C:\Users\paulp\Downloads\Wallet_SelectAIDB",
-    wallet_location=r"C:\Users\paulp\Downloads\Wallet_SelectAIDB",
+    config_dir=r"C:\Users\opc\Downloads\Wallet_SelectAIDB\Wallet_SelectAIDB",
+    wallet_location=r"C:\Users\opc\Downloads\Wallet_SelectAIDB\Wallet_SelectAIDB",
     wallet_password="Welcome12345"
 )
 print(f"Successfully connected to Oracle Database Connection: {connection}")
@@ -61,6 +54,7 @@ isRag = False
 isChat = False
 isShowSQL = False
 last_result_time = None
+is_connected = False
 
 def audio_callback(in_data, frame_count, time_info, status):
     queue.put_nowait(in_data)
@@ -84,8 +78,8 @@ isInsertResults = False
 async def send_audio(client):
     while True:
         data = await queue.get()
-        await client.send_data(data)
-
+        if is_connected:
+            await client.send_data(data)
 
 class SpeechListener(RealtimeClientListener):
     def on_result(self, result):
@@ -95,16 +89,12 @@ class SpeechListener(RealtimeClientListener):
             cummulativeResult += transcription
             print(f"Received final results: {transcription}")
             print(f"Current cummulative result: {cummulativeResult}")
-            # if cummulativeResult.lower().startswith("hey db"):
-            #     cummulativeResult = cummulativeResult[len("hey db"):].strip()
-            # Define a list of trigger phrases
             triggers = ["oracle", "hey db", "hey deebee", "a db", "adb", "they deebee", "hey deebee", "hey sweetie"]
             lowered_cumulative_result = cummulativeResult.lower()
             for trigger in triggers:
                 if trigger in lowered_cumulative_result:
                     cummulativeResult = cummulativeResult[
                                         lowered_cumulative_result.find(trigger) + len(trigger) + 1:].strip()
-                    # isSelect = True
                     if "use rag" in lowered_cumulative_result:
                         cummulativeResult = cummulativeResult.replace("use rag", "")
                         isRag = True
@@ -140,6 +130,9 @@ class SpeechListener(RealtimeClientListener):
         return super().on_ack_message(ackmessage)
 
     def on_connect(self):
+        global is_connected
+        is_connected = True
+        print("Connected to RealtimeClient.")
         return super().on_connect()
 
     def on_connect_message(self, connectmessage):
@@ -150,7 +143,9 @@ class SpeechListener(RealtimeClientListener):
         return super().on_network_event(ackmessage)
 
     def on_error(self, exception):
-        print(f"An error occurred: {exception}")
+        global is_connected
+        is_connected = False
+        print(f"An error occurred: {exception}. Attempting to reconnect...")
 
 async def check_idle():
     global last_result_time, isSelect, isRag, isChat, isShowSQL
@@ -172,36 +167,24 @@ def executeSandbox():
     data = {"message": cummulativeResult}
     headers = {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer 4ouI6wXqONQ4isEX1BUWmx6DiPyh09PPaPK8BjI93ww'
+        'Authorization': 'Bearer asdf'
     }
     response = requests.post(url, json=data, headers=headers)
-
-    # Assuming the response is in JSON format and includes 'answer' and 'sources'
     if response.status_code == 200:
-        # Parse the JSON response
         response_data = response.json()
         answer = response_data.get('answer', '')
         sources = response_data.get('sources', [])
-
-        # Convert sources list to string
         sources_str = ', '.join(sources)
-
-        # Concatenate answer and sources with a descriptive text
-        # full_response = f"{answer} Sources searched: {sources_str}"
         latest_answer = f"{answer} Sources searched: {sources_str}"
-
-        # Print variables to check
-        print("RAG Answer:", answer)
-        print("RAG Sources:", sources)
         print("RAG Full Response latest_answer:", latest_answer)
+        doTTSAndAudio2Face(latest_answer, latest_question)
     else:
         print("Failed to fetch data:", response.status_code, response.text)
-
+    cummulativeResult = ""
 
 def executeSelectAI():
     global cummulativeResult, isInsertResults, isShowSQL, latest_thetime, latest_question, latest_answer
     print(f"executeSelectAI called cummulative result: {cummulativeResult}")
-
     contains_logic = [
         {"containsWord": "f1", "latestQuestion": "f1", "latestAnswer": "f1"},
         {"containsWord": "f 1", "latestQuestion": "f1", "latestAnswer": "f1"},
@@ -211,42 +194,6 @@ def executeSelectAI():
         {"containsWord": "spatial", "latestQuestion": "swag", "latestAnswer": "spatial"}
     ]
 
-    # BEGIN
-    # DBMS_CLOUD_AI.CREATE_PROFILE(
-    #     profile_name= > 'OCWPODS_PROFILE',
-    # attributes = >
-    # '{"provider": "openai",
-    # "credential_name": "OPENAI_CRED",
-    # "model": "gpt-4",
-    # "object_list": [{"owner": "MOVIESTREAM", "name": "OCWPODS"}]}'
-    # );
-    # END;
-    # /
-
-    # https: // blogs.oracle.com / datawarehousing / post / how - to - help - ai - models - generate - better - natural - language - queries - in -autonomous - database
-    # COMMENT ON TABLE OCWPODS IS 'Contains pod short name, products, title, abstract, pod name, points of contact, location, and other keywords';
-    # COMMENT ON COLUMN OCWPODS.PODSHORTNAME IS 'the short name of the pod';
-    # COMMENT ON COLUMN OCWPODS.PRODUCTS IS 'abstract describing the pod';
-    # COMMENT ON COLUMN OCWPODS.TITLE IS 'the title the pod';
-    # COMMENT ON COLUMN OCWPODS.ABSTRACT IS 'abstract describing the pod';
-    # COMMENT ON COLUMN OCWPODS.PODNAME IS 'the name of the pod';
-    # COMMENT ON COLUMN OCWPODS.POCS IS 'the people at the pod';
-    # COMMENT ON COLUMN OCWPODS.LOCATION IS 'the location of the pod';
-    # COMMENT ON COLUMN OCWPODS.OTHERKEYWORDS IS 'other keywords describing the pod that can be searched on';
-
-    # profile_name => 'openai_gpt35',
-    promptSuffix = " . In a single word, tell me  the most appropriate PODSHORTNAME"
-    # promptSuffix = ""
-    # query = """SELECT DBMS_CLOUD_AI.GENERATE(
-    #             prompt       => :prompt || :promptSuffix,
-    #             profile_name => 'OCWPODS_PROFILE',
-    #             action       => 'narrate')
-    #         FROM dual"""
-    # query = """SELECT DBMS_CLOUD_AI.GENERATE(
-    #             prompt       => :prompt,
-    #             profile_name => 'openai_gpt35',
-    #             action       => 'chat')
-    #         FROM dual"""
     chatquery = """SELECT DBMS_CLOUD_AI.GENERATE(
                 prompt       => :prompt,
                 profile_name => 'VIDEOGAMES_PROFILE', 
@@ -265,12 +212,6 @@ def executeSelectAI():
                 action       => 'showsql')
             FROM dual"""
 
-    showpromptquery = """SELECT DBMS_CLOUD_AI.GENERATE(
-                prompt       => :prompt,
-                profile_name => 'VIDEOGAMES_PROFILE', 
-                action       => 'showprompt')
-            FROM dual"""
-
     if isShowSQL:
         query = showssqlquery
         print("showsql true")
@@ -285,12 +226,11 @@ def executeSelectAI():
         with connection.cursor() as cursor:
             try:
                 if handleContainsLogic(cummulativeResult.lower(), contains_logic):
+                    cummulativeResult = cummulativeResult.replace("show sql", "")
                     print(f"executeSelectAI handled directly with cummulative result: {cummulativeResult}")
                     return
                 else:
                     start_time = time.time()
-                    print(f"executeSelectAI handled by select ai with cummulative result: {cummulativeResult}")
-                    # cursor.execute(query, {'prompt': cummulativeResult, 'promptSuffix': promptSuffix})
                     cursor.execute(query, {'prompt': cummulativeResult})
                     result = cursor.fetchone()
                     if result and isinstance(result[0], oracledb.LOB):
@@ -327,116 +267,57 @@ def executeSelectAI():
                 connection.commit()
                 print("Insert successful.")
 
-            # setting up OCI config file and speech client
-            config = oci.config.from_file("~/.oci/config", "DEFAULT")
-            speech_client = AIServiceSpeechClient(config)
-
-            print(f"latest_question: {latest_question}")
-            print(f"latest_answer: {latest_answer}")
-
-
-            text_to_speech = SynthesizeSpeechDetails(
-                text=f" {latest_answer}",
-                is_stream_enabled=True,
-                # voice_id="en-US-Standard-B",  # Example: Set the voice to "Standard B" (change to any available voice)
-                # compartment_id=,  # Ensure you fill this with your OCI compartment ID
-                # configuration=,    # Optional: Add speech synthesis configuration if needed
-                # audio_config=,     # Optional: Add audio output configuration if needed
-            )
-
-            start_time = time.time()
-            # Call the service to synthesize speech
-            response = speech_client.synthesize_speech(synthesize_speech_details=text_to_speech)
-            end_time = time.time()
-            elapsed_time = end_time - start_time
-            print(f"TTS execution time: {elapsed_time:.4f} seconds")
-
-            # Save the synthesized speech output to a file
-            with open("TTSoutput.wav", "wb") as audio_file:
-                audio_file.write(response.data.content)
-
-            print("Speech synthesis completed and saved as TTSoutput.wav")
-
-
-            # 1. SetRootPath
-            start_time = time.time()
-            url = 'http://localhost:8011/A2F/Player/SetRootPath'
-            headers = {
-                'accept': 'application/json',
-                'Content-Type': 'application/json'
-            }
-            payload = {
-                "a2f_player": "/World/audio2face/Player",
-                "dir_path": "C:/oracle-ai-for-sustainable-dev"
-            }
-            response = requests.post(url, json=payload, headers=headers)
-            if response.status_code == 200:
-                print("SetRootPath call successful.")
-                print("Response:", response.json())  # Print the JSON response
-            else:
-                print(f"Failed to set root path: {response.status_code}, {response.text}")
-
-            print("Speech synthesis completed SetRootPath")
-            end_time = time.time()
-            elapsed_time = end_time - start_time
-            print(f"SetRootPath execution time: {elapsed_time:.4f} seconds")
-
-
-
-            # 2. Set Track
-            start_time = time.time()
-            set_track_url = 'http://localhost:8011/A2F/Player/SetTrack'
-            set_track_data = {
-                "a2f_player": "/World/audio2face/Player",
-                "file_name": "TTSoutput.wav",  # Use the path of the generated audio file
-                "time_range": [0, -1]
-            }
-            set_track_response = requests.post(set_track_url, json=set_track_data, headers={
-                'accept': 'application/json',
-                'Content-Type': 'application/json'
-            })
-            if set_track_response.status_code == 200:
-                print("Track set successfully.")
-                end_time = time.time()
-                elapsed_time = end_time - start_time
-                print(f"Track set successfully. execution time: {elapsed_time:.4f} seconds")
-            else:
-                print(f"Failed to set track: {set_track_response.status_code}, {set_track_response.text}")
-
-
-            # 3. Play Track
-            start_time = time.time()
-            play_track_url = 'http://localhost:8011/A2F/Player/Play'
-            play_track_data = {
-                "a2f_player": "/World/audio2face/Player"
-            }
-            play_response = requests.post(play_track_url, json=play_track_data, headers={
-                'accept': 'application/json',
-                'Content-Type': 'application/json'
-            })
-            if play_response.status_code == 200:
-                print("Track started playing.")
-            else:
-                print(f"Failed to play track: {play_response.status_code}, {play_response.text}")
-
-            end_time = time.time()
-            elapsed_time = end_time - start_time
-            print(f"TTSoutput.wav sent to audio2face.play execution time: {elapsed_time:.4f} seconds")
+            doTTSAndAudio2Face(latest_answer, latest_question)
 
     except Exception as e:
         print(f"An error occurred: {e}")
 
     cummulativeResult = ""
 
-def handleContainsLogic(cummulative_result, logic_array):
-    global latest_thetime, latest_question, latest_answer
+def doTTSAndAudio2Face(latest_answer, latest_question):
+    config = oci.config.from_file("~/.oci/config", "DEFAULT")
+    speech_client = AIServiceSpeechClient(config)
+    print(f"latest_question: {latest_question}")
+    print(f"latest_answer: {latest_answer}")
+    text_to_speech = SynthesizeSpeechDetails(
+        text=f" {latest_answer}",
+        is_stream_enabled=True,
+    )
+    response = speech_client.synthesize_speech(synthesize_speech_details=text_to_speech)
+    with open("TTSoutput.wav", "wb") as audio_file:
+        audio_file.write(response.data.content)
+    print("Speech synthesis completed and saved as TTSoutput.wav")
+    url = 'http://localhost:8011/A2F/Player/SetRootPath'
+    headers = {
+        'accept': 'application/json',
+        'Content-Type': 'application/json'
+    }
+    payload = {
+        "a2f_player": "/World/audio2face/Player",
+        "dir_path": "C:/oracle-ai-for-sustainable-dev"
+    }
+    response = requests.post(url, json=payload, headers=headers)
+    if response.status_code == 200:
+        print("SetRootPath call successful.")
+    set_track_url = 'http://localhost:8011/A2F/Player/SetTrack'
+    set_track_data = {
+        "a2f_player": "/World/audio2face/Player",
+        "file_name": "TTSoutput.wav",
+        "time_range": [0, -1]
+    }
+    requests.post(set_track_url, json=set_track_data, headers=headers)
+    play_track_url = 'http://localhost:8011/A2F/Player/Play'
+    play_track_data = {"a2f_player": "/World/audio2face/Player"}
+    requests.post(play_track_url, json=play_track_data, headers=headers)
 
+def handleContainsLogic(cummulative_result, logic_array):
+    global latest_thetime, latest_question, latest_answer, latest_action
     for item in logic_array:
         if item["containsWord"] in cummulative_result:
             latest_thetime = datetime.now()
             latest_question = item["latestQuestion"]
-            latest_answer = item["latestAnswer"]
-            # print("item containsWord: " + item["containsWord"])
+            latest_answer = item["containsWord"]
+            latest_action = item["containsWord"]
             return True
     return False
 
@@ -447,25 +328,24 @@ async def handle_request(request):
         "question": latest_question,
         "answer": latest_answer
     }
-    # return web.json_response(data)
-    # return web.json_response(latest_answer)
-    return web.json_response(text=str(latest_answer))
+    return web.json_response(text=str(latest_action))
 
 async def connect_with_retry(client, max_retries=5, initial_delay=2):
+    global is_connected
     delay = initial_delay
-    for attempt in range(max_retries):
+    while True:
         try:
-            await client.connect()
-            print("Connection successful.")
-            break  # Exit the loop if the connection is successful
+            if not is_connected:
+                await client.connect()
+                print("Connection successful.")
+            await asyncio.sleep(1)
         except Exception as e:
-            print(f"Attempt {attempt + 1} failed with error: {e}")
-            if attempt < max_retries - 1:
-                print(f"Retrying in {delay} seconds...")
-                await asyncio.sleep(delay)
-                delay *= 2  # Exponential backoff
-            else:
-                print("Max retries reached. Exiting.")
+            print(f"Connection attempt failed with error: {e}")
+            print(f"Retrying in {delay} seconds...")
+            await asyncio.sleep(delay)
+            delay = min(delay * 2, 60)
+        if is_connected:
+            delay = initial_delay
 
 if __name__ == "__main__":
     realtime_speech_parameters = RealtimeParameters()
@@ -503,7 +383,13 @@ if __name__ == "__main__":
 
     loop.run_until_complete(connect_with_retry(client))
 
-    if stream.is_active():
-        stream.close()
-
-    print("Closed")
+    try:
+        loop.run_forever()
+    except KeyboardInterrupt:
+        print("Shutting down.")
+    finally:
+        if stream.is_active():
+            stream.stop_stream()
+            stream.close()
+        loop.run_until_complete(runner.cleanup())
+        loop.close()

@@ -91,40 +91,20 @@ function App() {
     setIsLoading(true);
 
     try {
-    //   const response = await fetch(url, {
-    //     method: "GET",
-    //     headers: { Accept: "application/json" },
-    //   });
-
-    //   if (!response.ok) {
-    //     throw new Error(`HTTP error! Status: ${response.status}`);
-    //   }
-    //   const data = await response.json();
 
 
-      const responseUnreal = await fetch(urlJava, {
-        method: "GET",
-        headers: { Accept: "application/json" },
-      });
+      // const responseUnreal = await fetch(urlJava, {
+      //   method: "GET",
+      //   headers: { Accept: "application/json" },
+      // });
 
-      if (!responseUnreal.ok) {
-        throw new Error(`HTTP error! Status: ${responseUnreal.status}`);
-      }
-      const data2 = await responseUnreal; //currently just thrown away
+      // if (!responseUnreal.ok) {
+      //   throw new Error(`HTTP error! Status: ${responseUnreal.status}`);
+      // }
+      // const data2 = await responseUnreal; //currently just thrown away
 
       
-
-      setAiResponse(JSON.stringify(data2, null, 2));
-    } catch (error) {
-      console.error("Error fetching AI data:", error.message);
-      setAiResponse(`Error: ${error.message}`);
-    } finally {
-      setIsLoading(false);
-    }
-
-    const urlForUnrealSignals = `https://130.61.51.75:8090/aiholo?action=question`;
-    try {
-      const response = await fetch(urlForUnrealSignals, {
+      const response = await fetch(url, {
         method: "GET",
         headers: { Accept: "application/json" },
       });
@@ -132,8 +112,12 @@ function App() {
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-
       const data = await response.json();
+
+
+
+      
+
       setAiResponse(JSON.stringify(data, null, 2));
     } catch (error) {
       console.error("Error fetching AI data:", error.message);
@@ -141,6 +125,8 @@ function App() {
     } finally {
       setIsLoading(false);
     }
+
+
   };
 
   React.useEffect(() => {
@@ -283,7 +269,7 @@ function App() {
           <button onClick={() => (buttonState ? stopSession() : startSession())}>
             {buttonState ? "Stop Session and Submit Question" : "Start session and Ask Question"}
           </button>
-          <button onClick={requestFinalResult}>Request final result</button>
+          <button onClick={requestFinalResult}>Switch To "Mirror Me"</button>
           <button
             onClick={() => {
               buttonState && stopSession();
@@ -300,12 +286,7 @@ function App() {
           />
           <button onClick={() => handleCallSelectAI(textFieldValue)}>Call Select AI</button>
         </span>
-        {aiResponse && (
-          <div>
-            <h4>AI Response:</h4>
-            <pre>{aiResponse}</pre>
-          </div>
-        )}
+    
       </div>
       <hr />
       {startTime > 0 && (
@@ -347,12 +328,9 @@ function App() {
           </pre>
         </div>
       )}
-      {resultStream.length > 0 && (
-        <div>
-          <h4>WebSocket Messages:</h4>
-          <pre>{JSON.stringify(resultStream, undefined, 4)}</pre>
-        </div>
-      )}
+     
+   
+     
     </div>
   );
 }

@@ -45,7 +45,7 @@ def executeSandbox(cummulativeResult: str = None,):
     data = {"message": cummulativeResult}
     headers = {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer 4ouI6wXqONQ4isEX1BUWmx6DiPyh09PPaPK8BjI93ww'
+        'Authorization': 'Bearer asdf'
     }
     response = requests.post(url, json=data, headers=headers)
     if response.status_code == 200:
