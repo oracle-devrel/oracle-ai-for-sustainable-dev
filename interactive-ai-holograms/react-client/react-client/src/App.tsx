@@ -260,10 +260,10 @@ function App() {
         <br />
         <h5>Examples...</h5>
         <br />
-        'Hey DeeBee, Whats is the most popular video game' 
+        'Hey DeeBee, Whats is the best video game' 
         <br />- will query LLM directly
         <br />
-        'Hey DeeBee, Whats is the most popular video game. Use RAG' 
+        'Hey DeeBee, Whats is the best video game. Use RAG' 
         <br />- will use NL2SQL and Vector/RAG search on private database/data
         <br /><span>
           <button onClick={() => (buttonState ? stopSession() : startSession())}>

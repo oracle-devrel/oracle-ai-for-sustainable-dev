@@ -187,10 +187,24 @@ def doTTSAndAudio2Face(latest_answer, latest_question):
     speech_client = AIServiceSpeechClient(config)
     print(f"latest_question: {latest_question}")
     print(f"latest_answer: {latest_answer}")
+    # text_to_speech = SynthesizeSpeechDetails(
+    #     text=f" {latest_answer}",
+    #     is_stream_enabled=True,
+    # )
     text_to_speech = SynthesizeSpeechDetails(
         text=f" {latest_answer}",
-        is_stream_enabled=True,
+        is_stream_enabled=False,
+        configuration=oci.ai_speech.models.TtsOracleConfiguration(
+            model_family="ORACLE",
+            # Brian Annabelle Bob Stacy Phil Cindy Brad 
+            model_details=oci.ai_speech.models.TtsOracleTts2NaturalModelDetails(voice_id="Brian"),
+            speech_settings=oci.ai_speech.models.TtsOracleSpeechSettings(
+                speech_mark_types=["WORD"]
+            ),
+        )    
     )
+    # list_voices_response = speech_client.list_voices()
+    # print(list_voices_response.data)
     response = speech_client.synthesize_speech(synthesize_speech_details=text_to_speech)
     with open("TTSoutput.wav", "wb") as audio_file:
         audio_file.write(response.data.content)
