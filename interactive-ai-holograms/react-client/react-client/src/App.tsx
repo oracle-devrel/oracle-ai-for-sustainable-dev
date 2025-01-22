@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "./App.css";
 import {
   AIServiceSpeechRealtimeApi,
@@ -257,23 +257,33 @@ function App() {
     setErrors([]);
   };
 
+  
+  const [isQuestionsVisible, setIsQuestionsVisible] = useState(false);
+
+  const toggleQuestionsVisibility = () => {
+    setIsQuestionsVisible(!isQuestionsVisible);
+  };
+
   return (
     <div className="App">
       <div>
         <h3>Interactive AI Holograms</h3>
         <h5>Click 'Start session' and ask DeeBee/DB a question. </h5>
-        <br />
-        <h5>Examples...</h5>
-        'What is the latest version of the Oracle Database?'
-        <br />
-        'What is the latest version of the Oracle Database? Use Rag.'
-        <br />
-        'Whats is the best video game?'
-        <br />
-        'Whats is the best video game. Use Database'
-        <br />
-        'What is Oracle for Startups? Use Database'
-        <br />
+        <button onClick={toggleQuestionsVisibility}>
+          {isQuestionsVisible ? 'Hide Examples' : 'Show Examples'}
+        </button>
+        {isQuestionsVisible && (
+          <div>
+            <h5>Examples...</h5>
+            <ul>
+              <li>'What is the latest version of the Oracle Database?'</li>
+              <li>'What is the latest version of the Oracle Database? Use Rag.'</li>
+              <li>'What is the best video game?'</li>
+              <li>'What is the best video game? Use Database'</li>
+              <li>'What is Oracle for Startups? Use Database'</li>
+            </ul>
+          </div>
+        )}
         <span>
           <button onClick={() => (buttonState ? stopSession() : startSession())}>
             {buttonState ? "Stop Session and Submit Question" : "Start session and Ask Question"}
