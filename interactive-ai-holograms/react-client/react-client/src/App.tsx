@@ -264,11 +264,13 @@ function App() {
         <h5>Click 'Start session' and ask DeeBee/DB a question. </h5>
         <br />
         <h5>Examples...</h5>
-        What is the latest minor version release for Oracle Database
+        'What is the latest version of the Oracle Database?'
         <br />
-        'Hey DeeBee, Whats is the best video game' - will query LLM directly
+        'What is the latest version of the Oracle Database? Use Rag.'
         <br />
-        'Hey DeeBee, Whats is the best video game. Use Database' - will use NL2SQL and Vector/RAG search on private database/data
+        'Whats is the best video game?'
+        <br />
+        'Whats is the best video game. Use Database'
         <br />
         'What is Oracle for Startups? Use Database'
         <br />
