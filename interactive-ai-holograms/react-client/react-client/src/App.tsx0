@@ -1,10 +1,3 @@
-/*
-** MyWidget version 1.0.
-**
-** Copyright (c) 2015 WidgetCo, Inc.
-** Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl/
-*/
-
 import React from "react";
 import "./App.css";
 import {
@@ -18,89 +11,137 @@ import {
 } from "oci-aispeech-realtime-web";
 
 function App() {
-  // Initialize the OCI Realtime Speech Web SDK
   const realtimeWebSocket = React.useRef<AIServiceSpeechRealtimeApi>();
+  const finalResultRef = React.useRef(""); // Ref to track the latest finalResult
 
   const [tokenDetails, setTokenDetails] = React.useState("");
   const [errors, setErrors] = React.useState([]);
   const [buttonState, setButtonState] = React.useState(false);
+  const [textFieldValue, setTextFieldValue] = React.useState("");
+  const [aiResponse, setAiResponse] = React.useState("");
 
-  // States to store results from the OCI Realtime Speech
   const [message, setMessage] = React.useState<RealtimeMessageResult>();
   const [resultStream, setResultStream] = React.useState([]);
   const [partialResult, setPartialResult] = React.useState("");
   const [finalResult, setFinalResult] = React.useState("");
 
-  // States to store timings of various events
   const [startTime, setStartTime] = React.useState(0);
   const [tokenTime, setTokenTime] = React.useState(0);
   const [connectionTime, setConnectionTime] = React.useState(0);
   const [authTime, setAuthTime] = React.useState(0);
+  const [isLoading, setIsLoading] = React.useState(false);
 
-  /* CUSTOMER DEFINED API CALL
-   *
-   * Call the customer's server to get the region to which the websocket will connect to
-   *
-   */
-  const getRegion = async () => {
+  // Update the ref whenever finalResult changes
+  React.useEffect(() => {
+    finalResultRef.current = finalResult;
+  }, [finalResult]);
+
+  const getRegion = async (): Promise<{ region: string }> => {
     try {
-      const response = await fetch("http://localhost:8448/region", {
+      const response = await fetch("https://130.61.51.75:8448/region", {
         method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
       });
 
-      const result = await response.text();
-      console.log("Server Response:", JSON.parse(result));
-      return JSON.parse(result);
-    } catch (error) {
-      console.error("Error in fetching region:", error);
-      setErrors((prevErrors) => [...prevErrors, "Error in fetching region:" + JSON.stringify(error)]);
-      return {};
-    }
-  };
-
-  /* CUSTOMER DEFINED API CALL
-   *
-   * Call the customer's server to request a session token from the OCI Speech Service
-   *
-   */
-  const authenticate = async () => {
-    try {
-      const response = await fetch("http://localhost:8448/authenticate", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (response.ok) {
-        const result = await response.text();
-        console.log("Server Response:", JSON.parse(result));
-        return JSON.parse(result);
-      } else {
-        console.error("Error in fetching session token:", response);
-        setErrors((prevErrors) => [...prevErrors, "Error in fetching session token: " + response.status + " " + response.statusText]);
-        return {};
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
       }
+
+      const result = await response.json();
+      console.log("Region fetched:", result);
+      return result;
     } catch (error) {
-      console.error("Error in fetching session token:", error);
-      setErrors((prevErrors) => [...prevErrors, "Error in fetching session token: " + JSON.stringify(error)]);
-      return {};
+      console.error("Error fetching region:", error);
+      setErrors((prevErrors) => [...prevErrors, `Error fetching region: ${error.message}`]);
+      return { region: "" }; // Return a fallback object
     }
   };
 
-  // Update the User Interface on each message received from the WebSocket
+  const authenticate = async (): Promise<{ token: string; sessionId: string; compartmentId: string }> => {
+    try {
+      const response = await fetch("https://130.61.51.75:8448/authenticate", {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log("Authentication response:", result);
+      return result;
+    } catch (error) {
+      console.error("Error in fetching session token:", error.message);
+      throw error; // Propagate the error to `startSession` for handling
+    }
+  };
+
+  const handleCallSelectAI = async (question: string): Promise<void> => {
+    if (!question) {
+      console.error("handleCallSelectAI: No question provided");
+      setAiResponse("Error: No question provided");
+      return;
+    }
+
+    console.log("handleCallSelectAI question:", question);
+    const url = `https://130.61.51.75:8443/data?question=${encodeURIComponent(question)}`;
+    const urlJava = `https://130.61.51.75:8444/echo/set?value=question`;
+    console.log("handleCallSelectAI url:", url);
+    setIsLoading(true);
+
+    try {
+
+
+      // const responseUnreal = await fetch(urlJava, {
+      //   method: "GET",
+      //   headers: { Accept: "application/json" },
+      // });
+
+      // if (!responseUnreal.ok) {
+      //   throw new Error(`HTTP error! Status: ${responseUnreal.status}`);
+      // }
+      // const data2 = await responseUnreal; //currently just thrown away
+
+      
+      const response = await fetch(url, {
+        method: "GET",
+        headers: { Accept: "application/json" },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const data = await response.json();
+
+
+
+      
+
+      setAiResponse(JSON.stringify(data, null, 2));
+    } catch (error) {
+      console.error("Error fetching AI data:", error.message);
+      setAiResponse(`Error: ${error.message}`);
+    } finally {
+      setIsLoading(false);
+    }
+
+
+  };
+
   React.useEffect(() => {
     if (message) {
-      setResultStream((resultStream) => [message, ...resultStream]);
-      let data = message;
-      console.log(data);
-      if (data && data.event === "RESULT") {
-        let transcriptions = data.transcriptions;
+      setResultStream((prevStream) => [message, ...prevStream]);
+      const data = message;
+
+      if (data?.event === "RESULT") {
+        const transcriptions = data.transcriptions;
         if (transcriptions[0].isFinal) {
-          setFinalResult((finalResult) => finalResult + (finalResult.length > 0 ? " " : "") + transcriptions[0].transcription);
+          setFinalResult((prev) => {
+            const newResult = prev + (prev.length > 0 ? " " : "") + transcriptions[0].transcription;
+            console.log("Updated finalResult:", newResult);
+            return newResult;
+          });
           setPartialResult("");
         } else {
           setPartialResult(transcriptions[0].transcription);
@@ -109,16 +150,16 @@ function App() {
     }
   }, [message]);
 
-  // Start the transcription session
   const startSession = async () => {
     reset();
     setStartTime(new Date().getTime());
 
-    //use the same region as being used in the server for token generation
-    const serviceRegion = (await getRegion()).region;
+    const { region } = await getRegion();
+    if (!region) {
+      console.error("Region not available, session cannot start");
+      return;
+    }
 
-    // set the various parameters for the Realtime Speech session
-    // Read more - https://docs.oracle.com/en-us/iaas/api/#/en/speech/20220101/datatypes/RealtimeParameters
     const realtimeClientParameters: RealtimeParameters = {
       customizations: [],
       languageCode: "en-US",
@@ -130,86 +171,79 @@ function App() {
       encoding: "audio/raw;rate=16000",
     };
 
-    // configure the EventListeners for various events emitted by the OCI Realtime Speech
     const realtimeEventListener: RealtimeClientListener = {
-      // triggered when `isAckEnabled` parameter is set to true.
       onAckAudio(ackMessage: RealtimeMessageAckAudio) {},
-
-      // triggered when connection with the service is established
       onConnect(openEvent) {
         setButtonState(true);
         setConnectionTime(new Date().getTime());
         console.log("WebSocket Client Connected");
       },
-
-      // triggered when connection with the service is authenticated
       onConnectMessage(connectMessage) {
-        console.log("WebSocket Client Authenticated: ", connectMessage);
-        setResultStream([connectMessage, ...resultStream]);
+        console.log("WebSocket Client Authenticated:", connectMessage);
+        setResultStream((prevStream) => [connectMessage, ...prevStream]);
         setAuthTime(new Date().getTime());
       },
-
-      // triggered whenever there is an error
       onError(error) {
         setButtonState(false);
         setErrors((prevErrors) => [...prevErrors, error.name + " " + error.message]);
         console.error(error);
       },
-
-      // triggered when a transcription result is received
       onResult(resultMessage) {
         console.log(resultMessage);
         setMessage(resultMessage);
       },
-
-      // triggered when a session is closed for some reason
       onClose(closeEvent) {
         setButtonState(false);
-        console.log("WebSocket server closed: ", closeEvent.code, closeEvent.reason);
+        console.log("WebSocket server closed:", closeEvent.code, closeEvent.reason);
       },
     };
 
-    // fetch the session token from the customer's server and
-    // only then proceed to start the session with OCI Realtime Speech
-    authenticate().then((tokenObject) => {
+    try {
+      const tokenObject = await authenticate();
       console.log("Token received", tokenObject);
       setTokenTime(new Date().getTime());
-      if (tokenObject.sessionId === undefined) {
+      if (!tokenObject.sessionId) {
+        console.error("Invalid session token");
         setTokenDetails(JSON.stringify(tokenObject, undefined, 4));
-        stopSession();
         return;
       }
       setTokenDetails(JSON.stringify(tokenObject, undefined, 4));
 
-      // configure the Realtime Speech client with Parameters, Token and EventListener
       realtimeWebSocket.current = new AIServiceSpeechRealtimeApi(
         realtimeEventListener,
         tokenObject.token,
         tokenObject.compartmentId,
-        `wss://realtime.aiservice.${serviceRegion}.oci.oraclecloud.com/ws/transcribe/stream`,
+        `wss://realtime.aiservice.${region}.oci.oraclecloud.com/ws/transcribe/stream`,
         realtimeClientParameters
       );
 
-      // connect to the Realtime Speech service
       realtimeWebSocket.current.connect();
-    });
+    } catch (error) {
+      console.error("Failed to start session:", error.message);
+    }
   };
 
-  // Stop the transcription session
   const stopSession = () => {
     try {
+      console.log("stopSession...");
+      const latestFinalResult = finalResultRef.current;
+      console.log("finalResult before handleCallSelectAI:", latestFinalResult);
       realtimeWebSocket.current.close();
+      handleCallSelectAI(latestFinalResult);
     } catch (e) {
       console.error(e);
     }
   };
 
-  // Request the service to send the final result
   const requestFinalResult = () => {
     realtimeWebSocket.current && realtimeWebSocket.current.requestFinalResult();
   };
 
-  // Reset the elements on the screen
+  
+  const mirrorMe = () => {
+    console.log("switch to mirrorMe....");
+  };
+
   const reset = () => {
     setAuthTime(0);
     setConnectionTime(0);
@@ -223,101 +257,89 @@ function App() {
     setErrors([]);
   };
 
-  // Render a very simple UI for showcasing OCI Realtime Speech Service
   return (
     <div className="App">
       <div>
-        <h1>OCI Realtime Speech</h1>
-        <h4>Web SDK client example</h4>
+        <h3>Interactive AI Holograms</h3>
+        <h5>Click 'Start session' and ask DeeBee/DB a question. </h5>
+        <br />
+        <h5>Examples...</h5>
+        What is the latest minor version release for Oracle Database
+        <br />
+        'Hey DeeBee, Whats is the best video game' - will query LLM directly
+        <br />
+        'Hey DeeBee, Whats is the best video game. Use Database' - will use NL2SQL and Vector/RAG search on private database/data
+        <br />
+        'What is Oracle for Startups? Use Database'
+        <br />
         <span>
-          {/* Start and stop the session */}
-          <button
-            onClick={() => {
-              return buttonState ? stopSession() : startSession();
-            }}>
-            {buttonState ? "Stop Session" : "Start session"}
+          <button onClick={() => (buttonState ? stopSession() : startSession())}>
+            {buttonState ? "Stop Session and Submit Question" : "Start session and Ask Question"}
           </button>
-
-          {/* Request the service to send the final result */}
-          <button onClick={requestFinalResult}>{"Request final result"}</button>
-
-          {/* Clear the screen and stop the session */}
+          <br />
+          {/* <button onClick={requestFinalResult}>Request Final Result</button> */}
+          <button onClick={mirrorMe}>Switch To "Mirror Me"</button>
           <button
             onClick={() => {
               buttonState && stopSession();
               reset();
-            }}>
-            {"Clear screen"}
+            }}
+          >
+            Clear screen
           </button>
+          <input
+            type="text"
+            value={textFieldValue}
+            onChange={(e) => setTextFieldValue(e.target.value)}
+            placeholder="Enter your question"
+          />
+          <button onClick={() => handleCallSelectAI(textFieldValue)}>Call Select AI</button>
         </span>
+    
       </div>
       <hr />
-
-      {/* Displays the timings of various events involved
-       * in a successful Realtime Speech connection */}
       {startTime > 0 && (
         <>
           <h6>
             <pre>Start time - {new Date(startTime).toLocaleString()}</pre>
             {tokenTime > 0 && (
               <pre>
-                Token received - {new Date(tokenTime).toLocaleString()} (+ {tokenTime - startTime} ms)
+                Token received - {new Date(tokenTime).toLocaleString()} (+{tokenTime - startTime} ms)
               </pre>
             )}
             {connectionTime > 0 && (
               <pre>
-                Websocket connected - {new Date(connectionTime).toLocaleString()} (+ {connectionTime - tokenTime} ms)
+                WebSocket connected - {new Date(connectionTime).toLocaleString()} (+{connectionTime - tokenTime} ms)
               </pre>
             )}
             {authTime > 0 && (
               <pre>
-                Realtime authenticated - {new Date(authTime).toLocaleString()} (+ {authTime - connectionTime} ms)
+                Realtime authenticated - {new Date(authTime).toLocaleString()} (+{authTime - connectionTime} ms)
               </pre>
             )}
           </h6>
         </>
       )}
-
-      {/* Display the errors */}
-      {errors?.length > 0 && (
-        <>
-          <h4>Errors</h4>
-          <pre>{errors}</pre>
-        </>
+      {errors.length > 0 && (
+        <div>
+          <h4>Errors:</h4>
+          {errors.map((error, index) => (
+            <pre key={index}>{error}</pre>
+          ))}
+        </div>
       )}
-
-      {/* Display the token details as returned from
-       * the customer's server via the /authenticate GET call
-       * which in turn are returned by OCI Speech Service's
-       * `createRealtimeSessionToken` API */}
-      {tokenDetails && (
-        <>
-          <h4>Token Details</h4>
-          <pre>{tokenDetails}</pre>
-        </>
-      )}
-
-      {/* Display the transcriptions returned by the service.
-       * Partial transcriptions are italicized where as
-       * finalized transcriptions are in regular font.
-       */}
       {resultStream.length > 0 && (
-        <>
-          <h4>Transcriptions</h4>
+        <div>
+          <h4>Transcriptions:</h4>
           <pre style={{ textWrap: "pretty" }}>
             {finalResult + (finalResult.length > 0 ? " " : "")}
             <em>{partialResult}</em>
           </pre>
-        </>
+        </div>
       )}
-
-      {/* Display raw messages coming from the websocket connection */}
-      {resultStream.length > 0 && (
-        <>
-          <h4>Websocket Messages</h4>
-          <pre>{JSON.stringify(resultStream, undefined, 4)}</pre>
-        </>
-      )}
+     
+   
+     
     </div>
   );
 }

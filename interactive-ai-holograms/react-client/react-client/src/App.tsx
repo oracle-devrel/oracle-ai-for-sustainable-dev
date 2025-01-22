@@ -239,6 +239,11 @@ function App() {
     realtimeWebSocket.current && realtimeWebSocket.current.requestFinalResult();
   };
 
+  
+  const mirrorMe = () => {
+    console.log("switch to mirrorMe....");
+  };
+
   const reset = () => {
     setAuthTime(0);
     setConnectionTime(0);
@@ -259,17 +264,20 @@ function App() {
         <h5>Click 'Start session' and ask DeeBee/DB a question. </h5>
         <br />
         <h5>Examples...</h5>
+        What is the latest minor version release for Oracle Database
         <br />
-        'Hey DeeBee, Whats is the best video game' 
-        <br />- will query LLM directly
+        'Hey DeeBee, Whats is the best video game' - will query LLM directly
         <br />
-        'Hey DeeBee, Whats is the best video game. Use RAG' 
-        <br />- will use NL2SQL and Vector/RAG search on private database/data
-        <br /><span>
+        'Hey DeeBee, Whats is the best video game. Use Database' - will use NL2SQL and Vector/RAG search on private database/data
+        <br />
+        'What is Oracle for Startups? Use Database'
+        <br />
+        <span>
           <button onClick={() => (buttonState ? stopSession() : startSession())}>
             {buttonState ? "Stop Session and Submit Question" : "Start session and Ask Question"}
           </button>
-          <button onClick={requestFinalResult}>Switch To "Mirror Me"</button>
+          
+          {/* <button onClick={requestFinalResult}>Request Final Result</button> */}
           <button
             onClick={() => {
               buttonState && stopSession();
@@ -278,13 +286,14 @@ function App() {
           >
             Clear screen
           </button>
-          <input
+          <br /><input
             type="text"
             value={textFieldValue}
             onChange={(e) => setTextFieldValue(e.target.value)}
             placeholder="Enter your question"
           />
           <button onClick={() => handleCallSelectAI(textFieldValue)}>Call Select AI</button>
+          <br /><button onClick={mirrorMe}>Switch To "Mirror Me"</button>
         </span>
     
       </div>

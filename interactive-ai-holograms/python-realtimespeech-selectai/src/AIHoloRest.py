@@ -79,34 +79,34 @@ def executeSelectAI(cummulativeResult: str = None):
         {"containsWord": "satellites", "latestQuestion": "satellites", "latestAnswer": "satellites"},
         {"containsWord": "spatial", "latestQuestion": "spatial", "latestAnswer": "spatial"}
     ]
-
+    # other profiles includes AIHOLO ,  VIDEOGAMES_PROFILE, MOVIESTREAM
     chatquery = """SELECT DBMS_CLOUD_AI.GENERATE(
                 prompt       => :prompt,
-                profile_name => 'VIDEOGAMES_PROFILE', 
+                profile_name => 'AIHOLO', 
                 action       => 'chat')
             FROM dual"""
 
     narratequery = """SELECT DBMS_CLOUD_AI.GENERATE(
                 prompt       => :prompt,
-                profile_name => 'VIDEOGAMES_PROFILE', 
+                profile_name => 'AIHOLO', 
                 action       => 'narrate')
             FROM dual"""
     
     runsqlquery = """SELECT DBMS_CLOUD_AI.GENERATE(
                 prompt       => :prompt,
-                profile_name => 'VIDEOGAMES_PROFILE', 
+                profile_name => 'AIHOLO', 
                 action       => 'runsql')
             FROM dual"""
 
     showssqlquery = """SELECT DBMS_CLOUD_AI.GENERATE(
                 prompt       => :prompt,
-                profile_name => 'VIDEOGAMES_PROFILE', 
+                profile_name => 'AIHOLO', 
                 action       => 'showsql')
             FROM dual"""
     
     explainsqlquery = """SELECT DBMS_CLOUD_AI.GENERATE(
                 prompt       => :prompt,
-                profile_name => 'VIDEOGAMES_PROFILE', 
+                profile_name => 'AIHOLO', 
                 action       => 'explainsql')
             FROM dual"""
 
@@ -121,6 +121,9 @@ def executeSelectAI(cummulativeResult: str = None):
         print("isExplainSQL true")
     elif isChat:
         query = chatquery
+        print("chat true")
+    elif isRag:
+        query = narratequery
         print("chat true")
     else:
         query = narratequery
@@ -283,12 +286,22 @@ async def handle_request(request):
     print(f"cummulativeResult: {cummulativeResult}")
 
     lowered_cumulative_result = cummulativeResult.lower()
+    
+    print(f"Current cummulative result before trimming `use xyz`: {cummulativeResult}")
+    print(f"isSelect: {isSelect}")
+    print(f"isShowSQL: {isShowSQL}")
+    print(f"isRunSQL: {isRunSQL}")
+    print(f"isExplainSQL: {isExplainSQL}")
+    print(f"isRag: {isRag}")
+    print(f"isChat: {isChat}")
 
     if "use rag" in lowered_cumulative_result:
         cummulativeResult = cummulativeResult.replace("use rag", "")
+        print(f"use rag issued: {cummulativeResult}")
         isRag = True
-    if "use database" in lowered_cumulative_result:
+    elif "use database" in lowered_cumulative_result:
         cummulativeResult = cummulativeResult.replace("use database", "")
+        print(f"use database issued: {cummulativeResult}")
         isRag = True
     elif "use chat" in lowered_cumulative_result:
         cummulativeResult = cummulativeResult.replace("use chat", "")
@@ -316,6 +329,7 @@ async def handle_request(request):
     print(f"isRunSQL: {isRunSQL}")
     print(f"isExplainSQL: {isExplainSQL}")
     print(f"isRag: {isRag}")
+    print(f"isChat: {isChat}")
 
     if isSelect:
         executeSelectAI(cummulativeResult)
