@@ -276,8 +276,8 @@ function App() {
           <div>
             <h5>Examples...</h5>
             <ul>
-              <li>'What is the latest version of the Oracle Database?'</li>
-              <li>'What is the latest version of the Oracle Database? Use Rag.'</li>
+              <li>'What is the most recently released movie?'</li>
+              <li>'What is the most recently released movie? Use RAG'</li>
               <li>'What is the best video game?'</li>
               <li>'What is the best video game? Use Database'</li>
               <li>'What is Oracle for Startups? Use Database'</li>
@@ -285,6 +285,7 @@ function App() {
           </div>
         )}
         <span>
+        <br />
           <button onClick={() => (buttonState ? stopSession() : startSession())}>
             {buttonState ? "Stop Session and Submit Question" : "Start session and Ask Question"}
           </button>
