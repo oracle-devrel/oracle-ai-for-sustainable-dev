@@ -3,6 +3,6 @@ located here: https://livelabs.oracle.com/pls/apex/r/dbpm/livelabs/view-workshop
 
 Quick notes are here...
 - setup the database side with Select AI configured, etc.
-- oci session authenticate ; oci iam region list --config-file ~/.oci/config --profile MYSPEECHAIPROFILE --auth security_token
-- $env:COMPARTMENT_ID = "ocid1.compartment.oc1..YOURCOMPARMENTID"
-- python src/RealtimeSpeechSelectAI.py
+- setup OCI config profile auth (instance or security_token)
+- export COMPARTMENT_ID 
+- python src/RealtimeSTT_NL2SQL_TTS_AudioPlay.py
