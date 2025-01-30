@@ -268,6 +268,10 @@ function App() {
     <div className="App">
       <div>
         <h3>Interactive AI Holograms</h3>
+        
+        <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjGTacVCbweHP27h_x6f7PwRaazX0esJQtjnQXNep0ZpkK0JIqFC5bLfRWPknr3l9r9HoN3xV3nx072HrgxnVThOGFu-SOU145aJUCvQNNmKWoJc6z6Y8ad1PxXuahg-I0AMkcnPD77_tXze6-ZAMJO_Av4j0QhpG3mKrksKz3oAXI6m3HRjbjlCH7YTws/s959/Oracle%20Database%2023ai%20Now%20Available%20in%20Cloud.png" width="300" alt="Oracle Database 23ai" />
+        
+        <br />
         <h5>Click 'Start session' and ask DeeBee/DB a question. </h5>
         <button onClick={toggleQuestionsVisibility}>
           {isQuestionsVisible ? 'Hide Examples' : 'Show Examples'}
@@ -281,6 +285,8 @@ function App() {
               <li>'What is the best video game?'</li>
               <li>'What is the best video game? Use Database'</li>
               <li>'What is Oracle for Startups? Use Database'</li>
+              <li>'What is the latest version of the Oracle Database?'</li>
+              <li>'What is the latest version of the Oracle Database? Use RAG'</li>
             </ul>
           </div>
         )}
@@ -306,7 +312,7 @@ function App() {
             placeholder="Enter your question"
           />
           <button onClick={() => handleCallSelectAI(textFieldValue)}>Call Select AI</button>
-          <br /><button onClick={mirrorMe}>Switch To "Mirror Me"</button>
+          {/* <br /><button onClick={mirrorMe}>Switch To "Mirror Me"</button> */}
         </span>
     
       </div>
