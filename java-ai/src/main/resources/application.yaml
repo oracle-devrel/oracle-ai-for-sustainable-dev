@@ -29,9 +29,3 @@ logging:
 server:
   tomcat:
     max-swallow-size: 200MB
-  port: 8444
-  ssl:
-    key-store-type: PKCS12
-    key-store: classpath:keystore.p12
-    key-store-password: Welcome1
-    key-alias: springboot
