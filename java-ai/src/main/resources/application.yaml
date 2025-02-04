@@ -17,8 +17,8 @@ spring:
     url: jdbc:oracle:thin:@mydb_tp?TNS_ADMIN=/Users/me/Wallet_mydb
     #   Use "admin" for username for setup with Oracle Cloud ADB
     #    and use "sys as sysdba" for username for setup with Oracle 23c Free
-    username: testuser
-    password: testpassword
+    username: moviestream
+    password: Welcome12345
     driver-class-name: oracle.jdbc.OracleDriver
     type: oracle.ucp.jdbc.PoolDataSource
     oracleucp:
