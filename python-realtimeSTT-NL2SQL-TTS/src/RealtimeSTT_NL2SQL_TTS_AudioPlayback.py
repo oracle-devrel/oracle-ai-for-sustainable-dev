@@ -11,9 +11,9 @@ import oracledb
 import oci
 from oci.config import from_file
 from oci.auth.signers.security_token_signer import SecurityTokenSigner
-from oci.ai_speech_realtime import (
-    RealtimeClient,
-    RealtimeClientListener,
+from oci_ai_speech_realtime import (
+    RealtimeSpeechClient,
+    RealtimeSpeechClientListener,
     RealtimeParameters,
 )
 from aiohttp import web
@@ -27,13 +27,17 @@ latest_answer = None
 compartment_id = os.getenv('COMPARTMENT_ID')
 print(f"compartment_id: {compartment_id}")
 
+# oracle atp with mTls enabled, use Thick mode [oracledb.init_oracle_client] to load all libraries neeeded
+# download from https://www.oracle.com/database/technologies/instant-client/winx64-64-downloads.html
+# main doc for mTLS https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/connecting-python-mtls.html
+oracledb.init_oracle_client(lib_dir=r"C:\Users\Rodrigo Chafik\Downloads\instantclient-basic-windows.x64-23.7.0.25.01\instantclient_23_7")
 connection = oracledb.connect(
-    user="moviestream",
-    password="Welcome12345",
-    dsn="selectaidb_high",
-    config_dir="/Users/pparkins/Downloads/Wallet_SelectAIDB",
-    wallet_location="/Users/pparkins/Downloads/Wallet_SelectAIDB",
-    wallet_password="Welcome12345"
+    user="aiuser",
+    password="OracleATeam#2025",
+    dsn="chafik_high",
+    config_dir=r"D:\aTeam\Wallet_chafik",
+    wallet_location=r"D:\aTeam\Wallet_chafik",
+    wallet_password="ateamOracle@2024"
 )
 print(f"Successfully connected to Oracle Database Connection: {connection}")
 
@@ -105,7 +109,7 @@ def play_audio(file_path):
         print(f"Error playing audio: {e}")
 
 
-class SpeechListener(RealtimeClientListener):
+class SpeechListener(RealtimeSpeechClientListener):
     def on_result(self, result):
         global cummulativeResult, isSelect, isNarrate, isShowSQL, isRunSQL, isExplainSQL, last_result_time
         if result["transcriptions"][0]["isFinal"]:
@@ -174,7 +178,7 @@ async def check_idle():
 
 
 def authenticator():
-    config = from_file("~/.oci/config", "MYSPEECHAIPROFILE")
+    config = from_file("~/.oci/config", "DEFAULT")
     with open(config["security_token_file"], "r") as f:
         token = f.readline()
     private_key = oci.signer.load_private_key_from_file(config["key_file"])
@@ -199,7 +203,7 @@ def executeSelectAI():
 
     query = """SELECT DBMS_CLOUD_AI.GENERATE(
                 prompt       => :prompt,
-                profile_name => 'AIHOLO', 
+                profile_name => 'GENAI', 
                 action       => :action)
             FROM dual"""
 
@@ -219,32 +223,36 @@ def executeSelectAI():
 
             if selectai_action in ("showsql", "runsql", "explainsql"):
                 return
-            # API key-based authentication...
-            config = oci.config.from_file("~/.oci/config", "DEFAULT")
-            speech_client = AIServiceSpeechClient(config)
+            # API key-based authentication, using phoenix OCI Region - https://docs.oracle.com/en-us/iaas/Content/speech/using/speech.htm#ser-limits
+            config = oci.config.from_file("~/.oci/config", "TESTES")
 
-            text_to_speech = SynthesizeSpeechDetails(
-                text=f" {latest_answer}",
-                is_stream_enabled=False,
-                configuration=oci.ai_speech.models.TtsOracleConfiguration(
-                    model_family="ORACLE",
-                    # Brian Annabelle Bob Stacy Phil Cindy Brad
-                    model_details=oci.ai_speech.models.TtsOracleTts2NaturalModelDetails(voice_id="Brian"),
-                    speech_settings=oci.ai_speech.models.TtsOracleSpeechSettings(
-                        speech_mark_types=["WORD"]
-                    ),
-                )
-            )
+            ai_speech_client = oci.ai_speech.AIServiceSpeechClient(config)
+            synthesize_speech_response = ai_speech_client.synthesize_speech(
+                synthesize_speech_details=oci.ai_speech.models.SynthesizeSpeechDetails(
+                    text=f" {latest_answer}",
+                    is_stream_enabled=True,
+                    compartment_id=compartment_id,
+                    configuration=oci.ai_speech.models.TtsOracleConfiguration(
+                        model_family="ORACLE",
+                        model_details=oci.ai_speech.models.TtsOracleTts1StandardModelDetails(
+                            model_name="TTS_1_STANDARD",
+                            voice_id="Bob"),
+                        speech_settings=oci.ai_speech.models.TtsOracleSpeechSettings(
+                            text_type="SSML",
+                            sample_rate_in_hz=28000,
+                            output_format="PCM",
+                            speech_mark_types=["WORD"])),
+                    audio_config=oci.ai_speech.models.TtsBaseAudioConfig(
+                        config_type="BASE_AUDIO_CONFIG")
+                )       )     
 
-            response = speech_client.synthesize_speech(synthesize_speech_details=text_to_speech)
-
-            with open("TTSoutput.wav", "wb") as audio_file:
-                audio_file.write(response.data.content)
+            with open("TTSoutput.pcm", "wb") as audio_file:
+               audio_file.write(synthesize_speech_response.data.content)
 
             print("Speech synthesis completed and saved as TTSoutput.wav")
 
             # Play the generated speech
-            play_audio("TTSoutput.wav")
+            play_audio("TTSoutput.pcm")
 
     except Exception as e:
         print(f"An error occurred: {e}")
@@ -271,8 +279,8 @@ if __name__ == "__main__":
     )
     realtime_speech_parameters.final_silence_threshold_in_ms = 2000
 
-    realtime_speech_url = "wss://realtime.aiservice.us-phoenix-1.oci.oraclecloud.com"
-    client = RealtimeClient(
+    realtime_speech_url = "wss://realtime.aiservice.us-ashburn-1.oci.oraclecloud.com"
+    client = RealtimeSpeechClient(
         config=config,
         realtime_speech_parameters=realtime_speech_parameters,
         listener=SpeechListener(),
@@ -280,16 +288,6 @@ if __name__ == "__main__":
         signer=None,
         compartment_id=compartment_id,
     )
-
-    # Instance, resource principal, or session token-based authentication (as shown below) can also be used
-    # client = RealtimeClient(
-    #     config=config,
-    #     realtime_speech_parameters=realtime_speech_parameters,
-    #     listener=SpeechListener(),
-    #     service_endpoint=realtime_speech_url,
-    #     signer=authenticator(),
-    #     compartment_id=compartment_id,
-    # )
 
     loop.create_task(send_audio(client))
     loop.create_task(check_idle())
