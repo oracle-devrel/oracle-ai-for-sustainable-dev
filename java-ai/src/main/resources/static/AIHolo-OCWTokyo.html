@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive AI Hologram With Oracle Database</title>
+    <link rel="stylesheet" 
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.0/css/bootstrap.min.css" 
+          integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTum6k5d8zV6gBiFeWPGFN9MuhOf23Q9Ifjh" 
+          crossorigin="anonymous">
+    <style>
+        body {
+            text-align: center;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        #transcription {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background: white;
+            width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+            min-height: 100px;
+            max-height: 300px;
+            overflow-y: auto;
+            text-align: left;
+        }
+        button {
+            margin-top: 10px;
+        }
+        .radio-group {
+            margin-top: 15px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Oracle Databaseを使用したインタラクティブAIホログラム</h1>
+    <p>「スタート」をクリックし、日本語で話してください。終了して質問を送信するには「ストップ & 送信」をクリックしてください。</p>
+
+    <div class="radio-group">
+        <label><input type="radio" name="mode" value=" use chat" checked> Chat</label>
+        <label><input type="radio" name="mode" value=" use narrate"> Narrate (NL2SQL / Select AI / Vector RAG)</label>
+        <!-- <label><input type="radio" name="mode" value="vectorrag"> Vector RAG</label> -->
+    </div>
+
+    <button id="startBtn" class="btn btn-primary">🎤 スタート</button>
+    <button id="stopSendBtn" class="btn btn-danger" disabled>🛑📤 ストップ & 送信</button>
+    <button id="clearBtn" class="btn btn-warning">🗑️ クリア</button>
+    <button id="mirrorMeBtn" class="btn btn-info">📸 「ミラーリング」に切り替える</button>
+<br>たとえば、「最も売れているビデオゲームは何ですか？」
+    <div id="transcription"></div>
+    <p id="responseMessage"></p>
+
+    <script>
+        let recognition;
+        let isListening = false;
+        let transcriptBuffer = "";
+
+        // Check if browser supports SpeechRecognition
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.continuous = true;  // ✅ Keep listening indefinitely
+            recognition.interimResults = true;
+            recognition.lang = "ja-JP"; // ✅ Japanese Language Code
+
+            recognition.onstart = () => {
+                console.log("🎤 音声認識が開始されました...");
+                document.getElementById("startBtn").disabled = true;
+                document.getElementById("stopSendBtn").disabled = false;
+                transcriptBuffer = "";  // Reset buffer
+                isListening = true;
+            };
+
+            recognition.onend = () => {
+                console.log("🛑 音声認識が終了しました。");
+                document.getElementById("startBtn").disabled = false;
+                document.getElementById("stopSendBtn").disabled = true;
+                isListening = false;
+            };
+
+            recognition.onerror = (event) => {
+                console.error("⚠️ エラー発生:", event.error);
+            };
+
+            recognition.onresult = (event) => {
+                let interimTranscript = "";
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    if (event.results[i].isFinal) {
+                        transcriptBuffer += event.results[i][0].transcript + " ";
+                    } else {
+                        interimTranscript += event.results[i][0].transcript + " ";
+                    }
+                }
+
+                document.getElementById("transcription").innerText = transcriptBuffer.trim() + " " + interimTranscript.trim();
+                document.getElementById("transcription").scrollTop = document.getElementById("transcription").scrollHeight;
+            };
+        } else {
+            alert("⚠️ お使いのブラウザは音声認識をサポートしていません。Google Chromeをお試しください。");
+        }
+
+        // Start listening
+        document.getElementById("startBtn").addEventListener("click", () => {
+            if (!isListening) recognition.start();
+        });
+
+        // Stop listening and send question
+        document.getElementById("stopSendBtn").addEventListener("click", async () => {
+            if (isListening) recognition.stop();
+
+            const transcriptionText = transcriptBuffer.trim();
+            if (!transcriptionText) {
+                alert("⚠️ テキストがありません！");
+                return;
+            }
+
+            // Get selected mode
+            const selectedMode = document.querySelector('input[name="mode"]:checked').value;
+            const modifiedText = `${transcriptionText} use ${selectedMode}`;
+
+            const apiUrl = `https://141.148.204.74:8444/aiholo/play?question=${encodeURIComponent(modifiedText)}`;
+            
+            try {
+                const response = await fetch(apiUrl, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error("❌ サーバーからの応答取得に失敗しました。");
+                }
+
+                const result = await response.text();
+                console.log("✅ サーバー応答:", result);
+                document.getElementById("responseMessage").innerText = `✅ 応答: ${result}`;
+            } catch (error) {
+                console.error(error);
+                document.getElementById("responseMessage").innerText = "❌ エラー: 応答を取得できませんでした。";
+            }
+        });
+
+        // Clear transcription
+        document.getElementById("clearBtn").addEventListener("click", () => {
+            transcriptBuffer = "";
+            document.getElementById("transcription").innerText = "";
+            document.getElementById("responseMessage").innerText = "";
+            console.log("🗑️ Transcription cleared.");
+        });
+
+        // Switch to Mirror Me
+        document.getElementById("mirrorMeBtn").addEventListener("click", async () => {
+            const apiUrl = "https://141.148.204.74:8444/aiholo/set?value=mirrorme";
+            
+            try {
+                const response = await fetch(apiUrl, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error("❌ サーバーからの応答取得に失敗しました。");
+                }
+
+                const result = await response.text();
+                console.log("✅ Mirror Me Response:", result);
+                document.getElementById("responseMessage").innerText = `✅ Mirror Mode Activated: ${result}`;
+            } catch (error) {
+                console.error(error);
+                document.getElementById("responseMessage").innerText = "❌ エラー: Mirror Mode の切り替えに失敗しました。";
+            }
+        });
+    </script>
+<div style="text-align: center;">
+    <span style="display: inline-block; margin-right: 10px;">
+        <img src="aiholoarch.png" alt="AI Holo Architecture" width="300">
+    </span>
+    <span style="display: inline-block;">
+        <img src="oracleconverged23ai.webp" alt="Oracle 23 AI" width="550">
+    </span>
+</div>
+
+</body>
+</html>

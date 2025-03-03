@@ -1,31 +1,61 @@
 spring:
+  main:
+    allow-circular-references: true
+
+  web:
+    resources:
+      static-locations: classpath:/static/
+
+  mvc:
+    cors:
+      allowed-origin-patterns: ["*"]  # ✅ Allow all origins
+      allowed-methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+      allowed-headers: ["*"]
+
   servlet:
+    websocket:
+      buffer-size: 65536  # ✅ Increase WebSocket buffer size
     multipart:
       enabled: true
       max-file-size: 200MB
       max-request-size: 200MB
+
   cloud:
     oci:
       config:
         type: INSTANCE_PRINCIPAL
-  datasource:
-    #    Example where a wallet is used (TNS_ADMIN is the location of the wallet).
-    #     Eg if using Oracle Cloud ADB (autonomous database) Always Free.
-    #    url: "jdbc:oracle:thin:@xr_tp?TNS_ADMIN=/Users/me/Wallet_mydb"
-    #   Example without wallet.  Eg if using Oracle 23c Free.
-    #    url: "jdbc:oracle:thin:@localhost:1521/freepdb1"
-    url: jdbc:oracle:thin:@mydb_tp?TNS_ADMIN=/Users/me/Wallet_mydb
-    #   Use "admin" for username for setup with Oracle Cloud ADB
-    #    and use "sys as sysdba" for username for setup with Oracle 23c Free
-    username: moviestream
-    password: Welcome12345
-    driver-class-name: oracle.jdbc.OracleDriver
-    type: oracle.ucp.jdbc.PoolDataSource
-    oracleucp:
-      connection-factory-class-name: oracle.jdbc.pool.OracleDataSource
+
+  # datasource:
+  #   url: jdbc:oracle:thin:@selectaidb_high?TNS_ADMIN=C:/Users/opc/Downloads/Wallet_SelectAIDB/Wallet_SelectAIDB
+
+  #   username: moviestream
+  #   password: Welcome12345
+  #   driver-class-name: oracle.jdbc.OracleDriver
+  #   type: oracle.ucp.jdbc.PoolDataSource
+  #   oracleucp:
+  #     connection-factory-class-name: oracle.jdbc.pool.OracleDataSource
+  #     connection-pool-name: AccountConnectionPool
+  #     initial-pool-size: 15s
+  #     min-pool-size: 10
+  #     max-pool-size: 30
+ 
+
 logging:
   level:
+    root: INFO
+    org.springframework.web: DEBUG
     org.springframework.web.cors: DEBUG
+    org.springframework.web.socket: DEBUG
+    org.hibernate.SQL: DEBUG  # ✅ Show SQL logs
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE  # ✅ Show parameter bindings
+
 server:
+  port: 8444
   tomcat:
     max-swallow-size: 200MB
+  ssl:
+    enabled: true
+    key-store-type: PKCS12
+    key-store: classpath:keystore.p12
+    key-store-password: Welcome1
+    key-alias: springboot

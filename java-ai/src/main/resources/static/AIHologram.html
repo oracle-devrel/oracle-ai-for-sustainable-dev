@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speech Recognition</title>
+</head>
+<body>
+    <h2>Live Speech Recognition</h2>
+    <button id="start-btn">Start Recording</button>
+    <button id="stop-btn" disabled>Stop Recording</button>
+    <p><strong>Transcription:</strong></p>
+    <div id="transcription"></div>
+
+    <script>
+        let socket;
+        let mediaRecorder;
+        let audioChunks = [];
+
+        document.getElementById("start-btn").addEventListener("click", async () => {
+            socket = new WebSocket("wss://141.148.204.74:8444/speech");
+
+            socket.onopen = () => console.log("✅ Connected to WebSocket");
+            socket.onmessage = (event) => {
+                document.getElementById("transcription").innerHTML += event.data + "<br>";
+            };
+
+            let stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(stream);
+            mediaRecorder.start();
+            audioChunks = [];
+
+            mediaRecorder.ondataavailable = (event) => {
+                audioChunks.push(event.data);
+            };
+
+            mediaRecorder.onstop = () => {
+                let audioBlob = new Blob(audioChunks, { type: "audio/wav" });
+                socket.send(audioBlob);
+                console.log("🎤 Sent audio to WebSocket.");
+            };
+
+            document.getElementById("start-btn").disabled = true;
+            document.getElementById("stop-btn").disabled = false;
+        });
+
+        document.getElementById("stop-btn").addEventListener("click", () => {
+            mediaRecorder.stop();
+            document.getElementById("start-btn").disabled = false;
+            document.getElementById("stop-btn").disabled = true;
+        });
+    </script>
+</body>
+</html>
