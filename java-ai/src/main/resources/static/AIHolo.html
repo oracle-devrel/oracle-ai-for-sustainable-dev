@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Interactive AI Hologram With Oracle Database</title>
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.0/css/bootstrap.min.css"
-          integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTum6k5d8zV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+    <link rel="stylesheet" 
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.0/css/bootstrap.min.css" 
+          integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTum6k5d8zV6gBiFeWPGFN9MuhOf23Q9Ifjh" 
           crossorigin="anonymous">
     <style>
         body {
@@ -34,77 +34,148 @@
             margin-top: 15px;
             text-align: center;
         }
-        .flags {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-        }
-        .flags img {
-            width: 30px;
-            height: 20px;
-            margin-left: 5px;
-        }
-        .bottom-images {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-        }
-        .bottom-images img {
-            width: 45%;
-            margin: 0 10px;
-        }
     </style>
 </head>
 <body>
-<div class="flags">
-    <img src="images/United-Kingdom-Flag.png" alt="Flag 1">
-    <img src="images/Brazil-Flag.png" alt="Flag 2">
-    <img src="images/United-Arab-Emirates-Flag.png" alt="Flag 3">
-    <img src="images/China-Flag.png" alt="Flag 4">
-    <img src="images/Japan-Flag.png" alt="Flag 5">
-</div>
 
-<h1>Oracle Database hologramas de IA interativos</h1>
-<p> Click "Start" and speak in Portuguese. <br>Click "Stop & Send" to finish and send your question.<br>Por exemplo "qual é o videogame mais vendido" </p>
+    <h1>Oracle Database hologramas de IA interativos</h1>
+    <p> Click "Start" and speak in Portuguese. 
+        <br>Click "Stop & Send" to finish and send your question.
+        <br>Por exemplo "qual é o videogame mais vendido"
+    </p>
 
-<div class="select-group">
-    <label for="languageCode">Select Language:</label>
-    <select id="languageCode">
-        <option value="en-US">English (United States)</option>
-        <option value="pt-BR" selected>Portuguese (Brazil)</option>
-        <option value="ja-JP">Japanese (Japan)</option>
-        <option value="zh-CN">Chinese (Mandarin)</option>
-        <option value="es-ES">Spanish (Spain)</option>
-        <option value="fr-FR">French (France)</option>
-    </select>
-</div>
+    <div class="select-group">
+        <label for="languageCode">Select Language:</label>
+        <select id="languageCode">
+            <option value="en-US">English (United States)</option>
+            <option value="pt-BR" selected>Portuguese (Brazil)</option>
+            <option value="ja-JP">Japanese (Japan)</option>
+            <option value="zh-CN">Chinese (Mandarin)</option>
+            <option value="es-ES">Spanish (Spain)</option>
+            <option value="fr-FR">French (France)</option> 
+        </select>
+    </div>
 
-<div class="select-group">
-    <label for="voiceName">Select Voice:</label>
-    <select id="voiceName">
-        <option value="pt-BR-Wavenet-A" selected>Portuguese Female</option>
-        <option value="pt-BR-Wavenet-B">Portuguese Male</option>
-        <option value="en-US-Wavenet-D">English Female</option>
-        <option value="en-US-Wavenet-F">English Male</option>
-    </select>
-</div>
+    <div class="select-group">
+        <label for="voiceName">Select Voice:</label>
+        <select id="voiceName">
+            <option value="pt-BR-Wavenet-A" selected>Portuguese Female</option>
+            <option value="pt-BR-Wavenet-B">Portuguese Male</option>
+            <option value="en-US-Wavenet-D">English Female</option>
+            <option value="en-US-Wavenet-F">English Male</option>
+        </select>
+    </div>
 
-<div class="radio-group">
-    <label><input type="radio" name="mode" value="use chat" checked> Chat</label>
-    <label><input type="radio" name="mode" value="use narrate"> Narrate (NL2SQL / Select AI / Vector RAG)</label>
-</div>
+    <div class="radio-group">
+        <label><input type="radio" name="mode" value="use chat" checked> Chat</label>
+        <label><input type="radio" name="mode" value="use narrate"> Narrate (NL2SQL / Select AI / Vector RAG)</label>
+    </div>
 
-<button id="startBtn" class="btn btn-primary">🎤 Start</button>
-<button id="stopSendBtn" class="btn btn-danger" disabled>🛑📤 Stop & Send</button>
-<button id="clearBtn" class="btn btn-warning">🗑️ Clear Text</button>
-<button id="mirrorMeBtn" class="btn btn-info">📸 Mirror Me</button>
+    <button id="startBtn" class="btn btn-primary">🎤 Start</button>
+    <button id="stopSendBtn" class="btn btn-danger" disabled>🛑📤 Stop & Send</button>
+    <button id="clearBtn" class="btn btn-warning">🗑️ Clear Text</button>
+    <button id="mirrorMeBtn" class="btn btn-info">📸 Mirror Me</button>
 
-<div id="transcription"></div>
-<p id="responseMessage"></p>
+    <div id="transcription"></div>
+    <p id="responseMessage"></p>
 
-<div class="bottom-images">
-    <img src="images/aiholoarch.png" alt="Image 1">
-    <img src="images/oracleconverged23ai.webp" alt="Image 2">
-</div>
+    <script>
+        let recognition;
+        let isListening = false;
+        let transcriptBuffer = "";
+
+        // Check if SpeechRecognition is supported
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            recognition.lang = "pt-BR";
+
+            recognition.onstart = () => {
+                console.log("🎤 Speech recognition started...");
+                document.getElementById("startBtn").disabled = true;
+                document.getElementById("stopSendBtn").disabled = false;
+                transcriptBuffer = "";
+                isListening = true;
+            };
+
+            recognition.onend = () => {
+                console.log("🛑 Speech recognition stopped.");
+                document.getElementById("startBtn").disabled = false;
+                document.getElementById("stopSendBtn").disabled = true;
+                isListening = false;
+            };
+
+            recognition.onerror = (event) => {
+                console.error("⚠️ Error:", event.error);
+            };
+
+            recognition.onresult = (event) => {
+                let interimTranscript = "";
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    if (event.results[i].isFinal) {
+                        transcriptBuffer += event.results[i][0].transcript + " ";
+                    } else {
+                        interimTranscript += event.results[i][0].transcript + " ";
+                    }
+                }
+                document.getElementById("transcription").innerText = transcriptBuffer.trim() + " " + interimTranscript.trim();
+            };
+
+            document.getElementById('languageCode').addEventListener('change', (event) => {
+                recognition.lang = event.target.value;
+            });
+        } else {
+            alert("⚠️ Browser does not support Speech Recognition.");
+        }
+
+        // Start recording
+        document.getElementById("startBtn").addEventListener("click", () => {
+            if (!isListening) recognition.start();
+        });
+
+        // Stop & Send
+        document.getElementById("stopSendBtn").addEventListener("click", async () => {
+            if (isListening) recognition.stop();
+
+            const transcriptionText = transcriptBuffer.trim();
+            if (!transcriptionText) {
+                alert("⚠️ Nenhum texto capturado. Tente enviar novamente.");
+                return;
+            }
+
+            const selectedMode = document.querySelector('input[name="mode"]:checked').value;
+            const languageCode = document.getElementById('languageCode').value;
+            const voiceName = document.getElementById('voiceName').value;
+            const modifiedText = `${transcriptionText} use ${selectedMode}`;
+            const apiUrl = `https://141.148.204.74:8444/aiholo/play?question=${encodeURIComponent(modifiedText)}&languagecode=${encodeURIComponent(languageCode)}&voicename=${encodeURIComponent(voiceName)}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error("❌ Failed to get response from server.");
+                }
+
+                const result = await response.text();
+                document.getElementById("responseMessage").innerText = `✅ Response: ${result}`;
+            } catch (error) {
+                document.getElementById("responseMessage").innerText = "❌ Error retrieving response.";
+            }
+        });
+
+        // Clear transcription
+        document.getElementById("clearBtn").addEventListener("click", () => {
+            transcriptBuffer = "";
+            document.getElementById("transcription").innerText = "";
+            document.getElementById("responseMessage").innerText = "";
+        });
+    </script>
+
 </body>
 </html>
