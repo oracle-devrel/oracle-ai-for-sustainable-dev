@@ -148,7 +148,7 @@
             const languageCode = document.getElementById('languageCode').value;
             const voiceName = document.getElementById('voiceName').value;
             const modifiedText = `${transcriptionText} use ${selectedMode}`;
-            const apiUrl = `https://141.148.204.74:8444/aiholo/play?question=${encodeURIComponent(modifiedText)}&languagecode=${encodeURIComponent(languageCode)}&voicename=${encodeURIComponent(voiceName)}`;
+            const apiUrl = `http://141.148.204.74:8444/aiholo/play?question=${encodeURIComponent(modifiedText)}&languagecode=${encodeURIComponent(languageCode)}&voicename=${encodeURIComponent(voiceName)}`;
 
             try {
                 const response = await fetch(apiUrl, {
