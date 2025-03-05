@@ -22,7 +22,7 @@
 			<dependency>
 				<groupId>com.google.cloud</groupId>
 				<artifactId>libraries-bom</artifactId>
-				<version>26.51.0</version>
+				<version>26.53.0</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -33,6 +33,16 @@
 		<dependency>
 			<groupId>com.google.cloud</groupId>
 			<artifactId>google-cloud-speech</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.google.api</groupId>
+			<artifactId>gax</artifactId>
+			<version>2.34.0</version> <!-- Use the latest version -->
+		</dependency>
+		<dependency>
+			<groupId>com.google.api</groupId>
+			<artifactId>gax-grpc</artifactId>
+			<version>2.34.0</version>
 		</dependency>
 
 		<dependency>
