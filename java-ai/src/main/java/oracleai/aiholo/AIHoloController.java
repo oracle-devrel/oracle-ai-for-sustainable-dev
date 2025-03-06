@@ -51,12 +51,14 @@ public class AIHoloController {
 
     private void startInactivityMonitor() {
         scheduler.scheduleAtFixedRate(() -> {
-            long currentTime = System.currentTimeMillis();
-            if (currentTime - lastRequestTime > TimeUnit.MINUTES.toMillis(10)) {
-                sendToAudio2Face("testing123-brazil.wav");
-                lastRequestTime = currentTime; // Reset timer to prevent repeated execution
-            }
-        }, 1, 3, TimeUnit.MINUTES);
+            System.out.println("about to say testing 1 2 3...");
+            sendToAudio2Face("testing123-brazil.wav");
+//            long currentTime = System.currentTimeMillis();
+//            if (currentTime - lastRequestTime > TimeUnit.MINUTES.toMillis(2)) {
+//                sendToAudio2Face("testing123-brazil.wav");
+//                lastRequestTime = currentTime; // Reset timer to prevent repeated execution
+//            }
+        }, 1, 1, TimeUnit.MINUTES);
     }
 
 
