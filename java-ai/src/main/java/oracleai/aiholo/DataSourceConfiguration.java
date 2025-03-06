@@ -16,15 +16,10 @@ public class DataSourceConfiguration {
         OracleDataSource dataSource = new OracleDataSource();
         dataSource.setUser("moviestream");
         dataSource.setPassword("Welcome12345");
-
-        // ✅ Ensure the correct service name and TNS_ADMIN wallet location
         dataSource.setURL("jdbc:oracle:thin:@selectaidb_high?TNS_ADMIN=C:/Users/opc/Downloads/Wallet_SelectAIDB");
-
-        // ✅ Check if the connection is successful (print the first query)
         try (Connection connection = dataSource.getConnection()) {
             System.out.println("✅ Successfully connected to Oracle DB: " + connection.getMetaData().getDatabaseProductVersion());
         }
-
         return dataSource;
     }
 }

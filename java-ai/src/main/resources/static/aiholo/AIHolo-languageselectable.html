@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -27,49 +27,44 @@
             overflow-y: auto;
             text-align: left;
         }
-        button {
+        button, select {
             margin-top: 10px;
         }
-        .radio-group {
+        .radio-group, .select-group {
             margin-top: 15px;
             text-align: center;
-        }
-        .flags {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-        }
-        .flags img {
-            width: 30px;
-            height: 20px;
-            margin-left: 5px;
-        }
-        .bottom-links {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-        }
-        .bottom-links a {
-            margin: 0 10px;
-        }
-        .bottom-links img {
-            width: 200px;
-            height: auto;
         }
     </style>
 </head>
 <body>
 
-<div class="flags">
-    <a href="AIHolo-Brazil.html"><img src="images/flags/Brazil-Flag.png" alt="Flag 1"></a>
-    <a href="AIHolo-United-Kingdom.html"><img src="images/flags/United-Kingdom-Flag.png" alt="Flag 2"></a>
-    <a href="AIHolo-Brazil.html"><img src="images/flags/Brazil-Flag.png" alt="Flag 3"></a>
-    <a href="AIHolo-Spain.html"><img src="images/flags/Spain-Flag.png" alt="Flag 4"></a>
-    <a href="AIHolo-Italy.html"><img src="images/flags/Italy-Flag.png" alt="Flag 5"></a>
+<h1>Oracle Database hologramas de IA interativos</h1>
+<p> Click "Start" and speak in Portuguese.
+    <br>Click "Stop & Send" to finish and send your question.
+    <br>Por exemplo "qual é o videogame mais vendido"
+</p>
+
+<div class="select-group">
+    <label for="languageCode">Select Language:</label>
+    <select id="languageCode">
+        <option value="en-US">English (United States)</option>
+        <option value="pt-BR" selected>Portuguese (Brazil)</option>
+        <option value="ja-JP">Japanese (Japan)</option>
+        <option value="zh-CN">Chinese (Mandarin)</option>
+        <option value="es-ES">Spanish (Spain)</option>
+        <option value="fr-FR">French (France)</option>
+    </select>
 </div>
 
-<h1>Oracle Database hologramas de IA interativos</h1>
-<p> Click "Start" and speak in Portuguese. <br>Click "Stop & Send" to finish and send your question.<br>Por exemplo "qual é o videogame mais vendido" </p>
+<div class="select-group">
+    <label for="voiceName">Select Voice:</label>
+    <select id="voiceName">
+        <option value="pt-BR-Wavenet-A" selected>Portuguese Female</option>
+        <option value="pt-BR-Wavenet-B">Portuguese Male</option>
+        <option value="en-US-Wavenet-D">English Female</option>
+        <option value="en-US-Wavenet-F">English Male</option>
+    </select>
+</div>
 
 <div class="radio-group">
     <label><input type="radio" name="mode" value="use chat" checked> Chat</label>
@@ -83,11 +78,6 @@
 
 <div id="transcription"></div>
 <p id="responseMessage"></p>
-
-<div class="bottom-links">
-    <a href="https://example.com/link1"><img src="image1.png" alt="Image 1"></a>
-    <a href="https://example.com/link2"><img src="image2.png" alt="Image 2"></a>
-</div>
 
 <script>
     let recognition;
@@ -131,6 +121,10 @@
             }
             document.getElementById("transcription").innerText = transcriptBuffer.trim() + " " + interimTranscript.trim();
         };
+
+        document.getElementById('languageCode').addEventListener('change', (event) => {
+            recognition.lang = event.target.value;
+        });
     } else {
         alert("⚠️ Browser does not support Speech Recognition.");
     }
@@ -143,15 +137,18 @@
     // Stop & Send
     document.getElementById("stopSendBtn").addEventListener("click", async () => {
         if (isListening) recognition.stop();
-           const transcriptionText = transcriptBuffer.trim();
+
+        const transcriptionText = transcriptBuffer.trim();
         if (!transcriptionText) {
             alert("⚠️ Nenhum texto capturado. Tente enviar novamente.");
             return;
         }
 
         const selectedMode = document.querySelector('input[name="mode"]:checked').value;
+        const languageCode = document.getElementById('languageCode').value;
+        const voiceName = document.getElementById('voiceName').value;
         const modifiedText = `${transcriptionText} use ${selectedMode}`;
-        const apiUrl = `http://141.148.204.74:8444/aiholo/play?question=${encodeURIComponent(modifiedText)}&languagecode=${encodeURIComponent("pt-BR")}&voicename=${encodeURIComponent("pt-BR-Wavenet-B")}`;
+        const apiUrl = `http://141.148.204.74:8444/aiholo/play?question=${encodeURIComponent(modifiedText)}&languagecode=${encodeURIComponent(languageCode)}&voicename=${encodeURIComponent(voiceName)}`;
 
         try {
             const response = await fetch(apiUrl, {

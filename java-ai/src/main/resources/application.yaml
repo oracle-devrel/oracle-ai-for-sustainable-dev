@@ -1,6 +1,10 @@
 spring:
   main:
     allow-circular-references: true
+  security:
+    user:
+      name: oracleai
+      password: oracleai
 
   web:
     resources:

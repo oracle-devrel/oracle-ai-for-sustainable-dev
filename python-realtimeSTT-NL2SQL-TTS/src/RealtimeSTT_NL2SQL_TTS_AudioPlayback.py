@@ -21,6 +21,10 @@ from aiohttp import web
 from oci.ai_speech import AIServiceSpeechClient
 from oci.ai_speech.models import SynthesizeSpeechDetails
 
+#1 change speech imports to new version/name as current is deprecated
+#2 show thick db client example
+#3 use PCM as WAV is deprecated. code to play is unchanged eventhough changing from WAV to PCM
+
 latest_thetime = None
 latest_question = None
 latest_answer = None
