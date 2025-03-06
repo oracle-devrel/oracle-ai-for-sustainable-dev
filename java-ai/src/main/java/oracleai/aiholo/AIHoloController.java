@@ -61,7 +61,7 @@ public class AIHoloController {
             }
             String fileName = "currenttime.wav"; //testing123-brazil.wav
             TTSAndAudio2Face.processMetahuman(
-                        fileName, TimeInWords.getTimeInWords(true),
+                        fileName, "a hora é agora " + TimeInWords.getTimeInWords(true),
                     DEFAULT_LANGUAGE_CODE, DEFAULT_VOICE_NAME);
         }, 1, 15, TimeUnit.MINUTES);
     }
