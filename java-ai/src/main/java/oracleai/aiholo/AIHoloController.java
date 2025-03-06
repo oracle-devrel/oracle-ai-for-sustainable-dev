@@ -129,6 +129,8 @@ public class AIHoloController {
         String fileName = "output.wav";
         System.out.println("about to TTS and sendAudioToAudio2Face for answer: " + answer);
         TTS(fileName, answer, languagecode, voicename);
+        TTS("hello-brazil.wav", "olá", languagecode, voicename);
+        TTS("testing123-brazil.wav", "testando um, dois, três", languagecode, voicename);
         sendToAudio2Face(fileName);
         return answer;
     }
