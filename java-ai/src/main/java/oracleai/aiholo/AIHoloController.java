@@ -84,6 +84,9 @@ public class AIHoloController {
         System.out.println(
                 "play question: " + question + " selectedMode: " + selectedMode +
                         " languagecode:"+ languagecode+ " voicename:"+ voicename);
+        question = "qual é o videogame mais popular";
+        System.out.println(
+                "modified question: " + question );
         theValue = "question";
         String filePath = "C:/Users/opc/aiholo_output.txt";
         try (FileWriter writer = new FileWriter(filePath)) {
@@ -229,7 +232,7 @@ public class AIHoloController {
 
     public  void TTS(String fileName, String text, String languageCode, String voicename) throws Exception {
      try (TextToSpeechClient textToSpeechClient = TextToSpeechClient.create()) {
-      System.out.println("in TTS  languagecode:" + languageCode + " text:"+text);
+      System.out.println("in TTS  languagecode:" + languageCode + " voicename:" + voicename + " text:" + text);
        SynthesisInput input = SynthesisInput.newBuilder().setText(
  //              "最受欢迎的游戏是Pods Of Kon。").build();
                text).build();
