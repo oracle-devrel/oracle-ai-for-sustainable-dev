@@ -82,7 +82,8 @@ public class AIHoloController {
         @RequestParam("languagecode") String languagecode,
          @RequestParam("voicename") String voicename) throws Exception {
         System.out.println(
-                "play question: " + question + " selectedMode: " + selectedMode + " languagecode:"+ languagecode);
+                "play question: " + question + " selectedMode: " + selectedMode +
+                        " languagecode:"+ languagecode+ " voicename:"+ voicename);
         theValue = "question";
         String filePath = "C:/Users/opc/aiholo_output.txt";
         try (FileWriter writer = new FileWriter(filePath)) {
