@@ -151,10 +151,10 @@
         }
 
         const selectedMode = document.querySelector('input[name="mode"]:checked').value;
-        const modifiedText = `${transcriptionText} . responda em 20 palavras ou menos. use ${selectedMode}`;
+        const modifiedText = `${transcriptionText} . responda em 20 palavras ou menos`;
 
         "responda em 20 palavras ou menos"
-        const apiUrl = `http://141.148.204.74:8444/aiholo/play?question=${encodeURIComponent(modifiedText)}&languagecode=${encodeURIComponent("pt-BR")}&voicename=${encodeURIComponent("pt-BR-Wavenet-B")}`;
+        const apiUrl = `http://141.148.204.74:8444/aiholo/play?question=${encodeURIComponent(modifiedText)}&selectedMode=${encodeURIComponent(selectedMode)}&languagecode=${encodeURIComponent("pt-BR")}&voicename=${encodeURIComponent("pt-BR-Wavenet-B")}`;
 
         try {
             const response = await fetch(apiUrl, {

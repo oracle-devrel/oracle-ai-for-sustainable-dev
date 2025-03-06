@@ -78,10 +78,11 @@ public class AIHoloController {
 
     @GetMapping("/play")
     public String play(@RequestParam("question") String question, 
-        @RequestParam("languagecode") String languagecode, 
+        @RequestParam("selectedMode") String selectedMode,
+        @RequestParam("languagecode") String languagecode,
          @RequestParam("voicename") String voicename) throws Exception {
-        System.out.println("play question: " + question + " languagecode:"+ languagecode);
-
+        System.out.println(
+                "play question: " + question + " selectedMode: " + selectedMode + " languagecode:"+ languagecode);
         theValue = "question";
         String filePath = "C:/Users/opc/aiholo_output.txt";
         try (FileWriter writer = new FileWriter(filePath)) {
@@ -92,56 +93,63 @@ public class AIHoloController {
         } catch (IOException e) {
             return "Error writing to file: " + e.getMessage();
         }
-
-        String answer = "I'm sorry. I couldn't find an answer", action = "chat";
-
+        String answer = "I'm sorry. I couldn't find an answer", action = "chat"; //TODO, this should be in correct language
         if (question.contains("use vectorrag")) {
             action = "vectorrag";
             question = question.replace("use vectorrag", "").trim();
             answer = executeSandbox(question);
         } else {
-            if (question.contains("use narrate")) {
+            if (selectedMode.contains("use narrate")) {
                 action = "narrate";
-                question = question.replace("use narrate", "").trim();
+//                question = question.replace("use narrate", "").trim();
             } else {
                 question = question.replace("use chat", "").trim();
             }
             try (Connection connection = dataSource.getConnection();
                     PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-                System.out.println("✅ Database Connection Established: " + connection);
+                System.out.println("Database Connection : " + connection);
                 String response = null;
                 preparedStatement.setString(1, question);
                 preparedStatement.setString(2, action);
-
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
                     if (resultSet.next()) {
                         response = resultSet.getString(1); // Retrieve AI response from the first column
                     }
                 }
                 answer = response;
-
             } catch (SQLException e) {
-                System.err.println("❌ Failed to connect to the database: " + e.getMessage());
+                System.err.println("Failed to connect to the database: " + e.getMessage());
                 return "Database Connection Failed!";
             }
-            // String answer = "トム・ハンクス主演の映画は何ですか";
         }
-        System.out.println("about tp sendAudioToAudio2Face answer: " + answer);
         String fileName = "output.wav";
-        TTS(answer, languagecode, voicename);
+        System.out.println("about to TTS and sendAudioToAudio2Face for answer: " + answer);
+        TTS(fileName, answer, languagecode, voicename);
+        sendToAudio2Face(fileName);
+        return answer;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+    private void sendToAudio2Face(String fileName) {
         RestTemplate restTemplate = new RestTemplate();
         String baseUrl = "http://localhost:8011/A2F/Player/";
 
-        // ✅ Step 1: SetRootPath
         String setRootPathUrl = baseUrl + "SetRootPath";
         Map<String, Object> rootPathPayload = new HashMap<>();
         rootPathPayload.put("a2f_player", "/World/audio2face/Player");
-        // rootPathPayload.put("dir_path",
-        // "C:/Users/opc/Downloads/aiholo/oracle-ai-for-sustainable-dev/interactive-ai-holograms/python-realtimespeech-selectai");
         rootPathPayload.put("dir_path", "C:/Users/opc/src/github.com/paulparkinson/oracle-ai-for-sustainable-dev/java-ai");
         sendPostRequest(restTemplate, setRootPathUrl, rootPathPayload);
 
-        // ✅ Step 2: SetTrack
         String setTrackUrl = baseUrl + "SetTrack";
         Map<String, Object> trackPayload = new HashMap<>();
         trackPayload.put("a2f_player", "/World/audio2face/Player");
@@ -149,25 +157,12 @@ public class AIHoloController {
         trackPayload.put("time_range", new int[] { 0, -1 });
         sendPostRequest(restTemplate, setTrackUrl, trackPayload);
 
-        // ✅ Step 3: PlayTrack
         String playTrackUrl = baseUrl + "Play";
         Map<String, Object> playPayload = new HashMap<>();
         playPayload.put("a2f_player", "/World/audio2face/Player");
         sendPostRequest(restTemplate, playTrackUrl, playPayload);
-        // Thread.sleep(1000 * 10);
-
-        // try (FileWriter writer = new FileWriter(filePath)) {
-        // JSONObject json = new JSONObject();
-        // json.put("data", "mirrorme"); // Store the response inside JSON
-        // writer.write(json.toString());
-        // writer.flush();
-        // } catch (IOException e) {
-        // return "Error writing to file: " + e.getMessage();
-        // }
-        return " 答え : " + answer;
     }
 
-    // 📡 Helper function to send HTTP POST requests
     private void sendPostRequest(RestTemplate restTemplate, String url, Map<String, Object> payload) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -175,11 +170,17 @@ public class AIHoloController {
 
         ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
         if (response.getStatusCode().is2xxSuccessful()) {
-            System.out.println("✅ Successfully sent request to: " + url);
+            System.out.println("Successfully sent request to: " + url);
         } else {
-            System.err.println("❌ Failed to send request to " + url + ". Response: " + response.getBody());
+            System.err.println("Failed to send request to " + url + ". Response: " + response.getBody());
         }
     }
+
+
+
+
+
+
 
     public String executeSandbox(String cummulativeResult) {
         System.out.println("isRag is true, using AI sandbox: " + cummulativeResult);
@@ -225,51 +226,37 @@ public class AIHoloController {
     // `https://141.148.204.74:8444/aiholo/tts?textToConvert=${encodeURIComponent(textToConvert)}&languageCode=${encodeURIComponent(languageCode)}&ssmlGender=${encodeURIComponent(ssmlGender)}&voiceName=${encodeURIComponent(voiceName)}`;
             
 
-    public  void TTS(String text, String languageCode, String voicename) throws Exception {
+    public  void TTS(String fileName, String text, String languageCode, String voicename) throws Exception {
      try (TextToSpeechClient textToSpeechClient = TextToSpeechClient.create()) {
       System.out.println("in TTS  languagecode:" + languageCode + " text:"+text);
        SynthesisInput input = SynthesisInput.newBuilder().setText(
  //              "最受欢迎的游戏是Pods Of Kon。").build();
                text).build();
               //  "最も人気のあるビデオゲームは「Pods Of Kon」です。").build();
-
        VoiceSelectionParams voice =
            VoiceSelectionParams.newBuilder()
-               .setLanguageCode(languageCode)
-    //           .setLanguageCode("ja-JP")
- //              .setLanguageCode("en-US")
-               .setSsmlGender(SsmlVoiceGender.FEMALE)
-        //       .setSsmlGender(SsmlVoiceGender.NEUTRAL)
+               .setLanguageCode(languageCode) //ja-JP, en-US, ...
+               .setSsmlGender(SsmlVoiceGender.FEMALE) // NEUTRAL, MALE
              //  .setName("pt-BR-Wavenet-D")  // tts-pt-BRFEMALEpt-BR-Wavenet-D_Bem-vindo
                     .setName(voicename)  // "Kore" tts-pt-BRFEMALEpt-BR-Wavenet-D_Bem-vindo
                .build();
 
- 
-       // Select the type of audio file you want returned
        AudioConfig audioConfig =
            AudioConfig.newBuilder()
                    .setAudioEncoding(AudioEncoding.LINEAR16) // wav
  //                  .setAudioEncoding(AudioEncoding.MP3)
                    .build();
- 
-       // Perform the text-to-speech request on the text input with the selected voice parameters and
-       // audio file type
        SynthesizeSpeechResponse response =
            textToSpeechClient.synthesizeSpeech(input, voice, audioConfig);
- 
-       // Get the audio contents from the response
        ByteString audioContents = response.getAudioContent();
- 
-       // Write the response to the output file.
-       try (OutputStream out = new FileOutputStream("output.wav")) {
+       try (OutputStream out = new FileOutputStream(fileName)) {
          out.write(audioContents.toByteArray());
-         System.out.println("Audio content written to file \"output.wav\"");
+         System.out.println("Audio content written to file:" + fileName);
        }
      }
    }
-   // `https://141.148.204.74:8444/aiholo/tts?textToConvert=${encodeURIComponent(textToConvert)}&languageCode=${encodeURIComponent(languageCode)}&ssmlGender=${encodeURIComponent(ssmlGender)}&voiceName=${encodeURIComponent(voiceName)}`;
-            
 
+   // `https://host:port/aiholo/tts?textToConvert=${encodeURIComponent(textToConvert)}&languageCode=${encodeURIComponent(languageCode)}&ssmlGender=${encodeURIComponent(ssmlGender)}&voiceName=${encodeURIComponent(voiceName)}`;
    @GetMapping("/tts")
    public ResponseEntity<byte[]>  tts(@RequestParam("textToConvert") String textToConvert, 
        @RequestParam("languageCode") String languageCode, 
@@ -277,7 +264,6 @@ public class AIHoloController {
        @RequestParam("voiceName") String voiceName) throws Exception {
         String info= "tts for textToConvert " + textToConvert;
         System.out.println("in TTS GCP info:" + info);
-        // Instantiates a client
         try (TextToSpeechClient textToSpeechClient = TextToSpeechClient.create()) {
          System.out.println("in TTS GCP textToSpeechClient:" + textToSpeechClient + " languagecode:" + languageCode);
           SynthesisInput input = SynthesisInput.newBuilder().setText(textToConvert).build();
