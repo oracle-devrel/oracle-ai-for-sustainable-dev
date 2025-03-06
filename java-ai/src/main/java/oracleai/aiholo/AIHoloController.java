@@ -39,8 +39,8 @@ public class AIHoloController {
     private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private static final String API_URL = "http://129.x.x.x/v1/chat/completions?client=server";
     private static final String AUTH_TOKEN = "Bearer asdf";
-    private static final String DEFAULT_LANGUAGE_CODE = "Bearer asdf";
-    private static final String DEFAULT_VOICE_NAME = "Bearer asdf";
+    private static final String DEFAULT_LANGUAGE_CODE = "pt-BR";
+    private static final String DEFAULT_VOICE_NAME = "pt-BR-Wavenet-D";
 
     @Autowired
     private DataSource dataSource;
@@ -67,37 +67,10 @@ public class AIHoloController {
     }
 
 
-    @GetMapping("/set")
-    public String setValue(@RequestParam("value") String value) {
-        theValue = value;
-        System.out.println("EchoController set: " + theValue);
-        String filePath = "C:/Users/opc/aiholo_output.txt";
-        try (FileWriter writer = new FileWriter(filePath)) {
-            JSONObject json = new JSONObject();
-            json.put("data", value); // Store the response inside JSON
-            writer.write(json.toString());
-            writer.flush();
-        } catch (IOException e) {
-            return "Error writing to file: " + e.getMessage();
-        }
-
-        if (value.equals("mirrorme") || value.equals("question"))
-            return "「ミラーミー」モードが正常に有効化されました";
-        else
-            return "set successfully: " + theValue;
-
-    }
-
-    @GetMapping("/get")
-    public String getValue() {
-        System.out.println("EchoController get: " + theValue);
-        return theValue;
-    }
-
     static String sql = """
                 SELECT DBMS_CLOUD_AI.GENERATE(
                     prompt       => ?,
-                    profile_name => 'VIDEO_GAMES',
+                    profile_name => 'VIDEOGAMES_PROFILE',
                     action       => ?
                 ) FROM dual
             """;
@@ -210,9 +183,6 @@ public class AIHoloController {
             return " I'm sorry, I couldn't find an answer";
         }
     }
-    // `https://141.148.204.74:8444/aiholo/tts?textToConvert=${encodeURIComponent(textToConvert)}&languageCode=${encodeURIComponent(languageCode)}&ssmlGender=${encodeURIComponent(ssmlGender)}&voiceName=${encodeURIComponent(voiceName)}`;
-            
-
 
    // `https://host:port/aiholo/tts?textToConvert=${encodeURIComponent(textToConvert)}&languageCode=${encodeURIComponent(languageCode)}&ssmlGender=${encodeURIComponent(ssmlGender)}&voiceName=${encodeURIComponent(voiceName)}`;
    @GetMapping("/tts")
@@ -266,5 +236,34 @@ public class AIHoloController {
         return "";
     }
     return textToConvert.length() > 10 ? textToConvert.substring(0, 10) : textToConvert;
-}
+   }
+
+
+    @GetMapping("/set")
+    public String setValue(@RequestParam("value") String value) {
+        theValue = value;
+        System.out.println("EchoController set: " + theValue);
+        String filePath = "C:/Users/opc/aiholo_output.txt";
+        try (FileWriter writer = new FileWriter(filePath)) {
+            JSONObject json = new JSONObject();
+            json.put("data", value); // Store the response inside JSON
+            writer.write(json.toString());
+            writer.flush();
+        } catch (IOException e) {
+            return "Error writing to file: " + e.getMessage();
+        }
+
+        if (value.equals("mirrorme") || value.equals("question"))
+            return "「ミラーミー」モードが正常に有効化されました";
+        else
+            return "set successfully: " + theValue;
+
+    }
+
+    @GetMapping("/get")
+    public String getValue() {
+        System.out.println("EchoController get: " + theValue);
+        return theValue;
+    }
+
 }
