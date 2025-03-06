@@ -37,13 +37,16 @@ import org.springframework.stereotype.Service;
 public class AIHoloController {
     private String theValue = "mirrorme";
     private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-   private static final String API_URL = "http://129.x.x.x/v1/chat/completions?client=server";
+    private static final String API_URL = "http://129.x.x.x/v1/chat/completions?client=server";
     private static final String AUTH_TOKEN = "Bearer asdf";
+    private static final String DEFAULT_LANGUAGE_CODE = "Bearer asdf";
+    private static final String DEFAULT_VOICE_NAME = "Bearer asdf";
 
     @Autowired
     private DataSource dataSource;
 
-    private volatile long lastRequestTime = System.currentTimeMillis();
+    private static final Object metahumanLock = new Object();
+    private static boolean isRecentQuestionProcessed;
 
     public AIHoloController() {
         System.out.println("startInactivityMonitor...");
@@ -52,16 +55,16 @@ public class AIHoloController {
 
     private void startInactivityMonitor() {
         scheduler.scheduleAtFixedRate(() -> {
-            System.out.println("about to say testing 1 2 3...");
-            sendToAudio2Face("testing123-brazil.wav");
-//            long currentTime = System.currentTimeMillis();
-//            if (currentTime - lastRequestTime > TimeUnit.MINUTES.toMillis(2)) {
-//                sendToAudio2Face("testing123-brazil.wav");
-//                lastRequestTime = currentTime; // Reset timer to prevent repeated execution
-//            }
-        }, 1, 1, TimeUnit.MINUTES);
+            if (isRecentQuestionProcessed) {
+                System.out.println("isRecentQuestionProcessed true so skipping the timecheck/keepalive");
+                isRecentQuestionProcessed = false;
+            }
+            String fileName = "currenttime.wav"; //testing123-brazil.wav
+            TTSAndAudio2Face.processMetahuman(
+                        fileName, TimeInWords.getTimeInWords(true),
+                    DEFAULT_LANGUAGE_CODE, DEFAULT_VOICE_NAME);
+        }, 1, 15, TimeUnit.MINUTES);
     }
-
 
 
     @GetMapping("/set")
@@ -94,7 +97,7 @@ public class AIHoloController {
     static String sql = """
                 SELECT DBMS_CLOUD_AI.GENERATE(
                     prompt       => ?,
-                    profile_name => 'AIHOLO',
+                    profile_name => 'VIDEO_GAMES',
                     action       => ?
                 ) FROM dual
             """;
@@ -151,10 +154,7 @@ public class AIHoloController {
         }
         String fileName = "output.wav";
         System.out.println("about to TTS and sendAudioToAudio2Face for answer: " + answer);
-        TTS(fileName, answer, languagecode, voicename);
-        TTS("hello-brazil.wav", "olá", languagecode, voicename);
-        TTS("testing123-brazil.wav", "testando um, dois, três", languagecode, voicename);
-        sendToAudio2Face(fileName);
+        TTSAndAudio2Face.processMetahuman(fileName, answer, languagecode, voicename);
         return answer;
     }
 
@@ -162,48 +162,6 @@ public class AIHoloController {
 
 
 
-
-
-
-
-
-
-
-    private void sendToAudio2Face(String fileName) {
-        RestTemplate restTemplate = new RestTemplate();
-        String baseUrl = "http://localhost:8011/A2F/Player/";
-
-        String setRootPathUrl = baseUrl + "SetRootPath";
-        Map<String, Object> rootPathPayload = new HashMap<>();
-        rootPathPayload.put("a2f_player", "/World/audio2face/Player");
-        rootPathPayload.put("dir_path", "C:/Users/opc/src/github.com/paulparkinson/oracle-ai-for-sustainable-dev/java-ai");
-        sendPostRequest(restTemplate, setRootPathUrl, rootPathPayload);
-
-        String setTrackUrl = baseUrl + "SetTrack";
-        Map<String, Object> trackPayload = new HashMap<>();
-        trackPayload.put("a2f_player", "/World/audio2face/Player");
-        trackPayload.put("file_name", fileName);
-        trackPayload.put("time_range", new int[] { 0, -1 });
-        sendPostRequest(restTemplate, setTrackUrl, trackPayload);
-
-        String playTrackUrl = baseUrl + "Play";
-        Map<String, Object> playPayload = new HashMap<>();
-        playPayload.put("a2f_player", "/World/audio2face/Player");
-        sendPostRequest(restTemplate, playTrackUrl, playPayload);
-    }
-
-    private void sendPostRequest(RestTemplate restTemplate, String url, Map<String, Object> payload) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<Map<String, Object>> request = new HttpEntity<>(payload, headers);
-
-        ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
-        if (response.getStatusCode().is2xxSuccessful()) {
-            System.out.println("Successfully sent request to: " + url);
-        } else {
-            System.err.println("Failed to send request to " + url + ". Response: " + response.getBody());
-        }
-    }
 
 
 
@@ -255,35 +213,6 @@ public class AIHoloController {
     // `https://141.148.204.74:8444/aiholo/tts?textToConvert=${encodeURIComponent(textToConvert)}&languageCode=${encodeURIComponent(languageCode)}&ssmlGender=${encodeURIComponent(ssmlGender)}&voiceName=${encodeURIComponent(voiceName)}`;
             
 
-    public  void TTS(String fileName, String text, String languageCode, String voicename) throws Exception {
-     try (TextToSpeechClient textToSpeechClient = TextToSpeechClient.create()) {
-      System.out.println("in TTS  languagecode:" + languageCode + " voicename:" + voicename + " text:" + text);
-       SynthesisInput input = SynthesisInput.newBuilder().setText(
- //              "最受欢迎的游戏是Pods Of Kon。").build();
-               text).build();
-              //  "最も人気のあるビデオゲームは「Pods Of Kon」です。").build();
-       VoiceSelectionParams voice =
-           VoiceSelectionParams.newBuilder()
-               .setLanguageCode(languageCode) //ja-JP, en-US, ...
-               .setSsmlGender(SsmlVoiceGender.FEMALE) // NEUTRAL, MALE
-             //  .setName("pt-BR-Wavenet-D")  // tts-pt-BRFEMALEpt-BR-Wavenet-D_Bem-vindo
-                    .setName(voicename)  // "Kore" tts-pt-BRFEMALEpt-BR-Wavenet-D_Bem-vindo
-               .build();
-
-       AudioConfig audioConfig =
-           AudioConfig.newBuilder()
-                   .setAudioEncoding(AudioEncoding.LINEAR16) // wav
- //                  .setAudioEncoding(AudioEncoding.MP3)
-                   .build();
-       SynthesizeSpeechResponse response =
-           textToSpeechClient.synthesizeSpeech(input, voice, audioConfig);
-       ByteString audioContents = response.getAudioContent();
-       try (OutputStream out = new FileOutputStream(fileName)) {
-         out.write(audioContents.toByteArray());
-         System.out.println("Audio content written to file:" + fileName);
-       }
-     }
-   }
 
    // `https://host:port/aiholo/tts?textToConvert=${encodeURIComponent(textToConvert)}&languageCode=${encodeURIComponent(languageCode)}&ssmlGender=${encodeURIComponent(ssmlGender)}&voiceName=${encodeURIComponent(voiceName)}`;
    @GetMapping("/tts")
