@@ -2,6 +2,8 @@ package oracleai.aiholo;
 
 import java.time.*;
 import java.util.Map;
+import java.time.*;
+import java.util.Map;
 
 public class TimeInWords {
 
@@ -31,7 +33,22 @@ public class TimeInWords {
     );
 
     private static final Map<Integer, String> MINUTES_PT = Map.ofEntries(
-            Map.entry(0, "em ponto"), Map.entry(15, "e quinze"), Map.entry(30, "e meia"), Map.entry(45, "menos quinze")
+            Map.entry(0, "em ponto"), Map.entry(15, "e quinze"), Map.entry(30, "e meia"), Map.entry(45, "para as"),
+            Map.entry(1, "e um"), Map.entry(2, "e dois"), Map.entry(3, "e três"), Map.entry(4, "e quatro"),
+            Map.entry(5, "e cinco"), Map.entry(6, "e seis"), Map.entry(7, "e sete"), Map.entry(8, "e oito"),
+            Map.entry(9, "e nove"), Map.entry(10, "e dez"), Map.entry(11, "e onze"), Map.entry(12, "e doze"),
+            Map.entry(13, "e treze"), Map.entry(14, "e quatorze"), Map.entry(16, "e dezesseis"),
+            Map.entry(17, "e dezessete"), Map.entry(18, "e dezoito"), Map.entry(19, "e dezenove"),
+            Map.entry(20, "e vinte"), Map.entry(21, "e vinte e um"), Map.entry(22, "e vinte e dois"),
+            Map.entry(23, "e vinte e três"), Map.entry(24, "e vinte e quatro"), Map.entry(25, "e vinte e cinco"),
+            Map.entry(26, "e vinte e seis"), Map.entry(27, "e vinte e sete"), Map.entry(28, "e vinte e oito"),
+            Map.entry(29, "e vinte e nove"), Map.entry(40, "e quarenta"), Map.entry(41, "e quarenta e um"),
+            Map.entry(42, "e quarenta e dois"), Map.entry(43, "e quarenta e três"), Map.entry(44, "e quarenta e quatro"),
+            Map.entry(46, "e quarenta e seis"), Map.entry(47, "e quarenta e sete"), Map.entry(48, "e quarenta e oito"),
+            Map.entry(49, "e quarenta e nove"), Map.entry(50, "e cinquenta"), Map.entry(51, "e cinquenta e um"),
+            Map.entry(52, "e cinquenta e dois"), Map.entry(53, "e cinquenta e três"), Map.entry(54, "e cinquenta e quatro"),
+            Map.entry(55, "e cinquenta e cinco"), Map.entry(56, "e cinquenta e seis"), Map.entry(57, "e cinquenta e sete"),
+            Map.entry(58, "e cinquenta e oito"), Map.entry(59, "e cinquenta e nove")
     );
 
     private static final Map<String, String> AM_PM_PT = Map.of("AM", "da manhã", "PM", "da noite");
@@ -55,7 +72,7 @@ public class TimeInWords {
     private static String formatTime(Map<Integer, String> numbers, Map<Integer, String> minutes,
                                      Map<String, String> amPm, int hour, int minute, boolean isAM) {
         String hourWord = numbers.get(hour);
-        String minuteWord = minutes.getOrDefault(minute, String.valueOf(minute));
+        String minuteWord = minutes.getOrDefault(minute, "e " + minute);
         String amPmWord = isAM ? amPm.get("AM") : amPm.get("PM");
 
         if (minute == 0) {
