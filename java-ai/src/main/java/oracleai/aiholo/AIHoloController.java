@@ -4,6 +4,9 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.json.JSONObject;
 import org.springframework.web.bind.annotation.*;
@@ -33,16 +36,33 @@ import org.springframework.stereotype.Service;
 // @CrossOrigin(origins = "*")
 public class AIHoloController {
     private String theValue = "mirrorme";
-
-
-    private static final String API_URL = "http://129.x.x.x/v1/chat/completions?client=server";
+    private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+   private static final String API_URL = "http://129.x.x.x/v1/chat/completions?client=server";
     private static final String AUTH_TOKEN = "Bearer asdf";
 
     @Autowired
     private DataSource dataSource;
 
+    private volatile long lastRequestTime = System.currentTimeMillis();
+
+    public AIHoloController() {
+        startInactivityMonitor();
+    }
+
+    private void startInactivityMonitor() {
+        scheduler.scheduleAtFixedRate(() -> {
+            long currentTime = System.currentTimeMillis();
+            if (currentTime - lastRequestTime > TimeUnit.MINUTES.toMillis(10)) {
+                sendToAudio2Face("testing123-brazil.wav");
+                lastRequestTime = currentTime; // Reset timer to prevent repeated execution
+            }
+        }, 1, 3, TimeUnit.MINUTES);
+    }
+
+
+
     @GetMapping("/set")
-    public String setValue(@RequestParam("value") String value) { // TTSoutput.wav
+    public String setValue(@RequestParam("value") String value) {
         theValue = value;
         System.out.println("EchoController set: " + theValue);
         String filePath = "C:/Users/opc/aiholo_output.txt";
