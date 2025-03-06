@@ -46,6 +46,7 @@ public class AIHoloController {
     private volatile long lastRequestTime = System.currentTimeMillis();
 
     public AIHoloController() {
+        System.out.println("startInactivityMonitor...");
         startInactivityMonitor();
     }
 
