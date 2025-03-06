@@ -27,7 +27,7 @@ public class TTSAndAudio2Face {
                 System.out.println("processMetahuman exception during TTS:" + e);
                 //TODO might be funny and helpful to do this, ie have the system gives its status and ask for help ...
                 // sendToAudio2Face("uhoh-lookslikeIneedanewTTStoken.wav");
-                sendToAudio2Face("uhoh-lookslikeIneedanewTTStoken.wav");
+                sendToAudio2Face("hello-brazil.wav");
             }
 
         });
