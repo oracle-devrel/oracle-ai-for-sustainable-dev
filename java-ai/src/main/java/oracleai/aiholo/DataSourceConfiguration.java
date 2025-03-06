@@ -8,10 +8,10 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-@Configuration
+//@Configuration
 public class DataSourceConfiguration {
 
-    @Bean
+//    @Bean
     public DataSource dataSource() throws SQLException {
         OracleDataSource dataSource = new OracleDataSource();
         dataSource.setUser("moviestream");

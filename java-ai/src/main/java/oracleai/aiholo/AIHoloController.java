@@ -42,7 +42,7 @@ public class AIHoloController {
     private static final String DEFAULT_LANGUAGE_CODE = "pt-BR";
     private static final String DEFAULT_VOICE_NAME = "pt-BR-Wavenet-D";
 
-    @Autowired
+//    @Autowired
     private DataSource dataSource;
 
     private static final Object metahumanLock = new Object();

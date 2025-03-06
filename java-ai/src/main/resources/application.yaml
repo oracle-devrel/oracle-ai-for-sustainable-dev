@@ -54,7 +54,8 @@ spring:
 #    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
 
 server:
-  port: 8444
+  port: 8080
+#  port: 8444
   tomcat:
     max-swallow-size: 200MB
 #  ssl:
