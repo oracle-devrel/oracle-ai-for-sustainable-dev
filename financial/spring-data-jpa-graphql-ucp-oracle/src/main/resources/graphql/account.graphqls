@@ -1,0 +1,17 @@
+type Account {
+	id: ID!
+	balance: BigDecimal!
+	description: String
+	bank: Bank
+}
+
+extend type Query {
+	findAllAccounts: [Account]!
+	countAccounts: Long!
+}
+
+extend type Mutation {
+	createAccount(balance: BigDecimal!, description: String, bank: ID!): Account!
+	updateAccount(id: ID!, balance: BigDecimal, description: String): Account!
+	deleteAccount(id: ID!): Boolean
+}
