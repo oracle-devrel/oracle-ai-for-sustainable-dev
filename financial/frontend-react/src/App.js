@@ -12,7 +12,7 @@ import StockTicker from './pages/StockTicker';
 import APIs from './pages/APIs';
 import SpeakWithData from './pages/SpeakWithData';
 import Login from './pages/Login';
-import Observability from './pages/Observability'; 
+import Graph from './pages/Graph'; 
 import CreditCardPurchase from './pages/CreditCardPurchase'; 
 import ProtectedRoute from './ProtectedRoute';
 import styled from 'styled-components';
@@ -129,10 +129,10 @@ function App() {
               }
             />
             <Route
-              path="/observability"
+              path="/graph"
               element={
                 <ProtectedRoute>
-                  <Observability />
+                  <Graph />
                 </ProtectedRoute>
               }
             />

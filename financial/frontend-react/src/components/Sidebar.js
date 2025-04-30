@@ -84,22 +84,8 @@ const Sidebar = () => {
               <FaShieldAlt />
             </IconWrapper>
             <TextContainer>
-              <HighlightedText>FinTech/Bank APIs</HighlightedText>
-              <div>ORDS, OpenAPI <br /> SailGP</div>
-            </TextContainer>
-          </StyledNavLink>
-        </SidebarItem>
-        <SidebarItem>
-          <StyledNavLink to="/observability">
-            <IconWrapper>
-              <FaCogs />
-            </IconWrapper>
-            <TextContainer>
-              <HighlightedText>DevOps: Kubernetes, Microservices, and Observability</HighlightedText>
-              <div>
-                Backend For Microservices and AI
-                <br />LOLC
-              </div>
+              <HighlightedText>Publish financial APIs</HighlightedText>
+              <div>ORDS, OpenAPI <br /> [Sphere-not yet announced]</div>
             </TextContainer>
           </StyledNavLink>
         </SidebarItem>
@@ -109,7 +95,7 @@ const Sidebar = () => {
               <FaWallet />
             </IconWrapper>
             <TextContainer>
-              <HighlightedText>Account management</HighlightedText>
+              <HighlightedText>Create and view accounts</HighlightedText>
               <div>MongoDB/MERN stack<br/>
               Decimal Point Analytics (DPA)</div>
             </TextContainer>
@@ -121,9 +107,10 @@ const Sidebar = () => {
               <FaExchangeAlt />
             </IconWrapper>
             <TextContainer>
-              <HighlightedText>ATM</HighlightedText>
+              <HighlightedText>Deposit/withdraw money (ATM))</HighlightedText>
               <div>
-              Polyglot (Java, JS, Python, .NET, Go, Rust)
+              Polyglot <br/>
+              Java, JS, Python, .NET, Go, Rust
               </div>
             </TextContainer>
           </StyledNavLink>
@@ -137,7 +124,7 @@ const Sidebar = () => {
               <HighlightedText>Transfer to external bank</HighlightedText>
               <div>
                 MicroTx, Lock-free reservations <br />
-                U of Naples
+                University of Naples
               </div>
             </TextContainer>
           </StyledNavLink>
@@ -148,10 +135,24 @@ const Sidebar = () => {
               <FaPiggyBank />
             </IconWrapper>
             <TextContainer>
-              <HighlightedText>Credit card purchases, fraud, and money laundering</HighlightedText>
+              <HighlightedText>Make purchases and detect fraud</HighlightedText>
               <div>
-                Distributed DB, OML, Spatial, Graph<br />
-                AMEX, Certegy
+                Globally Distributed DB, OML, Spatial<br />
+                AMEX
+              </div>
+            </TextContainer>
+          </StyledNavLink>
+        </SidebarItem>
+        <SidebarItem>
+          <StyledNavLink to="/graph">
+            <IconWrapper>
+              <FaCogs />
+            </IconWrapper>
+            <TextContainer>
+              <HighlightedText>Detect money laundering</HighlightedText>
+              <div>
+                Graph
+                <br />Certegy
               </div>
             </TextContainer>
           </StyledNavLink>
@@ -176,9 +177,9 @@ const Sidebar = () => {
               <FaFileInvoiceDollar />
             </IconWrapper>
             <TextContainer>
-              <HighlightedText>Stock ticker and buy/sell stock</HighlightedText>
+              <HighlightedText>View stock ticker and buy/sell stock</HighlightedText>
               <div>
-                TrueCache
+                True Cache
                 <br />
                 NYSE
               </div>
@@ -191,10 +192,10 @@ const Sidebar = () => {
               <FaHandHoldingUsd />
             </IconWrapper>
             <TextContainer>
-              <HighlightedText>Personalized Financial Insights</HighlightedText>
+              <HighlightedText>Get personal financial insights</HighlightedText>
               <div>
                 Vector Search, AI Agents and MCP <br />
-                DMCC, Merrill Lynch (todo remove if not confirmed)
+                DMCC
               </div>
             </TextContainer>
           </StyledNavLink>

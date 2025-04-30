@@ -32,8 +32,60 @@ const ToggleButton = styled.button`
   }
 `;
 
+const Form = styled.form`
+  margin-top: 20px;
+  padding: 20px;
+  border: 1px solid #444;
+  border-radius: 8px;
+  background-color: #1e1e1e;
+  color: #ffffff;
+`;
+
+const Label = styled.label`
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+`;
+
+const Input = styled.input`
+  width: 100%;
+  margin-bottom: 16px;
+  padding: 8px;
+  border: 1px solid #555;
+  border-radius: 4px;
+  background-color: #2c2c2c;
+  color: #ffffff;
+`;
+
+const Button = styled.button`
+  padding: 10px 20px;
+  background-color: #1abc9c;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #16a085;
+  }
+`;
+
 const Accounts = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [formData, setFormData] = useState({
+    accountName: '',
+    accountType: '',
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    alert(`Account Created: ${formData.accountName}, Type: ${formData.accountType}`);
+  };
 
   return (
     <PageContainer>
@@ -92,6 +144,33 @@ const Accounts = () => {
           </div>
         )}
       </SidePanel>
+
+      {/* Form Section */}
+      <Form onSubmit={handleSubmit}>
+        <Label htmlFor="accountName">Account Name</Label>
+        <Input
+          type="text"
+          id="accountName"
+          name="accountName"
+          value={formData.accountName}
+          onChange={handleChange}
+          placeholder="Enter account name"
+          required
+        />
+
+        <Label htmlFor="accountType">Account Type</Label>
+        <Input
+          type="text"
+          id="accountType"
+          name="accountType"
+          value={formData.accountType}
+          onChange={handleChange}
+          placeholder="Enter account type"
+          required
+        />
+
+        <Button type="submit">Create Account</Button>
+      </Form>
     </PageContainer>
   );
 };

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 
 const PageContainer = styled.div`
@@ -6,9 +6,8 @@ const PageContainer = styled.div`
   color: #ffffff; /* Light text */
   width: 100%;
   height: 100vh;
-  display: flex;
-  flex-direction: column;
   padding: 20px;
+  overflow-y: auto; /* Allow scrolling if content overflows */
 `;
 
 const IframesContainer = styled.div`
@@ -33,10 +32,72 @@ const TwitchEmbed = styled.div`
   justify-content: center;
 `;
 
+const SidePanel = styled.div`
+  border: 1px solid #444; /* Darker border */
+  padding: 10px;
+  border-radius: 8px;
+  background-color: #1e1e1e; /* Darker background for the side panel */
+  color: #ffffff; /* Light text */
+  margin-bottom: 20px; /* Add spacing below the side panel */
+`;
+
+const ToggleButton = styled.button`
+  background-color: #1abc9c;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 10px;
+
+  &:hover {
+    background-color: #16a085;
+  }
+`;
+
 const SpeakWithData = () => {
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
   return (
     <PageContainer>
-      <h1>Speak with your financial data</h1>
+
+    <h2>Speak with your financial data</h2>
+    <h2>NL2SQL, Vector Search, Speech AI</h2>
+    <h2>Industrial Scientific</h2>
+      {/* Collapsible SidePanel */}
+      <SidePanel>
+        <ToggleButton onClick={() => setIsCollapsed(!isCollapsed)}>
+          {isCollapsed ? 'Show Details' : 'Hide Details'}
+        </ToggleButton>
+        {!isCollapsed && (
+          <div>
+            <h4>Personas:</h4>
+            <ul>
+              <li>Financial Analyst</li>
+              <li>Business Executive</li>
+            </ul>
+            <h4>Process:</h4>
+            <ul>
+              <li>Query financial data using natural language</li>
+              <li>Generate insights with NL2SQL and Vector Search</li>
+              <li>Interact with data using Speech AI</li>
+            </ul>
+            <h4>Developer Notes:</h4>
+            <ul>
+              <li>Leverage Oracle AI for natural language processing</li>
+              <li>Use Vector Search for semantic data queries</li>
+              <li>Integrate Speech AI for voice-based interactions</li>
+            </ul>
+          </div>
+        )}
+      </SidePanel>
+
+      <h2>Speak with Your Financial Data</h2>
+      <p>
+        Use natural language and speech to interact with your financial data.<br />
+        Powered by Oracle's NL2SQL, Vector Search, and Speech AI technologies.
+      </p>
+
       <IframesContainer>
         {/* Image */}
         <Image src="/images/aiholopage.png" alt="SpeakWithData" />

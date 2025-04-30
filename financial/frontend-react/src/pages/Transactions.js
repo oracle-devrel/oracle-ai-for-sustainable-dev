@@ -87,7 +87,23 @@ const Button = styled.button`
   }
 `;
 
+const ToggleButton = styled.button`
+  background-color: #1abc9c;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 10px;
+
+  &:hover {
+    background-color: #16a085;
+  }
+`;
+
 const Transactions = () => {
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
   const [formData, setFormData] = useState({
     amount: '',
     fromAccount: '',
@@ -130,17 +146,22 @@ const Transactions = () => {
       <h2>U of Naples</h2>
       <ContentContainer>
         <SidePanel>
-          <h4>Process:</h4>
-          <ul>
-            <li>Transfer funds between banks</li>
-          </ul>
-        </SidePanel>
-        <SidePanel>
-          <h4>Developers:</h4>
-          <ul>
-            <li>The only database that provides auto-compensating sagas (microservice transactions) and highest throughput for hotspots/fields</li>
-            <li>Simplified development (~80% less code)</li>
-          </ul>
+          <ToggleButton onClick={() => setIsCollapsed(!isCollapsed)}>
+            {isCollapsed ? 'Show Details' : 'Hide Details'}
+          </ToggleButton>
+          {!isCollapsed && (
+            <div>
+              <h4>Process:</h4>
+              <ul>
+                <li>Transfer funds between banks</li>
+              </ul>
+              <h4>Developers:</h4>
+              <ul>
+                <li>The only database that provides auto-compensating sagas (microservice transactions) and highest throughput for hotspots/fields</li>
+                <li>Simplified development (~80% less code)</li>
+              </ul>
+            </div>
+          )}
         </SidePanel>
         <Form onSubmit={handleSubmit}>
           <Label htmlFor="amount">Amount</Label>

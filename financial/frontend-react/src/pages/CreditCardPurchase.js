@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 
 const PageContainer = styled.div`
@@ -28,41 +28,63 @@ const SidePanel = styled.div`
   margin-top: 20px; /* Add spacing above the side panel */
 `;
 
+const ToggleButton = styled.button`
+  background-color: #1abc9c;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 10px;
+
+  &:hover {
+    background-color: #16a085;
+  }
+`;
+
 const CreditCardPurchase = () => {
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
   return (
     <PageContainer>
       <h2>Fraud Alerts on Credit Card Purchases</h2>
       <p>
-        Credit card purchases are conducted using Oracle Globally Distributed Database<br/>
-        Fraud detection and visualization is conducted using OML4Py (Python) and Spatial<br/>
-        Money Laundering is detected using Oracle Graph.<br/>
+        Credit card purchases are conducted using Oracle Globally Distributed Database<br />
+        Fraud detection and visualization is conducted using OML4Py (Python) and Spatial<br />
+        Money Laundering is detected using Oracle Graph.<br />
         Events are sent using Knative Eventing and CloudEvents.
       </p>
 
-      {/* Process SidePanel */}
+      {/* Collapsible SidePanel */}
       <SidePanel>
-        <h4>Personas:</h4>
-        <ul>
-          <li>Credit Card User</li>
-          <li>Backend Financial Worker</li>
-        </ul>
-        <h4>Process:</h4>
-        <ul>
-        <li>Manager credit card transactions with Globally Distributed Database</li>
-          <li>Detect suspicious credit card transactions using ML/AI and spatial</li>
-          <li>Graph analysis is conducted for money laundering</li>
-          <li>Generate fraud alerts in real-time using Knative Eventing and CloudEvents</li>
-        </ul>
-        <h4>Developer Notes:</h4>
-        <ul>
-          <li>Leverage Oracle Spatial and Graph for advanced analytics</li>
-          <li>Use OML4Py (Python, Jupyter, etc.) for machine learning</li>
-          <li>Integrate with Knative Eventing and CloudEvents for real-time event processing</li>
-        </ul>
+        <ToggleButton onClick={() => setIsCollapsed(!isCollapsed)}>
+          {isCollapsed ? 'Show Details' : 'Hide Details'}
+        </ToggleButton>
+        {!isCollapsed && (
+          <div>
+            <h4>Personas:</h4>
+            <ul>
+              <li>Credit Card User</li>
+              <li>Backend Financial Worker</li>
+            </ul>
+            <h4>Process:</h4>
+            <ul>
+              <li>Manage credit card transactions with Globally Distributed Database</li>
+              <li>Detect suspicious credit card transactions using ML/AI and spatial</li>
+              <li>Graph analysis is conducted for money laundering</li>
+              <li>Generate fraud alerts in real-time using Knative Eventing and CloudEvents</li>
+            </ul>
+            <h4>Developer Notes:</h4>
+            <ul>
+              <li>Leverage Oracle Spatial and Graph for advanced analytics</li>
+              <li>Use OML4Py (Python, Jupyter, etc.) for machine learning</li>
+              <li>Integrate with Knative Eventing and CloudEvents for real-time event processing</li>
+            </ul>
+          </div>
+        )}
       </SidePanel>
 
-      {/* Developers SidePanel */}
-
+      {/* Images */}
       <Image src="/images/spatial-suspicious.png" alt="Spatial Suspicious Transactions" />
       <Image src="/images/spatial-agg-03.png" alt="Spatial Aggregated Data" />
     </PageContainer>

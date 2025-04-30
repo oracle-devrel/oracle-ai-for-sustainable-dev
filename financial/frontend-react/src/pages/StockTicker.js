@@ -7,6 +7,7 @@ const PageContainer = styled.div`
   width: 100%;
   height: 100vh;
   padding: 20px;
+  overflow-y: auto; /* Allow scrolling if content overflows */
 `;
 
 const TickerContainer = styled.div`
@@ -89,11 +90,36 @@ const Button = styled.button`
   }
 `;
 
+const SidePanel = styled.div`
+  border: 1px solid #444; /* Darker border */
+  padding: 10px;
+  border-radius: 8px;
+  background-color: #1e1e1e; /* Darker background for the side panel */
+  color: #ffffff; /* Light text */
+  margin-bottom: 20px; /* Add spacing below the side panel */
+`;
+
+const ToggleButton = styled.button`
+  background-color: #1abc9c;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 10px;
+
+  &:hover {
+    background-color: #16a085;
+  }
+`;
+
 const StockTicker = () => {
   const [formData, setFormData] = useState({
     stock: '',
     shares: '',
   });
+
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -124,7 +150,38 @@ const StockTicker = () => {
 
   return (
     <PageContainer>
-      <h2>Stock Ticker and Purchase <br />(TrueCache)</h2>
+    <h2>Stock ticker and buy/sell stock</h2>
+    <h2>True Cache</h2>
+    <h2>NYSE</h2>
+      {/* Collapsible SidePanel */}
+      <SidePanel>
+        <ToggleButton onClick={() => setIsCollapsed(!isCollapsed)}>
+          {isCollapsed ? 'Show Details' : 'Hide Details'}
+        </ToggleButton>
+        {!isCollapsed && (
+          <div>
+            <h4>Personas:</h4>
+            <ul>
+              <li>Stock Market Analyst</li>
+              <li>Investor</li>
+            </ul>
+            <h4>Process:</h4>
+            <ul>
+              <li>Stream real-time stock prices using Oracle Streaming Service</li>
+              <li>Analyze stock trends with Oracle Database</li>
+              <li>Visualize stock performance in real-time</li>
+            </ul>
+            <h4>Developer Notes:</h4>
+            <ul>
+              <li>Use Oracle Event Hub for event streaming</li>
+              <li>Integrate with Kafka APIs for seamless event processing</li>
+              <li>Leverage Oracle Database for advanced analytics</li>
+            </ul>
+          </div>
+        )}
+      </SidePanel>
+
+
       <TickerContainer>
         <TickerText>
           <TickerContent>
@@ -135,6 +192,7 @@ const StockTicker = () => {
           </TickerContent>
         </TickerText>
       </TickerContainer>
+
       <Form>
         <Label htmlFor="stock">Stock</Label>
         <Select
@@ -172,6 +230,7 @@ const StockTicker = () => {
           Sell
         </Button>
       </Form>
+
     </PageContainer>
   );
 };

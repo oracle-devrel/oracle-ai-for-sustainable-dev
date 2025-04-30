@@ -7,13 +7,22 @@ const PageContainer = styled.div`
   width: 100%;
   height: 100vh;
   padding: 20px;
+  overflow-y: auto; /* Allow scrolling if content overflows */
+`;
+
+const ContentContainer = styled.div`
+  display: flex;
+  flex-direction: row; /* Align form and image side by side */
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-top: 20px;
 `;
 
 const Form = styled.form`
+  flex: 2; /* Take up more space for the form */
   display: flex;
   flex-direction: column; /* Stack form elements vertically */
   max-width: 800px;
-  margin: 20px auto;
   padding: 20px;
   border: 1px solid #444; /* Darker border */
   border-radius: 8px;
@@ -88,6 +97,12 @@ const ToggleButton = styled.button`
   }
 `;
 
+const ImageContainer = styled.div`
+  flex: 1; /* Take up less space for the image */
+  margin-left: 20px; /* Add spacing between the form and the image */
+  text-align: center;
+`;
+
 const Messaging = () => {
   const [formData, setFormData] = useState({
     amount: '',
@@ -155,9 +170,9 @@ const Messaging = () => {
                 <li>Only Oracle Database has a built-in messaging engine (TxEventQ) which allows database and messaing operations in the same local transaction</li>
                 <li>TxEventQ can be used via Kafka API, JMS, PL/SQL and via any language</li>
               </ul>
-              <h4>Contacts: Anders Swanson</h4>
+              <h4>Contacts: </h4>
               <ul>
-                <li>FSGBU Team</li>
+                <li>TxEventQ and Kafka: Anders Swanson</li>
               </ul>
             </div>
             <div style={{ flexShrink: 0, width: '40%' }}>
@@ -175,105 +190,115 @@ const Messaging = () => {
         )}
       </SidePanel>
 
-      {/* Form */}
-      <Form onSubmit={handleSubmit}>
-        <Label htmlFor="amount">Amount</Label>
-        <Input
-          type="number"
-          id="amount"
-          name="amount"
-          value={formData.amount}
-          onChange={handleChange}
-          placeholder="Enter amount"
-          required
-        />
+      {/* Form and Image Section */}
+      <ContentContainer>
+        <Form onSubmit={handleSubmit}>
+          <Label htmlFor="amount">Amount</Label>
+          <Input
+            type="number"
+            id="amount"
+            name="amount"
+            value={formData.amount}
+            onChange={handleChange}
+            placeholder="Enter amount"
+            required
+          />
 
-        <Label htmlFor="fromAccount">From Account</Label>
-        <Select
-          id="fromAccount"
-          name="fromAccount"
-          value={formData.fromAccount}
-          onChange={handleChange}
-          required
-        >
-          <option value="" disabled>
-            Select an account
-          </option>
-          <option value="bank1account1">Bank 1 Account 1</option>
-          <option value="bank1account2">Bank 1 Account 2</option>
-          <option value="bank1account3">Bank 1 Account 3</option>
-        </Select>
+          <Label htmlFor="fromAccount">From Account</Label>
+          <Select
+            id="fromAccount"
+            name="fromAccount"
+            value={formData.fromAccount}
+            onChange={handleChange}
+            required
+          >
+            <option value="" disabled>
+              Select an account
+            </option>
+            <option value="bank1account1">Bank 1 Account 1</option>
+            <option value="bank1account2">Bank 1 Account 2</option>
+            <option value="bank1account3">Bank 1 Account 3</option>
+          </Select>
 
-        <Label htmlFor="toAccount">To Account</Label>
-        <Select
-          id="toAccount"
-          name="toAccount"
-          value={formData.toAccount}
-          onChange={handleChange}
-          required
-        >
-          <option value="" disabled>
-            Select an account
-          </option>
-          <option value="bank2account1">Bank 2 Account 1</option>
-          <option value="bank2account2">Bank 2 Account 2</option>
-          <option value="bank2account3">Bank 2 Account 3</option>
-        </Select>
+          <Label htmlFor="toAccount">To Account</Label>
+          <Select
+            id="toAccount"
+            name="toAccount"
+            value={formData.toAccount}
+            onChange={handleChange}
+            required
+          >
+            <option value="" disabled>
+              Select an account
+            </option>
+            <option value="bank2account1">Bank 2 Account 1</option>
+            <option value="bank2account2">Bank 2 Account 2</option>
+            <option value="bank2account3">Bank 2 Account 3</option>
+          </Select>
 
-        <h4>For Developers: Select a radio button to trigger chaos/crash testing and notice difference in behavior between Kafka with Postgres and MongoDB and Kafka with Oracle Database</h4>
-        <RadioLabel>
-          <input
-            type="radio"
-            name="messagingOption"
-            value="Kafka with Postgres and MongoDB"
-            checked={formData.messagingOption === 'Kafka with Postgres and MongoDB'}
-            onChange={handleChange}
-          />
-          Kafka
-        </RadioLabel>
-        <RadioLabel>
-          <input
-            type="radio"
-            name="messagingOption"
-            value="Kafka with Oracle Database"
-            checked={formData.messagingOption === 'Kafka with Oracle Database'}
-            onChange={handleChange}
-          />
-          Kafka with Oracle Database
-        </RadioLabel>
-        <RadioLabel>
-          <input
-            type="radio"
-            name="crashOption"
-            value="crashBeforeCommit"
-            checked={formData.crashOption === 'crashBeforeCommit'}
-            onChange={handleChange}
-          />
-          Crash after message received, before brokerage updated
-        </RadioLabel>
-        <RadioLabel>
-          <input
-            type="radio"
-            name="crashOption"
-            value="crashAfterCommitBank1"
-            checked={formData.crashOption === 'crashAfterCommitBank1'}
-            onChange={handleChange}
-          />
-          Crash after brokerage updated, before message sent
-        </RadioLabel>
-        <RadioLabel>
-          <input
-            type="radio"
-            name="crashOption"
-            value="crashAfterCommitBank2"
-            checked={formData.crashOption === 'crashAfterCommitBank2'}
-            onChange={handleChange}
-          />
-          Crash After Commit Bank 2 (Before Return)
-        </RadioLabel>
+          <h4>For Developers: Select a radio button to trigger chaos/crash testing and notice difference in behavior between Kafka with Postgres and MongoDB and Kafka with Oracle Database</h4>
+          <RadioLabel>
+            <input
+              type="radio"
+              name="messagingOption"
+              value="Kafka with Postgres and MongoDB"
+              checked={formData.messagingOption === 'Kafka with Postgres and MongoDB'}
+              onChange={handleChange}
+            />
+            Kafka with Postgres and MongoDB
+          </RadioLabel>
+          <RadioLabel>
+            <input
+              type="radio"
+              name="messagingOption"
+              value="Kafka with Oracle Database"
+              checked={formData.messagingOption === 'Kafka with Oracle Database'}
+              onChange={handleChange}
+            />
+            Kafka with Oracle Database
+          </RadioLabel>
+          <RadioLabel>
+            <input
+              type="radio"
+              name="crashOption"
+              value="crashBeforeCommit"
+              checked={formData.crashOption === 'crashBeforeCommit'}
+              onChange={handleChange}
+            />
+            Crash after message received, before brokerage updated
+          </RadioLabel>
+          <RadioLabel>
+            <input
+              type="radio"
+              name="crashOption"
+              value="crashAfterCommitBank1"
+              checked={formData.crashOption === 'crashAfterCommitBank1'}
+              onChange={handleChange}
+            />
+            Crash after brokerage updated, before message sent
+          </RadioLabel>
+          <RadioLabel>
+            <input
+              type="radio"
+              name="crashOption"
+              value="crashAfterCommitBank2"
+              checked={formData.crashOption === 'crashAfterCommitBank2'}
+              onChange={handleChange}
+            />
+            Crash After Commit Bank 2 (Before Return)
+          </RadioLabel>
 
-        <Button type="submit">Submit</Button>
-      </Form>
+          <Button type="submit">Submit</Button>
+        </Form>
+
+        <ImageContainer>
+          <img
+            src="/images/mongopostgreskafka_vs_OracleAQ.png"
+            alt="Mongo/Postgres/Kafka vs Oracle AQ"
+            style={{ width: '100%', borderRadius: '8px', border: '1px solid #444' }}
+          />
+        </ImageContainer>
+      </ContentContainer>
     </PageContainer>
   );
 };
