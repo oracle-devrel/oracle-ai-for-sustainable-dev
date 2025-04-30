@@ -1,0 +1,19 @@
+# Copyright (c) 2025, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+spring:
+  application:
+    name: earnest_payment_service
+
+okafka:
+  consumerGroup: earnest_payment_consumer
+  consumerThreads: 1
+  oracleServiceName: ${SERVICE_NAME:freepdb1}
+  ojdbcPath: ${OJDBC_PATH}
+  securityProtocol: ${SECURITY_PROTOCOL:SSL}
+  bootstrapServers: ${BOOTSTRAP_SERVERS:localhost:1521}
+  topics:
+    - name: earnest_payment
+      partitions: 1
+server:
+  port: 8086

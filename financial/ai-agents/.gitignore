@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environment
+venv/
+env/
+.env
+
+# IDE
+.vscode/
+.idea/
+
+# Gradio
+.gradio/
+
+# Generated files
+embeddings/
+chroma_db/
+docs/*.json
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Logs
+*.log 

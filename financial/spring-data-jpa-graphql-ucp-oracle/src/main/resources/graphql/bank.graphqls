@@ -1,0 +1,14 @@
+type Bank {
+	id: ID!
+	name: String!
+	routing: Int
+}
+
+type Query {
+	findAllBanks: [Bank]!
+	countBanks: Long!
+}
+
+type Mutation {
+	createBank(name: String!, routing: Int): Bank!
+}
