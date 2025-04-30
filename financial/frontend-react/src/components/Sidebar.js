@@ -107,7 +107,7 @@ const Sidebar = () => {
               <FaExchangeAlt />
             </IconWrapper>
             <TextContainer>
-              <HighlightedText>Deposit/withdraw money (ATM))</HighlightedText>
+              <HighlightedText>Deposit/withdraw money (ATM)</HighlightedText>
               <div>
               Polyglot <br/>
               Java, JS, Python, .NET, Go, Rust
