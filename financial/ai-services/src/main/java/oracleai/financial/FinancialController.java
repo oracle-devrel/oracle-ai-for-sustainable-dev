@@ -12,6 +12,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/financial")
+@CrossOrigin(origins = "http://localhost:3000")
 public class FinancialController {
 
     @Autowired

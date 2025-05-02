@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
 const PageContainer = styled.div`
@@ -7,6 +7,7 @@ const PageContainer = styled.div`
   width: 100%;
   height: 100vh;
   padding: 20px;
+  overflow-y: auto;
 `;
 
 const SidePanel = styled.div`
@@ -70,12 +71,34 @@ const Button = styled.button`
   }
 `;
 
+const Table = styled.table`
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+`;
+
+const TableHeader = styled.th`
+  border: 1px solid #444;
+  padding: 8px;
+  background-color: #1e1e1e;
+  color: #ffffff;
+  text-align: left;
+`;
+
+const TableCell = styled.td`
+  border: 1px solid #444;
+  padding: 8px;
+  color: #ffffff;
+`;
+
 const Accounts = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [formData, setFormData] = useState({
     accountName: '',
     accountType: '',
   });
+  const [accounts, setAccounts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -86,6 +109,22 @@ const Accounts = () => {
     e.preventDefault();
     alert(`Account Created: ${formData.accountName}, Type: ${formData.accountType}`);
   };
+
+  useEffect(() => {
+    const fetchAccounts = async () => {
+      try {
+        const response = await fetch('http://localhost:8080/financial/accounts');
+        const data = await response.json();
+        setAccounts(data);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching accounts:', error);
+        setLoading(false);
+      }
+    };
+
+    fetchAccounts();
+  }, []);
 
   return (
     <PageContainer>
@@ -99,58 +138,17 @@ const Accounts = () => {
           {isCollapsed ? 'Show Details' : 'Hide Details'}
         </ToggleButton>
         {!isCollapsed && (
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div style={{ flex: 1, marginRight: '20px' }}>
-              <div>
-                <a
-                  href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier-financial/index.html"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ color: '#1abc9c', textDecoration: 'none' }}
-                >
-                  Click here for workshop lab and further information
-                </a>
-              </div>
-              <div>
-                <a
-                  href="https://github.com/paulparkinson/oracle-ai-for-sustainable-dev/tree/main/financial"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ color: '#1abc9c', textDecoration: 'none' }}
-                >
-                  Direct link to source code on GitHub
-                </a>
-              </div>
-              <h4>Financial Process:</h4>
-              <ul>
-                <li>Create and query all accounts</li>
-              </ul>
-              <h4>Developer Notes:</h4>
-              <ul>
-                <li>Use Oracle Database MongoDB adapter to insert accounts using MongoDB application/MERN stack</li>
-                <li>Query the accounts using relational/SQL commands from a Java/Spring Boot stack</li>
-                <li>This is possible due to the JSON Duality feature</li>
-              </ul>
-              <h4>Differentiators:</h4>
-              <ul>
-                <li>Only Oracle Database has the ability to read and write the same data/tables using both JSON (and MongoDB API) as well as relational/SQL</li>
-              </ul>
-              <h4>Contacts:</h4>
-              <ul>
-                <li>JSON Duality and MongoDB adapter: Julian Dontcheff, Beda Hammerschmidt</li>
-              </ul>
-            </div>
-            <div style={{ flexShrink: 0, width: '40%' }}>
-              <h4>Walkthrough Video:</h4>
-              <video
-                controls
-                width="100%"
-                style={{ borderRadius: '8px', border: '1px solid #444' }}
-              >
-                <source src="/images/financial-apis.mov" type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
-            </div>
+          <div>
+            <h4>Financial Process:</h4>
+            <ul>
+              <li>Create and query all accounts</li>
+            </ul>
+            <h4>Developer Notes:</h4>
+            <ul>
+              <li>Use Oracle Database MongoDB adapter to insert accounts using MongoDB application/MERN stack</li>
+              <li>Query the accounts using relational/SQL commands from a Java/Spring Boot stack</li>
+              <li>This is possible due to the JSON Duality feature</li>
+            </ul>
           </div>
         )}
       </SidePanel>
@@ -181,6 +179,38 @@ const Accounts = () => {
 
         <Button type="submit">Create Account</Button>
       </Form>
+
+      {/* Accounts Table */}
+      {loading ? (
+        <p>Loading accounts...</p>
+      ) : (
+        <Table>
+          <thead>
+            <tr>
+              <TableHeader>Account ID</TableHeader>
+              <TableHeader>Name</TableHeader>
+              <TableHeader>Type</TableHeader>
+              <TableHeader>Subtype</TableHeader>
+              <TableHeader>Available Balance</TableHeader>
+              <TableHeader>Current Balance</TableHeader>
+              <TableHeader>Verification Status</TableHeader>
+            </tr>
+          </thead>
+          <tbody>
+            {accounts.map((account) => (
+              <tr key={account.account_id}>
+                <TableCell>{account.account_id}</TableCell>
+                <TableCell>{account.name}</TableCell>
+                <TableCell>{account.type}</TableCell>
+                <TableCell>{account.subtype}</TableCell>
+                <TableCell>{account.available_balance ?? 'N/A'}</TableCell>
+                <TableCell>{account.current_balance ?? 'N/A'}</TableCell>
+                <TableCell>{account.verification_status}</TableCell>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      )}
     </PageContainer>
   );
 };
