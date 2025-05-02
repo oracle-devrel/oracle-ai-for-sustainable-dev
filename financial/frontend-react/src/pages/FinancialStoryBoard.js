@@ -23,9 +23,13 @@ const Link = styled.a`
 
 const Dashboard = () => (
   <div>
-    <h2>Financial Storyboard</h2>
-    <Image src="/images/storyboard.png" alt="Financial Storyboard" />
- 
+    <h2>Who is this for?</h2>
+    This financial application and its corresponding workshop are aimed at both financial systems experts and the developers who build these systems <br />
+<br />in order to liaise the two and have a shared understanding of the possibilities and details of both the business solutions and the development architecture involved in them.
+
+    <Image src="/images/financial-customer-storyboard-leadin.png" alt="Financial Storyboard" /><br />
+    <Image src="/images/financial-analyst-storyboard-leadin.png" alt="Financial Storyboard" /><br />
+    <Image src="/images/developer-storyboard-leadin.png" alt="Financial Storyboard" /><br />
   </div>
 );
 
