@@ -63,7 +63,7 @@ const APIs = () => {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          'https://ij1tyzir3wpwlpe-lemmingdb.adb.eu-frankfurt-1.oraclecloudapps.com/ords/financial/accounts/'
+          'https://ij1tyzir3wpwlpe-financialdb.adb.eu-frankfurt-1.oraclecloudapps.com/ords/financial/accounts/'
         );
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);

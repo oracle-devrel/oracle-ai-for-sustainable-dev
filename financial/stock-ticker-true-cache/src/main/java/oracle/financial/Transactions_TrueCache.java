@@ -126,7 +126,7 @@ public class Transactions_TrueCache extends Thread {
   {
     System.out.println(" \n\tBeginning of the transaction test!!!\n " );
     pds = PoolDataSourceFactory.getPoolDataSource();
-    pds.setConnectionPoolName("LiveLabsDemo");
+    pds.setConnectionPoolName("Financial");
     pds.setUser(user);
     pds.setPassword(password);
     pds.setURL(url_primary);

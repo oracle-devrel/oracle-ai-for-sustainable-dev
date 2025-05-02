@@ -14,9 +14,10 @@ public class DataSourceConfiguration {
     @Bean
     public DataSource dataSource() throws SQLException {
         OracleDataSource dataSource = new OracleDataSource();
-        dataSource.setUser("moviestream");
+//        dataSource.setUser("moviestream");
+        dataSource.setUser("financial");
         dataSource.setPassword("Welcome12345");
-        dataSource.setURL("jdbc:oracle:thin:@selectaidb_high?TNS_ADMIN=C:/Users/opc/Downloads/Wallet_SelectAIDB");
+        dataSource.setURL("jdbc:oracle:thin:@financialdb_high?TNS_ADMIN=/Users/pparkins/Downloads/Wallet_financialdb");
 //        try (Connection connection = dataSource.getConnection()) {
 //            System.out.println("✅ Successfully connected to Oracle DB: " + connection.getMetaData().getDatabaseProductVersion());
 //        }
