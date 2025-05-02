@@ -85,11 +85,6 @@ const Accounts = () => {
     official_name: '',
     type: '',
     subtype: '',
-    mask: '',
-    available_balance: '',
-    current_balance: '',
-    limit_balance: '',
-    verification_status: '',
   });
   const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -118,11 +113,6 @@ const Accounts = () => {
           official_name: '',
           type: '',
           subtype: '',
-          mask: '',
-          available_balance: '',
-          current_balance: '',
-          limit_balance: '',
-          verification_status: '',
         });
         fetchAccounts(); // Refresh the accounts table
       } else {
@@ -233,56 +223,6 @@ const Accounts = () => {
           placeholder="Enter account subtype"
         />
 
-        <Label htmlFor="mask">Mask</Label>
-        <Input
-          type="text"
-          id="mask"
-          name="mask"
-          value={formData.mask}
-          onChange={handleChange}
-          placeholder="Enter account mask"
-        />
-
-        <Label htmlFor="available_balance">Available Balance</Label>
-        <Input
-          type="number"
-          id="available_balance"
-          name="available_balance"
-          value={formData.available_balance}
-          onChange={handleChange}
-          placeholder="Enter available balance"
-        />
-
-        <Label htmlFor="current_balance">Current Balance</Label>
-        <Input
-          type="number"
-          id="current_balance"
-          name="current_balance"
-          value={formData.current_balance}
-          onChange={handleChange}
-          placeholder="Enter current balance"
-        />
-
-        <Label htmlFor="limit_balance">Limit Balance</Label>
-        <Input
-          type="number"
-          id="limit_balance"
-          name="limit_balance"
-          value={formData.limit_balance}
-          onChange={handleChange}
-          placeholder="Enter limit balance"
-        />
-
-        <Label htmlFor="verification_status">Verification Status</Label>
-        <Input
-          type="text"
-          id="verification_status"
-          name="verification_status"
-          value={formData.verification_status}
-          onChange={handleChange}
-          placeholder="Enter verification status"
-        />
-
         <Button type="submit">Create Account</Button>
       </Form>
 
@@ -297,9 +237,7 @@ const Accounts = () => {
               <TableHeader>Name</TableHeader>
               <TableHeader>Type</TableHeader>
               <TableHeader>Subtype</TableHeader>
-              <TableHeader>Available Balance</TableHeader>
-              <TableHeader>Current Balance</TableHeader>
-              <TableHeader>Verification Status</TableHeader>
+              <TableHeader>Official Name</TableHeader>
             </tr>
           </thead>
           <tbody>
@@ -309,9 +247,7 @@ const Accounts = () => {
                 <TableCell>{account.name}</TableCell>
                 <TableCell>{account.type}</TableCell>
                 <TableCell>{account.subtype}</TableCell>
-                <TableCell>{account.available_balance ?? 'N/A'}</TableCell>
-                <TableCell>{account.current_balance ?? 'N/A'}</TableCell>
-                <TableCell>{account.verification_status}</TableCell>
+                <TableCell>{account.official_name ?? 'N/A'}</TableCell>
               </tr>
             ))}
           </tbody>
