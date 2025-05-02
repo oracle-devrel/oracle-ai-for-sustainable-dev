@@ -97,7 +97,7 @@ const APIs = () => {
     <PageContainer>
       <h2>Financial APIs: Account Data</h2>
       <h2>Oracle Rest Data Services (ORDS), OpenAPI</h2>
-      <h2>[Startup to be published this week]</h2>
+      <h2>Sphere</h2>
 
       {/* Collapsible SidePanel */}
       <SidePanel>
@@ -107,14 +107,24 @@ const APIs = () => {
         {!isCollapsed && (
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div style={{ flex: 1, marginRight: '20px' }}>
-              <div>
+            <div>
                 <a
-                  href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier-financial/index.html?lab=financial-api"
+                  href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier-financial/index.html"
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{ color: '#1abc9c', textDecoration: 'none' }}
                 >
                   Click here for workshop lab and further information
+                </a>
+              </div>
+              <div>
+                <a
+                  href="https://github.com/paulparkinson/oracle-ai-for-sustainable-dev/tree/main/financial"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: '#1abc9c', textDecoration: 'none' }}
+                >
+                  Direct link to source code on GitHub
                 </a>
               </div>
               <h4>Financial Process:</h4>

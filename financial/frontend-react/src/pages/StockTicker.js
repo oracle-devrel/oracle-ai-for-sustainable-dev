@@ -160,12 +160,27 @@ const StockTicker = () => {
         </ToggleButton>
         {!isCollapsed && (
           <div>
-            <h4>Personas:</h4>
-            <ul>
-              <li>Stock Market Analyst</li>
-              <li>Investor</li>
-            </ul>
-            <h4>Process:</h4>
+                <div>
+                <a
+                  href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier-financial/index.html"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: '#1abc9c', textDecoration: 'none' }}
+                >
+                  Click here for workshop lab and further information
+                </a>
+              </div>
+              <div>
+                <a
+                  href="https://github.com/paulparkinson/oracle-ai-for-sustainable-dev/tree/main/financial"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: '#1abc9c', textDecoration: 'none' }}
+                >
+                  Direct link to source code on GitHub
+                </a>
+              </div>
+            <h4>Financial Process:</h4>
             <ul>
               <li>Stream real-time stock prices using Oracle Streaming Service</li>
               <li>Analyze stock trends with Oracle Database</li>

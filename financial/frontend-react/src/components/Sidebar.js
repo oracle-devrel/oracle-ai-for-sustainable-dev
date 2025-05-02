@@ -74,7 +74,7 @@ const Sidebar = () => {
               <FaTachometerAlt />
             </IconWrapper>
             <TextContainer>
-              <div>Technical Architecture</div>
+              <div>Technical architecture and setup</div>
             </TextContainer>
           </StyledNavLink>
         </SidebarItem>
@@ -85,7 +85,7 @@ const Sidebar = () => {
             </IconWrapper>
             <TextContainer>
               <HighlightedText>Publish financial APIs</HighlightedText>
-              <div>ORDS, OpenAPI <br /> [Sphere-not yet announced]</div>
+              <div>ORDS, OpenAPI <br />Sphere</div>
             </TextContainer>
           </StyledNavLink>
         </SidebarItem>
@@ -109,7 +109,7 @@ const Sidebar = () => {
             <TextContainer>
               <HighlightedText>Deposit/withdraw money (ATM)</HighlightedText>
               <div>
-              Polyglot <br/>
+              Polyglot, Blockchain Tables<br/>
               Java, JS, Python, .NET, Go, Rust
               </div>
             </TextContainer>
@@ -208,7 +208,8 @@ const Sidebar = () => {
             <TextContainer>
               <HighlightedText>Speak with your financial data</HighlightedText>
               <div>
-                NL2SQL, Vector Search, Speech AI
+                NL2SQL, Vector Search, Speech AI <br />
+                Industrial Scientific
               </div>
             </TextContainer>
           </StyledNavLink>

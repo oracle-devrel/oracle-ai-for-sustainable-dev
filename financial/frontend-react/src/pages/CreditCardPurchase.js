@@ -47,13 +47,9 @@ const CreditCardPurchase = () => {
 
   return (
     <PageContainer>
-      <h2>Fraud Alerts on Credit Card Purchases</h2>
-      <p>
-        Credit card purchases are conducted using Oracle Globally Distributed Database<br />
-        Fraud detection and visualization is conducted using OML4Py (Python) and Spatial<br />
-        Money Laundering is detected using Oracle Graph.<br />
-        Events are sent using Knative Eventing and CloudEvents.
-      </p>
+      <h2>Make purchases and detect fraud</h2>
+      <h2>Globally Distributed DB, OML, Spatial</h2>
+      <h2>AMEX</h2>
 
       {/* Collapsible SidePanel */}
       <SidePanel>
@@ -62,12 +58,27 @@ const CreditCardPurchase = () => {
         </ToggleButton>
         {!isCollapsed && (
           <div>
-            <h4>Personas:</h4>
-            <ul>
-              <li>Credit Card User</li>
-              <li>Backend Financial Worker</li>
-            </ul>
-            <h4>Process:</h4>
+                      <div>
+                <a
+                  href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier-financial/index.html"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: '#1abc9c', textDecoration: 'none' }}
+                >
+                  Click here for workshop lab and further information
+                </a>
+              </div>
+              <div>
+                <a
+                  href="https://github.com/paulparkinson/oracle-ai-for-sustainable-dev/tree/main/financial"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: '#1abc9c', textDecoration: 'none' }}
+                >
+                  Direct link to source code on GitHub
+                </a>
+              </div>
+            <h4>Financial Process:</h4>
             <ul>
               <li>Manage credit card transactions with Globally Distributed Database</li>
               <li>Detect suspicious credit card transactions using ML/AI and spatial</li>

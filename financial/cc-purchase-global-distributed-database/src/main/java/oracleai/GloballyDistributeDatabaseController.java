@@ -23,4 +23,14 @@ public class GloballyDistributeDatabaseController {
 //        return "resultspage";
 //    }
 
+    @GetMapping("/adsf")
+    @ResponseBody
+    public String asdf() {
+        return "{\"message\": \"This is a JSON response\"}";
+    }
+//    public String textsearch() throws Exception{
+////    public String textsearch(Model model) throws Exception{
+//        return "resultspage";
+//    }
+
 }

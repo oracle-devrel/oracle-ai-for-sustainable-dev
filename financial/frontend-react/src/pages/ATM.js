@@ -9,6 +9,29 @@ const PageContainer = styled.div`
   padding: 20px;
 `;
 
+const SidePanel = styled.div`
+  border: 1px solid #444; /* Darker border */
+  padding: 10px;
+  border-radius: 8px;
+  background-color: #1e1e1e; /* Darker background for the side panel */
+  color: #ffffff; /* Light text */
+  margin-bottom: 20px; /* Add spacing below the side panel */
+`;
+
+const ToggleButton = styled.button`
+  background-color: #1abc9c;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 10px;
+
+  &:hover {
+    background-color: #16a085;
+  }
+`;
+
 const Form = styled.form`
   display: flex;
   flex-direction: column; /* Stack form elements vertically */
@@ -56,6 +79,7 @@ const Button = styled.button`
 `;
 
 const ATM = () => {
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const [formData, setFormData] = useState({
     amount: '',
     transactionType: '',
@@ -76,8 +100,50 @@ const ATM = () => {
 
   return (
     <PageContainer>
-      <h2>ATM</h2>
-      <h2>Polyglot (Java, JS, Python, .NET, Go, Rust)</h2>
+    <h2>Deposit/withdraw money (ATM)</h2>
+    <h2>Polyglot (Java, JS, Python, .NET, Go, Rust), Blockchain Tables</h2>
+      {/* Collapsible SidePanel */}
+      <SidePanel>
+        <ToggleButton onClick={() => setIsCollapsed(!isCollapsed)}>
+          {isCollapsed ? 'Show Details' : 'Hide Details'}
+        </ToggleButton>
+        {!isCollapsed && (
+          <div>
+
+    <div>
+                <a
+                  href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier-financial/index.html"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: '#1abc9c', textDecoration: 'none' }}
+                >
+                  Click here for workshop lab and further information
+                </a>
+              </div>
+              <div>
+                <a
+                  href="https://github.com/paulparkinson/oracle-ai-for-sustainable-dev/tree/main/financial"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: '#1abc9c', textDecoration: 'none' }}
+                >
+                  Direct link to source code on GitHub
+                </a>
+              </div>
+            <h4>Business Process:</h4>
+            <ul>
+              <li>Deposit or withdraw money</li>
+              <li>Check account balance</li>
+              <li>Prevent detect/fraud</li>
+            </ul>
+            <h4>Developer Notes:</h4>
+            <ul>
+              <li>Polyglot implementation: Java, JS, Python, .NET, Go, Rust</li>
+              <li>Ensure secure transactions and detect/prevent with Blockchain Tables</li>
+            </ul>
+          </div>
+        )}
+      </SidePanel>
 
       <Form onSubmit={handleSubmit}>
         <Label htmlFor="amount">Amount</Label>

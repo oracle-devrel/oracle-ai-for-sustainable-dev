@@ -30,10 +30,21 @@ const LinksContainer = styled.div`
   }
 `;
 
+const ImageContainer = styled.div`
+  margin-bottom: 20px;
+  text-align: center;
+
+  img {
+    max-width: 100%;
+    border-radius: 8px;
+    border: 1px solid #444;
+  }
+`;
+
 const DashBoard = () => {
   return (
     <PageContainer>
-      <h2>Technical Architecture</h2>
+      <h2>Technical architecture and setup</h2>
 
       {/* Links */}
       <LinksContainer>
@@ -44,6 +55,8 @@ const DashBoard = () => {
         >
           Link To Source Code
         </a>
+        <br />
+        <br />
         <a
           href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier-financial/index.html"
           target="_blank"
@@ -52,6 +65,14 @@ const DashBoard = () => {
           Link to Workshop
         </a>
       </LinksContainer>
+
+      {/* Architecture Image */}
+      <ImageContainer>
+        <img
+          src="/images/architecture.png"
+          alt="Technical Architecture"
+        />
+      </ImageContainer>
 
       {/* Walkthrough Video */}
       <VideoContainer>

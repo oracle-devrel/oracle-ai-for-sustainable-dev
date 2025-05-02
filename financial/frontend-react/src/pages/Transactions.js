@@ -142,8 +142,8 @@ const Transactions = () => {
   return (
     <PageContainer>
       <h2>Transfer to external bank</h2>
-      <h2>Spring Boot, MicroTx, Lock-free reservations</h2>
-      <h2>U of Naples</h2>
+      <h2>MicroTx, Lock-free reservations</h2>
+      <h2>University of Naples</h2>
       <ContentContainer>
         <SidePanel>
           <ToggleButton onClick={() => setIsCollapsed(!isCollapsed)}>
@@ -151,7 +151,27 @@ const Transactions = () => {
           </ToggleButton>
           {!isCollapsed && (
             <div>
-              <h4>Process:</h4>
+              <div>
+                <a
+                  href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier-financial/index.html"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: '#1abc9c', textDecoration: 'none' }}
+                >
+                  Click here for workshop lab and further information
+                </a>
+              </div>
+              <div>
+                <a
+                  href="https://github.com/paulparkinson/oracle-ai-for-sustainable-dev/tree/main/financial"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: '#1abc9c', textDecoration: 'none' }}
+                >
+                  Direct link to source code on GitHub
+                </a>
+              </div>
+              <h4>Financial Process:</h4>
               <ul>
                 <li>Transfer funds between banks</li>
               </ul>
