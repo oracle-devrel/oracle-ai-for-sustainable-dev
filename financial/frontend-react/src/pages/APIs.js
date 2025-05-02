@@ -95,7 +95,7 @@ const APIs = () => {
 
   return (
     <PageContainer>
-      <h2>Financial APIs: Account Data</h2>
+      <h2>Publish Financial APIs</h2>
       <h2>Oracle Rest Data Services (ORDS), OpenAPI</h2>
       <h2>Sphere</h2>
 

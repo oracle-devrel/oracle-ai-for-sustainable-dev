@@ -19,20 +19,6 @@ const SidePanel = styled.div`
   margin-top: 20px; /* Add spacing above the side panel */
 `;
 
-const ToggleButton = styled.button`
-  background-color: #1abc9c;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  margin-bottom: 10px;
-
-  &:hover {
-    background-color: #16a085;
-  }
-`;
-
 const Form = styled.form`
   margin-top: 20px;
   padding: 20px;
@@ -94,8 +80,16 @@ const TableCell = styled.td`
 const Accounts = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [formData, setFormData] = useState({
-    accountName: '',
-    accountType: '',
+    account_id: '',
+    name: '',
+    official_name: '',
+    type: '',
+    subtype: '',
+    mask: '',
+    available_balance: '',
+    current_balance: '',
+    limit_balance: '',
+    verification_status: '',
   });
   const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -105,38 +99,69 @@ const Accounts = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert(`Account Created: ${formData.accountName}, Type: ${formData.accountType}`);
+    try {
+      const response = await fetch('http://localhost:8080/financial/accounts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        alert('Account created successfully!');
+        setFormData({
+          account_id: '',
+          name: '',
+          official_name: '',
+          type: '',
+          subtype: '',
+          mask: '',
+          available_balance: '',
+          current_balance: '',
+          limit_balance: '',
+          verification_status: '',
+        });
+        fetchAccounts(); // Refresh the accounts table
+      } else {
+        const errorText = await response.text();
+        alert(`Failed to create account: ${errorText}`);
+      }
+    } catch (error) {
+      console.error('Error creating account:', error);
+      alert('An error occurred while creating the account.');
+    }
+  };
+
+  const fetchAccounts = async () => {
+    try {
+      const response = await fetch('http://localhost:8080/financial/accounts');
+      const data = await response.json();
+      setAccounts(data);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching accounts:', error);
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
-    const fetchAccounts = async () => {
-      try {
-        const response = await fetch('http://localhost:8080/financial/accounts');
-        const data = await response.json();
-        setAccounts(data);
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching accounts:', error);
-        setLoading(false);
-      }
-    };
-
     fetchAccounts();
   }, []);
 
   return (
     <PageContainer>
-      <h2>Account Management</h2>
+      <h2>Create and view accounts</h2>
       <h2>MongoDB/MERN stack</h2>
       <h2>Decimal Point Analytics (DPA)</h2>
 
       {/* Collapsible SidePanel */}
       <SidePanel>
-        <ToggleButton onClick={() => setIsCollapsed(!isCollapsed)}>
+        <Button onClick={() => setIsCollapsed(!isCollapsed)}>
           {isCollapsed ? 'Show Details' : 'Hide Details'}
-        </ToggleButton>
+        </Button>
         {!isCollapsed && (
           <div>
             <h4>Financial Process:</h4>
@@ -155,26 +180,107 @@ const Accounts = () => {
 
       {/* Form Section */}
       <Form onSubmit={handleSubmit}>
-        <Label htmlFor="accountName">Account Name</Label>
+        <Label htmlFor="account_id">Account ID</Label>
         <Input
           type="text"
-          id="accountName"
-          name="accountName"
-          value={formData.accountName}
+          id="account_id"
+          name="account_id"
+          value={formData.account_id}
+          onChange={handleChange}
+          placeholder="Enter account ID"
+          required
+        />
+
+        <Label htmlFor="name">Name</Label>
+        <Input
+          type="text"
+          id="name"
+          name="name"
+          value={formData.name}
           onChange={handleChange}
           placeholder="Enter account name"
           required
         />
 
-        <Label htmlFor="accountType">Account Type</Label>
+        <Label htmlFor="official_name">Official Name</Label>
         <Input
           type="text"
-          id="accountType"
-          name="accountType"
-          value={formData.accountType}
+          id="official_name"
+          name="official_name"
+          value={formData.official_name}
+          onChange={handleChange}
+          placeholder="Enter official name"
+        />
+
+        <Label htmlFor="type">Type</Label>
+        <Input
+          type="text"
+          id="type"
+          name="type"
+          value={formData.type}
           onChange={handleChange}
           placeholder="Enter account type"
           required
+        />
+
+        <Label htmlFor="subtype">Subtype</Label>
+        <Input
+          type="text"
+          id="subtype"
+          name="subtype"
+          value={formData.subtype}
+          onChange={handleChange}
+          placeholder="Enter account subtype"
+        />
+
+        <Label htmlFor="mask">Mask</Label>
+        <Input
+          type="text"
+          id="mask"
+          name="mask"
+          value={formData.mask}
+          onChange={handleChange}
+          placeholder="Enter account mask"
+        />
+
+        <Label htmlFor="available_balance">Available Balance</Label>
+        <Input
+          type="number"
+          id="available_balance"
+          name="available_balance"
+          value={formData.available_balance}
+          onChange={handleChange}
+          placeholder="Enter available balance"
+        />
+
+        <Label htmlFor="current_balance">Current Balance</Label>
+        <Input
+          type="number"
+          id="current_balance"
+          name="current_balance"
+          value={formData.current_balance}
+          onChange={handleChange}
+          placeholder="Enter current balance"
+        />
+
+        <Label htmlFor="limit_balance">Limit Balance</Label>
+        <Input
+          type="number"
+          id="limit_balance"
+          name="limit_balance"
+          value={formData.limit_balance}
+          onChange={handleChange}
+          placeholder="Enter limit balance"
+        />
+
+        <Label htmlFor="verification_status">Verification Status</Label>
+        <Input
+          type="text"
+          id="verification_status"
+          name="verification_status"
+          value={formData.verification_status}
+          onChange={handleChange}
+          placeholder="Enter verification status"
         />
 
         <Button type="submit">Create Account</Button>
