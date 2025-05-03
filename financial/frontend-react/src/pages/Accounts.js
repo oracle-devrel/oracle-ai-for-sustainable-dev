@@ -153,17 +153,52 @@ const Accounts = () => {
           {isCollapsed ? 'Show Details' : 'Hide Details'}
         </Button>
         {!isCollapsed && (
-          <div>
-            <h4>Financial Process:</h4>
-            <ul>
-              <li>Create and query all accounts</li>
-            </ul>
-            <h4>Developer Notes:</h4>
-            <ul>
-              <li>Use Oracle Database MongoDB adapter to insert accounts using MongoDB application/MERN stack</li>
-              <li>Query the accounts using relational/SQL commands from a Java/Spring Boot stack</li>
-              <li>This is possible due to the JSON Duality feature</li>
-            </ul>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div style={{ flex: 1, marginRight: '20px' }}>
+            <div>
+                <a
+                  href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier-financial/index.html"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: '#1abc9c', textDecoration: 'none' }}
+                >
+                  Click here for workshop lab and further information
+                </a>
+              </div>
+              <div>
+                <a
+                  href="https://github.com/paulparkinson/oracle-ai-for-sustainable-dev/tree/main/financial"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: '#1abc9c', textDecoration: 'none' }}
+                >
+                  Direct link to source code on GitHub
+                </a>
+              </div>
+              <h4>Financial Process:</h4>
+              <ul>
+                <li>Create and query all accounts</li>
+              </ul>
+              <h4>Developer Notes:</h4>
+              <ul>
+                <li>Use Oracle Database MongoDB adapter to insert accounts using MongoDB application/MERN stack</li>
+                <li>Query the accounts using relational/SQL commands from a Java/Spring Boot stack</li>
+                <li>This is possible due to the JSON Duality feature</li>
+              </ul>
+            </div>
+            <div style={{ flexShrink: 0, width: '70%' }}>
+              <h4>Walkthrough Video:</h4>
+              <iframe
+                width="100%"
+                height="615"
+                src="https://www.youtube.com/embed/bK2yP1rXxn8"
+                title="YouTube video player"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                style={{ borderRadius: '8px', border: '1px solid #444' }}
+              ></iframe>
+            </div>
           </div>
         )}
       </SidePanel>

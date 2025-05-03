@@ -145,14 +145,16 @@ const APIs = () => {
             </div>
             <div style={{ flexShrink: 0, width: '70%' }}>
               <h4>Walkthrough Video:</h4>
-              <video
-                controls
+              <iframe
                 width="100%"
+                height="615"
+                src="https://www.youtube.com/embed/8Tgmy74A4Bg"
+                title="YouTube video player"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
                 style={{ borderRadius: '8px', border: '1px solid #444' }}
-              >
-                <source src="/images/financial-apis.mp4" type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
+              ></iframe>
             </div>
           </div>
         )}
