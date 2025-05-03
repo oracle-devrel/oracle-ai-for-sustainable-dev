@@ -101,7 +101,7 @@ const ATM = () => {
   return (
     <PageContainer>
     <h2>Deposit/withdraw money (ATM)</h2>
-    <h2>Polyglot (Java, JS, Python, .NET, Go, Rust), Blockchain Tables</h2>
+    <h2>Polyglot (Java, JS, Python, .NET, Go, Rust)</h2>
       {/* Collapsible SidePanel */}
       <SidePanel>
         <ToggleButton onClick={() => setIsCollapsed(!isCollapsed)}>

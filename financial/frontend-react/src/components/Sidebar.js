@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import styled from 'styled-components';
 import { FaTachometerAlt, FaWallet, FaExchangeAlt, FaChartPie, FaPiggyBank, FaHandHoldingUsd, FaFileInvoiceDollar, FaShieldAlt, FaUserShield, FaCogs, FaChartLine } from 'react-icons/fa';
@@ -8,6 +8,9 @@ const SidebarContainer = styled.div`
   background-color: #2c3e50;
   height: 100vh;
   position: fixed;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 `;
 
 const SidebarMenu = styled.ul`
@@ -54,17 +57,33 @@ const TextContainer = styled.div`
   flex-direction: column; /* Stack the first line and additional details vertically */
 `;
 
+const ToggleButton = styled.button`
+  background-color: #1abc9c;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin: 10px;
+  &:hover {
+    background-color: #16a085;
+  }
+`;
+
 const Sidebar = () => {
+  const [showDetails, setShowDetails] = useState(true); // Toggle state for showing details
+
   return (
     <SidebarContainer>
       <SidebarMenu>
         <SidebarItem>
           <StyledNavLink to="/financialstoryboard">
             <IconWrapper>
-              <FaChartLine /> {/* Updated icon */}
+              <FaChartLine />
             </IconWrapper>
             <TextContainer>
-              <div>Financial Storyboard</div>
+              <HighlightedText>Financial Storyboard</HighlightedText>
+              {showDetails && <div>Details about Financial Storyboard</div>}
             </TextContainer>
           </StyledNavLink>
         </SidebarItem>
@@ -74,7 +93,8 @@ const Sidebar = () => {
               <FaTachometerAlt />
             </IconWrapper>
             <TextContainer>
-              <div>Technical architecture and setup</div>
+              <HighlightedText>Technical architecture and setup</HighlightedText>
+              {showDetails && <div>Details about architecture and setup</div>}
             </TextContainer>
           </StyledNavLink>
         </SidebarItem>
@@ -85,7 +105,7 @@ const Sidebar = () => {
             </IconWrapper>
             <TextContainer>
               <HighlightedText>Publish financial APIs</HighlightedText>
-              <div>ORDS, OpenAPI <br />Sphere</div>
+              {showDetails && <div>ORDS, OpenAPI <br />Sphere</div>}
             </TextContainer>
           </StyledNavLink>
         </SidebarItem>
@@ -96,8 +116,8 @@ const Sidebar = () => {
             </IconWrapper>
             <TextContainer>
               <HighlightedText>Create and view accounts</HighlightedText>
-              <div>MongoDB/MERN stack<br/>
-              Decimal Point Analytics (DPA)</div>
+              {showDetails && <div>MongoDB/MERN stack<br/>
+              Decimal Point Analytics (DPA)</div>}
             </TextContainer>
           </StyledNavLink>
         </SidebarItem>
@@ -108,10 +128,10 @@ const Sidebar = () => {
             </IconWrapper>
             <TextContainer>
               <HighlightedText>Deposit/withdraw money (ATM)</HighlightedText>
-              <div>
-              Polyglot, Blockchain Tables<br/>
+              {showDetails && <div>
+              Polyglot<br/>
               Java, JS, Python, .NET, Go, Rust
-              </div>
+              </div>}
             </TextContainer>
           </StyledNavLink>
         </SidebarItem>
@@ -122,10 +142,10 @@ const Sidebar = () => {
             </IconWrapper>
             <TextContainer>
               <HighlightedText>Transfer to external bank</HighlightedText>
-              <div>
+              {showDetails && <div>
                 MicroTx, Lock-free reservations <br />
                 University of Naples
-              </div>
+              </div>}
             </TextContainer>
           </StyledNavLink>
         </SidebarItem>
@@ -136,10 +156,10 @@ const Sidebar = () => {
             </IconWrapper>
             <TextContainer>
               <HighlightedText>Make purchases and detect fraud</HighlightedText>
-              <div>
+              {showDetails && <div>
                 Globally Distributed DB, OML, Spatial<br />
                 AMEX
-              </div>
+              </div>}
             </TextContainer>
           </StyledNavLink>
         </SidebarItem>
@@ -150,10 +170,10 @@ const Sidebar = () => {
             </IconWrapper>
             <TextContainer>
               <HighlightedText>Detect money laundering</HighlightedText>
-              <div>
+              {showDetails && <div>
                 Graph
                 <br />Certegy
-              </div>
+              </div>}
             </TextContainer>
           </StyledNavLink>
         </SidebarItem>
@@ -164,10 +184,10 @@ const Sidebar = () => {
             </IconWrapper>
             <TextContainer>
               <HighlightedText>Transfer to brokerage accounts</HighlightedText>
-              <div>
+              {showDetails && <div>
                 Kafka and TxEventQ <br />
                 FSGBU
-              </div>
+              </div>}
             </TextContainer>
           </StyledNavLink>
         </SidebarItem>
@@ -178,11 +198,11 @@ const Sidebar = () => {
             </IconWrapper>
             <TextContainer>
               <HighlightedText>View stock ticker and buy/sell stock</HighlightedText>
-              <div>
+              {showDetails && <div>
                 True Cache
                 <br />
                 NYSE
-              </div>
+              </div>}
             </TextContainer>
           </StyledNavLink>
         </SidebarItem>
@@ -193,10 +213,10 @@ const Sidebar = () => {
             </IconWrapper>
             <TextContainer>
               <HighlightedText>Get personal financial insights</HighlightedText>
-              <div>
+              {showDetails && <div>
                 Vector Search, AI Agents and MCP <br />
                 DMCC
-              </div>
+              </div>}
             </TextContainer>
           </StyledNavLink>
         </SidebarItem>
@@ -207,14 +227,17 @@ const Sidebar = () => {
             </IconWrapper>
             <TextContainer>
               <HighlightedText>Speak with your financial data</HighlightedText>
-              <div>
+              {showDetails && <div>
                 NL2SQL, Vector Search, Speech AI <br />
                 Industrial Scientific
-              </div>
+              </div>}
             </TextContainer>
           </StyledNavLink>
         </SidebarItem>
       </SidebarMenu>
+      <ToggleButton onClick={() => setShowDetails(!showDetails)}>
+        {showDetails ? 'Hide Details' : 'Show Details'}
+      </ToggleButton>
     </SidebarContainer>
   );
 };

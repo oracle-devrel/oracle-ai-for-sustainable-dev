@@ -2,77 +2,84 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 
 const PageContainer = styled.div`
-  background-color: #121212; /* Dark background */
-  color: #ffffff; /* Light text */
+  background-color: #121212;
+  color: #ffffff;
   width: 100%;
   height: 100vh;
   padding: 20px;
-  overflow-y: auto; /* Allow scrolling if content overflows */
-  display: flex; /* Use flexbox for layout */
-  flex-direction: column; /* Stack title and content vertically */
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 `;
 
 const ContentContainer = styled.div`
-  display: flex; /* Use flexbox for layout */
-  flex-direction: row; /* Place SidePanel and Form side by side */
-  align-items: flex-start; /* Align items at the top */
-  margin-top: 20px; /* Add spacing below the title */
+  display: flex;
+  flex-direction: column; /* Stack SidePanel and Form vertically */
+  align-items: flex-start;
+  margin-top: 20px;
 `;
 
 const Form = styled.form`
-  flex: 3; /* Take up more space for the form */
+  flex: 3;
   display: flex;
   flex-direction: column;
   max-width: 800px;
-  margin-left: 20px; /* Add spacing between the SidePanel and the form */
+  margin-top: 20px; /* Add spacing between SidePanel and Form */
   padding: 20px;
-  border: 1px solid #444; /* Darker border */
+  border: 1px solid #444;
   border-radius: 8px;
-  background-color: #1e1e1e; /* Darker background for the form */
+  background-color: #1e1e1e;
 `;
 
 const SidePanel = styled.div`
-  flex: 0.5; /* Reduce the space taken by the side panel */
-  max-width: 400px; /* Limit the maximum width */
-  border: 1px solid #444; /* Darker border */
+  flex: 0.5;
+  max-width: 400px;
+  border: 1px solid #444;
   padding: 10px;
   border-radius: 8px;
-  background-color: #1e1e1e; /* Darker background for the side panel */
-  color: #ffffff; /* Light text */
-  font-size: 1.1rem; /* Slightly smaller font size */
+  background-color: #1e1e1e;
+  color: #ffffff;
+  font-size: 1.1rem;
 `;
 
 const Label = styled.label`
   display: block;
   margin-bottom: 8px;
   font-weight: bold;
-  color: #ffffff; /* Light text */
+  color: #ffffff;
 `;
 
 const Input = styled.input`
   width: 100%;
   margin-bottom: 16px;
   padding: 8px;
-  border: 1px solid #555; /* Darker border */
+  border: 1px solid #555;
   border-radius: 4px;
-  background-color: #2c2c2c; /* Darker input background */
-  color: #ffffff; /* Light text */
+  background-color: #2c2c2c;
+  color: #ffffff;
 `;
 
 const Select = styled.select`
   width: 100%;
   margin-bottom: 16px;
   padding: 8px;
-  border: 1px solid #555; /* Darker border */
+  border: 1px solid #555;
   border-radius: 4px;
-  background-color: #2c2c2c; /* Darker select background */
-  color: #ffffff; /* Light text */
+  background-color: #2c2c2c;
+  color: #ffffff;
 `;
 
 const RadioLabel = styled.label`
   display: block;
   margin-bottom: 8px;
-  color: #ffffff; /* Light text */
+  color: #ffffff;
+`;
+
+const CheckboxLabel = styled.label`
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+  color: #ffffff;
 `;
 
 const Button = styled.button`
@@ -101,6 +108,23 @@ const ToggleButton = styled.button`
   }
 `;
 
+const CollapsibleContent = styled.div`
+  display: flex;
+  flex-direction: row; /* Arrange text and video side by side */
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%; /* Make it span the full width of the page */
+`;
+
+const TextContainer = styled.div`
+  flex: 1;
+  margin-right: 20px; /* Add spacing between text and video */
+`;
+
+const VideoContainer = styled.div`
+  flex: 1;
+`;
+
 const Transactions = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
@@ -108,13 +132,17 @@ const Transactions = () => {
     amount: '',
     fromAccount: '',
     toAccount: '',
-    messagingOption: '', // New field for messaging options
-    crashOption: '', // New field for crash simulation
+    crashOption: 'noCrash', // Default to "No Crash"
+    sagaAction: 'complete', // Default to "Complete/Commit"
+    useLockFreeReservations: false, // Default to not using lock-free reservations
   });
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    const { name, value, type, checked } = e.target;
+    setFormData({
+      ...formData,
+      [name]: type === 'checkbox' ? checked : value,
+    });
   };
 
   const handleSubmit = (e) => {
@@ -150,37 +178,51 @@ const Transactions = () => {
             {isCollapsed ? 'Show Details' : 'Hide Details'}
           </ToggleButton>
           {!isCollapsed && (
-            <div>
-              <div>
-                <a
-                  href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier-financial/index.html"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ color: '#1abc9c', textDecoration: 'none' }}
-                >
-                  Click here for workshop lab and further information
-                </a>
-              </div>
-              <div>
-                <a
-                  href="https://github.com/paulparkinson/oracle-ai-for-sustainable-dev/tree/main/financial"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ color: '#1abc9c', textDecoration: 'none' }}
-                >
-                  Direct link to source code on GitHub
-                </a>
-              </div>
-              <h4>Financial Process:</h4>
-              <ul>
-                <li>Transfer funds between banks</li>
-              </ul>
-              <h4>Developers:</h4>
-              <ul>
-                <li>The only database that provides auto-compensating sagas (microservice transactions) and highest throughput for hotspots/fields</li>
-                <li>Simplified development (~80% less code)</li>
-              </ul>
-            </div>
+            <CollapsibleContent>
+              <TextContainer>
+                <div>
+                  <a
+                    href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier-financial/index.html"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: '#1abc9c', textDecoration: 'none' }}
+                  >
+                    Click here for workshop lab and further information
+                  </a>
+                </div>
+                <div>
+                  <a
+                    href="https://github.com/paulparkinson/oracle-ai-for-sustainable-dev/tree/main/financial"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: '#1abc9c', textDecoration: 'none' }}
+                  >
+                    Direct link to source code on GitHub
+                  </a>
+                </div>
+                <h4>Financial Process:</h4>
+                <ul>
+                  <li>Transfer funds between banks</li>
+                </ul>
+                <h4>Developers:</h4>
+                <ul>
+                  <li>The only database that provides auto-compensating sagas (microservice transactions) and highest throughput for hotspots/fields</li>
+                  <li>Simplified development (~80% less code)</li>
+                </ul>
+
+              </TextContainer>
+              <VideoContainer>
+                <iframe
+                  width="100%"
+                  height="315"
+                  src="https://www.youtube.com/embed/3p8X-i1y43U" 
+                  title="YouTube video player"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                ></iframe>
+              </VideoContainer>
+            </CollapsibleContent>
           )}
         </SidePanel>
         <Form onSubmit={handleSubmit}>
@@ -227,28 +269,50 @@ const Transactions = () => {
             <option value="bank2account3">Bank 2 Account 3</option>
           </Select>
 
-          <h4>For Developers: Select a radio button to trigger chaos/crash testing and notice difference in behavior and simplified coding when using Oracle Database lock-free reservations and MicroTx sagas</h4>
+          <h4>Saga Action</h4>
           <RadioLabel>
             <input
               type="radio"
-              name="messagingOption"
-              value="Without MicroTx and Lock-free Reservations"
-              checked={formData.messagingOption === 'Without MicroTx and Lock-free Reservations'}
+              name="sagaAction"
+              value="complete"
+              checked={formData.sagaAction === 'complete'}
               onChange={handleChange}
             />
-            Without MicroTx and Lock-free Reservations
+            Complete/Commit
           </RadioLabel>
           <RadioLabel>
             <input
               type="radio"
-              name="messagingOption"
-              value="With MicroTx and Lock-free Reservations"
-              checked={formData.messagingOption === 'With MicroTx and Lock-free Reservations'}
+              name="sagaAction"
+              value="rollback"
+              checked={formData.sagaAction === 'rollback'}
               onChange={handleChange}
             />
-            With MicroTx and Lock-free Reservations
+            Compensate/Rollback
           </RadioLabel>
 
+          {/* Checkbox for Lock-free Reservations */}
+          <CheckboxLabel>
+            <input
+              type="checkbox"
+              name="useLockFreeReservations"
+              checked={formData.useLockFreeReservations}
+              onChange={handleChange}
+            />
+            Use Lock-free Reservations
+          </CheckboxLabel>
+
+          <h4>Crash Simulation</h4>
+          <RadioLabel>
+            <input
+              type="radio"
+              name="crashOption"
+              value="noCrash"
+              checked={formData.crashOption === 'noCrash'}
+              onChange={handleChange}
+            />
+            No Crash
+          </RadioLabel>
           <RadioLabel>
             <input
               type="radio"
@@ -279,7 +343,28 @@ const Transactions = () => {
             />
             Crash After Second Bank Commit
           </RadioLabel>
-
+          <h4>Explore Source Code:</h4>
+                <div>
+                  <a
+                    href="https://github.com/paulparkinson/oracle-ai-for-sustainable-dev/tree/main/financial/bank-transfer-microtx-saga-lockless/account"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: '#1abc9c', textDecoration: 'none' }}
+                  >
+                    Source code without MicroTx and Lock-free Reservations
+                  </a>
+                </div>
+                <div>
+                  <a
+                    href="https://github.com/paulparkinson/oracle-ai-for-sustainable-dev/tree/main/financial/bank-transfer-microtx-saga-lockless/account"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: '#1abc9c', textDecoration: 'none' }}
+                  >
+                    Source code with MicroTx and Lock-free Reservations
+                  </a>
+                </div>
+                <br />
           <Button type="submit">Submit</Button>
         </Form>
       </ContentContainer>

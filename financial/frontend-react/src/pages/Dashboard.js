@@ -69,7 +69,7 @@ const DashBoard = () => {
       {/* Architecture Image */}
       <ImageContainer>
         <img
-          src="/images/architecture.png"
+          src={`${process.env.PUBLIC_URL}/images/architecture.png`}
           alt="Technical Architecture"
         />
       </ImageContainer>
