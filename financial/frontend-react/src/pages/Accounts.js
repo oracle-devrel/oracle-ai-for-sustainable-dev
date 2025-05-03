@@ -185,6 +185,10 @@ const Accounts = () => {
                 <li>Query the accounts using relational/SQL commands from a Java/Spring Boot stack</li>
                 <li>This is possible due to the JSON Duality feature</li>
               </ul>
+              <h4>Contacts:</h4>
+              <ul>
+                <li>MongoDB Adapter and JSON Duality: Julian Dontcheff, Beda Hammerschmidt</li>
+              </ul>
             </div>
             <div style={{ flexShrink: 0, width: '70%' }}>
               <h4>Walkthrough Video:</h4>

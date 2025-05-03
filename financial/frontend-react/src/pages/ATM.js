@@ -101,16 +101,17 @@ const ATM = () => {
   return (
     <PageContainer>
     <h2>Deposit/withdraw money (ATM)</h2>
-    <h2>Polyglot (Java, JS, Python, .NET, Go, Rust)</h2>
+    <h2>Polyglot</h2>
+    <h2>Java, JS, Python, .NET, Go, Rust</h2>
       {/* Collapsible SidePanel */}
       <SidePanel>
         <ToggleButton onClick={() => setIsCollapsed(!isCollapsed)}>
           {isCollapsed ? 'Show Details' : 'Hide Details'}
         </ToggleButton>
         {!isCollapsed && (
-          <div>
-
-    <div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div style={{ flex: 1, marginRight: '20px' }}>
+              <div>
                 <a
                   href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier-financial/index.html"
                   target="_blank"
@@ -130,17 +131,35 @@ const ATM = () => {
                   Direct link to source code on GitHub
                 </a>
               </div>
-            <h4>Business Process:</h4>
-            <ul>
-              <li>Deposit or withdraw money</li>
-              <li>Check account balance</li>
-              <li>Prevent detect/fraud</li>
-            </ul>
-            <h4>Developer Notes:</h4>
-            <ul>
-              <li>Polyglot implementation: Java, JS, Python, .NET, Go, Rust</li>
-              <li>Ensure secure transactions and detect/prevent with Blockchain Tables</li>
-            </ul>
+              <h4>Financial Process:</h4>
+              <ul>
+                <li>Deposit or withdraw money</li>
+                <li>Check account balance</li>
+              </ul>
+              <h4>Developer Notes:</h4>
+              <ul>
+                <li>Polyglot implementation: Java, JS, Python, .NET, Go, Rust</li>
+                <li>Ensure secure transactions and detect/prevent with Blockchain Tables</li>
+              </ul>
+              <h4>Contacts:</h4>
+              <ul>
+                <li>Java: Kuassi Mensah, JavaScript: Sharad Chandran R, Python: Veronica Dumitriu, .NET: Alex Key, All C-based (JS, Python, Go, tec.): Christopher Jones</li>
+
+              </ul>
+            </div>
+            <div style={{ flexShrink: 0, width: '70%' }}>
+              <h4>Walkthrough Video:</h4>
+              <iframe
+                width="100%"
+                height="315"
+                src="https://www.youtube.com/embed/8Tgmy74A4Bg"
+                title="YouTube video player"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                style={{ borderRadius: '8px', border: '1px solid #444' }}
+              ></iframe>
+            </div>
           </div>
         )}
       </SidePanel>
