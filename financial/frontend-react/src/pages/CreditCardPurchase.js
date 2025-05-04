@@ -104,7 +104,7 @@ const CreditCardPurchase = () => {
 
   return (
     <PageContainer>
-      <h2>Make purchases and detect fraud</h2>
+      <h2>Make purchases and visualize fraud</h2>
       <h2>Globally Distributed DB, OML, Spatial</h2>
       <h2>AMEX</h2>
 

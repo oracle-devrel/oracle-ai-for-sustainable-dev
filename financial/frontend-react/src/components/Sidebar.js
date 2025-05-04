@@ -194,7 +194,7 @@ const Sidebar = () => {
               <FaPiggyBank />
             </IconWrapper>
             <TextContainer>
-              <HighlightedText>Make purchases and detect fraud</HighlightedText>
+              <HighlightedText>Make purchases and visualize fraud</HighlightedText>
               {showDetails && <div>
                 Globally Distributed DB, OML, Spatial<br />
                 AMEX
