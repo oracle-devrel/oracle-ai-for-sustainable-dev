@@ -94,6 +94,33 @@
 			<version>${oci.sdk.version}</version>
 		</dependency>
 
+<!--		<dependency>-->
+<!--			<groupId>org.springframework.boot</groupId>-->
+<!--			<artifactId>spring-boot-starter-jdbc</artifactId>-->
+<!--		</dependency>-->
+
+<!--		<dependency>-->
+<!--			<groupId>com.oracle.database.jdbc</groupId>-->
+<!--			<artifactId>ojdbc11</artifactId>-->
+<!--		</dependency>-->
+<!--		-->
+<!--		<dependency>-->
+<!--			<groupId>org.springframework.ai</groupId>-->
+<!--			<artifactId>spring-ai-oracle-store</artifactId>-->
+<!--		</dependency>-->
+<!--		<dependency>-->
+<!--			<groupId>org.springframework.ai</groupId>-->
+<!--			<artifactId>spring-ai-oracle-store-spring-boot-starter</artifactId>-->
+<!--			<version>1.0.0-M6</version>-->
+<!--		</dependency>-->
+		<dependency>
+			<groupId>dev.langchain4j</groupId>
+			<artifactId>langchain4j-oracle</artifactId>
+			<version>1.0.0-beta2</version>
+		</dependency>
+
+
+
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-simple</artifactId>

@@ -84,7 +84,7 @@
             const voiceDropdown = document.querySelector(`select[name="voiceName_${languageCode}_${ssmlGender}"]:not([disabled])`);
             const voiceName = voiceDropdown ? voiceDropdown.value : "";
 
-            const requestURL = `https://141.148.204.74:8444/aiholo/tts?textToConvert=${encodeURIComponent(textToConvert)}&languageCode=${encodeURIComponent(languageCode)}&ssmlGender=${encodeURIComponent(ssmlGender)}&voiceName=${encodeURIComponent(voiceName)}`;
+            const requestURL = `https://aiholo.org/aiholo/tts?textToConvert=${encodeURIComponent(textToConvert)}&languageCode=${encodeURIComponent(languageCode)}&ssmlGender=${encodeURIComponent(ssmlGender)}&voiceName=${encodeURIComponent(voiceName)}`;
             
             window.location.href = requestURL;
         }
