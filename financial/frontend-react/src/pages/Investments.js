@@ -59,13 +59,27 @@ const Investments = () => {
           {isCollapsed ? 'Show Details' : 'Hide Details'}
         </ToggleButton>
         {!isCollapsed && (
-          <div>
-            <h4>Personas:</h4>
-            <ul>
-              <li>Portfolio Manager</li>
-              <li>Investor</li>
-            </ul>
-            <h4>Process:</h4>
+          <div>     <div>
+          <a
+            href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier-financial/index.html"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: '#1abc9c', textDecoration: 'none' }}
+          >
+            Click here for workshop lab and further information
+          </a>
+        </div>
+        <div>
+          <a
+            href="https://github.com/paulparkinson/oracle-ai-for-sustainable-dev/tree/main/financial"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: '#1abc9c', textDecoration: 'none' }}
+          >
+            Direct link to source code on GitHub
+          </a>
+        </div>
+            <h4>Financial Process:</h4>
             <ul>
               <li>Analyze investment portfolios</li>
               <li>Track performance of stocks, bonds, and mutual funds</li>

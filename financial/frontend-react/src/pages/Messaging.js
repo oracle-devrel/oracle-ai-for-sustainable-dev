@@ -138,22 +138,24 @@ const Messaging = () => {
         {!isCollapsed && (
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div style={{ flex: 1, marginRight: '20px' }}>
+            <div>
+                <a
+                  href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier-financial/index.html"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: '#1abc9c', textDecoration: 'none' }}
+                >
+                  Click here for workshop lab and further information
+                </a>
+              </div>
               <div>
                 <a
-                  href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier-financial/index.html?lab=financial-api"
+                  href="https://github.com/paulparkinson/oracle-ai-for-sustainable-dev/tree/main/financial"
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{ color: '#1abc9c', textDecoration: 'none' }}
                 >
-                  Click here for workshop lab
-                </a>
-                <a
-                  href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier-financial/index.html?lab=financial-api"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ color: '#1abc9c', textDecoration: 'none' }}
-                >
-                  Click here to go directly to source code
+                  Direct link to source code on GitHub
                 </a>
               </div>
               <h4>Financial Process:</h4>
