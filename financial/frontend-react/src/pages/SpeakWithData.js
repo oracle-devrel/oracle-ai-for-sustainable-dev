@@ -103,6 +103,14 @@ const SpeakWithData = () => {
               <li>Use Vector Search for semantic data queries</li>
               <li>Integrate Speech AI for voice-based interactions</li>
             </ul>
+            <h4>Differentiators:</h4>
+            <ul>
+              <li>Conduct SQL and Vector searches using natural language</li>
+            </ul>
+            <h4>Contacts:</h4>
+            <ul>
+              <li>NL2SQL/Select AI: Mark Hornick, Speech AI: Michael Zhang</li>
+            </ul>
           </div>
         )}
       </SidePanel>

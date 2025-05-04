@@ -155,6 +155,13 @@ const Graph = () => {
             <ul>
               <li>Leverage Oracle Database Graph</li>
             </ul>
+            <h4>Contacts:</h4>
+            <ul>
+              <li>Graph: Melliyal Annamalai</li>
+            </ul>
+
+
+            
           </div>
         )}
       </SidePanel>

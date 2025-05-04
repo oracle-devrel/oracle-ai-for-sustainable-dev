@@ -4,7 +4,7 @@ import styled from 'styled-components';
 const PageContainer = styled.div`
   background-color: #121212;
   color: #ffffff;
-  width: 100%;
+  width: 100%; /* Ensure it spans the full width of the screen */
   height: 100vh;
   padding: 20px;
   overflow-y: auto;
@@ -15,16 +15,15 @@ const PageContainer = styled.div`
 const ContentContainer = styled.div`
   display: flex;
   flex-direction: column; /* Stack SidePanel and Form vertically */
-  align-items: flex-start;
-  margin-top: 20px;
+  width: 100%; /* Use the full width of the page */
+  max-width: 1200px; /* Add a maximum width for better readability */
+  margin: 0 auto; /* Center the content horizontally within the page */
 `;
 
 const Form = styled.form`
-  flex: 3;
+  width: 100%; /* Make the Form span the full width */
   display: flex;
   flex-direction: column;
-  max-width: 800px;
-  margin-top: 20px; /* Add spacing between SidePanel and Form */
   padding: 20px;
   border: 1px solid #444;
   border-radius: 8px;
@@ -32,14 +31,14 @@ const Form = styled.form`
 `;
 
 const SidePanel = styled.div`
-  flex: 0.5;
-  max-width: 400px;
+  width: 100%; /* Make the SidePanel span the full width */
   border: 1px solid #444;
   padding: 10px;
   border-radius: 8px;
   background-color: #1e1e1e;
   color: #ffffff;
   font-size: 1.1rem;
+  margin-bottom: 20px; /* Add spacing between the SidePanel and the Form */
 `;
 
 const Label = styled.label`
@@ -204,10 +203,16 @@ const Transactions = () => {
                 <ul>
                   <li>Transfer funds between banks</li>
                 </ul>
-                <h4>Developers:</h4>
+                <h4>Developer Notes:</h4>
                 <ul>
                   <li>The only database that provides auto-compensating sagas (microservice transactions) and highest throughput for hotspots/fields</li>
                   <li>Simplified development (~80% less code)</li>
+                </ul>
+
+                <h4>Contacts:</h4>
+                <ul>
+                  <li>MicroTx: Brijesh Deo, Lock-free reservations: Gregg Christman</li>
+             
                 </ul>
 
               </TextContainer>
@@ -215,7 +220,7 @@ const Transactions = () => {
                 <iframe
                   width="100%"
                   height="315"
-                  src="https://www.youtube.com/embed/3p8X-i1y43U" 
+                  src="https://www.youtube.com/embed/3p8X-i1y43U"
                   title="YouTube video player"
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

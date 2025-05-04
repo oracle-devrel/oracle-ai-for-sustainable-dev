@@ -192,6 +192,15 @@ const StockTicker = () => {
               <li>Integrate with Kafka APIs for seamless event processing</li>
               <li>Leverage Oracle Database for advanced analytics</li>
             </ul>
+              <h4>Differentiators:</h4>
+              <ul>
+                <li>Unlike Redis which has it's own API, True Cache uses SQL and so no application modifications are required</li>
+              </ul>
+            <h4>Contacts:</h4>
+            <ul>
+              <li>True Cache: Bill Lee, Pankaj Chandiramani</li>
+            </ul>
+
           </div>
         )}
       </SidePanel>

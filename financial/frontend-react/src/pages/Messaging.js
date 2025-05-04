@@ -172,7 +172,7 @@ const Messaging = () => {
               </ul>
               <h4>Contacts: </h4>
               <ul>
-                <li>TxEventQ and Kafka: Anders Swanson</li>
+                <li>TxEventQ and Kafka: Nithin Thekkupadam Narayanan, Anders Swanson</li>
               </ul>
             </div>
             <div style={{ flexShrink: 0, width: '40%' }}>
