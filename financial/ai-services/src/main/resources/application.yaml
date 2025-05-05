@@ -29,19 +29,11 @@ spring:
       config:
         type: INSTANCE_PRINCIPAL
 
-#  datasource:
-#    url: jdbc:oracle:thin:@selectaidb_high?TNS_ADMIN=C:/Users/opc/Downloads/Wallet_SelectAIDB/Wallet_SelectAIDB
-#
-#    username: moviestream
-#    password: Welcome12345
-#    driver-class-name: oracle.jdbc.OracleDriver
-#    type: oracle.ucp.jdbc.PoolDataSource
-#    oracleucp:
-#      connection-factory-class-name: oracle.jdbc.pool.OracleDataSource
-#      connection-pool-name: AccountConnectionPool
-#      initial-pool-size: 15s
-#      min-pool-size: 10
-#      max-pool-size: 30
+  datasource:
+    username: ${DB_USER:financial} # Default to 'financial', overridden by environment variable DB_USER
+    password: ${DB_PASSWORD:Welcome12345} # Default to 'Welcome12345', overridden by environment variable DB_PASSWORD
+    url: ${DB_URL:jdbc:oracle:thin:@financialdb_high?TNS_ADMIN=/Users/pparkins/Downloads/Wallet_financialdb} # Default URL, overridden by environment variable DB_URL
+
 #  ai:
 #    vectorstore:
 #      oracle:

@@ -1,6 +1,7 @@
 package oracleai.common;
 
 import oracle.jdbc.pool.OracleDataSource;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -11,12 +12,21 @@ import java.sql.SQLException;
 @Configuration
 public class DataSourceConfiguration {
 
+    @Value("${spring.datasource.username}")
+    private String username;
+
+    @Value("${spring.datasource.password}")
+    private String password;
+
+    @Value("${spring.datasource.url}")
+    private String url;
+
     @Bean
     public DataSource dataSource() throws SQLException {
         OracleDataSource dataSource = new OracleDataSource();
-        dataSource.setUser("financial");
-        dataSource.setPassword("Welcome12345");
-        dataSource.setURL("jdbc:oracle:thin:@financialdb_high?TNS_ADMIN=/Users/pparkins/Downloads/Wallet_financialdb");
+        dataSource.setUser(username);
+        dataSource.setPassword(password);
+        dataSource.setURL(url);
         try (Connection connection = dataSource.getConnection()) {
             System.out.println("✅ Successfully connected to Oracle DB: " + connection.getMetaData().getDatabaseProductVersion());
         }
