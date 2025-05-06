@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -27,15 +27,6 @@ const MapWrapper = styled.div`
   margin-bottom: 20px;
 `;
 
-const Image = styled.img`
-  display: block;
-  max-width: 90%;
-  height: auto;
-  margin: 20px auto;
-  border: 1px solid #444;
-  border-radius: 8px;
-`;
-
 const Form = styled.form`
   width: 100%;
   display: flex;
@@ -51,6 +42,16 @@ const Label = styled.label`
   display: block;
   margin-bottom: 8px;
   font-weight: bold;
+  color: #ffffff;
+`;
+
+const Select = styled.select`
+  width: 100%;
+  margin-bottom: 16px;
+  padding: 8px;
+  border: 1px solid #555;
+  border-radius: 4px;
+  background-color: #2c2c2c;
   color: #ffffff;
 `;
 
@@ -100,6 +101,22 @@ const ToggleButton = styled.button`
   }
 `;
 
+const CollapsibleContent = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+`;
+
+const TextContent = styled.div`
+  flex: 1;
+  margin-right: 20px;
+`;
+
+const VideoWrapper = styled.div`
+  flex-shrink: 0;
+  width: 40%;
+`;
+
 const NotebookWrapper = styled.div`
   width: 100%;
   height: 600px; /* Set a fixed height for the iframe */
@@ -109,14 +126,46 @@ const NotebookWrapper = styled.div`
   overflow: hidden;
 `;
 
+const Image = styled.img`
+  display: block;
+  max-width: 90%;
+  height: auto;
+  margin: 20px auto;
+  border: 1px solid #444;
+  border-radius: 8px;
+`;
+
 const CreditCardPurchase = () => {
   const [formData, setFormData] = useState({
     cardNumber: '',
     amount: '',
     description: '',
+    longitude: '',
+    latitude: '',
   });
 
+  const [accountIds, setAccountIds] = useState([]);
   const [isCollapsed, setIsCollapsed] = useState(false);
+
+  useEffect(() => {
+    // Fetch account IDs for the dropdown
+    const fetchAccountIds = async () => {
+      try {
+        const response = await fetch(
+          'https://ij1tyzir3wpwlpe-financialdb.adb.eu-frankfurt-1.oraclecloudapps.com/ords/financial/accounts/'
+        );
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        setAccountIds(data.items || []); // Assuming the data is in the `items` array
+      } catch (error) {
+        console.error('Error fetching account IDs:', error);
+      }
+    };
+
+    fetchAccountIds();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -125,7 +174,7 @@ const CreditCardPurchase = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    alert(`Transaction submitted successfully! Card: ${formData.cardNumber}, Amount: ${formData.amount}`);
+    alert(`Transaction submitted successfully! Data: ${JSON.stringify(formData)}`);
   };
 
   // Generate 100 random coordinates clustered around Denver, Houston, New Orleans, and Washington D.C.
@@ -167,68 +216,80 @@ const CreditCardPurchase = () => {
           {isCollapsed ? 'Show Details' : 'Hide Details'}
         </ToggleButton>
         {!isCollapsed && (
-          <div>
-            <div>
-              <a
-                href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier-financial/index.html"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ color: '#1abc9c', textDecoration: 'none' }}
-              >
-                Click here for workshop lab and further information
-              </a>
-            </div>
-            <div>
-              <a
-                href="https://github.com/paulparkinson/oracle-ai-for-sustainable-dev/tree/main/financial"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ color: '#1abc9c', textDecoration: 'none' }}
-              >
-                Direct link to source code on GitHub
-              </a>
-            </div>
-            <h4>Financial Process:</h4>
-            <ul>
-              <li>Manage credit card transactions with Globally Distributed Database</li>
-              <li>Detect suspicious credit card transactions using ML/AI and spatial</li>
-            </ul>
-            <h4>Developer Notes:</h4>
-            <ul>
-              <li>Leverage Oracle Spatial for advanced visualization and analysis</li>
-              <li>Use OML4Py (Python, Jupyter, etc.) for machine learning</li>
-            </ul>
-            <h4>Differentiators:</h4>
-            <ul>
-              <li>Use OML and notebooks locally or in execution environment as part of database</li>
-            </ul>
-            <h4>Walkthrough Video:</h4>
-            <iframe
-              width="100%"
-              height="315"
-              src="https://www.youtube.com/embed/8Tgmy74A4Bg"
-              title="YouTube video player"
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              style={{ borderRadius: '8px', border: '1px solid #444' }}
-            ></iframe>
-          </div>
+          <CollapsibleContent>
+            <TextContent>
+              <div>
+                <a
+                  href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier-financial/index.html"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: '#1abc9c', textDecoration: 'none' }}
+                >
+                  Click here for workshop lab and further information
+                </a>
+              </div>
+              <div>
+                <a
+                  href="https://github.com/paulparkinson/oracle-ai-for-sustainable-dev/tree/main/financial"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: '#1abc9c', textDecoration: 'none' }}
+                >
+                  Direct link to source code on GitHub
+                </a>
+              </div>
+              <h4>Financial Process:</h4>
+              <ul>
+                <li>Manage credit card transactions with Globally Distributed Database</li>
+                <li>Detect suspicious credit card transactions using ML/AI and spatial</li>
+              </ul>
+              <h4>Developer Notes:</h4>
+              <ul>
+                <li>Leverage Oracle Spatial for advanced visualization and analysis</li>
+                <li>Use OML4Py (Python, Jupyter, etc.) for machine learning</li>
+              </ul>
+              <h4>Differentiators:</h4>
+              <ul>
+                <li>Globally distributed database offers multi-region strong consistency, SQL, JSON, RAC, Data Guard, Sharding, RAFT</li> 
+                <li>Use OML4Py and notebooks locally or in execution environment as part of database</li>
+                <li>Spatial queries, JSON, graph, and AI with no plugins required nor scale trade-offs</li>
+              </ul>
+            </TextContent>
+            <VideoWrapper>
+              <iframe
+                width="100%"
+                height="315"
+                src="https://www.youtube.com/embed/8Tgmy74A4Bg"
+                title="YouTube video player"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                style={{ borderRadius: '8px', border: '1px solid #444' }}
+              ></iframe>
+            </VideoWrapper>
+          </CollapsibleContent>
         )}
       </SidePanel>
 
       {/* Form Section */}
       <Form onSubmit={handleSubmit}>
         <Label htmlFor="cardNumber">Card/Account Number</Label>
-        <Input
-          type="text"
+        <Select
           id="cardNumber"
           name="cardNumber"
           value={formData.cardNumber}
           onChange={handleChange}
-          placeholder="Enter card/account number"
           required
-        />
+        >
+          <option value="" disabled>
+            Select an account
+          </option>
+          {accountIds.map((account) => (
+            <option key={account.account_id} value={account.account_id}>
+              {account.account_id}
+            </option>
+          ))}
+        </Select>
 
         <Label htmlFor="amount">Amount</Label>
         <Input
@@ -249,6 +310,28 @@ const CreditCardPurchase = () => {
           value={formData.description}
           onChange={handleChange}
           placeholder="Enter transaction description"
+        />
+
+        <Label htmlFor="longitude">Longitude</Label>
+        <Input
+          type="text"
+          id="longitude"
+          name="longitude"
+          value={formData.longitude}
+          onChange={handleChange}
+          placeholder="Enter longitude"
+          required
+        />
+
+        <Label htmlFor="latitude">Latitude</Label>
+        <Input
+          type="text"
+          id="latitude"
+          name="latitude"
+          value={formData.latitude}
+          onChange={handleChange}
+          placeholder="Enter latitude"
+          required
         />
 
         <Button type="submit">Submit</Button>
@@ -281,8 +364,8 @@ const CreditCardPurchase = () => {
       </NotebookWrapper>
 
       {/* Images */}
-      <Image src="/images/spatial-suspicious.png" alt="Spatial Suspicious Transactions" />
-      <Image src="/images/spatial-agg-03.png" alt="Spatial Aggregated Data" />
+      {/* <Image src="/images/spatial-suspicious.png" alt="Spatial Suspicious Transactions" /> */}
+      {/* <Image src="/images/spatial-agg-03.png" alt="Spatial Aggregated Data" /> */}
     </PageContainer>
   );
 };

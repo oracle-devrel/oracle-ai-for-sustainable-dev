@@ -20,6 +20,22 @@ const SidePanel = styled.div`
   margin-top: 20px; /* Add spacing above the side panel */
 `;
 
+const CollapsibleContent = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+`;
+
+const TextContent = styled.div`
+  flex: 1;
+  margin-right: 20px; /* Add spacing between text and video */
+`;
+
+const VideoWrapper = styled.div`
+  flex-shrink: 0;
+  width: 40%; /* Set the width of the video */
+`;
+
 const GraphContainer = styled.div`
   width: 100%;
   height: 400px; /* Set a fixed height for the graph container */
@@ -126,42 +142,54 @@ const Graph = () => {
           {isCollapsed ? 'Show Details' : 'Hide Details'}
         </ToggleButton>
         {!isCollapsed && (
-          <div>
-            <div>
-              <a
-                href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier-financial/index.html"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ color: '#1abc9c', textDecoration: 'none' }}
-              >
-                Click here for workshop lab and further information
-              </a>
-            </div>
-            <div>
-              <a
-                href="https://github.com/paulparkinson/oracle-ai-for-sustainable-dev/tree/main/financial"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ color: '#1abc9c', textDecoration: 'none' }}
-              >
-                Direct link to source code on GitHub
-              </a>
-            </div>
-            <h4>Financial Process:</h4>
-            <ul>
-              <li>Graph analysis is conducted for money laundering</li>
-            </ul>
-            <h4>Developer Notes:</h4>
-            <ul>
-              <li>Leverage Oracle Database Graph</li>
-            </ul>
-            <h4>Differentiators:</h4>
+          <CollapsibleContent>
+            <TextContent>
+              <div>
+                <a
+                  href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier-financial/index.html"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: '#1abc9c', textDecoration: 'none' }}
+                >
+                  Click here for workshop lab and further information
+                </a>
+              </div>
+              <div>
+                <a
+                  href="https://github.com/paulparkinson/oracle-ai-for-sustainable-dev/tree/main/financial"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: '#1abc9c', textDecoration: 'none' }}
+                >
+                  Direct link to source code on GitHub
+                </a>
+              </div>
+              <h4>Financial Process:</h4>
+              <ul>
+                <li>Graph analysis is conducted for money laundering</li>
+              </ul>
+              <h4>Developer Notes:</h4>
+              <ul>
+                <li>Leverage Oracle Database Graph</li>
+              </ul>
+              <h4>Differentiators:</h4>
               <ul>
                 <li>Supports PGQL, SQL, JSONPath, Rest, and Vector​</li>
               </ul>
-
-            
-          </div>
+            </TextContent>
+            <VideoWrapper>
+              <iframe
+                width="100%"
+                height="315"
+                src="https://www.youtube.com/embed/8Tgmy74A4Bg"
+                title="YouTube video player"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                style={{ borderRadius: '8px', border: '1px solid #444' }}
+              ></iframe>
+            </VideoWrapper>
+          </CollapsibleContent>
         )}
       </SidePanel>
 
@@ -169,7 +197,7 @@ const Graph = () => {
       <GraphContainer id="cy"></GraphContainer>
 
       {/* Generate Transactions Button */}
-      <GenerateButton onClick={generateTransactions}>Generate Transactions</GenerateButton>
+      <GenerateButton onClick={generateTransactions}>Generate transactions to see corresponding graph</GenerateButton>
     </PageContainer>
   );
 };
