@@ -55,11 +55,14 @@ const ToggleButton = styled.button`
 const APIs = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [accountData, setAccountData] = useState([]);
+  const [accountData2, setAccountData2] = useState([]); // State for the second table
   const [loading, setLoading] = useState(true);
+  const [loading2, setLoading2] = useState(true); // Loading state for the second table
   const [error, setError] = useState(null);
+  const [error2, setError2] = useState(null); // Error state for the second table
 
   useEffect(() => {
-    // Fetch data from the API
+    // Fetch data for the first table
     const fetchData = async () => {
       try {
         const response = await fetch(
@@ -77,12 +80,35 @@ const APIs = () => {
       }
     };
 
+    // Fetch data for the second table
+    const fetchData2 = async () => {
+      try {
+        const response = await fetch(
+          'https://ij1tyzir3wpwlpe-financialdb.adb.eu-frankfurt-1.oraclecloudapps.com/ords/financial2/accounts/'
+        );
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        setAccountData2(data.items || []); // Assuming the data is in the `items` array
+        setLoading2(false);
+      } catch (err) {
+        setError2(err.message);
+        setLoading2(false);
+      }
+    };
+
     fetchData();
+    fetchData2();
   }, []);
 
   // Dynamically generate table headers based on the keys of the first object in the data, excluding "links"
   const tableHeaders = accountData.length > 0 
     ? Object.keys(accountData[0]).filter((key) => key !== 'links') 
+    : [];
+
+  const tableHeaders2 = accountData2.length > 0 
+    ? Object.keys(accountData2[0]).filter((key) => key !== 'links') 
     : [];
 
   // Helper function to safely render table cell content
@@ -107,7 +133,7 @@ const APIs = () => {
         {!isCollapsed && (
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div style={{ flex: 1, marginRight: '20px' }}>
-            <div>
+              <div>
                 <a
                   href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier-financial/index.html"
                   target="_blank"
@@ -140,7 +166,7 @@ const APIs = () => {
               </ul>
               <h4>Differentiators:</h4>
               <ul>
-                <li>---</li>
+                <li>Exposes not just CRUD operations but stored procedures, workflows, event-driven flows, Vector searches, etc.</li>
               </ul>
             </div>
             <div style={{ flexShrink: 0, width: '70%' }}>
@@ -160,7 +186,8 @@ const APIs = () => {
         )}
       </SidePanel>
 
-      {/* Account Data Table */}
+      {/* First Account Data Table */}
+      <h3>Account Data Bank 1</h3>
       {loading ? (
         <p>Loading account data...</p>
       ) : error ? (
@@ -178,6 +205,33 @@ const APIs = () => {
             {accountData.map((account, index) => (
               <tr key={index}>
                 {tableHeaders.map((header) => (
+                  <TableCell key={header}>{renderCellContent(account[header])}</TableCell>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      )}
+
+      {/* Second Account Data Table */}
+      <h3>Account Data Bank 2</h3>
+      {loading2 ? (
+        <p>Loading account data...</p>
+      ) : error2 ? (
+        <p style={{ color: 'red' }}>Error: {error2}</p>
+      ) : (
+        <Table>
+          <thead>
+            <tr>
+              {tableHeaders2.map((header) => (
+                <TableHeader key={header}>{header}</TableHeader>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {accountData2.map((account, index) => (
+              <tr key={index}>
+                {tableHeaders2.map((header) => (
                   <TableCell key={header}>{renderCellContent(account[header])}</TableCell>
                 ))}
               </tr>

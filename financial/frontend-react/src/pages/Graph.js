@@ -155,7 +155,10 @@ const Graph = () => {
             <ul>
               <li>Leverage Oracle Database Graph</li>
             </ul>
-      
+            <h4>Differentiators:</h4>
+              <ul>
+                <li>Supports PGQL, SQL, JSONPath, Rest, and Vector​</li>
+              </ul>
 
             
           </div>

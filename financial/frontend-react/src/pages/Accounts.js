@@ -271,7 +271,9 @@ const Accounts = () => {
               <h4>Differentiators:</h4>
               <ul>
                 <li>JSON Duality allows the same data to be read and written to using JSON (and MongoDB API) as well as SQL</li>
-                <li>MongoDB API adapter maps MongoDB operations into real Oracle Database transactions and so, even MongoDB's recently added multi-document transactions are less efficient and more fragile in comparison</li>
+                <li>MongoDB API adapter maps MongoDB operations into real Oracle Database transactions and so, even MongoDB's recently added multi-document transactions are less efficient and can leave locks</li>
+                <li>MongoDB does not support Geo-distributed transactions or transactions across multiple databases, sharding, or savepoints</li>
+               
               </ul>
             </div>
             <div style={{ flexShrink: 0, width: '70%' }}>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
 const PageContainer = styled.div`
@@ -60,6 +60,16 @@ const Input = styled.input`
   color: #ffffff; /* Light text */
 `;
 
+const Select = styled.select`
+  width: 100%;
+  margin-bottom: 16px;
+  padding: 8px;
+  border: 1px solid #555;
+  border-radius: 4px;
+  background-color: #2c2c2c;
+  color: #ffffff;
+`;
+
 const RadioLabel = styled.label`
   display: block;
   margin-bottom: 8px;
@@ -81,10 +91,31 @@ const Button = styled.button`
 const ATM = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [formData, setFormData] = useState({
+    accountId: '',
     amount: '',
     transactionType: '',
     language: '',
   });
+  const [accountIds, setAccountIds] = useState([]);
+
+  // Fetch account IDs from the API
+  useEffect(() => {
+    const fetchAccountIds = async () => {
+      try {
+        const response = await fetch('http://localhost:8080/financial/accounts');
+        const data = await response.json();
+        const ids = data.map((account) => account.account_id); // Extract account IDs
+        setAccountIds(ids);
+        if (ids.length > 0) {
+          setFormData((prev) => ({ ...prev, accountId: ids[0] })); // Prepopulate with the first account ID
+        }
+      } catch (error) {
+        console.error('Error fetching account IDs:', error);
+      }
+    };
+
+    fetchAccountIds();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -94,15 +125,15 @@ const ATM = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     alert(
-      `Transaction submitted successfully! Type: ${formData.transactionType}, Language: ${formData.language}`
+      `Transaction submitted successfully! Account ID: ${formData.accountId}, Type: ${formData.transactionType}, Language: ${formData.language}`
     );
   };
 
   return (
     <PageContainer>
-    <h2>Deposit/withdraw money (ATM)</h2>
-    <h2>Polyglot</h2>
-    <h2>Java, JS, Python, .NET, Go, Rust</h2>
+      <h2>Deposit/withdraw money (ATM)</h2>
+      <h2>Polyglot</h2>
+      <h2>Java, JS, Python, .NET, Go, Rust</h2>
       {/* Collapsible SidePanel */}
       <SidePanel>
         <ToggleButton onClick={() => setIsCollapsed(!isCollapsed)}>
@@ -143,7 +174,7 @@ const ATM = () => {
               </ul>
               <h4>Differentiators:</h4>
               <ul>
-                <li>---</li>
+                <li>Supports all languages and frameworks</li>
               </ul>
             </div>
             <div style={{ flexShrink: 0, width: '70%' }}>
@@ -164,7 +195,22 @@ const ATM = () => {
       </SidePanel>
 
       <Form onSubmit={handleSubmit}>
-        <Label htmlFor="amount">Amount</Label>
+        <Label htmlFor="accountId">Account ID</Label>
+        <Select
+          id="accountId"
+          name="accountId"
+          value={formData.accountId}
+          onChange={handleChange}
+          required
+        >
+          {accountIds.map((id) => (
+            <option key={id} value={id}>
+              {id}
+            </option>
+          ))}
+        </Select>
+
+        <Label htmlFor="amount">Amount to deposit/withdraw</Label>
         <Input
           type="number"
           id="amount"

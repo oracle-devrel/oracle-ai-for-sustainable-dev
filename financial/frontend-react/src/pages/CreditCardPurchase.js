@@ -199,9 +199,20 @@ const CreditCardPurchase = () => {
               <li>Use OML4Py (Python, Jupyter, etc.) for machine learning</li>
             </ul>
             <h4>Differentiators:</h4>
-              <ul>
-                <li>Use OML and notebooks locally or in execution environment as part of database</li>
-              </ul>
+            <ul>
+              <li>Use OML and notebooks locally or in execution environment as part of database</li>
+            </ul>
+            <h4>Walkthrough Video:</h4>
+            <iframe
+              width="100%"
+              height="315"
+              src="https://www.youtube.com/embed/8Tgmy74A4Bg"
+              title="YouTube video player"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              style={{ borderRadius: '8px', border: '1px solid #444' }}
+            ></iframe>
           </div>
         )}
       </SidePanel>

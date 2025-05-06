@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
 const PageContainer = styled.div`
@@ -136,6 +136,45 @@ const Transactions = () => {
     useLockFreeReservations: false, // Default to not using lock-free reservations
   });
 
+  const [fromAccounts, setFromAccounts] = useState([]); // State for "From Account" dropdown
+  const [toAccounts, setToAccounts] = useState([]); // State for "To Account" dropdown
+
+  // Fetch account IDs for "From Account" dropdown
+  useEffect(() => {
+    const fetchFromAccounts = async () => {
+      try {
+        const response = await fetch(
+          'https://ij1tyzir3wpwlpe-financialdb.adb.eu-frankfurt-1.oraclecloudapps.com/ords/financial/accounts/'
+        );
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        setFromAccounts(data.items || []); // Assuming the data is in the `items` array
+      } catch (error) {
+        console.error('Error fetching from accounts:', error);
+      }
+    };
+
+    const fetchToAccounts = async () => {
+      try {
+        const response = await fetch(
+          'https://ij1tyzir3wpwlpe-financialdb.adb.eu-frankfurt-1.oraclecloudapps.com/ords/financial2/accounts/'
+        );
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        setToAccounts(data.items || []); // Assuming the data is in the `items` array
+      } catch (error) {
+        console.error('Error fetching to accounts:', error);
+      }
+    };
+
+    fetchFromAccounts();
+    fetchToAccounts();
+  }, []);
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData({
@@ -209,10 +248,9 @@ const Transactions = () => {
                   <li>Simplified development (~80% less code)</li>
                 </ul>
                 <h4>Differentiators:</h4>
-              <ul>
-                <li>Auto-compensating microservices transactions, support for multiple lanugages, Rest and Messaging</li>
-              </ul>
-
+                <ul>
+                  <li>Auto-compensating microservices transactions, support for multiple languages, Rest and Messaging</li>
+                </ul>
               </TextContainer>
               <VideoContainer>
                 <iframe
@@ -251,9 +289,11 @@ const Transactions = () => {
             <option value="" disabled>
               Select an account
             </option>
-            <option value="bank1account1">Bank 1 Account 1</option>
-            <option value="bank1account2">Bank 1 Account 2</option>
-            <option value="bank1account3">Bank 1 Account 3</option>
+            {fromAccounts.map((account) => (
+              <option key={account.account_id} value={account.account_id}>
+                {account.account_id}
+              </option>
+            ))}
           </Select>
 
           <Label htmlFor="toAccount">To Account</Label>
@@ -267,9 +307,11 @@ const Transactions = () => {
             <option value="" disabled>
               Select an account
             </option>
-            <option value="bank2account1">Bank 2 Account 1</option>
-            <option value="bank2account2">Bank 2 Account 2</option>
-            <option value="bank2account3">Bank 2 Account 3</option>
+            {toAccounts.map((account) => (
+              <option key={account.account_id} value={account.account_id}>
+                {account.account_id}
+              </option>
+            ))}
           </Select>
 
           <h4>Saga Action</h4>
@@ -346,28 +388,7 @@ const Transactions = () => {
             />
             Crash After Second Bank Commit
           </RadioLabel>
-          <h4>Explore Source Code:</h4>
-                <div>
-                  <a
-                    href="https://github.com/paulparkinson/oracle-ai-for-sustainable-dev/tree/main/financial/bank-transfer-microtx-saga-lockless/account"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{ color: '#1abc9c', textDecoration: 'none' }}
-                  >
-                    Source code without MicroTx and Lock-free Reservations
-                  </a>
-                </div>
-                <div>
-                  <a
-                    href="https://github.com/paulparkinson/oracle-ai-for-sustainable-dev/tree/main/financial/bank-transfer-microtx-saga-lockless/account"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{ color: '#1abc9c', textDecoration: 'none' }}
-                  >
-                    Source code with MicroTx and Lock-free Reservations
-                  </a>
-                </div>
-                <br />
+
           <Button type="submit">Submit</Button>
         </Form>
       </ContentContainer>
