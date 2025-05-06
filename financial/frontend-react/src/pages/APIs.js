@@ -130,7 +130,7 @@ const APIs = () => {
               <h4>Financial Process:</h4>
               <ul>
                 <li>Access/use financial data or processes from APIs</li>
-                <li>Display the largest changes in portfolio</li>
+                <li>Display account information</li>
               </ul>
               <h4>Developer Notes:</h4>
               <ul>
@@ -138,9 +138,9 @@ const APIs = () => {
                 <li>Automatic OpenAPI is generated for seamless integration</li>
                 <li>Expose data or processes in the database with a couple clicks or lines of code</li>
               </ul>
-              <h4>Contacts:</h4>
+              <h4>Differentiators:</h4>
               <ul>
-                <li>ORDS: Jeff Smith</li>
+                <li>---</li>
               </ul>
             </div>
             <div style={{ flexShrink: 0, width: '70%' }}>

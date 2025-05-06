@@ -50,7 +50,7 @@ const Login = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     // Add authentication logic here
-    if (username === 'financial' && password === 'oracleai') {
+    if (username === 'DEVELOPER' && password === 'Welcome123456#') {
       login();
       navigate('/dashboard');
     } else {

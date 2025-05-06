@@ -28,6 +28,17 @@ const Form = styled.form`
   color: #ffffff;
 `;
 
+const FormContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  gap: 20px; /* Add spacing between the forms */
+  margin-top: 20px;
+`;
+
+const StyledForm = styled(Form)`
+  flex: 1; /* Ensure both forms take equal width */
+`;
+
 const Label = styled.label`
   display: block;
   margin-bottom: 8px;
@@ -77,14 +88,42 @@ const TableCell = styled.td`
   color: #ffffff;
 `;
 
+const CheckboxContainer = styled.div`
+  display: flex;
+  flex-direction: column; /* Stack elements vertically */
+  align-items: flex-start; /* Align to the left */
+  margin-bottom: 16px;
+`;
+
+const RadioGroup = styled.div`
+  display: flex;
+  flex-direction: column; /* Stack radio buttons vertically */
+  margin-top: 8px; /* Add spacing above the radio buttons */
+`;
+
+const CheckboxLabel = styled.label`
+  margin-left: 8px;
+  color: #ffffff;
+  white-space: nowrap; /* Prevent label from wrapping to the next line */
+`;
+
+const RadioLabel = styled.label`
+  color: #ffffff;
+  margin-left: 24px; /* Indent radio buttons for better alignment */
+`;
+
 const Accounts = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [formData, setFormData] = useState({
     account_id: '',
-    name: '',
     official_name: '',
     type: '',
-    subtype: '',
+    current_balance: '',
+  });
+  const [updateFormData, setUpdateFormData] = useState({
+    amount: '',
+    crashAfterFirstUpdate: false,
+    action: 'Use MongoDB', // Default action
   });
   const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -92,6 +131,14 @@ const Accounts = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+  };
+
+  const handleUpdateChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setUpdateFormData({
+      ...updateFormData,
+      [name]: type === 'checkbox' ? checked : value,
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -109,10 +156,9 @@ const Accounts = () => {
         alert('Account created successfully!');
         setFormData({
           account_id: '',
-          name: '',
           official_name: '',
           type: '',
-          subtype: '',
+          current_balance: '',
         });
         fetchAccounts(); // Refresh the accounts table
       } else {
@@ -122,6 +168,35 @@ const Accounts = () => {
     } catch (error) {
       console.error('Error creating account:', error);
       alert('An error occurred while creating the account.');
+    }
+  };
+
+  const handleUpdateSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch('http://localhost:8080/financial/accounts', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updateFormData),
+      });
+
+      if (response.ok) {
+        alert('Accounts updated successfully!');
+        setUpdateFormData({
+          amount: '',
+          crashAfterFirstUpdate: false,
+          action: 'Use MongoDB',
+        });
+        fetchAccounts(); // Refresh the accounts table
+      } else {
+        const errorText = await response.text();
+        alert(`Failed to update accounts: ${errorText}`);
+      }
+    } catch (error) {
+      console.error('Error updating accounts:', error);
+      alert('An error occurred while updating the accounts.');
     }
   };
 
@@ -139,6 +214,14 @@ const Accounts = () => {
 
   useEffect(() => {
     fetchAccounts();
+
+    // Set up interval to refresh accounts every 1 second
+    const interval = setInterval(() => {
+      fetchAccounts();
+    }, 1000);
+
+    // Cleanup interval on component unmount
+    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -155,7 +238,7 @@ const Accounts = () => {
         {!isCollapsed && (
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div style={{ flex: 1, marginRight: '20px' }}>
-            <div>
+              <div>
                 <a
                   href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier-financial/index.html"
                   target="_blank"
@@ -185,9 +268,10 @@ const Accounts = () => {
                 <li>Query the accounts using relational/SQL commands from a Java/Spring Boot stack</li>
                 <li>This is possible due to the JSON Duality feature</li>
               </ul>
-              <h4>Contacts:</h4>
+              <h4>Differentiators:</h4>
               <ul>
-                <li>MongoDB Adapter and JSON Duality: Julian Dontcheff, Beda Hammerschmidt</li>
+                <li>JSON Duality allows the same data to be read and written to using JSON (and MongoDB API) as well as SQL</li>
+                <li>MongoDB API adapter maps MongoDB operations into real Oracle Database transactions and so, even MongoDB's recently added multi-document transactions are less efficient and more fragile in comparison</li>
               </ul>
             </div>
             <div style={{ flexShrink: 0, width: '70%' }}>
@@ -207,63 +291,111 @@ const Accounts = () => {
         )}
       </SidePanel>
 
-      {/* Form Section */}
-      <Form onSubmit={handleSubmit}>
-        <Label htmlFor="account_id">Account ID</Label>
-        <Input
-          type="text"
-          id="account_id"
-          name="account_id"
-          value={formData.account_id}
-          onChange={handleChange}
-          placeholder="Enter account ID"
-          required
-        />
+      {/* Forms Section */}
+      <FormContainer>
+        {/* Create Account Form */}
+        <StyledForm onSubmit={handleSubmit}>
+          <h3>Create Account</h3>
+          <Label htmlFor="account_id">Account ID</Label>
+          <Input
+            type="text"
+            id="account_id"
+            name="account_id"
+            value={formData.account_id}
+            onChange={handleChange}
+            placeholder="Enter account ID"
+            required
+          />
 
-        <Label htmlFor="name">Name</Label>
-        <Input
-          type="text"
-          id="name"
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-          placeholder="Enter account name"
-          required
-        />
+          <Label htmlFor="official_name">Official Name</Label>
+          <Input
+            type="text"
+            id="official_name"
+            name="official_name"
+            value={formData.official_name}
+            onChange={handleChange}
+            placeholder="Enter official name"
+          />
 
-        <Label htmlFor="official_name">Official Name</Label>
-        <Input
-          type="text"
-          id="official_name"
-          name="official_name"
-          value={formData.official_name}
-          onChange={handleChange}
-          placeholder="Enter official name"
-        />
+          <Label htmlFor="type">Type</Label>
+          <Input
+            type="text"
+            id="type"
+            name="type"
+            value={formData.type}
+            onChange={handleChange}
+            placeholder="Enter account type"
+            required
+          />
 
-        <Label htmlFor="type">Type</Label>
-        <Input
-          type="text"
-          id="type"
-          name="type"
-          value={formData.type}
-          onChange={handleChange}
-          placeholder="Enter account type"
-          required
-        />
+          <Label htmlFor="current_balance">Current Balance</Label>
+          <Input
+            type="number"
+            id="current_balance"
+            name="current_balance"
+            value={formData.current_balance}
+            onChange={handleChange}
+            placeholder="Enter current balance"
+          />
 
-        <Label htmlFor="subtype">Subtype</Label>
-        <Input
-          type="text"
-          id="subtype"
-          name="subtype"
-          value={formData.subtype}
-          onChange={handleChange}
-          placeholder="Enter account subtype"
-        />
+          <Button type="submit">Create Account</Button>
+        </StyledForm>
 
-        <Button type="submit">Create Account</Button>
-      </Form>
+        {/* Update All Accounts Form */}
+        <StyledForm onSubmit={handleUpdateSubmit}>
+          <h3>Update All Accounts</h3>
+          <Label htmlFor="amount">Amount to add to all accounts</Label>
+          <Input
+            type="number"
+            id="amount"
+            name="amount"
+            value={updateFormData.amount}
+            onChange={handleUpdateChange}
+            placeholder="Enter amount"
+            required
+          />
+
+          <CheckboxContainer>
+            <div>
+              <Input
+                type="checkbox"
+                id="crashAfterFirstUpdate"
+                name="crashAfterFirstUpdate"
+                checked={updateFormData.crashAfterFirstUpdate}
+                onChange={handleUpdateChange}
+              />
+              <CheckboxLabel htmlFor="crashAfterFirstUpdate">Crash After First Update</CheckboxLabel>
+            </div>
+
+            <RadioGroup>
+              <div>
+                <Input
+                  type="radio"
+                  id="useMongoDB"
+                  name="action"
+                  value="Use MongoDB"
+                  checked={updateFormData.action === 'Use MongoDB'}
+                  onChange={handleUpdateChange}
+                />
+                <RadioLabel htmlFor="useMongoDB">Use MongoDB</RadioLabel>
+              </div>
+              <div>
+                <Input
+                  type="radio"
+                  id="useMongoDBWithOracleAdapter"
+                  name="action"
+                  value="Use MongoDB with Oracle Adapter"
+                  checked={updateFormData.action === 'Use MongoDB with Oracle Adapter'}
+                  onChange={handleUpdateChange}
+                />
+                <RadioLabel htmlFor="useMongoDBWithOracleAdapter">Use MongoDB with Oracle Adapter</RadioLabel>
+              </div>
+            </RadioGroup>
+          </CheckboxContainer>
+
+          <Button type="submit">Update Accounts</Button>
+        </StyledForm>
+      </FormContainer>
 
       {/* Accounts Table */}
       {loading ? (
@@ -273,20 +405,18 @@ const Accounts = () => {
           <thead>
             <tr>
               <TableHeader>Account ID</TableHeader>
-              <TableHeader>Name</TableHeader>
-              <TableHeader>Type</TableHeader>
-              <TableHeader>Subtype</TableHeader>
               <TableHeader>Official Name</TableHeader>
+              <TableHeader>Type</TableHeader>
+              <TableHeader>Current Balance</TableHeader>
             </tr>
           </thead>
           <tbody>
             {accounts.map((account) => (
               <tr key={account.account_id}>
                 <TableCell>{account.account_id}</TableCell>
-                <TableCell>{account.name}</TableCell>
-                <TableCell>{account.type}</TableCell>
-                <TableCell>{account.subtype}</TableCell>
                 <TableCell>{account.official_name ?? 'N/A'}</TableCell>
+                <TableCell>{account.type}</TableCell>
+                <TableCell>{account.current_balance ?? 'N/A'}</TableCell>
               </tr>
             ))}
           </tbody>

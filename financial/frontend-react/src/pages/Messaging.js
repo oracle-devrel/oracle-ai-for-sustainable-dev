@@ -172,10 +172,7 @@ const Messaging = () => {
                 <li>Only Oracle Database has a built-in messaging engine (TxEventQ) which allows database and messaing operations in the same local transaction</li>
                 <li>TxEventQ can be used via Kafka API, JMS, PL/SQL and via any language</li>
               </ul>
-              <h4>Contacts: </h4>
-              <ul>
-                <li>TxEventQ and Kafka: Nithin Thekkupadam Narayanan, Anders Swanson</li>
-              </ul>
+          
             </div>
             <div style={{ flexShrink: 0, width: '40%' }}>
               <h4>Walkthrough Video:</h4>

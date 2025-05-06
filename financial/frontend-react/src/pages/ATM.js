@@ -141,10 +141,9 @@ const ATM = () => {
                 <li>Polyglot implementation: Java, JS, Python, .NET, Go, Rust</li>
                 <li>Ensure secure transactions and detect/prevent with Blockchain Tables</li>
               </ul>
-              <h4>Contacts:</h4>
+              <h4>Differentiators:</h4>
               <ul>
-                <li>Java: Kuassi Mensah, JavaScript: Sharad Chandran R, Python: Veronica Dumitriu, .NET: Alex Key, All C-based (JS, Python, Go, tec.): Christopher Jones</li>
-
+                <li>---</li>
               </ul>
             </div>
             <div style={{ flexShrink: 0, width: '70%' }}>

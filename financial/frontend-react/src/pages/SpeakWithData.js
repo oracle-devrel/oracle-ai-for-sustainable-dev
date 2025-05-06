@@ -107,10 +107,7 @@ const SpeakWithData = () => {
             <ul>
               <li>Conduct SQL and Vector searches using natural language</li>
             </ul>
-            <h4>Contacts:</h4>
-            <ul>
-              <li>NL2SQL/Select AI: Mark Hornick, Speech AI: Michael Zhang</li>
-            </ul>
+        
           </div>
         )}
       </SidePanel>

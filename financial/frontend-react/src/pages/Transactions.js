@@ -208,12 +208,10 @@ const Transactions = () => {
                   <li>The only database that provides auto-compensating sagas (microservice transactions) and highest throughput for hotspots/fields</li>
                   <li>Simplified development (~80% less code)</li>
                 </ul>
-
-                <h4>Contacts:</h4>
-                <ul>
-                  <li>MicroTx: Brijesh Deo, Lock-free reservations: Gregg Christman</li>
-             
-                </ul>
+                <h4>Differentiators:</h4>
+              <ul>
+                <li>Auto-compensating microservices transactions, support for multiple lanugages, Rest and Messaging</li>
+              </ul>
 
               </TextContainer>
               <VideoContainer>

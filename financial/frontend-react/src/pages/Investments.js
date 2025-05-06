@@ -95,10 +95,6 @@ const Investments = () => {
             <ul>
               <li>Vector processing in the same database and with other business data (structured and unstructured)</li>
             </ul>
-            <h4>Contacts:</h4>
-            <ul>
-              <li>Vector: Doug Hood</li>
-            </ul>
           </div>
         )}
       </SidePanel>
