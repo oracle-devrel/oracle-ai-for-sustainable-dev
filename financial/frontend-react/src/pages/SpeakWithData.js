@@ -10,28 +10,6 @@ const PageContainer = styled.div`
   overflow-y: auto; /* Allow scrolling if content overflows */
 `;
 
-const IframesContainer = styled.div`
-  display: flex;
-  flex-direction: column; /* Stack elements vertically */
-  width: 100%;
-  height: 100%; /* Use full height */
-  gap: 20px; /* Space between the elements */
-`;
-
-const Image = styled.img`
-  width: 100%; /* Make the image take the full width */
-  max-height: 50%; /* Limit the height to half the container */
-  object-fit: contain; /* Maintain aspect ratio */
-  border: none;
-`;
-
-const TwitchEmbed = styled.div`
-  flex: 1; /* Allow the Twitch iframe to take the remaining space */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
 const SidePanel = styled.div`
   border: 1px solid #444; /* Darker border */
   padding: 10px;
@@ -55,23 +33,62 @@ const ToggleButton = styled.button`
   }
 `;
 
+const CollapsibleContent = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+`;
+
+const TextContent = styled.div`
+  flex: 1;
+  margin-right: 20px; /* Add spacing between text and video */
+`;
+
+const VideoWrapper = styled.div`
+  flex-shrink: 0;
+  width: 40%; /* Set the width of the video */
+`;
+
+const IframesContainer = styled.div`
+  display: flex;
+  flex-direction: column; /* Stack elements vertically */
+  width: 100%;
+  height: 100%; /* Use full height */
+  gap: 20px; /* Space between the elements */
+`;
+
+const Image = styled.img`
+  width: 100%; /* Make the image take the full width */
+  max-height: 50%; /* Limit the height to half the container */
+  object-fit: contain; /* Maintain aspect ratio */
+  border: none;
+`;
+
+const TwitchEmbed = styled.div`
+  flex: 1; /* Allow the Twitch iframe to take the remaining space */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
 const SpeakWithData = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   return (
     <PageContainer>
+      <h2>Speak with your financial data</h2>
+      <h2>NL2SQL, Vector Search, Speech AI</h2>
+      <h2>Industrial Scientific</h2>
 
-    <h2>Speak with your financial data</h2>
-    <h2>NL2SQL, Vector Search, Speech AI</h2>
-    <h2>Industrial Scientific</h2>
       {/* Collapsible SidePanel */}
       <SidePanel>
         <ToggleButton onClick={() => setIsCollapsed(!isCollapsed)}>
           {isCollapsed ? 'Show Details' : 'Hide Details'}
         </ToggleButton>
         {!isCollapsed && (
-          <div>
-             <div>
+          <CollapsibleContent>
+            <TextContent>
+              <div>
                 <a
                   href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier-financial/index.html"
                   target="_blank"
@@ -91,24 +108,37 @@ const SpeakWithData = () => {
                   Direct link to source code on GitHub
                 </a>
               </div>
-            <h4>Financial Process:</h4>
-            <ul>
-              <li>Query financial data using natural language</li>
-              <li>Generate insights with NL2SQL and Vector Search</li>
-              <li>Interact with data using Speech AI</li>
-            </ul>
-            <h4>Developer Notes:</h4>
-            <ul>
-              <li>Leverage Oracle AI for natural language processing</li>
-              <li>Use Vector Search for semantic data queries</li>
-              <li>Integrate Speech AI for voice-based interactions</li>
-            </ul>
-            <h4>Differentiators:</h4>
-            <ul>
-              <li>Conduct SQL and Vector searches using natural language</li>
-            </ul>
-        
-          </div>
+              <h4>Financial Process:</h4>
+              <ul>
+                <li>Query financial data using natural language</li>
+                <li>Generate insights with NL2SQL and Vector Search</li>
+                <li>Interact with data using Speech AI</li>
+              </ul>
+              <h4>Developer Notes:</h4>
+              <ul>
+                <li>Leverage Oracle AI for natural language processing</li>
+                <li>Use Vector Search for semantic data queries</li>
+                <li>Integrate Speech AI for voice-based interactions</li>
+              </ul>
+              <h4>Differentiators:</h4>
+              <ul>
+                <li>Conduct SQL and Vector searches using natural language</li>
+              </ul>
+            </TextContent>
+            <VideoWrapper>
+            <h4>Walkthrough Video:</h4>
+              <iframe
+                width="100%"
+                height="315"
+                src="https://www.youtube.com/embed/8Tgmy74A4Bg"
+                title="YouTube video player"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                style={{ borderRadius: '8px', border: '1px solid #444' }}
+              ></iframe>
+            </VideoWrapper>
+          </CollapsibleContent>
         )}
       </SidePanel>
 

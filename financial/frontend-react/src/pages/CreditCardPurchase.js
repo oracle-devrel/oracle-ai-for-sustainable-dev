@@ -256,6 +256,7 @@ const CreditCardPurchase = () => {
               </ul>
             </TextContent>
             <VideoWrapper>
+            <h4>Walkthrough Video:</h4>
               <iframe
                 width="100%"
                 height="315"

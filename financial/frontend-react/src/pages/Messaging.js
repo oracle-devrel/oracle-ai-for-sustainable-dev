@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
 const PageContainer = styled.div`
@@ -108,11 +108,50 @@ const Messaging = () => {
     amount: '',
     fromAccount: '',
     toAccount: '',
-    messagingOption: '',
-    crashOption: '',
+    messagingOption: 'Kafka with Oracle Database', // Default to "Kafka with Oracle Database"
+    crashOption: 'noCrash', // Default to "No Crash"
   });
 
+  const [fromAccounts, setFromAccounts] = useState([]); // State for "From Account" dropdown
+  const [toAccounts, setToAccounts] = useState([]); // State for "To Account" dropdown
   const [isCollapsed, setIsCollapsed] = useState(false);
+
+  useEffect(() => {
+    // Fetch account IDs for "From Account" dropdown
+    const fetchFromAccounts = async () => {
+      try {
+        const response = await fetch(
+          'https://ij1tyzir3wpwlpe-financialdb.adb.eu-frankfurt-1.oraclecloudapps.com/ords/financial/accounts/'
+        );
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        setFromAccounts(data.items || []); // Assuming the data is in the `items` array
+      } catch (error) {
+        console.error('Error fetching from accounts:', error);
+      }
+    };
+
+    // Fetch account IDs for "To Account" dropdown
+    const fetchToAccounts = async () => {
+      try {
+        const response = await fetch(
+          'https://ij1tyzir3wpwlpe-financialdb.adb.eu-frankfurt-1.oraclecloudapps.com/ords/financial2/accounts/'
+        );
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        setToAccounts(data.items || []); // Assuming the data is in the `items` array
+      } catch (error) {
+        console.error('Error fetching to accounts:', error);
+      }
+    };
+
+    fetchFromAccounts();
+    fetchToAccounts();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -138,7 +177,7 @@ const Messaging = () => {
         {!isCollapsed && (
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div style={{ flex: 1, marginRight: '20px' }}>
-            <div>
+              <div>
                 <a
                   href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier-financial/index.html"
                   target="_blank"
@@ -169,10 +208,9 @@ const Messaging = () => {
               </ul>
               <h4>Differentiators:</h4>
               <ul>
-                <li>Only Oracle Database has a built-in messaging engine (TxEventQ) which allows database and messaing operations in the same local transaction</li>
+                <li>Only Oracle Database has a built-in messaging engine (TxEventQ) which allows database and messaging operations in the same local transaction</li>
                 <li>TxEventQ can be used via Kafka API, JMS, PL/SQL and via any language</li>
               </ul>
-          
             </div>
             <div style={{ flexShrink: 0, width: '40%' }}>
               <h4>Walkthrough Video:</h4>
@@ -214,9 +252,11 @@ const Messaging = () => {
             <option value="" disabled>
               Select an account
             </option>
-            <option value="bank1account1">Bank 1 Account 1</option>
-            <option value="bank1account2">Bank 1 Account 2</option>
-            <option value="bank1account3">Bank 1 Account 3</option>
+            {fromAccounts.map((account) => (
+              <option key={account.account_id} value={account.account_id}>
+                {account.account_id}
+              </option>
+            ))}
           </Select>
 
           <Label htmlFor="toAccount">To Account</Label>
@@ -230,9 +270,11 @@ const Messaging = () => {
             <option value="" disabled>
               Select an account
             </option>
-            <option value="bank2account1">Bank 2 Account 1</option>
-            <option value="bank2account2">Bank 2 Account 2</option>
-            <option value="bank2account3">Bank 2 Account 3</option>
+            {toAccounts.map((account) => (
+              <option key={account.account_id} value={account.account_id}>
+                {account.account_id}
+              </option>
+            ))}
           </Select>
 
           <h4>For Developers: Select a radio button to trigger chaos/crash testing and notice difference in behavior between Kafka with Postgres and MongoDB and Kafka with Oracle Database</h4>
@@ -255,6 +297,16 @@ const Messaging = () => {
               onChange={handleChange}
             />
             Kafka with Oracle Database
+          </RadioLabel>
+          <RadioLabel>
+            <input
+              type="radio"
+              name="crashOption"
+              value="noCrash"
+              checked={formData.crashOption === 'noCrash'}
+              onChange={handleChange}
+            />
+            No Crash
           </RadioLabel>
           <RadioLabel>
             <input

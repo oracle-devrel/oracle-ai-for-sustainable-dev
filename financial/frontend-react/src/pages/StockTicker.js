@@ -113,6 +113,22 @@ const ToggleButton = styled.button`
   }
 `;
 
+const CollapsibleContent = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+`;
+
+const TextContent = styled.div`
+  flex: 1;
+  margin-right: 20px; /* Add spacing between text and video */
+`;
+
+const VideoWrapper = styled.div`
+  flex-shrink: 0;
+  width: 40%; /* Set the width of the video */
+`;
+
 const StockTicker = () => {
   const [formData, setFormData] = useState({
     stock: '',
@@ -150,17 +166,19 @@ const StockTicker = () => {
 
   return (
     <PageContainer>
-    <h2>Stock ticker and buy/sell stock</h2>
-    <h2>True Cache</h2>
-    <h2>NYSE</h2>
+      <h2>Stock ticker and buy/sell stock</h2>
+      <h2>True Cache</h2>
+      <h2>NYSE</h2>
+
       {/* Collapsible SidePanel */}
       <SidePanel>
         <ToggleButton onClick={() => setIsCollapsed(!isCollapsed)}>
           {isCollapsed ? 'Show Details' : 'Hide Details'}
         </ToggleButton>
         {!isCollapsed && (
-          <div>
-                <div>
+          <CollapsibleContent>
+            <TextContent>
+              <div>
                 <a
                   href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier-financial/index.html"
                   target="_blank"
@@ -180,36 +198,47 @@ const StockTicker = () => {
                   Direct link to source code on GitHub
                 </a>
               </div>
-            <h4>Financial Process:</h4>
-            <ul>
-              <li>Stream real-time stock prices using Oracle Streaming Service</li>
-              <li>Analyze stock trends with Oracle Database</li>
-              <li>Visualize stock performance in real-time</li>
-            </ul>
-            <h4>Developer Notes:</h4>
-            <ul>
-              <li>Use Oracle Event Hub for event streaming</li>
-              <li>Integrate with Kafka APIs for seamless event processing</li>
-              <li>Leverage Oracle Database for advanced analytics</li>
-            </ul>
+              <h4>Financial Process:</h4>
+              <ul>
+                <li>Stream real-time stock prices using Oracle Streaming Service</li>
+                <li>Analyze stock trends with Oracle Database</li>
+                <li>Visualize stock performance in real-time</li>
+              </ul>
+              <h4>Developer Notes:</h4>
+              <ul>
+                <li>Use Oracle Event Hub for event streaming</li>
+                <li>Integrate with Kafka APIs for seamless event processing</li>
+                <li>Leverage Oracle Database for advanced analytics</li>
+              </ul>
               <h4>Differentiators:</h4>
               <ul>
-                <li>Unlike Redis which has it's own API, True Cache uses SQL and so no application modifications are required</li>
+                <li>Unlike Redis which has its own API, True Cache uses SQL and so no application modifications are required</li>
               </ul>
-          
-
-          </div>
+            </TextContent>
+            <VideoWrapper>
+            <h4>Walkthrough Video:</h4>
+              <iframe
+                width="100%"
+                height="315"
+                src="https://www.youtube.com/embed/8Tgmy74A4Bg"
+                title="YouTube video player"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                style={{ borderRadius: '8px', border: '1px solid #444' }}
+              ></iframe>
+            </VideoWrapper>
+          </CollapsibleContent>
         )}
       </SidePanel>
-
 
       <TickerContainer>
         <TickerText>
           <TickerContent>
-            AAPL: $170.50 ▲1.25% | GOOGL: $2,850.30 ▼0.45% | AMZN: $3,450.10 ▲0.75% | MSFT: $310.20 ▲0.95% | TSLA: $1,050.00 ▼1.10%
+            ABC1: $100.50 ▲1.25% | ABC2: $200.30 ▼0.45% | ABC3: $300.10 ▲0.75% | ABC4: $400.20 ▲0.95% | ABC5: $500.00 ▼1.10%
           </TickerContent>
           <TickerContent>
-            AAPL: $170.50 ▲1.25% | GOOGL: $2,850.30 ▼0.45% | AMZN: $3,450.10 ▲0.75% | MSFT: $310.20 ▲0.95% | TSLA: $1,050.00 ▼1.10%
+            ABC1: $100.50 ▲1.25% | ABC2: $200.30 ▼0.45% | ABC3: $300.10 ▲0.75% | ABC4: $400.20 ▲0.95% | ABC5: $500.00 ▼1.10%
           </TickerContent>
         </TickerText>
       </TickerContainer>
@@ -226,11 +255,11 @@ const StockTicker = () => {
           <option value="" disabled>
             Select a stock
           </option>
-          <option value="AAPL">Apple (AAPL)</option>
-          <option value="GOOGL">Google (GOOGL)</option>
-          <option value="AMZN">Amazon (AMZN)</option>
-          <option value="MSFT">Microsoft (MSFT)</option>
-          <option value="TSLA">Tesla (TSLA)</option>
+          <option value="ABC1">Stock ABC1</option>
+          <option value="ABC2">Stock ABC2</option>
+          <option value="ABC3">Stock ABC3</option>
+          <option value="ABC4">Stock ABC4</option>
+          <option value="ABC5">Stock ABC5</option>
         </Select>
 
         <Label htmlFor="shares">Number of Shares</Label>
@@ -250,8 +279,10 @@ const StockTicker = () => {
         <Button type="button" onClick={(e) => handleStockSubmit(e, 'sell')}>
           Sell
         </Button>
+        <p style={{ marginTop: '10px', color: '#1abc9c', fontSize: '14px' }}>
+          Buy/sell affects stock value
+        </p>
       </Form>
-
     </PageContainer>
   );
 };

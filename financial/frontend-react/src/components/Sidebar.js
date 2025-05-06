@@ -13,6 +13,14 @@ const SidebarContainer = styled.div`
   justify-content: space-between;
 `;
 
+const SidebarHeader = styled.div`
+  padding: 20px;
+  color: #ecf0f1;
+  font-size: 14px;
+  text-align: center;
+  border-bottom: 1px solid #34495e;
+`;
+
 const SidebarMenu = styled.ul`
   list-style: none;
   padding: 0;
@@ -114,6 +122,11 @@ const Sidebar = () => {
 
   return (
     <SidebarContainer>
+      {/* Header Note */}
+      <SidebarHeader>
+        Please send any feedback to <strong>devreldb_ww@oracle.com</strong> 
+      </SidebarHeader>
+
       <SidebarMenu>
         <SidebarItem>
           <StyledNavLink to="/financialstoryboard">
