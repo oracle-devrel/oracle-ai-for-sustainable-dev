@@ -160,6 +160,7 @@
         let recognition;
         let isListening = false;
         let transcriptBuffer = "";
+        let conversationHistory = []; // Array to store the last two questions and answers
 
         if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
             recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
@@ -218,8 +219,22 @@
                 alert("⚠️ No text captured. Try sending again.");
                 return;
             }
+
+            // Add the current question to the conversation history
+            conversationHistory.push({ question: transcriptionText });
+
+            // Keep only the last two questions and answers
+            if (conversationHistory.length > 2) {
+                conversationHistory.shift();
+            }
+
+            // Build the conversational context
+            let conversationalContext = conversationHistory
+                .map((entry, index) => `Q${index + 1}: ${entry.question}${entry.answer ? `\nA${index + 1}: ${entry.answer}` : ''}`)
+                .join('\n');
+
             const selectedMode = document.querySelector('input[name="mode"]:checked').value;
-            const modifiedText = `${transcriptionText} .`;
+            const modifiedText = `${conversationalContext}\nQ: ${transcriptionText}`;
             const apiUrl = `https://aiholo.org/aiholo/play?question=${encodeURIComponent(modifiedText)}&selectedMode=${encodeURIComponent(selectedMode)}&languageCode=${encodeURIComponent(languageCodeSTT)}&voiceName=${encodeURIComponent(voiceName)}`;
 
             console.log("Transcription Text:", transcriptionText); // Debugging
@@ -228,6 +243,10 @@
             try {
                 const response = await fetch(apiUrl, { method: "GET" });
                 const result = await response.text();
+
+                // Add the response to the last question in the conversation history
+                conversationHistory[conversationHistory.length - 1].answer = result;
+
                 document.getElementById("responseMessage").innerText = `✅ Response: ${result}`;
                 document.getElementById("stopSendBtn").disabled = false;
             } catch (error) {
@@ -241,6 +260,7 @@
             transcriptBuffer = ""; // Clear the transcript buffer
             document.getElementById("transcription").innerText = ""; // Clear the transcription text field
             document.getElementById("responseMessage").innerText = ""; // Optionally clear the response message
+            conversationHistory = []; // Clear the conversation history
         });
 
         // Add event listener for the Mirror Me button
