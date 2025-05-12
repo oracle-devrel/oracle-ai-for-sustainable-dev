@@ -242,6 +242,36 @@
             document.getElementById("transcription").innerText = ""; // Clear the transcription text field
             document.getElementById("responseMessage").innerText = ""; // Optionally clear the response message
         });
+
+        // Add event listener for the Mirror Me button
+        document.getElementById("mirrorMeBtn").addEventListener("click", async () => {
+            try {
+                const response = await fetch("https://aiholo.org/aiholo/set?value=mirrorme", { method: "GET" });
+                if (response.ok) {
+                    alert("✅ Switched to 'Mirror Me' mode successfully!");
+                } else {
+                    alert("❌ Failed to switch to 'Mirror Me' mode.");
+                }
+            } catch (error) {
+                console.error("Error switching to 'Mirror Me' mode:", error);
+                alert("❌ An error occurred while switching to 'Mirror Me' mode.");
+            }
+        });
+
+        // Add event listener for the Explainer button
+        document.getElementById("explainerBtn").addEventListener("click", async () => {
+            try {
+                const response = await fetch("https://aiholo.org/aiholo/explainer", { method: "GET" });
+                if (response.ok) {
+                    alert("✅ Explainer mode activated successfully!");
+                } else {
+                    alert("❌ Failed to activate explainer mode.");
+                }
+            } catch (error) {
+                console.error("Error activating explainer mode:", error);
+                alert("❌ An error occurred while activating explainer mode.");
+            }
+        });
     });
 </script>
 
