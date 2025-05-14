@@ -53,7 +53,8 @@ const ToggleButton = styled.button`
 `;
 
 const APIs = () => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true); // First panel hidden by default
+  const [isCollapsedSecond, setIsCollapsedSecond] = useState(true); // Second panel hidden by default
   const [accountData, setAccountData] = useState([]);
   const [accountData2, setAccountData2] = useState([]); // State for the second table
   const [loading, setLoading] = useState(true);
@@ -125,10 +126,10 @@ const APIs = () => {
       <h2>Oracle Rest Data Services (ORDS), OpenAPI</h2>
       <h2>Sphere</h2>
 
-      {/* Collapsible SidePanel */}
+      {/* First Collapsible SidePanel */}
       <SidePanel>
         <ToggleButton onClick={() => setIsCollapsed(!isCollapsed)}>
-          {isCollapsed ? 'Show Details' : 'Hide Details'}
+          {isCollapsed ? 'Show Developer Details' : 'Hide Developer Details'}
         </ToggleButton>
         {!isCollapsed && (
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -153,16 +154,12 @@ const APIs = () => {
                   Direct link to source code on GitHub
                 </a>
               </div>
-              <h4>Financial Process:</h4>
-              <ul>
-                <li>Access/use financial data or processes from APIs</li>
-                <li>Display account information</li>
-              </ul>
               <h4>Developer Notes:</h4>
               <ul>
                 <li>Use Oracle Rest Data Services (ORDS) to expose APIs for data and processes</li>
                 <li>Automatic OpenAPI is generated for seamless integration</li>
                 <li>Expose data or processes in the database with a couple clicks or lines of code</li>
+                <li>Automate workflows using REST APIs</li>
               </ul>
               <h4>Differentiators:</h4>
               <ul>
@@ -175,6 +172,43 @@ const APIs = () => {
                 width="100%"
                 height="615"
                 src="https://www.youtube.com/embed/8Tgmy74A4Bg"
+                title="YouTube video player"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                style={{ borderRadius: '8px', border: '1px solid #444' }}
+              ></iframe>
+            </div>
+          </div>
+        )}
+      </SidePanel>
+
+      {/* Second Collapsible SidePanel */}
+      <SidePanel>
+        <ToggleButton onClick={() => setIsCollapsedSecond(!isCollapsedSecond)}>
+          {isCollapsedSecond ? 'Show Financial Process Details' : 'Hide Financial Process Details'}
+        </ToggleButton>
+        {!isCollapsedSecond && (
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div style={{ flex: 1, marginRight: '20px' }}>
+              <h4>Financial Process:</h4>
+              <ul>
+                <li>Access/use financial data or processes from APIs</li>
+                <li>Display account information</li>
+                <li>Enable integration with third-party financial systems</li>
+              </ul>
+              <h4>Performance:</h4>
+              <ul>
+                <li>Optimized for large-scale data operations</li>
+                <li>Supports advanced query capabilities</li>
+              </ul>
+            </div>
+            <div style={{ flexShrink: 0, width: '70%' }}>
+              <h4>Walkthrough Video:</h4>
+              <iframe
+                width="100%"
+                height="615"
+                src="https://www.youtube.com/embed/8Tgmy74A4Bg" // Replace with the desired YouTube video URL
                 title="YouTube video player"
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

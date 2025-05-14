@@ -104,6 +104,8 @@ const ImageContainer = styled.div`
 `;
 
 const Messaging = () => {
+  const BASE_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8080'; // Default to localhost if env variable is not set
+
   const [formData, setFormData] = useState({
     amount: '',
     fromAccount: '',
@@ -122,7 +124,7 @@ const Messaging = () => {
       try {
         const response = await fetch(
           'https://ij1tyzir3wpwlpe-financialdb.adb.eu-frankfurt-1.oraclecloudapps.com/ords/financial/accounts/'
-        );
+);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -138,7 +140,7 @@ const Messaging = () => {
       try {
         const response = await fetch(
           'https://ij1tyzir3wpwlpe-financialdb.adb.eu-frankfurt-1.oraclecloudapps.com/ords/financial2/accounts/'
-        );
+);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -151,16 +153,34 @@ const Messaging = () => {
 
     fetchFromAccounts();
     fetchToAccounts();
-  }, []);
+  }, [BASE_URL]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert('Budget transaction submitted successfully!');
+    try {
+      const response = await fetch(`${BASE_URL}/kafka/transfer`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        alert(`Brokerage transfer submitted successfully!`);
+      } else {
+        const errorText = await response.text(); // Declare and define errorText here
+        alert(`Failed to submit transaction: ${errorText}`);
+      }
+    } catch (error) {
+      console.error('Error submitting transaction:', error);
+      alert('An error occurred while submitting the transaction.');
+    }
   };
 
   return (
@@ -189,7 +209,7 @@ const Messaging = () => {
               </div>
               <div>
                 <a
-                  href="https://github.com/paulparkinson/oracle-ai-for-sustainable-dev/tree/main/financial"
+                  href="https://github.com/paulparkinson/oracle-ai-for-sustainable-dev/tree/main/financial/brokerage-transfer-kafka"
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{ color: '#1abc9c', textDecoration: 'none' }}
