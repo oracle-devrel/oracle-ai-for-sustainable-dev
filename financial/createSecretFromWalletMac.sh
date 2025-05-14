@@ -17,6 +17,6 @@ data:
   truststore.jks: $(base64 -i ./truststore.jks)
 kind: Secret
 metadata:
-  name: ragdb-wallet-secret
-  namespace: msdataworkshop
+  name: financialdb-wallet-secret
+  namespace: financial
 !

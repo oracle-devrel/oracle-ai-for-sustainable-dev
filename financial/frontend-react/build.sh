@@ -1,9 +1,8 @@
 #!/bin/bash
 
-export IMAGE_NAME=frontend
 export IMAGE_VERSION=$TAG
-export DOCKER_REGISTRY=us-ashburn-1.ocir.io/oradbclouducm/financial
-#eg us-ashburn-1.ocir.io/oradbclouducm/financial/frontend:0.9
+export DOCKER_REGISTRY=eu-frankfurt-1.ocir.io/oradbclouducm/financial
+#eg us-ashburn-1.ocir.io/oradbclouducm/financial/frontend:0.
 
 if [ -z "$DOCKER_REGISTRY" ]; then
     echo "Error: DOCKER_REGISTRY env variable needs to be set!"
@@ -18,7 +17,12 @@ echo ${IMAGE}
 
 echo about to build...
 #podman build -t=$IMAGE .
-podman buildx build --platform linux/amd64 -t $IMAGE .
+podman buildx build --platform linux/amd64 --build-arg REACT_APP_BACKEND_URL=https://oracledatabase-financial.org -t $IMAGE .
+#podman buildx build --platform linux/amd64 --build-arg REACT_APP_BACKEND_URL=https://144.24.182.230/ -t $IMAGE .
+#podman buildx build --platform linux/amd64 --build-arg REACT_APP_BACKEND_URL=https://138.2.128.55:8090 -t $IMAGE .
+#podman buildx build --platform linux/amd64 --build-arg REACT_APP_BACKEND_URL=http://10.96.22.27:8090 -t $IMAGE .
+#podman buildx build --platform linux/amd64 --build-arg REACT_APP_BACKEND_URL=http://backend.financial:8090 -t $IMAGE .
+#podman buildx build --platform linux/amd64 --build-arg REACT_APP_BACKEND_URL=https://backend.financial:8090 -t $IMAGE .
 #podman buildx build --platform linux/amd64 -t $IMAGE --load .
 
 

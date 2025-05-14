@@ -112,6 +112,11 @@ const RadioLabel = styled.label`
   margin-left: 24px; /* Indent radio buttons for better alignment */
 `;
 
+const BASE_URL =
+  process.env.REACT_APP_BACKEND_URL || 'http://localhost:8080'; // Use environment variable or default to localhost
+
+console.log('BASE_URL:', BASE_URL); // Debug output to verify the value
+
 const Accounts = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [formData, setFormData] = useState({
@@ -144,7 +149,7 @@ const Accounts = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:8080/financial/accounts', {
+      const response = await fetch(`${BASE_URL}/financial/accounts`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -174,7 +179,7 @@ const Accounts = () => {
   const handleUpdateSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:8080/financial/accounts', {
+      const response = await fetch(`${BASE_URL}/financial/accounts`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -202,7 +207,7 @@ const Accounts = () => {
 
   const fetchAccounts = async () => {
     try {
-      const response = await fetch('http://localhost:8080/financial/accounts');
+      const response = await fetch(`${BASE_URL}/financial/accounts`);
       const data = await response.json();
       setAccounts(data);
       setLoading(false);
@@ -228,7 +233,7 @@ const Accounts = () => {
     <PageContainer>
       <h2>Create and view accounts</h2>
       <h2>MongoDB/MERN stack</h2>
-      <h2>Decimal Point Analytics (DPA)</h2>
+      <h2>Decimal Point Analytics</h2>
 
       {/* Collapsible SidePanel */}
       <SidePanel>

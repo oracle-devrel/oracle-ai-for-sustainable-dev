@@ -3,7 +3,6 @@
 ## Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl/
 
 
-#kubectl apply -f  frontend-springboot-service.yaml  -n financial
 #kubectl apply -f  frontend-loadbalancer-service.yaml  -n financial
 kubectl delete deployment frontend-react  -n financial
 

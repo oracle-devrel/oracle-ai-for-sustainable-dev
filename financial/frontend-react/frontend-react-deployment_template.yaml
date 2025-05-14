@@ -13,8 +13,12 @@ spec:
         app: frontend
     spec:
       containers:
-      - name: frontend-react
-        image: IMAGE_PLACEHOLDER
-        imagePullPolicy: Always
-        ports:
-        - containerPort: 8080
+        - name: frontend-react
+          image: IMAGE_PLACEHOLDER
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            - name: REACT_APP_BACKEND_URL
+              value: http://backend.financial:8090
+      restartPolicy: Always

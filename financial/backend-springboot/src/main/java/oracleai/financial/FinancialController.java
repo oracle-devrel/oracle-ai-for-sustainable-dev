@@ -12,15 +12,22 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/financial")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "https://oracledatabase-financial.org")
+//@CrossOrigin(origins = "http://158.180.20.119")
 public class FinancialController {
 
     @Autowired
     private DataSource dataSource;
 
+    @GetMapping("/test")
+    public String test() {
+        return "test";
+    }
+
     // CREATE: Add a new account
     @PostMapping("/accounts")
     public String createAccount(@RequestBody Map<String, Object> accountData) {
+        System.out.println("FinancialController.accounts createAccount");
         String sql = """
                 INSERT INTO accounts (account_id, name, official_name, type, subtype, mask, available_balance, current_balance, limit_balance, verification_status)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -51,6 +58,7 @@ public class FinancialController {
     // READ: Get all accounts
     @GetMapping("/accounts")
     public List<Map<String, Object>> getAllAccounts() {
+        System.out.println("FinancialController.accounts getAllAccounts");
         String sql = "SELECT * FROM accounts";
         List<Map<String, Object>> accounts = new ArrayList<>();
 
@@ -81,6 +89,7 @@ public class FinancialController {
     // READ: Get a single account by ID
     @GetMapping("/accounts/{id}")
     public Map<String, Object> getAccountById(@PathVariable("id") String accountId) {
+        System.out.println("FinancialController.accounts getAccountById accountId:" + accountId);
         String sql = "SELECT * FROM accounts WHERE account_id = ?";
         Map<String, Object> account = new HashMap<>();
 
@@ -111,6 +120,7 @@ public class FinancialController {
     // UPDATE: Update an account by ID
     @PutMapping("/accounts/{id}")
     public String updateAccount(@PathVariable("id") String accountId, @RequestBody Map<String, Object> accountData) {
+        System.out.println("FinancialController.accounts updateAccount accountId:" + accountId);
         String sql = """
                 UPDATE accounts
                 SET name = ?, official_name = ?, type = ?, subtype = ?, mask = ?, available_balance = ?, current_balance = ?, limit_balance = ?, verification_status = ?
@@ -142,6 +152,7 @@ public class FinancialController {
     // DELETE: Delete an account by ID
     @DeleteMapping("/accounts/{id}")
     public String deleteAccount(@PathVariable("id") String accountId) {
+        System.out.println("FinancialController.accounts deleteAccount accountId:" + accountId);
         String sql = "DELETE FROM accounts WHERE account_id = ?";
 
         try (Connection connection = dataSource.getConnection();

@@ -169,7 +169,7 @@ const Sidebar = () => {
             <TextContainer>
               <HighlightedText>Create and view accounts</HighlightedText>
               {showDetails && <div>MongoDB/MERN stack<br/>
-              Decimal Point Analytics (DPA)</div>}
+              Decimal Point Analytics</div>}
             </TextContainer>
           </StyledNavLink>
         </SidebarItem>
