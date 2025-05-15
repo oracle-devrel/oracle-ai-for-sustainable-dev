@@ -2,7 +2,6 @@ package oracle.examples.cloudbank.services;
 
 import com.oracle.microtx.springboot.lra.annotation.*;
 import com.oracle.microtx.springboot.lra.lockfree.MicroTxLockFreeReservation;
-import com.oracle.microtx.springboot.lra.annotation.*;
 import oracle.examples.cloudbank.model.Account;
 import oracle.examples.cloudbank.model.Journal;
 

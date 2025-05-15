@@ -3,7 +3,7 @@
 export TAG=0.1.$(date +%s)
 echo TAG = $TAG
 
-export IMAGE_NAME=backend-springboot
+export IMAGE_NAME=bank-account
 export IMAGE_VERSION=$TAG
 export DOCKER_REGISTRY=eu-frankfurt-1.ocir.io/oradbclouducm/financial
 if [ -z "$DOCKER_REGISTRY" ]; then
@@ -17,5 +17,5 @@ echo ${IMAGE}
 
 ./build.sh
 ./deploy.sh
-echo logpod backend
-logpod backend
+echo logpod account
+logpod account

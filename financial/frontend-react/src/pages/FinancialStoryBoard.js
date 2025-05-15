@@ -21,15 +21,28 @@ const Link = styled.a`
   }
 `;
 
+const HighlightedText = styled.p`
+  font-size: 1.8rem; /* Larger font size */
+  font-weight: bold;
+  margin-bottom: 20px;
+`;
+
 const Dashboard = () => (
   <div>
     <h2>Who is this for?</h2>
-    This financial application and its corresponding workshop are aimed at both financial systems experts and the developers who build these systems <br />
-<br />in order to liaise the two and have a shared understanding of the possibilities and details of both the business solutions and the development architecture involved in them.
-
-    <Image src="/images/financial-customer-storyboard-leadin.png" alt="Financial Storyboard" /><br />
-    <Image src="/images/financial-analyst-storyboard-leadin.png" alt="Financial Storyboard" /><br />
-    <Image src="/images/developer-storyboard-leadin.png" alt="Financial Storyboard" /><br />
+    <HighlightedText>
+      This financial application and its corresponding workshop are aimed at:
+    </HighlightedText>
+    <ul>
+      <li>Financial systems experts   AND</li>
+      <li>Developers who build these systems</li>
+    </ul>
+    <p>
+      In order to liaise the two and have a shared understanding of the possibilities and details of both the business solutions and the development architecture involved in them.
+    </p>
+    <Image src="/images/financial-customer-storyboard-leadin.png" alt="Financial Storyboard" />
+    <Image src="/images/financial-analyst-storyboard-leadin.png" alt="Financial Storyboard" />
+    <Image src="/images/developer-storyboard-leadin.png" alt="Financial Storyboard" />
   </div>
 );
 

@@ -3,22 +3,22 @@ server:
 spring:
   microtx:
     lra:
-      coordinator-url: http://localhost:9000/api/v1/lra-coordinator
+      coordinator-url: http://otmm-tcs.otmm:9000/api/v1/lra-coordinator
       #      coordinator-url: http://tmm-app:9000/api/v1/lra-coordinator
       propagation-active: true
-      participant-url: http://192.168.205.1:8081
+      participant-url: http://transfer.financial:8081
       headers-propagation-prefix: {x-b3-, oracle-tmm-, authorization, refresh-}
 account:
   deposit:
-      url: http://192.168.205.1:8080/deposit/deposit
+      url:  http://bank.financial:8080/deposit/deposit
   withdraw:
-      url: http://192.168.205.1:8080/withdraw/withdraw
+      url: http://bank.financial:8080/withdraw/withdraw
 transfer:
   cancel:
-      url: http://localhost:8081/cancel
+      url: http://transfer.financial:8081/cancel
       process:
-           url: http://192.168.205.1:8081/processcancel
+        url: http://transfer.financial:8081/processcancel
   confirm:
-      url: http://localhost:8081/close
+      url: http://transfer.financial:8081/close
       process:
-         url: http://192.168.205.1:8081/processclose
+         url: http://transfer.financial:8081/processclose

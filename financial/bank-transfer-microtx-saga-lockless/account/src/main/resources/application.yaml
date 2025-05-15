@@ -5,7 +5,7 @@ spring:
     name: account
   microtx:
     lra:
-      coordinator-url: http://localhost:9000/api/v1/lra-coordinator
+      coordinator-url: http://otmm-tcss.otmm:9000/api/v1/lra-coordinator
 #      coordinator-url: http://tmm-app:9000/api/v1/lra-coordinator
       propagation-active: true
       participant-url: http://192.168.205.1:8080
@@ -15,13 +15,13 @@ spring:
       ddl-auto: update
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.Oracle12cDialect
+#        dialect: org.hibernate.dialect.OracleDialect
         format_sql: true
     show-sql: false
   datasource:
-    url: jdbc:oracle:thin:@myservice_high?TNS_ADMIN=/Users/.../mywallet
-    username: myUser
-    password: myPW
+    url: jdbc:oracle:thin:@financialdb_high?TNS_ADMIN=/oraclefinancial/creds
+    username: financial
+    password: Welcome12345
     driver-class-name: oracle.jdbc.OracleDriver
     type: oracle.ucp.jdbc.PoolDataSource
     oracleucp:

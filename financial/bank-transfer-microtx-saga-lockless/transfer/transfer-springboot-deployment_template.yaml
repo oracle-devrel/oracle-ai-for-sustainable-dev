@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: backend-springboot
+  name: transfer-springboot
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: backend
+      app: transfer
   template:
     metadata:
       labels:
-        app: backend
+        app: transfer
     spec:
       volumes:
         - name: creds
@@ -18,7 +18,7 @@ spec:
             secretName: financialdb-wallet-secret
             defaultMode: 420
       containers:
-        - name: backend-springboot
+        - name: transfer-springboot
           image: IMAGE_PLACEHOLDER
           imagePullPolicy: Always
           ports:

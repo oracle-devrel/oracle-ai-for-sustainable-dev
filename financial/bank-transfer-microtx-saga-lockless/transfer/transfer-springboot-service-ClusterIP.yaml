@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: backend
+  name: transfer
 spec:
   type: ClusterIP
   selector:
-    app: backend
+    app: transfer
   ports:
     - protocol: TCP
-      port: 443              # External HTTPS port
-      targetPort: 443
+      port: 8081              # External
+      targetPort: 8081

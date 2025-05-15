@@ -4,19 +4,31 @@ import oracle.examples.cloudbank.model.Account;
 import oracle.examples.cloudbank.model.Journal;
 import com.oracle.microtx.springboot.lra.annotation.*;
 import com.oracle.microtx.springboot.lra.annotation.LRA;
+import com.oracle.microtx.springboot.lra.lockfree.MicroTxLockFreeReservation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import java.sql.Connection;
 import java.util.logging.Logger;
 
 import static com.oracle.microtx.springboot.lra.annotation.LRA.*;
+
 
 @RestController
 @RequestMapping("/withdraw")
 public class AccountsWithdrawService {
     private static final Logger log = Logger.getLogger(AccountsWithdrawService.class.getName());
     public static final String WITHDRAW = "WITHDRAW";
+
+    @PersistenceContext
+    private EntityManager entityManager; // Inject the EntityManager
+
+    @Autowired
+    private MicroTxLockFreeReservation microTxLockFreeReservation;
 
     /**
      * Reduce account balance by given amount and write journal entry re the same. Both actions in same local tx
@@ -27,21 +39,35 @@ public class AccountsWithdrawService {
                             @RequestParam("accountId") long accountId,
                             @RequestParam("amount") long withdrawAmount)  {
         log.info("withdraw " + withdrawAmount + " in account:" + accountId + " (lraId:" + lraId + ")...");
+        boolean useLockFreeReservations = false;
         Account account = AccountTransferDAO.instance().getAccountForAccountId(accountId);
-        if (account==null) {
+        if (account == null) {
             log.info("withdraw failed: account does not exist"); //could also do leave here
             AccountTransferDAO.instance().saveJournal(new Journal(WITHDRAW, accountId, 0, lraId,
                     AccountTransferDAO.getStatusString(ParticipantStatus.Active)));
             return ResponseEntity.ok("withdraw failed: account does not exist");
         }
-        if (account.getAccountBalance() < withdrawAmount) {
-            log.info("withdraw failed: insufficient funds");
-            AccountTransferDAO.instance().saveJournal(new Journal(WITHDRAW, accountId, 0, lraId,
-                    AccountTransferDAO.getStatusString(ParticipantStatus.Active)));
-            return ResponseEntity.ok("withdraw failed: insufficient funds");
+        if (useLockFreeReservations) {
+            try {
+                Connection connection = entityManager.unwrap(Connection.class);
+                log.info("microTxLockFreeReservation.join connection: " + connection);
+                // https://docs.oracle.com/en/database/oracle/transaction-manager-for-microservices/24.2/tmmma/com/oracle/microtx/lra/lockfree/MicroTxLockFreeReservation.html
+                // https://docs.oracle.com/en/database/oracle/transaction-manager-for-microservices/24.4/tmmdg/verify.html
+                // https://www.youtube.com/watch?v=mBijkqoAibE
+                microTxLockFreeReservation.join(connection);
+            } catch (Exception e) {
+                log.warning("Failed to retrieve the underlying connection: " + e.getMessage());
+            }
+        } else {
+            if (account.getAccountBalance() < withdrawAmount) {
+                log.info("withdraw failed: insufficient funds");
+                AccountTransferDAO.instance().saveJournal(new Journal(WITHDRAW, accountId, 0, lraId,
+                        AccountTransferDAO.getStatusString(ParticipantStatus.Active)));
+                return ResponseEntity.ok("withdraw failed: insufficient funds");
+            }
+            log.info("withdraw current balance:" + account.getAccountBalance() +
+                    " new balance:" + (account.getAccountBalance() - withdrawAmount));
         }
-        log.info("withdraw current balance:" + account.getAccountBalance() +
-                " new balance:" + (account.getAccountBalance() - withdrawAmount));
         updateAccountBalance(lraId, accountId, withdrawAmount, account);
         return ResponseEntity.ok("withdraw succeeded");
     }
