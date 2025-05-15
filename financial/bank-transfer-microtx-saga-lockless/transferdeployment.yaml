@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: transfer
+  labels:
+    app: transfer
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: transfer
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: transfer
+        version: v1
+    spec:
+      containers:
+        - name: transfer
+          image: transfer:0.1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: MP_LRA_COORDINATOR_URL
+              value: http://otmm-tcs.otmm.svc.cluster.local:9000/api/v1/lra-coordinator
+            - name: WITHDRAW_ACOUNT_SERVICE_URL
+              value: http://account.application.svc.cluster.local:8080
+            - name: DEPOSIT_ACOUNT_SERVICE_URL
+              value: http://account.application.svc.cluster.local:8080
+            - name: SERVICE_NAME
+              value: transfer
+      imagePullSecrets:
+        - name: registry-auth

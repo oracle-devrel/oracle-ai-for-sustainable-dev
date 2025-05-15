@@ -1,0 +1,73 @@
+{
+    "taskDefinitionArn": "arn:aws:ecs:us-east-1:207567779767:task-definition/hotel:1",
+    "containerDefinitions": [
+        {
+            "name": "hotel",
+            "image": "207567779767.dkr.ecr.us-east-1.amazonaws.com/lra/hotel:latest",
+            "cpu": 256,
+            "memory": 256,
+            "portMappings": [
+                {
+                    "name": "hotel-8082",
+                    "containerPort": 8082,
+                    "hostPort": 8082,
+                    "protocol": "tcp",
+                    "appProtocol": "http"
+                }
+            ],
+            "essential": true,
+            "environment": [
+                {
+                    "name": "SPRING_MICROTX_LRA_COORDINATOR_URL",
+                    "value": "http://microtx-9000.microtx-ecs-cluster:9000/api/v1/lra-coordinator"
+                },
+                {
+                    "name": "SPRING_MICROTX_LRA_PARTICIPANT_URL",
+                    "value": "http://hotel-8082.microtx-ecs-cluster:8082"
+                }
+            ],
+            "environmentFiles": [],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "ulimits": [],
+            "systemControls": []
+        }
+    ],
+    "family": "hotel",
+    "taskRoleArn": "arn:aws:iam::207567779767:role/ecsTaskExecutionRole",
+    "executionRoleArn": "arn:aws:iam::207567779767:role/ecsTaskExecutionRole",
+    "networkMode": "bridge",
+    "revision": 1,
+    "volumes": [],
+    "status": "ACTIVE",
+    "requiresAttributes": [
+        {
+            "name": "com.amazonaws.ecs.capability.ecr-auth"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.task-iam-role"
+        },
+        {
+            "name": "ecs.capability.execution-role-ecr-pull"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
+        }
+    ],
+    "placementConstraints": [],
+    "compatibilities": [
+        "EC2"
+    ],
+    "requiresCompatibilities": [
+        "EC2"
+    ],
+    "cpu": "256",
+    "memory": "256",
+    "runtimePlatform": {
+        "cpuArchitecture": "X86_64",
+        "operatingSystemFamily": "LINUX"
+    },
+    "registeredAt": "2024-09-03T15:18:26.450Z",
+    "registeredBy": "arn:aws:iam::207567779767:root",
+    "tags": []
+}

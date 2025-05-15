@@ -1,0 +1,77 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: hotel
+  namespace: '1005293455201'
+  selfLink: /apis/serving.knative.dev/v1/namespaces/1005293455201/services/hotel
+  uid: 5d26f827-e6b1-4815-a72b-85e7afcd1b83
+  resourceVersion: AAYjTnWw9fU
+  generation: 1
+  creationTimestamp: '2024-09-30T04:15:15.889094Z'
+  labels:
+    cloud.googleapis.com/location: XXXX
+  annotations:
+    run.googleapis.com/client-name: cloud-console
+    serving.knative.dev/creator: XXXXX
+    serving.knative.dev/lastModifier: XXXXX
+    run.googleapis.com/operation-id: 4a1885c7-47b2-4709-8093-b25fa3f9f5a2
+    run.googleapis.com/ingress: all
+    run.googleapis.com/ingress-status: all
+    run.googleapis.com/minScale: '1'
+    run.googleapis.com/urls: '["https://XXXX-1005293455201.us-central1.run.app","https://XXXX-zpcdb3inea-uc.X.XXX.app"]'
+spec:
+  template:
+    metadata:
+      labels:
+        run.googleapis.com/startupProbeType: Default
+      annotations:
+        autoscaling.knative.dev/maxScale: '100'
+        run.googleapis.com/client-name: cloud-console
+        run.googleapis.com/startup-cpu-boost: 'true'
+    spec:
+      containerConcurrency: 80
+      timeoutSeconds: 300
+      serviceAccountName: 1005293455201-compute@developer.gserviceaccount.com
+      containers:
+      - name: hotel-1
+        image: asia-south1-docker.pkg.dev/microtx-436602/shaily/hotel@sha256:85fc3f24ff4b896ccc16d95c47e423fadfa7c5b5982743d92fc694d64eeef21a
+        ports:
+        - name: http1
+          containerPort: 8082
+        env:
+        - name: MP_LRA_COORDINATOR_URL
+          value: https://XXXX-1005293455201.asia-south1.XXX.app/api/v1/lra-coordinator
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 512Mi
+        startupProbe:
+          timeoutSeconds: 240
+          periodSeconds: 240
+          failureThreshold: 1
+          tcpSocket:
+            port: 8082
+  traffic:
+  - percent: 100
+    latestRevision: true
+status:
+  observedGeneration: 1
+  conditions:
+  - type: Ready
+    status: 'True'
+    lastTransitionTime: '2024-09-30T04:15:49.216757Z'
+  - type: ConfigurationsReady
+    status: 'True'
+    lastTransitionTime: '2024-09-30T04:15:15.970988Z'
+  - type: RoutesReady
+    status: 'True'
+    lastTransitionTime: '2024-09-30T04:15:49.184974Z'
+  latestReadyRevisionName: hotel-00001-7gs
+  latestCreatedRevisionName: hotel-00001-7gs
+  traffic:
+  - revisionName: hotel-00001-7gs
+    percent: 100
+    latestRevision: true
+  url: https://hotel-zpcdb3inea-uc.a.run.app
+  address:
+    url: https://hotel-zpcdb3inea-uc.a.run.app

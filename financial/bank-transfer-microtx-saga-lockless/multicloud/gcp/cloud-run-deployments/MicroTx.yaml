@@ -1,0 +1,97 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: micrtotx-free
+  namespace: '1005293455201'
+  selfLink: /apis/serving.knative.dev/v1/namespaces/1005293455201/services/micrtotx-free
+  uid: XXXXXX
+  resourceVersion: AAYm7sI0BNI
+  generation: 7
+  creationTimestamp: '2024-11-15T07:01:16.273383Z'
+  labels:
+    cloud.googleapis.com/location: XXXXXX
+  annotations:
+    serving.knative.dev/creator: XXXXX
+    serving.knative.dev/lastModifier: XXXXX
+    run.googleapis.com/client-name: cloud-console
+    run.googleapis.com/operation-id: 490e6eb0-9a86-46ce-a6de-d24d0ed58164
+    run.googleapis.com/ingress: all
+    run.googleapis.com/ingress-status: all
+    run.googleapis.com/minScale: '1'
+    run.googleapis.com/urls: '["https://micrtotx-XXXX-1005293455201.XXXX.run.app","https://micrtotx-XXXXX-zpcdb3inea-XX.X.run.app"]'
+spec:
+  template:
+    metadata:
+      labels:
+        client.knative.dev/nonce: 1336d971-fec7-4d84-8b3d-c79866e6d284
+        run.googleapis.com/startupProbeType: Default
+      annotations:
+        autoscaling.knative.dev/maxScale: '5'
+        autoscaling.knative.dev/minScale: '1'
+        run.googleapis.com/client-name: cloud-console
+        run.googleapis.com/startup-cpu-boost: 'true'
+    spec:
+      containerConcurrency: 80
+      timeoutSeconds: 300
+      serviceAccountName: 1005293455201-compute@developer.gserviceaccount.com
+      containers:
+      - name: micrtotx-free-1
+        image: asia-south1-docker.pkg.dev/microtx-436602/shaily/micrtotx-free@sha256:ae4e14ac5759bbe49015b588f97b8a4fca4d596337bc68cfb0fdc50c600b38b1
+        ports:
+        - name: http1
+          containerPort: 9000
+        env:
+        - name: STORAGE_TYPE
+          value: memory
+        - name: LISTEN_ADDR
+          value: 0.0.0.0:9000
+        - name: LOGGING_LEVEL
+          value: info
+        - name: SERVE_TLS_ENABLED
+          value: 'false'
+        - name: HTTP_TRACE_ENABLED
+          value: 'false'
+        - name: INTERNAL_ADDR
+          value: https://micrtotx-free-1005293455201.us-central1.run.app
+        - name: EXTERNAL_ADDR
+          value: https://micrtotx-free-1005293455201.us-central1.run.app
+        - name: TCC_COORDINATOR_ENABLED
+          value: 'true'
+        - name: XA_COORDINATOR_ENABLED
+          value: 'true'
+        - name: LRA_COORDINATOR_ENABLED
+          value: 'true'
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 512Mi
+        startupProbe:
+          timeoutSeconds: 240
+          periodSeconds: 240
+          failureThreshold: 1
+          tcpSocket:
+            port: 9000
+  traffic:
+  - percent: 100
+    latestRevision: true
+status:
+  observedGeneration: 7
+  conditions:
+  - type: Ready
+    status: 'True'
+    lastTransitionTime: '2024-11-15T07:46:02.524882Z'
+  - type: ConfigurationsReady
+    status: 'True'
+    lastTransitionTime: '2024-11-15T07:46:01.232962Z'
+  - type: RoutesReady
+    status: 'True'
+    lastTransitionTime: '2024-11-15T07:46:02.480230Z'
+  latestReadyRevisionName: micrtotx-free-00007-f6p
+  latestCreatedRevisionName: micrtotx-free-00007-f6p
+  traffic:
+  - revisionName: micrtotx-free-00007-f6p
+    percent: 100
+    latestRevision: true
+  url: https://micrtotx-free-zpcdb3inea-uc.a.run.app
+  address:
+    url: https://micrtotx-free-zpcdb3inea-uc.a.run.app

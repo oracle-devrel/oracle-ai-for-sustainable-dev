@@ -1,0 +1,115 @@
+{
+    "taskDefinitionArn": "arn:aws:ecs:us-east-1:207567779767:task-definition/microtx-taskdef:1",
+    "containerDefinitions": [
+        {
+            "name": "coordinator",
+            "image": "container-registry.oracle.com/database/otmm:24.2.2",
+            "cpu": 256,
+            "memory": 256,
+            "portMappings": [
+                {
+                    "name": "tcs-port-9000",
+                    "containerPort": 9000,
+                    "hostPort": 9000,
+                    "protocol": "tcp",
+                    "appProtocol": "http"
+                }
+            ],
+            "essential": true,
+            "environment": [
+                {
+                    "name": "SERVE_TLS_ENABLED",
+                    "value": "false"
+                },
+                {
+                    "name": "STORAGE_TYPE",
+                    "value": "memory"
+                },
+                {
+                    "name": "HTTP_TRACE_ENABLED",
+                    "value": "true"
+                },
+                {
+                    "name": "LOGGING_LEVEL",
+                    "value": "debug"
+                },
+                {
+                    "name": "name",
+                    "value": "coordinator"
+                },
+                {
+                    "name": "name",
+                    "value": "coordinator"
+                },
+                {
+                    "name": "LISTEN_ADDR",
+                    "value": "0.0.0.0:9000"
+                },
+                {
+                    "name": "INTERNAL_ADDR",
+                    "value": "http://localhost:9000"
+                },
+                {
+                    "name": "XA_COORDINATOR_ENABLED",
+                    "value": "true"
+                },
+                {
+                    "name": "LRA_COORDINATOR_ENABLED",
+                    "value": "true"
+                },
+                {
+                    "name": "TCC_COORDINATOR_ENABLED",
+                    "value": "true"
+                }
+            ],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "systemControls": []
+        }
+    ],
+    "family": "microtx-taskdef",
+    "taskRoleArn": "arn:aws:iam::207567779767:role/ecsTaskExecutionRole",
+    "executionRoleArn": "arn:aws:iam::207567779767:role/ecsTaskExecutionRole",
+    "networkMode": "bridge",
+    "revision": 1,
+    "status": "ACTIVE",
+    "requiresAttributes": [
+        {
+            "name": "com.amazonaws.ecs.capability.ecr-auth"
+        },
+        {
+            "name": "ecs.capability.env-files.s3"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.task-iam-role"
+        },
+        {
+            "name": "ecs.capability.docker-plugin./microtx/config"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.25"
+        },
+        {
+            "name": "ecs.capability.execution-role-ecr-pull"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
+        }
+    ],
+    "placementConstraints": [],
+    "compatibilities": [
+        "EC2"
+    ],
+    "requiresCompatibilities": [
+        "EC2"
+    ],
+    "cpu": "512",
+    "memory": "512",
+    "runtimePlatform": {
+        "cpuArchitecture": "X86_64",
+        "operatingSystemFamily": "LINUX"
+    },
+    "registeredAt": "2024-09-03T08:15:45.606Z",
+    "registeredBy": "arn:aws:iam::207567779767:root",
+    "tags": []
+}

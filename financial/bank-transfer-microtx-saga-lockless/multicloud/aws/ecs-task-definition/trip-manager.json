@@ -1,0 +1,84 @@
+{
+    "taskDefinitionArn": "arn:aws:ecs:us-east-1:207567779767:task-definition/trip-manager:1",
+    "containerDefinitions": [
+        {
+            "name": "trip-manager",
+            "image": "207567779767.dkr.ecr.us-east-1.amazonaws.com/lra/trip-manager:latest",
+            "cpu": 256,
+            "memory": 256,
+            "portMappings": [
+                {
+                    "name": "trip-manger-8081",
+                    "containerPort": 8081,
+                    "hostPort": 8081,
+                    "protocol": "tcp",
+                    "appProtocol": "http"
+                }
+            ],
+            "essential": true,
+            "environment": [
+                {
+                    "name": "SPRING_MICROTX_LRA_COORDINATOR_URL",
+                    "value": "http://microtx-9000.microtx-ecs-cluster:9000/api/v1/lra-coordinator"
+                },
+                {
+                    "name": "SPRING_MICROTX_LRA_PARTICIPANT_URL",
+                    "value": "http://trip-manger-8081.microtx-ecs-cluster:8081"
+                },
+                {
+                    "name": "FLIGHT_SERVICE_URL",
+                    "value": "http://flight-8083.microtx-ecs-cluster:8083/flightService/api/flight"
+                },
+                {
+                    "name": "HOTEL_SERVICE_URL",
+                    "value": "http://hotel-8082.microtx-ecs-cluster:8082/hotelService/api/hotel"
+                }
+            ],
+            "environmentFiles": [],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "ulimits": [],
+            "systemControls": []
+        }
+    ],
+    "family": "trip-manager",
+    "taskRoleArn": "arn:aws:iam::207567779767:role/ecsTaskExecutionRole",
+    "executionRoleArn": "arn:aws:iam::207567779767:role/ecsTaskExecutionRole",
+    "networkMode": "awsvpc",
+    "revision": 1,
+    "volumes": [],
+    "status": "ACTIVE",
+    "requiresAttributes": [
+        {
+            "name": "com.amazonaws.ecs.capability.ecr-auth"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.task-iam-role"
+        },
+        {
+            "name": "ecs.capability.execution-role-ecr-pull"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
+        },
+        {
+            "name": "ecs.capability.task-eni"
+        }
+    ],
+    "placementConstraints": [],
+    "compatibilities": [
+        "EC2"
+    ],
+    "requiresCompatibilities": [
+        "EC2"
+    ],
+    "cpu": "512",
+    "memory": "512",
+    "runtimePlatform": {
+        "cpuArchitecture": "X86_64",
+        "operatingSystemFamily": "LINUX"
+    },
+    "registeredAt": "2024-09-03T15:14:51.197Z",
+    "registeredBy": "arn:aws:iam::207567779767:root",
+    "tags": []
+}

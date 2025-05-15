@@ -1,0 +1,79 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: trip-manager
+  namespace: '1005293455201'
+  selfLink: /apis/serving.knative.dev/v1/namespaces/1005293455201/services/trip-manager
+  uid: 2625c074-cb41-4ee1-a370-8a0fc03e5727
+  resourceVersion: AAYjT5dhZqM
+  generation: 3
+  creationTimestamp: '2024-09-30T04:20:55.507304Z'
+  labels:
+    cloud.googleapis.com/location: us-central1
+  annotations:
+    serving.knative.dev/creator: XXXXX
+    serving.knative.dev/lastModifier: XXXXX
+    run.googleapis.com/client-name: cloud-console
+    run.googleapis.com/operation-id: 32751dd5-2ded-47ac-86c9-12f2f94f49a9
+    run.googleapis.com/ingress: all
+    run.googleapis.com/ingress-status: all
+    run.googleapis.com/minScale: '1'
+    run.googleapis.com/urls: '["https://trip-manager-XXXXX.us-XXXXX.XXX.app","https://trip-manager-zpcdb3inea-uc.a.XXXX.app"]'
+spec:
+  template:
+    metadata:
+      labels:
+        client.knative.dev/nonce: 24bbcd1c-3a01-4fa6-8984-48e2547a77d5
+        run.googleapis.com/startupProbeType: Default
+      annotations:
+        autoscaling.knative.dev/maxScale: '100'
+        autoscaling.knative.dev/minScale: '1'
+        run.googleapis.com/client-name: cloud-console
+        run.googleapis.com/startup-cpu-boost: 'true'
+    spec:
+      containerConcurrency: 80
+      timeoutSeconds: 300
+      serviceAccountName: 1005293455201-compute@developer.gserviceaccount.com
+      containers:
+      - name: trip-manager-1
+        image: asia-south1-docker.pkg.dev/microtx-436602/shaily/trip-manager@sha256:58a8eb2aeb9f56f51cfa5b187fdc504791e41ddadc45aeda0b71fd62c4dac740
+        ports:
+        - name: http1
+          containerPort: 8081
+        env:
+        - name: MP_LRA_COORDINATOR_URL
+          value: https://tmm-1005293455201.asia-south1.run.app/api/v1/lra-coordinator
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 512Mi
+        startupProbe:
+          timeoutSeconds: 240
+          periodSeconds: 240
+          failureThreshold: 1
+          tcpSocket:
+            port: 8081
+  traffic:
+  - percent: 100
+    latestRevision: true
+status:
+  observedGeneration: 3
+  conditions:
+  - type: Ready
+    status: 'True'
+    lastTransitionTime: '2024-09-30T05:36:49.395363Z'
+  - type: ConfigurationsReady
+    status: 'True'
+    lastTransitionTime: '2024-09-30T04:20:55.590080Z'
+  - type: RoutesReady
+    status: 'True'
+    lastTransitionTime: '2024-09-30T05:36:49.366402Z'
+  latestReadyRevisionName: trip-manager-00003-fdx
+  latestCreatedRevisionName: trip-manager-00003-fdx
+  traffic:
+  - revisionName: trip-manager-00003-fdx
+    percent: 100
+    latestRevision: true
+  url: https://trip-manager-zpcdb3inea-uc.a.run.app
+  address:
+    url: https://trip-manager-zpcdb3inea-uc.a.run.app

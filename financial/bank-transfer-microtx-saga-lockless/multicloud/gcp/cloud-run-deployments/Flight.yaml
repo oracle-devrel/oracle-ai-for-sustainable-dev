@@ -1,0 +1,79 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: flight
+  namespace: '1005293455201'
+  selfLink: /apis/serving.knative.dev/v1/namespaces/1005293455201/services/flight
+  uid: 7c5c656c-5abc-4682-b1d3-883d4bc9c806
+  resourceVersion: AAYj90IzGX0
+  generation: 2
+  creationTimestamp: '2024-09-30T04:09:49.315656Z'
+  labels:
+    cloud.googleapis.com/location: XXXX
+  annotations:
+    serving.knative.dev/creator: XXXXX
+    serving.knative.dev/lastModifier: XXXXX
+    run.googleapis.com/client-name: cloud-console
+    run.googleapis.com/operation-id: 83829351-3f27-4d8c-b434-bb10dee3cd70
+    run.googleapis.com/ingress: all
+    run.googleapis.com/ingress-status: all
+    run.googleapis.com/minScale: '1'
+    run.googleapis.com/urls: '["https://flight-1005293455201.us-central1.run.app","https://flight-zpcdb3inea-XX.X.XX.app"]'
+spec:
+  template:
+    metadata:
+      labels:
+        client.knative.dev/nonce: 18b75260-e9e1-4066-9f27-cb75471137e2
+        run.googleapis.com/startupProbeType: Default
+      annotations:
+        autoscaling.knative.dev/maxScale: '2'
+        autoscaling.knative.dev/minScale: '1'
+        run.googleapis.com/client-name: cloud-console
+        run.googleapis.com/startup-cpu-boost: 'true'
+    spec:
+      containerConcurrency: 80
+      timeoutSeconds: 300
+      serviceAccountName: 1005293455201-compute@developer.gserviceaccount.com
+      containers:
+      - name: flight-1
+        image: asia-south1-docker.pkg.dev/microtx-436602/shaily/flight@sha256:311b844562eda0dc32bac3b8c7a8a6132e750556c9a13d276c94eb57f2400582
+        ports:
+        - name: http1
+          containerPort: 8083
+        env:
+        - name: MP_LRA_COORDINATOR_URL
+          value: https://XXXX-1005293455201.XXXXX.run.app/api/v1/lra-coordinator
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 512Mi
+        startupProbe:
+          timeoutSeconds: 240
+          periodSeconds: 240
+          failureThreshold: 1
+          tcpSocket:
+            port: 8083
+  traffic:
+  - percent: 100
+    latestRevision: true
+status:
+  observedGeneration: 2
+  conditions:
+  - type: Ready
+    status: 'True'
+    lastTransitionTime: '2024-10-08T13:38:54.803325Z'
+  - type: ConfigurationsReady
+    status: 'True'
+    lastTransitionTime: '2024-09-30T04:09:49.531793Z'
+  - type: RoutesReady
+    status: 'True'
+    lastTransitionTime: '2024-10-08T13:38:54.768814Z'
+  latestReadyRevisionName: flight-00002-lrh
+  latestCreatedRevisionName: flight-00002-lrh
+  traffic:
+  - revisionName: flight-00002-lrh
+    percent: 100
+    latestRevision: true
+  url: https://flight-zpcdb3inea-XX.X.XXX.app
+  address:
+    url: https://flight-zpcdb3inea-XX.X.XXX.app
