@@ -124,6 +124,25 @@ const VideoContainer = styled.div`
   flex: 1;
 `;
 
+const Table = styled.table`
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background-color: #1e1e1e;
+  color: #ffffff;
+`;
+
+const TableHeader = styled.th`
+  border: 1px solid #444;
+  padding: 8px;
+  text-align: left;
+`;
+
+const TableCell = styled.td`
+  border: 1px solid #444;
+  padding: 8px;
+`;
+
 const Transactions = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
@@ -138,41 +157,27 @@ const Transactions = () => {
 
   const [fromAccounts, setFromAccounts] = useState([]); // State for "From Account" dropdown
   const [toAccounts, setToAccounts] = useState([]); // State for "To Account" dropdown
+  const [allAccounts, setAllAccounts] = useState([]); // State for displaying all accounts in a table
 
-  // Fetch account IDs for "From Account" dropdown
+  // Fetch account data for dropdowns and table
   useEffect(() => {
-    const fetchFromAccounts = async () => {
+    const fetchAccounts = async () => {
       try {
-        const response = await fetch(
-          'https://ij1tyzir3wpwlpe-financialdb.adb.eu-frankfurt-1.oraclecloudapps.com/ords/financial/ACCOUNT_DETAIL/'
-        );
+        const BASE_URL = process.env.REACT_APP_BACKEND_URL; // Use the environment variable
+        const response = await fetch(`${BASE_URL}/financial/allaccounts`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        setFromAccounts(data.items || []); // Assuming the data is in the `items` array
+        setFromAccounts(data); // Populate "From Account" dropdown
+        setToAccounts(data); // Populate "To Account" dropdown
+        setAllAccounts(data); // Populate the table
       } catch (error) {
-        console.error('Error fetching from accounts:', error);
+        console.error('Error fetching accounts:', error);
       }
     };
 
-    const fetchToAccounts = async () => {
-      try {
-        const response = await fetch(
-          'https://ij1tyzir3wpwlpe-financialdb.adb.eu-frankfurt-1.oraclecloudapps.com/ords/financial2/accounts/'
-        );
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        setToAccounts(data.items || []); // Assuming the data is in the `items` array
-      } catch (error) {
-        console.error('Error fetching to accounts:', error);
-      }
-    };
-
-    fetchFromAccounts();
-    fetchToAccounts();
+    fetchAccounts();
   }, []);
 
   const handleChange = (e) => {
@@ -260,7 +265,7 @@ const Transactions = () => {
                 </ul>
               </TextContainer>
               <VideoContainer>
-              <h4>Walkthrough Video:</h4>
+                <h4>Walkthrough Video:</h4>
                 <iframe
                   width="100%"
                   height="315"
@@ -298,8 +303,8 @@ const Transactions = () => {
               Select an account
             </option>
             {fromAccounts.map((account) => (
-              <option key={account.account_id} value={account.account_id}>
-                {account.account_id}
+              <option key={account.accountId} value={account.accountId}>
+                {account.accountId}
               </option>
             ))}
           </Select>
@@ -316,8 +321,8 @@ const Transactions = () => {
               Select an account
             </option>
             {toAccounts.map((account) => (
-              <option key={account.account_id} value={account.account_id}>
-                {account.account_id}
+              <option key={account.accountId} value={account.accountId}>
+                {account.accountId}
               </option>
             ))}
           </Select>
@@ -399,6 +404,34 @@ const Transactions = () => {
 
           <Button type="submit">Submit</Button>
         </Form>
+
+        {/* Table to display all accounts */}
+        <Table>
+          <thead>
+            <tr>
+              <TableHeader>Account ID</TableHeader>
+              <TableHeader>Account Name</TableHeader>
+              <TableHeader>Account Type</TableHeader>
+              <TableHeader>Customer ID</TableHeader>
+              <TableHeader>Opened Date</TableHeader>
+              <TableHeader>Other Details</TableHeader>
+              <TableHeader>Balance</TableHeader>
+            </tr>
+          </thead>
+          <tbody>
+            {allAccounts.map((account) => (
+              <tr key={account.accountId}>
+                <TableCell>{account.accountId}</TableCell>
+                <TableCell>{account.accountName || 'N/A'}</TableCell>
+                <TableCell>{account.accountType || 'N/A'}</TableCell>
+                <TableCell>{account.accountCustomerId || 'N/A'}</TableCell>
+                <TableCell>{account.accountOpenedDate || 'N/A'}</TableCell>
+                <TableCell>{account.accountOtherDetails || 'N/A'}</TableCell>
+                <TableCell>{account.accountBalance}</TableCell>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
       </ContentContainer>
     </PageContainer>
   );

@@ -98,9 +98,9 @@ public class FinancialController {
 
     // READ: Get all accounts
     @GetMapping("/accounts")
-    public List<Map<String, Object>> getAllAccounts() {
+    public List<Map<String, Object>> getAllAccountsDetail() {
         System.out.println("FinancialController.accounts getAllAccounts");
-        String sql = "SELECT * FROM accounts";
+        String sql = "SELECT * from account_detail";
         List<Map<String, Object>> accounts = new ArrayList<>();
 
         try (Connection connection = dataSource.getConnection();
@@ -131,7 +131,7 @@ public class FinancialController {
     @GetMapping("/accounts/{id}")
     public Map<String, Object> getAccountById(@PathVariable("id") String accountId) {
         System.out.println("FinancialController.accounts getAccountById accountId:" + accountId);
-        String sql = "SELECT * FROM accounts WHERE account_id = ?";
+        String sql = "SELECT * from account_detail WHERE account_id = ?";
         Map<String, Object> account = new HashMap<>();
 
         try (Connection connection = dataSource.getConnection();
@@ -194,7 +194,7 @@ public class FinancialController {
     @DeleteMapping("/accounts/{id}")
     public String deleteAccount(@PathVariable("id") String accountId) {
         System.out.println("FinancialController.accounts deleteAccount accountId:" + accountId);
-        String sql = "DELETE FROM accounts WHERE account_id = ?";
+        String sql = "DELETE from account_detail WHERE account_id = ?";
 
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -205,6 +205,25 @@ public class FinancialController {
         } catch (SQLException e) {
             e.printStackTrace();
             return "Error: " + e.getMessage();
+        }
+    }
+
+    @GetMapping("/allaccounts")
+    public ResponseEntity<?> getAllAccounts() {
+        System.out.println("FinancialController.allaccounts getAllAccounts");
+        try {
+            // Construct the URL for the external service
+            String url = "http://account.financial:8080/api/v1/accounts";
+
+            // Use RestTemplate to relay the call
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+
+            // Return the response from the external service
+            return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error relaying all accounts request: " + e.getMessage());
         }
     }
 }
