@@ -134,5 +134,21 @@ public class AccountAndJournalAdminService {
         }
     }
 
+    @GetMapping("/accounts")
+    public ResponseEntity<List<Account>> getAllAccounts() {
+        log.info("ACCOUNT: getAllAccounts");
+        try {
+            List<Account> accountData = new ArrayList<>();
+            accountData.addAll(accountRepository.findAll());
+            if (accountData.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+            return new ResponseEntity<>(accountData, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Error retrieving all accounts", e);
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }
 

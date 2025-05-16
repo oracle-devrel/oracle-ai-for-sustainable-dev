@@ -2,6 +2,9 @@ package oracleai.financial;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.client.RestTemplate;
 
 import javax.sql.DataSource;
 import java.sql.*;
@@ -12,7 +15,8 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/financial")
-@CrossOrigin(origins = "https://oracledatabase-financial.org")
+//@CrossOrigin(origins = "https://oracledatabase-financial.org")
+@CrossOrigin(origins = "*")
 //@CrossOrigin(origins = "http://158.180.20.119")
 public class FinancialController {
 
@@ -22,6 +26,43 @@ public class FinancialController {
     @GetMapping("/test")
     public String test() {
         return "test";
+    }
+
+    @GetMapping("/testconn")
+    public String testconn() throws Exception{
+        System.out.println("FinancialController.testconn dataSource (about to get connection):" + dataSource);
+        Connection connection = dataSource.getConnection();
+        System.out.println("FinancialController.testconn connection:" + connection);
+        return "connection = " + connection;
+    }
+
+    @RequestMapping(value = "/transfer", method = RequestMethod.POST)
+    public ResponseEntity<?> transfer(@RequestParam("fromAccount") String fromAccount,
+                                       @RequestParam("toAccount") String toAccount,
+                                       @RequestParam("amount") long amount,
+                                       @RequestParam("sagaAction") String sagaAction,
+                                       @RequestParam("useLockFreeReservations") boolean useLockFreeReservations,
+                                       @RequestHeader Map<String, String> headers) {
+        System.out.println("Headers: " + headers);
+        System.out.println("transfer fromAccount = " + fromAccount + ", toAccount = " + toAccount + ", amount = " + amount +
+                ", sagaAction = " + sagaAction + ", useLockFreeReservations = " + useLockFreeReservations);
+        try {
+            // Construct the URL with query parameters
+            String url = String.format(
+                "http://transfer.financial:8081/transfer?fromAccount=%s&toAccount=%s&amount=%d&sagaAction=%s&useLockFreeReservations=%b",
+                fromAccount, toAccount, amount, sagaAction, useLockFreeReservations
+            );
+
+            // Use RestTemplate to relay the call
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<String> response = restTemplate.postForEntity(url, null, String.class);
+
+            // Return the response from the external service
+            return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error relaying transfer request: " + e.getMessage());
+        }
     }
 
     // CREATE: Add a new account

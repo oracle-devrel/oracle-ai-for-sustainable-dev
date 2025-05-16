@@ -27,7 +27,7 @@ public class AccountsWithdrawService {
     @PersistenceContext
     private EntityManager entityManager; // Inject the EntityManager
 
-    @Autowired
+//    @Autowired
     private MicroTxLockFreeReservation microTxLockFreeReservation;
 
     /**

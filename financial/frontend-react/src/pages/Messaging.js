@@ -123,7 +123,7 @@ const Messaging = () => {
     const fetchFromAccounts = async () => {
       try {
         const response = await fetch(
-          'https://ij1tyzir3wpwlpe-financialdb.adb.eu-frankfurt-1.oraclecloudapps.com/ords/financial/accounts/'
+          'https://ij1tyzir3wpwlpe-financialdb.adb.eu-frankfurt-1.oraclecloudapps.com/ords/financial/ACCOUNT_DETAIL/'
 );
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);

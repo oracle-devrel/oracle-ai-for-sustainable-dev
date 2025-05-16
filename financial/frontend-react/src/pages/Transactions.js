@@ -144,7 +144,7 @@ const Transactions = () => {
     const fetchFromAccounts = async () => {
       try {
         const response = await fetch(
-          'https://ij1tyzir3wpwlpe-financialdb.adb.eu-frankfurt-1.oraclecloudapps.com/ords/financial/accounts/'
+          'https://ij1tyzir3wpwlpe-financialdb.adb.eu-frankfurt-1.oraclecloudapps.com/ords/financial/ACCOUNT_DETAIL/'
         );
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -185,12 +185,19 @@ const Transactions = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    fetch('http://oracleai-financial.org/transfer', {
+
+    // Use the BASE_URL environment variable
+    const BASE_URL = process.env.REACT_APP_BACKEND_URL;
+
+    // Construct the URL with query parameters
+    const url = `${BASE_URL}/financial/transfer?fromAccount=${formData.fromAccount}&toAccount=${formData.toAccount}&amount=${formData.amount}&sagaAction=${formData.sagaAction}&useLockFreeReservations=${formData.useLockFreeReservations}`;
+
+    // Make the POST request
+    fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(formData),
     })
       .then((response) => {
         if (response.ok) {

@@ -5,21 +5,23 @@ spring:
     name: account
   microtx:
     lra:
-      coordinator-url: http://otmm-tcss.otmm:9000/api/v1/lra-coordinator
+      coordinator-url: http://otmm-tcs.otmm:9000/api/v1/lra-coordinator
 #      coordinator-url: http://tmm-app:9000/api/v1/lra-coordinator
       propagation-active: true
-      participant-url: http://192.168.205.1:8080
+      participant-url: http://account.financial:8080
       headers-propagation-prefix: {x-b3-, oracle-tmm-, authorization, refresh-}
+      lock-free-reservation-active: true
+
   jpa:
     hibernate:
       ddl-auto: update
     properties:
       hibernate:
-#        dialect: org.hibernate.dialect.OracleDialect
-        format_sql: true
+       dialect: org.hibernate.dialect.OracleDialect
+#       format_sql: true
     show-sql: false
   datasource:
-    url: jdbc:oracle:thin:@financialdb_high?TNS_ADMIN=/oraclefinancial/creds
+    url: "jdbc:oracle:thin:@financialdb_high?TNS_ADMIN=/oraclefinancial/creds"
     username: financial
     password: Welcome12345
     driver-class-name: oracle.jdbc.OracleDriver
@@ -30,3 +32,7 @@ spring:
       initial-pool-size: 15
       min-pool-size: 10
       max-pool-size: 30
+#logging:
+#  level:
+#    org.hibernate.SQL: DEBUG
+#    org.hibernate.type.descriptor.sql.BasicBinder: TRACE

@@ -8,5 +8,5 @@ spec:
     app: account
   ports:
     - protocol: TCP
-      port: 443              # External HTTPS port
-      targetPort: 443
+      port: 8080              # External
+      targetPort: 8080

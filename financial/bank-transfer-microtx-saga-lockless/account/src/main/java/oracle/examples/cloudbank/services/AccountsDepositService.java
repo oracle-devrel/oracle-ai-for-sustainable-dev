@@ -2,6 +2,8 @@ package oracle.examples.cloudbank.services;
 
 import com.oracle.microtx.springboot.lra.annotation.*;
 import com.oracle.microtx.springboot.lra.lockfree.MicroTxLockFreeReservation;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import oracle.examples.cloudbank.model.Account;
 import oracle.examples.cloudbank.model.Journal;
 
@@ -19,6 +21,12 @@ public class AccountsDepositService {
     private static final Logger log = Logger.getLogger(AccountsDepositService.class.getName());
 
     private final static String DEPOSIT = "DEPOSIT";
+
+    @PersistenceContext
+    private EntityManager entityManager; // Inject the EntityManager
+
+    //    @Autowired
+    private MicroTxLockFreeReservation microTxLockFreeReservation;
 
     /**
      * Write journal entry re deposit amount.

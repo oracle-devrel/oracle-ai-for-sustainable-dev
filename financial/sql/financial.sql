@@ -11,7 +11,7 @@ END;
 /
 
 -- CREATE ACCOUNTS TABLE
-CREATE TABLE accounts (
+CREATE TABLE account_detail (
     account_id         VARCHAR2(64) PRIMARY KEY,
     name               VARCHAR2(255),
     official_name      VARCHAR2(255),
@@ -24,8 +24,8 @@ CREATE TABLE accounts (
     verification_status VARCHAR2(50)
 );
 
--- INSERT DATA INTO ACCOUNTS TABLE
-INSERT INTO accounts (
+-- INSERT DATA INTO account_detail TABLE
+INSERT INTO account_detail (
     account_id,
     name,
     official_name,
@@ -49,7 +49,7 @@ INSERT INTO accounts (
     'verified'
 );
 
-INSERT INTO accounts (
+INSERT INTO account_detail (
     account_id,
     name,
     official_name,
@@ -73,7 +73,7 @@ INSERT INTO accounts (
     'verified'
 );
 
-INSERT INTO accounts (
+INSERT INTO account_detail (
     account_id,
     name,
     official_name,
@@ -104,7 +104,7 @@ BEGIN
     ORDS.ENABLE_OBJECT(
         P_ENABLED      => TRUE,
         P_SCHEMA      => 'FINANCIAL',
-        P_OBJECT      =>  'ACCOUNTS',
+        P_OBJECT      =>  'account_detail',
         P_OBJECT_TYPE      => 'TABLE',
         P_OBJECT_ALIAS      => 'accounts',
         P_AUTO_REST_AUTH      => FALSE

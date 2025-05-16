@@ -54,12 +54,13 @@ public class TransferService {
     public ResponseEntity<?> transfer(@RequestParam("fromAccount") long fromAccount,
                              @RequestParam("toAccount") long toAccount,
                              @RequestParam("amount") long amount,
+                             @RequestParam("sagaAction") String sagaAction,
                              @RequestHeader( LRA_HTTP_CONTEXT_HEADER) String lraId) throws Exception
     {
         if (lraId == null) {
             return ResponseEntity.internalServerError().body("Failed to create LRA");
         }
-        log.info("Started new LRA/transfer Id: " + lraId);
+        log.info("Started new LRA/transfer Id: " + lraId + " sagaAction:" + sagaAction);
         boolean isCompensate = false;
         String returnString = "";
         returnString += withdraw(new URI(lraId), fromAccount, amount);
