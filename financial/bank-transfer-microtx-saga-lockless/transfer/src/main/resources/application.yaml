@@ -10,9 +10,9 @@ spring:
       headers-propagation-prefix: {x-b3-, oracle-tmm-, authorization, refresh-}
 account:
   deposit:
-      url:  http://bank.financial:8080/deposit/deposit
+      url:  http://account.financial:8080/deposit/deposit
   withdraw:
-      url: http://bank.financial:8080/withdraw/withdraw
+      url: http://account.financial:8080/withdraw/withdraw
 transfer:
   cancel:
       url: http://transfer.financial:8081/cancel

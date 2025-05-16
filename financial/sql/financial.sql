@@ -11,91 +11,28 @@ END;
 /
 
 -- CREATE ACCOUNTS TABLE
-CREATE TABLE account_detail (
-    account_id         VARCHAR2(64) PRIMARY KEY,
-    name               VARCHAR2(255),
-    official_name      VARCHAR2(255),
-    type               VARCHAR2(50),
-    subtype            VARCHAR2(50),
-    mask               VARCHAR2(10),
-    available_balance  NUMBER(18, 2),
-    current_balance    NUMBER(18, 2),
-    limit_balance      NUMBER(18, 2),
-    verification_status VARCHAR2(50)
-);
-
--- INSERT DATA INTO account_detail TABLE
-INSERT INTO account_detail (
-    account_id,
-    name,
-    official_name,
-    type,
-    subtype,
-    mask,
-    available_balance,
-    current_balance,
-    limit_balance,
-    verification_status
-) VALUES (
-    'acc_1001',
-    'Checking',
-    'Gold Standard 0% Interest Checking',
-    'depository',
-    'checking',
-    '1234',
-    1200.50,
-    1250.00,
-    NULL,
-    'verified'
-);
-
-INSERT INTO account_detail (
-    account_id,
-    name,
-    official_name,
-    type,
-    subtype,
-    mask,
-    available_balance,
-    current_balance,
-    limit_balance,
-    verification_status
-) VALUES (
-    'acc_1002',
-    'Savings',
-    'Premier High-Yield Savings',
-    'depository',
-    'savings',
-    '5678',
-    5000.00,
-    5000.00,
-    NULL,
-    'verified'
-);
-
-INSERT INTO account_detail (
-    account_id,
-    name,
-    official_name,
-    type,
-    subtype,
-    mask,
-    available_balance,
-    current_balance,
-    limit_balance,
-    verification_status
-) VALUES (
-    'acc_1003',
-    'Credit Card',
-    'Diamond Elite Credit Card',
-    'credit',
-    'credit card',
-    '9012',
-    NULL,
-    200.00,
-    5000.00,
-    'pending_automatic_verification'
-);
+CREATE TABLE "FINANCIAL"."ACCOUNTS"
+   (	"ACCOUNT_ID" NUMBER(19,0) GENERATED ALWAYS AS IDENTITY MINVALUE 1 MAXVALUE 9999999999999999999999999999 INCREMENT BY 1 START WITH 1 CACHE 20 NOORDER  NOCYCLE  NOKEEP  NOSCALE  NOT NULL ENABLE,
+	"ACCOUNT_BALANCE" NUMBER(19,0),
+	"CUSTOMER_ID" VARCHAR2(255 CHAR),
+	"ACCOUNT_NAME" VARCHAR2(255 CHAR),
+	"ACCOUNT_OPENED_DATE" TIMESTAMP (6),
+	"ACCOUNT_OTHER_DETAILS" VARCHAR2(255 CHAR),
+	"ACCOUNT_TYPE" VARCHAR2(255 CHAR)
+   ) ;
+--   SEGMENT CREATION IMMEDIATE
+--  PCTFREE 10 PCTUSED 40 INITRANS 10 MAXTRANS 255
+-- NOCOMPRESS LOGGING
+--  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+--  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+--  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+--  TABLESPACE "DATA" ;
+--ALTER TABLE "FINANCIAL"."ACCOUNTS" ADD PRIMARY KEY ("ACCOUNT_ID")
+--  USING INDEX PCTFREE 10 INITRANS 20 MAXTRANS 255 COMPUTE STATISTICS
+--  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+--  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+--  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+--  TABLESPACE "DATA"  ENABLE;
 
 COMMIT;
 /
