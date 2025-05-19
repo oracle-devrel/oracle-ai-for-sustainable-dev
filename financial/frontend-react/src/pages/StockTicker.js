@@ -173,7 +173,7 @@ const StockTicker = () => {
       {/* Collapsible SidePanel */}
       <SidePanel>
         <ToggleButton onClick={() => setIsCollapsed(!isCollapsed)}>
-          {isCollapsed ? 'Show Details' : 'Hide Details'}
+          {isCollapsed ? 'Show Developer Details' : 'Hide Developer Details'}
         </ToggleButton>
         {!isCollapsed && (
           <CollapsibleContent>

@@ -62,7 +62,7 @@ const Iframe = styled.iframe`
 `;
 
 const Investments = () => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
 
   return (
     <PageContainer>
@@ -73,7 +73,7 @@ const Investments = () => {
       {/* Collapsible SidePanel */}
       <SidePanel>
         <ToggleButton onClick={() => setIsCollapsed(!isCollapsed)}>
-          {isCollapsed ? 'Show Details' : 'Hide Details'}
+          {isCollapsed ? 'Show Developer Details' : 'Hide Developer Details'}
         </ToggleButton>
         {!isCollapsed && (
           <CollapsibleContent>

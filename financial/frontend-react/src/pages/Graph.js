@@ -75,7 +75,7 @@ const ToggleButton = styled.button`
 
 const Graph = () => {
   const [cy, setCy] = useState(null);
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
 
   useEffect(() => {
     const cyInstance = cytoscape({
@@ -139,7 +139,7 @@ const Graph = () => {
       {/* Collapsible SidePanel */}
       <SidePanel>
         <ToggleButton onClick={() => setIsCollapsed(!isCollapsed)}>
-          {isCollapsed ? 'Show Details' : 'Hide Details'}
+          {isCollapsed ? 'Show Developer Details' : 'Hide Developer Details'}
         </ToggleButton>
         {!isCollapsed && (
           <CollapsibleContent>

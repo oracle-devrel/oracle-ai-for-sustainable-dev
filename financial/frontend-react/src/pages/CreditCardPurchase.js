@@ -145,7 +145,7 @@ const CreditCardPurchase = () => {
   });
 
   const [accountIds, setAccountIds] = useState([]);
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
 
   useEffect(() => {
     // Fetch account IDs for the dropdown
@@ -213,7 +213,7 @@ const CreditCardPurchase = () => {
       {/* Collapsible SidePanel */}
       <SidePanel>
         <ToggleButton onClick={() => setIsCollapsed(!isCollapsed)}>
-          {isCollapsed ? 'Show Details' : 'Hide Details'}
+          {isCollapsed ? 'Show Developer Details' : 'Hide Developer Details'}
         </ToggleButton>
         {!isCollapsed && (
           <CollapsibleContent>

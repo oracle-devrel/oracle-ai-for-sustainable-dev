@@ -113,7 +113,7 @@ const RadioLabel = styled.label`
 `;
 
 const BASE_URL =
-  process.env.REACT_APP_BACKEND_URL || 'http://localhost:8080'; // Use environment variable or default to localhost
+  process.env.REACT_APP_MICROTX_ACCOUNT_SERVICE_URL || 'http://localhost:8080'; // Use environment variable or default to localhost
 
 console.log('BASE_URL:', BASE_URL); // Debug output to verify the value
 

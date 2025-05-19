@@ -116,7 +116,7 @@ const Messaging = () => {
 
   const [fromAccounts, setFromAccounts] = useState([]); // State for "From Account" dropdown
   const [toAccounts, setToAccounts] = useState([]); // State for "To Account" dropdown
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
 
   useEffect(() => {
     // Fetch account IDs for "From Account" dropdown
@@ -192,7 +192,7 @@ const Messaging = () => {
       {/* Collapsible SidePanel */}
       <SidePanel>
         <ToggleButton onClick={() => setIsCollapsed(!isCollapsed)}>
-          {isCollapsed ? 'Show Details' : 'Hide Details'}
+          {isCollapsed ? 'Show Developer Details' : 'Hide Developer Details'}
         </ToggleButton>
         {!isCollapsed && (
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
