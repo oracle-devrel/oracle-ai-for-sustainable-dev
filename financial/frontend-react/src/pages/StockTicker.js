@@ -166,9 +166,9 @@ const StockTicker = () => {
 
   return (
     <PageContainer>
-      <h2>Stock ticker and buy/sell stock</h2>
-      <h2>True Cache</h2>
-      <h2>NYSE</h2>
+      <h2>Process: Stock ticker and buy/sell stock</h2>
+      <h2>Tech: True Cache</h2>
+      <h2>Reference: NYSE</h2>
 
       {/* Collapsible SidePanel */}
       <SidePanel>
@@ -220,7 +220,7 @@ const StockTicker = () => {
               <iframe
                 width="100%"
                 height="315"
-                src="https://www.youtube.com/embed/8Tgmy74A4Bg"
+                src="https://www.youtube.com/embed/E1pOaCkd_PM"
                 title="YouTube video player"
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

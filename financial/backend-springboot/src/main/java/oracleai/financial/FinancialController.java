@@ -213,7 +213,8 @@ public class FinancialController {
         System.out.println("FinancialController.allaccounts getAllAccounts");
         try {
             // Construct the URL for the external service
-            String url = "http://account.financial:8080/api/v1/accounts";
+//            String url = "http://account.financial:8080/api/v1/accounts";
+            String url = "http://account.financial:8080/accounts/accounts";
 
             // Use RestTemplate to relay the call
             RestTemplate restTemplate = new RestTemplate();

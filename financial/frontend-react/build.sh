@@ -17,13 +17,21 @@ echo ${IMAGE}
 
 echo about to build...
 #podman build -t=$IMAGE .
-podman buildx build --platform linux/amd64 --build-arg REACT_APP_BACKEND_URL=https://oracledatabase-financial.org -t $IMAGE .
-#podman buildx build --platform linux/amd64 --build-arg REACT_APP_BACKEND_URL=https://144.24.182.230/ -t $IMAGE .
-#podman buildx build --platform linux/amd64 --build-arg REACT_APP_BACKEND_URL=https://138.2.128.55:8090 -t $IMAGE .
-#podman buildx build --platform linux/amd64 --build-arg REACT_APP_BACKEND_URL=http://10.96.22.27:8090 -t $IMAGE .
-#podman buildx build --platform linux/amd64 --build-arg REACT_APP_BACKEND_URL=http://backend.financial:8090 -t $IMAGE .
-#podman buildx build --platform linux/amd64 --build-arg REACT_APP_BACKEND_URL=https://backend.financial:8090 -t $IMAGE .
+#podman buildx build --platform linux/amd64 --build-arg REACT_APP_BACKEND_URL=https://oracledatabase-financial.org -t $IMAGE .
 #podman buildx build --platform linux/amd64 -t $IMAGE --load .
+podman buildx build --platform linux/amd64 \
+  --build-arg REACT_APP_BACKEND_URL=https://oracledatabase-financial.org \
+  --build-arg REACT_APP_MICROTX_TRANSFER_SERVICE_URL=https://oracleai-financial.org/transfer \
+  --build-arg REACT_APP_MICROTX_ACCOUNT_SERVICE_URL=https://oracleai-financial.org/accounts \
+  --build-arg REACT_APP_JAVA_ACCOUNTDETAIL_SERVICE_URL=https://oracleai-financial.org/accounts \
+  --build-arg REACT_APP_GRAPH_LAUNDERING_SERVICE_URL=https://oracledatabase-financial.org \
+  --build-arg REACT_APP_TRUECACHE_STOCK_SERVICE_URL=https://oracledatabase-financial.org \
+  --build-arg REACT_APP_SHARDING_SPATIAL_CC_SERVICE_URL=https://oracledatabase-financial.org \
+  --build-arg REACT_APP_STOCK_SERVICE_URL=https://oracledatabase-financial.org \
+  --build-arg REACT_APP_KAFKA_TXEVENTQ_SERVICE_URL=https://oracledatabase-financial.org \
+  --build-arg REACT_APP_AIAGENT_VECTOR_ADVISOR_SERVICE_URL=https://oracledatabase-financial.org \
+  --build-arg REACT_APP_SPEECH_SELECTAI_QUERY_SERVICE_URL=https://oracledatabase-financial.org \
+  -t $IMAGE .
 
 
 echo about to push ${IMAGE} $IMAGE...

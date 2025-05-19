@@ -132,9 +132,9 @@ const Graph = () => {
 
   return (
     <PageContainer>
-      <h2>Detect Money Laundering</h2>
-      <h2>Graph</h2>
-      <h2>Certegy</h2>
+      <h2>Process: Detect Money Laundering</h2>
+      <h2>Tech : Graph</h2>
+      <h2>Reference: Certegy</h2>
 
       {/* Collapsible SidePanel */}
       <SidePanel>
@@ -182,7 +182,7 @@ const Graph = () => {
               <iframe
                 width="100%"
                 height="315"
-                src="https://www.youtube.com/embed/8Tgmy74A4Bg"
+                src="https://www.youtube.com/embed/E1pOaCkd_PM"
                 title="YouTube video player"
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

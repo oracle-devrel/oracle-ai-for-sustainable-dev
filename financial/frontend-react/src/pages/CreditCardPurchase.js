@@ -206,9 +206,9 @@ const CreditCardPurchase = () => {
 
   return (
     <PageContainer>
-      <h2>Make purchases and visualize fraud</h2>
-      <h2>Globally Distributed DB, OML, Spatial</h2>
-      <h2>AMEX</h2>
+      <h2>Process: Make purchases and visualize fraud</h2>
+      <h2>Tech: Globally Distributed DB, OML, Spatial</h2>
+      <h2>Reference: AMEX</h2>
 
       {/* Collapsible SidePanel */}
       <SidePanel>
@@ -260,7 +260,7 @@ const CreditCardPurchase = () => {
               <iframe
                 width="100%"
                 height="315"
-                src="https://www.youtube.com/embed/8Tgmy74A4Bg"
+                src="https://www.youtube.com/embed/E1pOaCkd_PM"
                 title="YouTube video player"
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

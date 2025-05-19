@@ -185,9 +185,9 @@ const Messaging = () => {
 
   return (
     <PageContainer>
-      <h2>Transfer to brokerage accounts</h2>
-      <h2>Kafka and TxEventQ</h2>
-      <h2>FSGBU</h2>
+      <h2>Process: Transfer to brokerage accounts</h2>
+      <h2>Tech: Kafka and TxEventQ</h2>
+      <h2>Reference: FSGBU</h2>
 
       {/* Collapsible SidePanel */}
       <SidePanel>
@@ -233,16 +233,18 @@ const Messaging = () => {
               </ul>
             </div>
             <div style={{ flexShrink: 0, width: '40%' }}>
-              <h4>Walkthrough Video:</h4>
-              <video
-                controls
-                width="100%"
-                style={{ borderRadius: '8px', border: '1px solid #444' }}
-              >
-                <source src="/images/financial-app-walkthrough.mov" type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
-            </div>
+  <h4>Walkthrough Video:</h4>
+  <iframe
+    width="100%"
+    height="315"
+    src="https://www.youtube.com/embed/E1pOaCkd_PM"
+    title="YouTube video player"
+    frameBorder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    allowFullScreen
+    style={{ borderRadius: '8px', border: '1px solid #444' }}
+  ></iframe>
+</div>
           </div>
         )}
       </SidePanel>

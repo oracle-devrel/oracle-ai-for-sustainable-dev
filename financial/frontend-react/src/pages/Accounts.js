@@ -207,9 +207,13 @@ const Accounts = () => {
 
   const fetchAccounts = async () => {
     try {
-      const response = await fetch(`${BASE_URL}/financial/accounts`);
+      const BASE_URL = process.env.REACT_APP_MICROTX_ACCOUNT_SERVICE_URL; // Use the environment variable
+      const response = await fetch(`${BASE_URL}/accounts`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       const data = await response.json();
-      setAccounts(data);
+      setAccounts(data); // Populate the accounts table
       setLoading(false);
     } catch (error) {
       console.error('Error fetching accounts:', error);
@@ -231,9 +235,9 @@ const Accounts = () => {
 
   return (
     <PageContainer>
-      <h2>Create and view accounts</h2>
-      <h2>MongoDB/MERN stack</h2>
-      <h2>Decimal Point Analytics</h2>
+      <h2>Process: Create and view accounts</h2>
+      <h2>Tech: MongoDB/MERN stack</h2>
+      <h2>Reference: Decimal Point Analytics</h2>
 
       {/* Collapsible SidePanel */}
       <SidePanel>
@@ -278,15 +282,14 @@ const Accounts = () => {
                 <li>JSON Duality allows the same data to be read and written to using JSON (and MongoDB API) as well as SQL</li>
                 <li>MongoDB API adapter maps MongoDB operations into real Oracle Database transactions and so, even MongoDB's recently added multi-document transactions are less efficient and can leave locks</li>
                 <li>MongoDB does not support Geo-distributed transactions or transactions across multiple databases, sharding, or savepoints</li>
-               
               </ul>
             </div>
-            <div style={{ flexShrink: 0, width: '70%' }}>
+            <div style={{ flexShrink: 0, width: '40%' }}>
               <h4>Walkthrough Video:</h4>
               <iframe
                 width="100%"
-                height="615"
-                src="https://www.youtube.com/embed/bK2yP1rXxn8"
+                height="315"
+                src="https://www.youtube.com/embed/E1pOaCkd_PM"
                 title="YouTube video player"
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -404,7 +407,7 @@ const Accounts = () => {
         </StyledForm>
       </FormContainer>
 
-      {/* Accounts Table */}
+      {/* Table to display all accounts */}
       {loading ? (
         <p>Loading accounts...</p>
       ) : (
@@ -412,18 +415,24 @@ const Accounts = () => {
           <thead>
             <tr>
               <TableHeader>Account ID</TableHeader>
-              <TableHeader>Official Name</TableHeader>
-              <TableHeader>Type</TableHeader>
-              <TableHeader>Current Balance</TableHeader>
+              <TableHeader>Account Name</TableHeader>
+              <TableHeader>Account Type</TableHeader>
+              <TableHeader>Customer ID</TableHeader>
+              <TableHeader>Opened Date</TableHeader>
+              <TableHeader>Other Details</TableHeader>
+              <TableHeader>Balance</TableHeader>
             </tr>
           </thead>
           <tbody>
             {accounts.map((account) => (
-              <tr key={account.account_id}>
-                <TableCell>{account.account_id}</TableCell>
-                <TableCell>{account.official_name ?? 'N/A'}</TableCell>
-                <TableCell>{account.type}</TableCell>
-                <TableCell>{account.current_balance ?? 'N/A'}</TableCell>
+              <tr key={account.accountId}>
+                <TableCell>{account.accountId}</TableCell>
+                <TableCell>{account.accountName || 'N/A'}</TableCell>
+                <TableCell>{account.accountType || 'N/A'}</TableCell>
+                <TableCell>{account.accountCustomerId || 'N/A'}</TableCell>
+                <TableCell>{account.accountOpenedDate || 'N/A'}</TableCell>
+                <TableCell>{account.accountOtherDetails || 'N/A'}</TableCell>
+                <TableCell>{account.accountBalance}</TableCell>
               </tr>
             ))}
           </tbody>

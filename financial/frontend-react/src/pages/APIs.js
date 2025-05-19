@@ -122,9 +122,9 @@ const APIs = () => {
 
   return (
     <PageContainer>
-      <h2>Publish Financial APIs</h2>
-      <h2>Oracle Rest Data Services (ORDS), OpenAPI</h2>
-      <h2>Sphere</h2>
+      <h2>Process: Publish Financial APIs</h2>
+      <h2>Tech: Oracle Rest Data Services (ORDS), OpenAPI</h2>
+      <h2>Reference: Sphere</h2>
 
       {/* First Collapsible SidePanel */}
       <SidePanel>

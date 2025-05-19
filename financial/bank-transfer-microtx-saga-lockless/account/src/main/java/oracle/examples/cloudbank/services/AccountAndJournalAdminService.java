@@ -15,13 +15,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/accounts")
 public class AccountAndJournalAdminService {
 
     final AccountRepository accountRepository;
@@ -108,6 +109,25 @@ public class AccountAndJournalAdminService {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @PostMapping("/createAccountWithGivenBalance")
+    public ResponseEntity<Account> createAccountWithGivenBalance(@RequestBody Account account) {
+        log.info("ACCOUNT: createAccount with balance of " + account.getAccountBalance());
+        try {
+            Account entity = new Account(
+                    account.getAccountName(),
+                    account.getAccountType(),
+                    account.getAccountOtherDetails(),
+                    account.getAccountCustomerId());
+            entity.setAccountBalance(account.getAccountBalance());
+            Account _account = accountRepository.save(entity);
+            return new ResponseEntity<>(_account, HttpStatus.CREATED);
+
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @DeleteMapping("/account/{accountId}")
     public ResponseEntity<HttpStatus> deleteAccount(@PathVariable("accountId") long accountId) {
         log.info("ACCOUNT: deleteAccount");
@@ -150,5 +170,26 @@ public class AccountAndJournalAdminService {
         }
     }
 
+    @PutMapping("/account/{accountId}/balance")
+    public ResponseEntity<Account> updateAccountBalance(
+            @PathVariable("accountId") long accountId,
+            @RequestBody double amountToAdd) {
+        log.info("ACCOUNT: updateAccountBalance for accountId: " + accountId);
+        try {
+            Optional<Account> accountData = accountRepository.findById(accountId);
+            if (accountData.isPresent()) {
+                Account account = accountData.get();
+                long updatedBalance = account.getAccountBalance() + (long) amountToAdd; // Cast to long
+                account.setAccountBalance(updatedBalance); // Update the balance
+                Account updatedAccount = accountRepository.save(account); // Save the updated account
+                return new ResponseEntity<>(updatedAccount, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Account not found
+            }
+        } catch (Exception e) {
+            log.error("Error updating account balance for accountId: " + accountId, e);
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
 

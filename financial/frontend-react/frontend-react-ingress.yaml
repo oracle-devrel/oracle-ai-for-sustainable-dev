@@ -13,6 +13,7 @@ spec:
     - host: oracleai-financial.org
       http:
         paths:
+          # Rule for React frontend
           - path: /
             pathType: Prefix
             backend:
@@ -20,3 +21,75 @@ spec:
                 name: react-frontend
                 port:
                   number: 80
+          # Rule for accounts endpoint
+          - path: /accounts
+            pathType: Prefix
+            backend:
+              service:
+                name: account
+                port:
+                  number: 8080
+          # Rule for transfer endpoint
+          - path: /transfer
+            pathType: Prefix
+            backend:
+              service:
+                name: transfer
+                port:
+                  number: 8081
+          # Rule for accountdetail endpoint
+          - path: /accountdetail
+            pathType: Prefix
+            backend:
+              service:
+                name: accountdetail
+                port:
+                  number: 8080
+          # Rule for graph endpoint
+          - path: /graph
+            pathType: Prefix
+            backend:
+              service:
+                name: graph
+                port:
+                  number: 8080
+          # Rule for truecache endpoint
+          - path: /truecache
+            pathType: Prefix
+            backend:
+              service:
+                name: truecache
+                port:
+                  number: 8080
+          # Rule for gdd_spatial endpoint
+          - path: /gdd_spatial
+            pathType: Prefix
+            backend:
+              service:
+                name: gdd-spatial
+                port:
+                  number: 8080
+          # Rule for kafka endpoint
+          - path: /kafka
+            pathType: Prefix
+            backend:
+              service:
+                name: kafka
+                port:
+                  number: 8080
+          # Rule for aiagent endpoint
+          - path: /aiagent
+            pathType: Prefix
+            backend:
+              service:
+                name: aiagent
+                port:
+                  number: 8080
+          # Rule for selectai endpoint
+          - path: /selectai
+            pathType: Prefix
+            backend:
+              service:
+                name: selectai
+                port:
+                  number: 8080

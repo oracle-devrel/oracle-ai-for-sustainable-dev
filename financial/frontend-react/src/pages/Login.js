@@ -52,7 +52,7 @@ const Login = () => {
     // Add authentication logic here
     if (username === 'DEVELOPER' && password === 'Welcome123456#') {
       login();
-      navigate('/dashboard');
+      navigate('/financialstoryboard');
     } else {
       alert('Invalid credentials');
     }

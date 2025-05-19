@@ -144,13 +144,13 @@ const TableCell = styled.td`
 `;
 
 const Transactions = () => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true); // Set to true to make the panel collapsed by default
 
   const [formData, setFormData] = useState({
     amount: '',
     fromAccount: '',
     toAccount: '',
-    crashOption: 'noCrash', // Default to "No Crash"
+    crashSimulation: 'noCrash', // Renamed from "crashOption" to "crashSimulation"
     sagaAction: 'complete', // Default to "Complete/Commit"
     useLockFreeReservations: false, // Default to not using lock-free reservations
   });
@@ -163,8 +163,8 @@ const Transactions = () => {
   useEffect(() => {
     const fetchAccounts = async () => {
       try {
-        const BASE_URL = process.env.REACT_APP_BACKEND_URL; // Use the environment variable
-        const response = await fetch(`${BASE_URL}/financial/allaccounts`);
+        const BASE_URL = process.env.REACT_APP_MICROTX_ACCOUNT_SERVICE_URL; // Use the environment variable
+        const response = await fetch(`${BASE_URL}/accounts`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -192,10 +192,10 @@ const Transactions = () => {
     e.preventDefault();
 
     // Use the BASE_URL environment variable
-    const BASE_URL = process.env.REACT_APP_BACKEND_URL;
+    const BASE_URL = process.env.REACT_APP_MICROTX_TRANSFER_SERVICE_URL;
 
     // Construct the URL with query parameters
-    const url = `${BASE_URL}/financial/transfer?fromAccount=${formData.fromAccount}&toAccount=${formData.toAccount}&amount=${formData.amount}&sagaAction=${formData.sagaAction}&useLockFreeReservations=${formData.useLockFreeReservations}`;
+    const url = `${BASE_URL}?fromAccount=${formData.fromAccount}&toAccount=${formData.toAccount}&amount=${formData.amount}&sagaAction=${formData.sagaAction}&useLockFreeReservations=${formData.useLockFreeReservations}&crashSimulation=${formData.crashSimulation}`;
 
     // Make the POST request
     fetch(url, {
@@ -219,13 +219,13 @@ const Transactions = () => {
 
   return (
     <PageContainer>
-      <h2>Transfer to external bank</h2>
-      <h2>MicroTx, Lock-free reservations</h2>
-      <h2>University of Naples</h2>
+      <h2>Process: Transfer to external bank</h2>
+      <h2>Tech: MicroTx, Lock-free reservations</h2>
+      <h2>Reference: University of Naples</h2>
       <ContentContainer>
         <SidePanel>
           <ToggleButton onClick={() => setIsCollapsed(!isCollapsed)}>
-            {isCollapsed ? 'Show Details' : 'Hide Details'}
+            {isCollapsed ? 'Developer Details' : 'Hide Developer Details'} {/* Updated button text */}
           </ToggleButton>
           {!isCollapsed && (
             <CollapsibleContent>
@@ -364,9 +364,9 @@ const Transactions = () => {
           <RadioLabel>
             <input
               type="radio"
-              name="crashOption"
+              name="crashSimulation"
               value="noCrash"
-              checked={formData.crashOption === 'noCrash'}
+              checked={formData.crashSimulation === 'noCrash'}
               onChange={handleChange}
             />
             No Crash
@@ -374,9 +374,9 @@ const Transactions = () => {
           <RadioLabel>
             <input
               type="radio"
-              name="crashOption"
+              name="crashSimulation"
               value="crashBeforeFirstBankCommit"
-              checked={formData.crashOption === 'crashBeforeFirstBankCommit'}
+              checked={formData.crashSimulation === 'crashBeforeFirstBankCommit'}
               onChange={handleChange}
             />
             Crash Before First Bank Commit
@@ -384,9 +384,9 @@ const Transactions = () => {
           <RadioLabel>
             <input
               type="radio"
-              name="crashOption"
+              name="crashSimulation"
               value="crashAfterFirstBankCommit"
-              checked={formData.crashOption === 'crashAfterFirstBankCommit'}
+              checked={formData.crashSimulation === 'crashAfterFirstBankCommit'}
               onChange={handleChange}
             />
             Crash After First Bank Commit
@@ -394,9 +394,9 @@ const Transactions = () => {
           <RadioLabel>
             <input
               type="radio"
-              name="crashOption"
+              name="crashSimulation"
               value="crashAfterSecondBankCommit"
-              checked={formData.crashOption === 'crashAfterSecondBankCommit'}
+              checked={formData.crashSimulation === 'crashAfterSecondBankCommit'}
               onChange={handleChange}
             />
             Crash After Second Bank Commit

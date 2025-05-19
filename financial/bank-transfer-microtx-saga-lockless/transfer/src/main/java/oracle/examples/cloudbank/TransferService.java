@@ -55,21 +55,25 @@ public class TransferService {
                              @RequestParam("toAccount") long toAccount,
                              @RequestParam("amount") long amount,
                              @RequestParam("sagaAction") String sagaAction,
+                             @RequestParam("crashSimulation") String crashSimulation,
+                             @RequestParam("useLockFreeReservations") boolean useLockFreeReservations,
                              @RequestHeader( LRA_HTTP_CONTEXT_HEADER) String lraId) throws Exception
     {
         if (lraId == null) {
             return ResponseEntity.internalServerError().body("Failed to create LRA");
         }
-        log.info("Started new LRA/transfer Id: " + lraId + " sagaAction:" + sagaAction);
+        log.info("Started new LRA/transfer Id: " + lraId + " sagaAction:" + sagaAction +
+                " crashSimulation:" + crashSimulation + " useLockFreeReservations:" + useLockFreeReservations);
         boolean isCompensate = false;
         String returnString = "";
         returnString += withdraw(new URI(lraId), fromAccount, amount);
         log.info(returnString);
-        if (returnString.contains("succeeded")) {
+        if (returnString.contains("succeeded") && sagaAction.equalsIgnoreCase("complete") && crashSimulation.equals("noCrash")) {
             returnString += " " + deposit(new URI(lraId), toAccount, amount);
             log.info(returnString);
             if (returnString.contains("failed")) isCompensate = true; //deposit failed
         } else isCompensate = true; //withdraw failed
+
         log.info("LRA/transfer action will be " + (isCompensate?"cancel":"close"));
         HttpHeaders headers = new HttpHeaders();
         headers.add("TRANSFER_ID", lraId);

@@ -88,23 +88,45 @@ const Button = styled.button`
   }
 `;
 
+const Table = styled.table`
+  width: 100%;
+  margin-top: 20px;
+  border-collapse: collapse;
+`;
+
+const TableHeader = styled.th`
+  background-color: #2c2c2c;
+  color: #ffffff;
+  padding: 10px;
+  border: 1px solid #444;
+`;
+
+const TableCell = styled.td`
+  background-color: #121212;
+  color: #ffffff;
+  padding: 10px;
+  border: 1px solid #444;
+`;
+
 const ATM = () => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true); // Set to true to make the details box collapsed by default
   const [formData, setFormData] = useState({
     accountId: '',
     amount: '',
-    transactionType: '',
     language: '',
   });
   const [accountIds, setAccountIds] = useState([]);
+  const [accountDetails, setAccountDetails] = useState(null); // State to store the account details
+
+  const BASE_URL = process.env.REACT_APP_MICROTX_ACCOUNT_SERVICE_URL; // Use the same URL prefix as in Transactions.js
 
   // Fetch account IDs from the API
   useEffect(() => {
     const fetchAccountIds = async () => {
       try {
-        const response = await fetch('http://localhost:8080/financial/accounts');
+        const response = await fetch(`${BASE_URL}/accounts`); // Adjust the URL to match your backend
         const data = await response.json();
-        const ids = data.map((account) => account.account_id); // Extract account IDs
+        const ids = data.map((account) => account.accountId); // Extract account IDs
         setAccountIds(ids);
         if (ids.length > 0) {
           setFormData((prev) => ({ ...prev, accountId: ids[0] })); // Prepopulate with the first account ID
@@ -115,29 +137,64 @@ const ATM = () => {
     };
 
     fetchAccountIds();
-  }, []);
+  }, [BASE_URL]);
+
+  const fetchAccountDetails = async (accountId) => {
+    try {
+      const response = await fetch(`${BASE_URL}/account/${accountId}`); // Fetch details for a specific account
+      if (response.ok) {
+        const data = await response.json();
+        setAccountDetails(data); // Update the account details state
+      } else {
+        console.error(`Failed to fetch account details for accountId: ${accountId}`);
+      }
+    } catch (error) {
+      console.error('Error fetching account details:', error);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert(
-      `Transaction submitted successfully! Account ID: ${formData.accountId}, Type: ${formData.transactionType}, Language: ${formData.language}`
-    );
+
+    const url = `${BASE_URL}/account/${formData.accountId}/balance`;
+
+    try {
+      const response = await fetch(url, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(parseFloat(formData.amount)), // Send the amount as a number
+      });
+
+      if (response.ok) {
+        alert(`Transaction successful! Account ID: ${formData.accountId}, Amount: ${formData.amount}`);
+        setFormData({ ...formData, amount: '' }); // Reset the amount field
+        fetchAccountDetails(formData.accountId); // Refresh the account details table
+      } else {
+        const errorText = await response.text();
+        alert(`Transaction failed: ${errorText}`);
+      }
+    } catch (error) {
+      console.error('Error submitting transaction:', error);
+      alert('An error occurred. Please try again.');
+    }
   };
 
   return (
     <PageContainer>
-      <h2>Deposit/withdraw money (ATM)</h2>
-      <h2>Polyglot</h2>
+      <h2>Process: Deposit/withdraw money (ATM)</h2>
+      <h2>Tech: Polyglot</h2>
       <h2>Java, JS, Python, .NET, Go, Rust</h2>
       {/* Collapsible SidePanel */}
       <SidePanel>
         <ToggleButton onClick={() => setIsCollapsed(!isCollapsed)}>
-          {isCollapsed ? 'Show Details' : 'Hide Details'}
+          {isCollapsed ? 'Show Developer Details' : 'Hide Developer Details'}
         </ToggleButton>
         {!isCollapsed && (
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -154,7 +211,7 @@ const ATM = () => {
               </div>
               <div>
                 <a
-                  href="https://github.com/paulparkinson/oracle-ai-for-sustainable-dev/tree/main/financial"
+                  href="https://github.com/paulparkinson/oracle-ai-for-sustainable-dev/tree/main/financial/atm-polyglot"
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{ color: '#1abc9c', textDecoration: 'none' }}
@@ -182,7 +239,7 @@ const ATM = () => {
               <iframe
                 width="100%"
                 height="315"
-                src="https://www.youtube.com/embed/8Tgmy74A4Bg"
+                src="https://www.youtube.com/embed/E1pOaCkd_PM"
                 title="YouTube video player"
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -220,38 +277,6 @@ const ATM = () => {
           placeholder="Enter amount"
           required
         />
-
-        <h4>Select a transaction type:</h4>
-        <RadioLabel>
-          <input
-            type="radio"
-            name="transactionType"
-            value="deposit"
-            checked={formData.transactionType === 'deposit'}
-            onChange={handleChange}
-          />
-          Deposit
-        </RadioLabel>
-        <RadioLabel>
-          <input
-            type="radio"
-            name="transactionType"
-            value="withdraw"
-            checked={formData.transactionType === 'withdraw'}
-            onChange={handleChange}
-          />
-          Withdraw
-        </RadioLabel>
-        <RadioLabel>
-          <input
-            type="radio"
-            name="transactionType"
-            value="balance"
-            checked={formData.transactionType === 'balance'}
-            onChange={handleChange}
-          />
-          Balance Inquiry
-        </RadioLabel>
 
         <h4>Select a language for the transaction:</h4>
         <RadioLabel>
@@ -317,6 +342,34 @@ const ATM = () => {
 
         <Button type="submit">Submit</Button>
       </Form>
+
+      {/* Table to display account details */}
+      {accountDetails && (
+        <Table>
+          <thead>
+            <tr>
+              <TableHeader>Account ID</TableHeader>
+              <TableHeader>Account Name</TableHeader>
+              <TableHeader>Account Type</TableHeader>
+              <TableHeader>Customer ID</TableHeader>
+              <TableHeader>Opened Date</TableHeader>
+              <TableHeader>Other Details</TableHeader>
+              <TableHeader>Balance</TableHeader>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <TableCell>{accountDetails.accountId}</TableCell>
+              <TableCell>{accountDetails.accountName || 'N/A'}</TableCell>
+              <TableCell>{accountDetails.accountType || 'N/A'}</TableCell>
+              <TableCell>{accountDetails.accountCustomerId || 'N/A'}</TableCell>
+              <TableCell>{accountDetails.accountOpenedDate || 'N/A'}</TableCell>
+              <TableCell>{accountDetails.accountOtherDetails || 'N/A'}</TableCell>
+              <TableCell>{accountDetails.accountBalance}</TableCell>
+            </tr>
+          </tbody>
+        </Table>
+      )}
     </PageContainer>
   );
 };

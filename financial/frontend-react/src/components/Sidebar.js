@@ -145,8 +145,8 @@ const Sidebar = () => {
               <FaTachometerAlt />
             </IconWrapper>
             <TextContainer>
-              <HighlightedText>Technical architecture and setup</HighlightedText>
-              {showDetails && <div>Details about architecture and setup</div>}
+              <HighlightedText>Architecture and setup</HighlightedText>
+              {showDetails && <div>Kubernetes, Observability, etc.</div>}
             </TextContainer>
           </StyledNavLink>
         </SidebarItem>
