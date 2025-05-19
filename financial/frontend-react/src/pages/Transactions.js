@@ -203,7 +203,7 @@ const Transactions = () => {
     })
       .then((response) => {
         if (response.ok) {
-          alert(`Transfer successful! 
+          alert(`Transfer requestion complete.
         From Account: ${formData.fromAccount}, 
         To Account: ${formData.toAccount}, 
         Amount: ${formData.amount}, 

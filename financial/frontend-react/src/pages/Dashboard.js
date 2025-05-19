@@ -45,6 +45,12 @@ const DashBoard = () => {
   return (
     <PageContainer>
       <h2>Technical architecture and setup</h2>
+      <ul>
+        <li>All pages in this app have corresponding labs in the workshop which is linked to from the page itself.</li>
+        <li>Source for all pages is available in the GitHub repo which is linked to from the page itself.</li>
+        <li>All pages/labs share the same schema but can be run a la carte as there are no interdependencies.</li>
+        <li>All pages are microservices that can be run either in Kubernetes or standalone.</li>
+      </ul>
 
       {/* Links */}
       <LinksContainer>

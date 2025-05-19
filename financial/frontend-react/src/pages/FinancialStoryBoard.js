@@ -63,14 +63,12 @@ const Dashboard = () => {
     <div>
       <h2>Who is this application and workshop for?</h2>
       <StyledList>
-        <StyledListItem>Financial systems experts AND developers who build these systems</StyledListItem>
+        <StyledListItem>SEs for financial systems AND developers who build these systems</StyledListItem>
       </StyledList>
       <h2>Is the application ready to test?</h2>
       <StyledList>
         <StyledListItem>
-          The application is in beta and will be complete by end of June.
-          <br /> {/* Added a new line here */}
-          The following is the status and remaining work in priority order.
+          Yes, however, the app is in beta and constantly being worked - the status and remaining work in priority order are below.  All feedback is appreciated.
         </StyledListItem>
       </StyledList>
 

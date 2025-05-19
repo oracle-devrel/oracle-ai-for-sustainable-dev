@@ -54,20 +54,16 @@ const ToggleButton = styled.button`
 
 const APIs = () => {
   const [isCollapsed, setIsCollapsed] = useState(true); // First panel hidden by default
-  const [isCollapsedSecond, setIsCollapsedSecond] = useState(true); // Second panel hidden by default
   const [accountData, setAccountData] = useState([]);
-  const [accountData2, setAccountData2] = useState([]); // State for the second table
   const [loading, setLoading] = useState(true);
-  const [loading2, setLoading2] = useState(true); // Loading state for the second table
   const [error, setError] = useState(null);
-  const [error2, setError2] = useState(null); // Error state for the second table
 
   useEffect(() => {
     // Fetch data for the first table
     const fetchData = async () => {
       try {
         const response = await fetch(
-          'https://ij1tyzir3wpwlpe-financialdb.adb.eu-frankfurt-1.oraclecloudapps.com/ords/financial/ACCOUNT_DETAIL/'
+          'https://ij1tyzir3wpwlpe-financialdb.adb.eu-frankfurt-1.oraclecloudapps.com/ords/financial/accounts/'
         );
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -81,36 +77,19 @@ const APIs = () => {
       }
     };
 
-    // Fetch data for the second table
-    const fetchData2 = async () => {
-      try {
-        const response = await fetch(
-          'https://ij1tyzir3wpwlpe-financialdb.adb.eu-frankfurt-1.oraclecloudapps.com/ords/financial2/accounts/'
-        );
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        setAccountData2(data.items || []); // Assuming the data is in the `items` array
-        setLoading2(false);
-      } catch (err) {
-        setError2(err.message);
-        setLoading2(false);
-      }
-    };
-
     fetchData();
-    fetchData2();
   }, []);
 
-  // Dynamically generate table headers based on the keys of the first object in the data, excluding "links"
-  const tableHeaders = accountData.length > 0 
-    ? Object.keys(accountData[0]).filter((key) => key !== 'links') 
-    : [];
-
-  const tableHeaders2 = accountData2.length > 0 
-    ? Object.keys(accountData2[0]).filter((key) => key !== 'links') 
-    : [];
+  // Dynamically generate table headers based on the new data format
+  const tableHeaders = [
+    'account_id',
+    'account_balance',
+    'customer_id',
+    'account_name',
+    'account_opened_date',
+    'account_other_details',
+    'account_type',
+  ];
 
   // Helper function to safely render table cell content
   const renderCellContent = (value) => {
@@ -126,7 +105,7 @@ const APIs = () => {
       <h2>Tech: Oracle Rest Data Services (ORDS), OpenAPI</h2>
       <h2>Reference: Sphere</h2>
 
-      {/* First Collapsible SidePanel */}
+      {/* Collapsible SidePanel */}
       <SidePanel>
         <ToggleButton onClick={() => setIsCollapsed(!isCollapsed)}>
           {isCollapsed ? 'Show Developer Details' : 'Hide Developer Details'}
@@ -183,45 +162,8 @@ const APIs = () => {
         )}
       </SidePanel>
 
-      {/* Second Collapsible SidePanel */}
-      <SidePanel>
-        <ToggleButton onClick={() => setIsCollapsedSecond(!isCollapsedSecond)}>
-          {isCollapsedSecond ? 'Show Financial Process Details' : 'Hide Financial Process Details'}
-        </ToggleButton>
-        {!isCollapsedSecond && (
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div style={{ flex: 1, marginRight: '20px' }}>
-              <h4>Financial Process:</h4>
-              <ul>
-                <li>Access/use financial data or processes from APIs</li>
-                <li>Display account information</li>
-                <li>Enable integration with third-party financial systems</li>
-              </ul>
-              <h4>Performance:</h4>
-              <ul>
-                <li>Optimized for large-scale data operations</li>
-                <li>Supports advanced query capabilities</li>
-              </ul>
-            </div>
-            <div style={{ flexShrink: 0, width: '70%' }}>
-              <h4>Walkthrough Video:</h4>
-              <iframe
-                width="100%"
-                height="615"
-                src="https://www.youtube.com/embed/8Tgmy74A4Bg" // Replace with the desired YouTube video URL
-                title="YouTube video player"
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                style={{ borderRadius: '8px', border: '1px solid #444' }}
-              ></iframe>
-            </div>
-          </div>
-        )}
-      </SidePanel>
-
-      {/* First Account Data Table */}
-      <h3>Account Data Bank 1</h3>
+      {/* Account Data Table */}
+      <h3>Account Data</h3>
       {loading ? (
         <p>Loading account data...</p>
       ) : error ? (
@@ -231,7 +173,7 @@ const APIs = () => {
           <thead>
             <tr>
               {tableHeaders.map((header) => (
-                <TableHeader key={header}>{header}</TableHeader>
+                <TableHeader key={header}>{header.replace(/_/g, ' ').toUpperCase()}</TableHeader>
               ))}
             </tr>
           </thead>
@@ -239,33 +181,6 @@ const APIs = () => {
             {accountData.map((account, index) => (
               <tr key={index}>
                 {tableHeaders.map((header) => (
-                  <TableCell key={header}>{renderCellContent(account[header])}</TableCell>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-      )}
-
-      {/* Second Account Data Table */}
-      <h3>Account Data Bank 2</h3>
-      {loading2 ? (
-        <p>Loading account data...</p>
-      ) : error2 ? (
-        <p style={{ color: 'red' }}>Error: {error2}</p>
-      ) : (
-        <Table>
-          <thead>
-            <tr>
-              {tableHeaders2.map((header) => (
-                <TableHeader key={header}>{header}</TableHeader>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {accountData2.map((account, index) => (
-              <tr key={index}>
-                {tableHeaders2.map((header) => (
                   <TableCell key={header}>{renderCellContent(account[header])}</TableCell>
                 ))}
               </tr>
