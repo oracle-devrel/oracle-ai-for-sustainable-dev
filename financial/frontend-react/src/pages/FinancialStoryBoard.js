@@ -47,7 +47,7 @@ const Dashboard = () => {
     { name: 'Architecture and Setup: k8s and otel', complete: '80%', notes: 'More text description and Grafana console for prod env.' },
     { name: 'API: ORDS', complete: '100%', notes: 'Update or remove 2nd video' },
     { name: 'Accounts: MERN', complete: '100%', notes: 'Add crash option back in' },
-    { name: 'ATM: Polyglot', complete: '80%', notes: 'Add last few languages.' },
+    { name: 'ATM: Polyglot', complete: '100%', notes: 'Add last few languages.' },
     { name: 'Transfer: MicroTx and Lock-free', complete: '100%', notes: 'Update video' },
     { name: 'Suspicious Purchases: GDD, Spatial', complete: '90%', notes: 'Update video, show purchases, Jupyter on prod version' },
     { name: 'Circular payments: Graph', complete: '80%', notes: 'Update video, use new graph server container' },

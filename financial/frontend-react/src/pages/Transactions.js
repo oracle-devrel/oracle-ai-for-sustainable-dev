@@ -150,33 +150,34 @@ const Transactions = () => {
     amount: '',
     fromAccount: '',
     toAccount: '',
-    crashSimulation: 'noCrash', // Renamed from "crashOption" to "crashSimulation"
-    sagaAction: 'complete', // Default to "Complete/Commit"
-    useLockFreeReservations: false, // Default to not using lock-free reservations
+    crashSimulation: 'noCrash',
+    sagaAction: 'complete',
+    useLockFreeReservations: false,
   });
 
-  const [fromAccounts, setFromAccounts] = useState([]); // State for "From Account" dropdown
-  const [toAccounts, setToAccounts] = useState([]); // State for "To Account" dropdown
-  const [allAccounts, setAllAccounts] = useState([]); // State for displaying all accounts in a table
+  const [fromAccounts, setFromAccounts] = useState([]);
+  const [toAccounts, setToAccounts] = useState([]);
+  const [allAccounts, setAllAccounts] = useState([]);
 
-  // Fetch account data for dropdowns and table
-  useEffect(() => {
-    const fetchAccounts = async () => {
-      try {
-        const BASE_URL = process.env.REACT_APP_MICROTX_ACCOUNT_SERVICE_URL; // Use the environment variable
-        const response = await fetch(`${BASE_URL}/accounts`);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        setFromAccounts(data); // Populate "From Account" dropdown
-        setToAccounts(data); // Populate "To Account" dropdown
-        setAllAccounts(data); // Populate the table
-      } catch (error) {
-        console.error('Error fetching accounts:', error);
+  // Define fetchAccounts function
+  const fetchAccounts = async () => {
+    try {
+      const BASE_URL = process.env.REACT_APP_MICROTX_ACCOUNT_SERVICE_URL;
+      const response = await fetch(`${BASE_URL}/accounts`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-    };
+      const data = await response.json();
+      setFromAccounts(data);
+      setToAccounts(data);
+      setAllAccounts(data);
+    } catch (error) {
+      console.error('Error fetching accounts:', error);
+    }
+  };
 
+  // Fetch accounts on component mount
+  useEffect(() => {
     fetchAccounts();
   }, []);
 
@@ -191,13 +192,9 @@ const Transactions = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Use the BASE_URL environment variable
     const BASE_URL = process.env.REACT_APP_MICROTX_TRANSFER_SERVICE_URL;
-
-    // Construct the URL with query parameters
     const url = `${BASE_URL}?fromAccount=${formData.fromAccount}&toAccount=${formData.toAccount}&amount=${formData.amount}&sagaAction=${formData.sagaAction}&useLockFreeReservations=${formData.useLockFreeReservations}&crashSimulation=${formData.crashSimulation}`;
 
-    // Make the POST request
     fetch(url, {
       method: 'POST',
       headers: {
@@ -206,7 +203,14 @@ const Transactions = () => {
     })
       .then((response) => {
         if (response.ok) {
-          alert('Transfer successful!');
+          alert(`Transfer successful! 
+        From Account: ${formData.fromAccount}, 
+        To Account: ${formData.toAccount}, 
+        Amount: ${formData.amount}, 
+        Saga Action: ${formData.sagaAction}, 
+        Lock-free Reservations: ${formData.useLockFreeReservations}, 
+        Crash Simulation: ${formData.crashSimulation}`);
+          fetchAccounts(); // Refresh the accounts table
         } else {
           alert('Transfer failed. Please try again.');
         }
@@ -225,7 +229,7 @@ const Transactions = () => {
       <ContentContainer>
         <SidePanel>
           <ToggleButton onClick={() => setIsCollapsed(!isCollapsed)}>
-            {isCollapsed ? 'Developer Details' : 'Hide Developer Details'} {/* Updated button text */}
+            {isCollapsed ? 'Developer Details' : 'Hide Developer Details'}
           </ToggleButton>
           {!isCollapsed && (
             <CollapsibleContent>
@@ -349,7 +353,6 @@ const Transactions = () => {
             Compensate/Rollback
           </RadioLabel>
 
-          {/* Checkbox for Lock-free Reservations */}
           <CheckboxLabel>
             <input
               type="checkbox"
@@ -405,7 +408,6 @@ const Transactions = () => {
           <Button type="submit">Submit</Button>
         </Form>
 
-        {/* Table to display all accounts */}
         <Table>
           <thead>
             <tr>

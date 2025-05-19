@@ -135,7 +135,7 @@ const StockTicker = () => {
     shares: '',
   });
 
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true); // Set to true to make the panel collapsed by default
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -216,7 +216,7 @@ const StockTicker = () => {
               </ul>
             </TextContent>
             <VideoWrapper>
-            <h4>Walkthrough Video:</h4>
+              <h4>Walkthrough Video:</h4>
               <iframe
                 width="100%"
                 height="315"
@@ -262,14 +262,14 @@ const StockTicker = () => {
           <option value="ABC5">Stock ABC5</option>
         </Select>
 
-        <Label htmlFor="shares">Number of Shares</Label>
+        <Label htmlFor="shares">Set Stock Price</Label>
         <Input
           type="number"
           id="shares"
           name="shares"
           value={formData.shares}
           onChange={handleChange}
-          placeholder="Enter number of shares"
+          placeholder="Enter stock price"
           required
         />
 

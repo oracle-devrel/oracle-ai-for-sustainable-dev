@@ -118,38 +118,29 @@ const BASE_URL =
 console.log('BASE_URL:', BASE_URL); // Debug output to verify the value
 
 const Accounts = () => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true); // Set to true to make the SidePanel collapsed by default
   const [formData, setFormData] = useState({
-    account_id: '',
-    official_name: '',
-    type: '',
-    current_balance: '',
-  });
-  const [updateFormData, setUpdateFormData] = useState({
-    amount: '',
-    crashAfterFirstUpdate: false,
-    action: 'Use MongoDB', // Default action
+    accountName: '',
+    accountType: '',
+    accountCustomerId: '',
+    accountOpenedDate: new Date().toISOString().split('T')[0], // Set current date as default
+    accountOtherDetails: '',
+    accountBalance: '',
   });
   const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const BASE_URL = process.env.REACT_APP_MICROTX_ACCOUNT_SERVICE_URL; // Use the same URL prefix as in Transactions.js
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleUpdateChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setUpdateFormData({
-      ...updateFormData,
-      [name]: type === 'checkbox' ? checked : value,
-    });
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`${BASE_URL}/financial/accounts`, {
+      const response = await fetch(`${BASE_URL}/createAccountWithGivenBalance`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -160,10 +151,12 @@ const Accounts = () => {
       if (response.ok) {
         alert('Account created successfully!');
         setFormData({
-          account_id: '',
-          official_name: '',
-          type: '',
-          current_balance: '',
+          accountName: '',
+          accountType: '',
+          accountCustomerId: '',
+          accountOpenedDate: new Date().toISOString().split('T')[0], // Reset to current date
+          accountOtherDetails: '',
+          accountBalance: '',
         });
         fetchAccounts(); // Refresh the accounts table
       } else {
@@ -176,38 +169,8 @@ const Accounts = () => {
     }
   };
 
-  const handleUpdateSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await fetch(`${BASE_URL}/financial/accounts`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updateFormData),
-      });
-
-      if (response.ok) {
-        alert('Accounts updated successfully!');
-        setUpdateFormData({
-          amount: '',
-          crashAfterFirstUpdate: false,
-          action: 'Use MongoDB',
-        });
-        fetchAccounts(); // Refresh the accounts table
-      } else {
-        const errorText = await response.text();
-        alert(`Failed to update accounts: ${errorText}`);
-      }
-    } catch (error) {
-      console.error('Error updating accounts:', error);
-      alert('An error occurred while updating the accounts.');
-    }
-  };
-
   const fetchAccounts = async () => {
     try {
-      const BASE_URL = process.env.REACT_APP_MICROTX_ACCOUNT_SERVICE_URL; // Use the environment variable
       const response = await fetch(`${BASE_URL}/accounts`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -223,14 +186,6 @@ const Accounts = () => {
 
   useEffect(() => {
     fetchAccounts();
-
-    // Set up interval to refresh accounts every 1 second
-    const interval = setInterval(() => {
-      fetchAccounts();
-    }, 1000);
-
-    // Cleanup interval on component unmount
-    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -301,111 +256,75 @@ const Accounts = () => {
         )}
       </SidePanel>
 
-      {/* Forms Section */}
-      <FormContainer>
-        {/* Create Account Form */}
-        <StyledForm onSubmit={handleSubmit}>
-          <h3>Create Account</h3>
-          <Label htmlFor="account_id">Account ID</Label>
-          <Input
-            type="text"
-            id="account_id"
-            name="account_id"
-            value={formData.account_id}
-            onChange={handleChange}
-            placeholder="Enter account ID"
-            required
-          />
+      {/* Create Account Form */}
+      <StyledForm onSubmit={handleSubmit}>
+        <h3>Create Account</h3>
+        <Label htmlFor="accountName">Account Name</Label>
+        <Input
+          type="text"
+          id="accountName"
+          name="accountName"
+          value={formData.accountName}
+          onChange={handleChange}
+          placeholder="Enter account name"
+          required
+        />
 
-          <Label htmlFor="official_name">Official Name</Label>
-          <Input
-            type="text"
-            id="official_name"
-            name="official_name"
-            value={formData.official_name}
-            onChange={handleChange}
-            placeholder="Enter official name"
-          />
+        <Label htmlFor="accountType">Account Type</Label>
+        <Input
+          type="text"
+          id="accountType"
+          name="accountType"
+          value={formData.accountType}
+          onChange={handleChange}
+          placeholder="Enter account type"
+          required
+        />
 
-          <Label htmlFor="type">Type</Label>
-          <Input
-            type="text"
-            id="type"
-            name="type"
-            value={formData.type}
-            onChange={handleChange}
-            placeholder="Enter account type"
-            required
-          />
+        <Label htmlFor="accountCustomerId">Customer ID</Label>
+        <Input
+          type="text"
+          id="accountCustomerId"
+          name="accountCustomerId"
+          value={formData.accountCustomerId}
+          onChange={handleChange}
+          placeholder="Enter customer ID"
+          required
+        />
 
-          <Label htmlFor="current_balance">Current Balance</Label>
-          <Input
-            type="number"
-            id="current_balance"
-            name="current_balance"
-            value={formData.current_balance}
-            onChange={handleChange}
-            placeholder="Enter current balance"
-          />
+        <Label htmlFor="accountOpenedDate">Opened Date</Label>
+        <Input
+          type="date"
+          id="accountOpenedDate"
+          name="accountOpenedDate"
+          value={formData.accountOpenedDate}
+          onChange={handleChange}
+          required
+        />
 
-          <Button type="submit">Create Account</Button>
-        </StyledForm>
+        <Label htmlFor="accountOtherDetails">Other Details</Label>
+        <Input
+          type="text"
+          id="accountOtherDetails"
+          name="accountOtherDetails"
+          value={formData.accountOtherDetails}
+          onChange={handleChange}
+          placeholder="Enter other details"
+        />
 
-        {/* Update All Accounts Form */}
-        <StyledForm onSubmit={handleUpdateSubmit}>
-          <h3>Update All Accounts</h3>
-          <Label htmlFor="amount">Amount to add to all accounts</Label>
-          <Input
-            type="number"
-            id="amount"
-            name="amount"
-            value={updateFormData.amount}
-            onChange={handleUpdateChange}
-            placeholder="Enter amount"
-            required
-          />
+        <Label htmlFor="accountBalance">Balance</Label>
+        <Input
+          type="number"
+          id="accountBalance"
+          name="accountBalance"
+          value={formData.accountBalance}
+          onChange={handleChange}
+          placeholder="Enter balance"
+          required
+        />
 
-          <CheckboxContainer>
-            <div>
-              <Input
-                type="checkbox"
-                id="crashAfterFirstUpdate"
-                name="crashAfterFirstUpdate"
-                checked={updateFormData.crashAfterFirstUpdate}
-                onChange={handleUpdateChange}
-              />
-              <CheckboxLabel htmlFor="crashAfterFirstUpdate">Crash After First Update</CheckboxLabel>
-            </div>
-
-            <RadioGroup>
-              <div>
-                <Input
-                  type="radio"
-                  id="useMongoDB"
-                  name="action"
-                  value="Use MongoDB"
-                  checked={updateFormData.action === 'Use MongoDB'}
-                  onChange={handleUpdateChange}
-                />
-                <RadioLabel htmlFor="useMongoDB">Use MongoDB</RadioLabel>
-              </div>
-              <div>
-                <Input
-                  type="radio"
-                  id="useMongoDBWithOracleAdapter"
-                  name="action"
-                  value="Use MongoDB with Oracle Adapter"
-                  checked={updateFormData.action === 'Use MongoDB with Oracle Adapter'}
-                  onChange={handleUpdateChange}
-                />
-                <RadioLabel htmlFor="useMongoDBWithOracleAdapter">Use MongoDB with Oracle Adapter</RadioLabel>
-              </div>
-            </RadioGroup>
-          </CheckboxContainer>
-
-          <Button type="submit">Update Accounts</Button>
-        </StyledForm>
-      </FormContainer>
+        <Button type="submit">Create Account</Button>
+      </StyledForm>
 
       {/* Table to display all accounts */}
       {loading ? (
