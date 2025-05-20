@@ -54,21 +54,24 @@ const Dashboard = () => {
     { name: 'Transfer to brokerage: Kafka TxEventQ', complete: '80%', notes: 'Update video, change naming and queue creation' },
     { name: 'Stock ticker: True Cache', complete: '90%', notes: 'Update video, make stock price directly updatable, ie not via stock average, and mod names' },
     { name: 'Financial Insights: AI Agents, MCP, Vector search', complete: '70%', notes: 'Update video' },
-    { name: 'Speak with data: Speech AI, Select AI', complete: '90%', notes: 'Update video, Add regin to accounting table and return audio rather than play it' },
+    { name: 'Speak with data: Speech AI, Select AI', complete: '100%', notes: 'Update video, Add regin to accounting table and return audio rather than play it' },
     { name: 'Frontened design work', complete: '20%', notes: 'Incorporate design from Fernanda' },
-    { name: 'ADD ABILITY FOR MULTIPLE USERS TO RUN APP', complete: '40%', notes: 'Adding reservation for multi-tenancy' }
+    { name: 'ADD ABILITY FOR MULTIPLE USERS TO RUN APP', complete: '100%', notes: 'I currently simply ask that everyone create their own accounts.' }
   ];
 
   return (
     <div>
       <h2>Who is this application and workshop for?</h2>
       <StyledList>
-        <StyledListItem>SEs for financial systems AND developers who build these systems</StyledListItem>
+        <StyledListItem>SEs, Architects, ... AND developers</StyledListItem>
       </StyledList>
       <h2>Is the application ready to test?</h2>
       <StyledList>
         <StyledListItem>
-          Yes, however, the app is in beta and constantly being worked - the status and remaining work in priority order are below.  All feedback is appreciated.
+          Yes, however, the app is in beta and constantly being worked - the status and remaining work in priority is listed below.
+        </StyledListItem>
+        <StyledListItem>
+          In order to allow multiple people to use the application at the same time, please create your own account in the "Create Account" page
         </StyledListItem>
       </StyledList>
 
