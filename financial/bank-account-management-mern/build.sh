@@ -1,28 +1,34 @@
 #!/bin/bash
-## Copyright (c) 2021 Oracle and/or its affiliates.
-## Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl/
 
-
-SCRIPT_DIR=$(dirname $0)
-
-IMAGE_NAME=inventory-nodejs
-IMAGE_VERSION=0.1
-
-
-if [ -z "$DOCKER_REGISTRY" ]; then
-    echo "DOCKER_REGISTRY not set. Will get it with state_get"
-  export DOCKER_REGISTRY=$(state_get DOCKER_REGISTRY)
-fi
+export IMAGE_VERSION=$TAG
+export DOCKER_REGISTRY=eu-frankfurt-1.ocir.io/oradbclouducm/financial
+#eg us-ashburn-1.ocir.io/oradbclouducm/financial/frontend:0.
 
 if [ -z "$DOCKER_REGISTRY" ]; then
     echo "Error: DOCKER_REGISTRY env variable needs to be set!"
     exit 1
 fi
 
-
 export IMAGE=${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_VERSION}
+echo ${IMAGE}
 
-docker build -t $IMAGE ./inventory
+#oci artifacts container repository create --compartment-id ocid1.compartment.oc1..aaaaaaaafnah3ogykjsg34qruhixhb2drls6zhsejzm7mubi2i5qj66slcoq  --display-name financial/frontend  --is-public true
 
-docker push $IMAGE
+
+echo about to build...
+#podman build -t=$IMAGE .
+#podman buildx build --platform linux/amd64 --build-arg REACT_APP_BACKEND_URL=https://oracledatabase-financial.org -t $IMAGE .
+#podman buildx build --platform linux/amd64 -t $IMAGE --load .
+#mongodb://financial:Welcome12345@IJ1TYZIR3WPWLPE-FINANCIALDB.adb.eu-frankfurt-1.oraclecloudapps.com:27017/financial?authMechanism=PLAIN&authSource=$external&ssl=true&retryWrites=false&loadBalanced=true
+podman buildx build --platform linux/amd64 \
+  --build-arg MONGODB_URL="https://oracledatabase-financial.org" \
+  -t $IMAGE .
+
+
+echo about to push ${IMAGE} $IMAGE...
+podman push --format docker "$IMAGE"
+#podman push  --tls-verify=false "$IMAGE"
+
+#podman run --rm -p 8080:8080 $IMAGE
+# podman run --rm -p 8080:8080 us-ashburn-1.ocir.io/oradbclouducm/financial/frontend:0.9
 

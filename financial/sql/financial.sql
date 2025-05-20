@@ -34,6 +34,16 @@ CREATE TABLE "FINANCIAL"."ACCOUNTS"
 --  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
 --  TABLESPACE "DATA"  ENABLE;
 
+--Name                  Null?    Type
+----------------------- -------- ------------------
+--ACCOUNT_ID            NOT NULL NUMBER(19)
+--ACCOUNT_BALANCE                NUMBER(19)
+--CUSTOMER_ID                    VARCHAR2(255 CHAR)
+--ACCOUNT_NAME                   VARCHAR2(255 CHAR)
+--ACCOUNT_OPENED_DATE            TIMESTAMP(6)
+--ACCOUNT_OTHER_DETAILS          VARCHAR2(255 CHAR)
+--ACCOUNT_TYPE                   VARCHAR2(255 CHAR)
+
 COMMIT;
 /
 
@@ -48,4 +58,66 @@ BEGIN
     );
     COMMIT;
 END;
+
+
+BEGIN
+  DBMS_CLOUD_ADMIN.ENABLE_MONGO_API;
+END;
+/
+
+mongodb://[user:password@]IJ1TYZIR3WPWLPE-FINANCIALDB.adb.eu-frankfurt-1.oraclecloudapps.com:27017/[user]?authMechanism=PLAIN&authSource=$external&ssl=true&retryWrites=false&loadBalanced=true
+mongodb://[financial:Welcome12345@]IJ1TYZIR3WPWLPE-FINANCIALDB.adb.eu-frankfurt-1.oraclecloudapps.com:27017/[financial]?authMechanism=PLAIN&authSource=$external&ssl=true&retryWrites=false&loadBalanced=true
+
+
+
+--CREATE TABLE dept_tab
+-- (deptno NUMBER(2,0),
+-- dname VARCHAR2(14),
+-- code NUMBER(13,0),
+-- state VARCHAR2(15),
+--
+-- country VARCHAR2(15),
+-- CONSTRAINT pk_dept PRIMARY KEY (deptno));
+--
+--
+--CREATE JSON RELATIONAL DUALITY VIEW dept_dv AS
+-- SELECT JSON {'_id' : d.deptno,
+-- 'deptName' : d.dname,
+-- 'location' : {zipcode : d.code,
+-- country : d.country}
+-- FROM dept_tab d WITH UPDATE INSERT DELETE;
+
+CREATE TABLE dept_tab
+ (deptno NUMBER(2,0),
+ dname VARCHAR2(14),
+ code NUMBER(13,0),
+ state VARCHAR2(15),
+ country VARCHAR2(15),
+ CONSTRAINT pk_accountid PRIMARY KEY (ACCOUNT_ID));
+
+--From https://docs.oracle.com/en/database/oracle/oracle-database/23/jsnvu/json-relational-duality-developers-guide.pdf
+
+
+--ACCOUNT_ID            NOT NULL NUMBER(19)
+--ACCOUNT_BALANCE                NUMBER(19)
+--CUSTOMER_ID                    VARCHAR2(255 CHAR)
+--ACCOUNT_NAME                   VARCHAR2(255 CHAR)
+--ACCOUNT_OPENED_DATE            TIMESTAMP(6)
+--ACCOUNT_OTHER_DETAILS          VARCHAR2(255 CHAR)
+--ACCOUNT_TYPE                   VARCHAR2(255 CHAR)
+
+
+CREATE JSON RELATIONAL DUALITY VIEW accounts_dv AS
+  SELECT JSON {
+    '_id'                  : ACCOUNT_ID,
+    'accountBalance'       : ACCOUNT_BALANCE,
+    'customerId'           : CUSTOMER_ID,
+    'accountName'          : ACCOUNT_NAME,
+    'accountOpenedDate'    : ACCOUNT_OPENED_DATE,
+    'accountOtherDetails'  : ACCOUNT_OTHER_DETAILS,
+    'accountType'          : ACCOUNT_TYPE
+  }
+  FROM accounts
+  WITH INSERT UPDATE DELETE CHECK;
+
 

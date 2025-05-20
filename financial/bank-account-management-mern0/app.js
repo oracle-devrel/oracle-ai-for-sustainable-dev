@@ -11,26 +11,29 @@ const PORT = 5000;
 app.use(bodyParser.json());
 app.use(cors());
 
-// MongoDB connection (using Oracle JSON Duality View as MongoDB API)
-const MONGO_URI = 'mongodb://financial:Welcome12345@IJ1TYZIR3WPWLPE-FINANCIALDB.adb.eu-frankfurt-1.oraclecloudapps.com:27017/financial?authMechanism=PLAIN&authSource=$external&ssl=true&retryWrites=false&loadBalanced=true';
+// MongoDB connection
+const MONGO_URI = 'mongodb://financial:Welcome12345@IJ1TYZIR3WPWLPE-FINANCIALDB.adb.eu-frankfurt-1.oraclecloudapps.com:27017/financial?authMechanism=PLAIN&authSource=$external&ssl=true&retryWrites=false&loadBalanced=true'; // Replace with your MongoDB URI
 mongoose
   .connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log('Connected to Oracle JSON Duality View via MongoDB API'))
-  .catch((err) => console.error('Error connecting to MongoDB API:', err));
+  .then(() => console.log('Connected to MongoDB'))
+  .catch((err) => console.error('Error connecting to MongoDB:', err));
 
-// Define the schema (matches the JSON Duality View structure)
+// Define the schema
 const accountSchema = new mongoose.Schema({
-  _id: { type: String, required: true, unique: true },
-  accountBalance: { type: Number },
-  customerId: { type: String },
-  accountName: { type: String },
-  accountOpenedDate: { type: Date },
-  accountOtherDetails: { type: String },
-  accountType: { type: String },
+  account_id: { type: String, required: true, unique: true },
+  name: { type: String, required: true },
+  official_name: { type: String },
+  type: { type: String, required: true },
+  subtype: { type: String },
+  mask: { type: String },
+  available_balance: { type: Number },
+  current_balance: { type: Number },
+  limit_balance: { type: Number },
+  verification_status: { type: String },
 });
 
 // Create the model
-const Account = mongoose.model('accounts_dv', accountSchema);
+const Account = mongoose.model('Account', accountSchema);
 
 // CRUD Endpoints
 
@@ -60,7 +63,7 @@ app.get('/api/accounts', async (req, res) => {
 // Read a single account by ID
 app.get('/api/accounts/:id', async (req, res) => {
   try {
-    const account = await Account.findById(req.params.id);
+    const account = await Account.findOne({ account_id: req.params.id });
     if (!account) {
       return res.status(404).json({ error: 'Account not found' });
     }
@@ -74,10 +77,11 @@ app.get('/api/accounts/:id', async (req, res) => {
 // Update an account by ID
 app.put('/api/accounts/:id', async (req, res) => {
   try {
-    const account = await Account.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+    const account = await Account.findOneAndUpdate(
+      { account_id: req.params.id },
+      req.body,
+      { new: true, runValidators: true }
+    );
     if (!account) {
       return res.status(404).json({ error: 'Account not found' });
     }
@@ -91,7 +95,7 @@ app.put('/api/accounts/:id', async (req, res) => {
 // Delete an account by ID
 app.delete('/api/accounts/:id', async (req, res) => {
   try {
-    const account = await Account.findByIdAndDelete(req.params.id);
+    const account = await Account.findOneAndDelete({ account_id: req.params.id });
     if (!account) {
       return res.status(404).json({ error: 'Account not found' });
     }

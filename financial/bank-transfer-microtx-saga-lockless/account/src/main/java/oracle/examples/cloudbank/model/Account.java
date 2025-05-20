@@ -6,6 +6,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Column;
+import jakarta.persistence.UniqueConstraint;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Generated;
@@ -14,14 +15,17 @@ import org.hibernate.annotations.GenerationTime;
 import java.util.Date;
 
 @Entity
-@Table(name = "ACCOUNTS")
+@Table(
+    name = "ACCOUNTS",
+    uniqueConstraints = @UniqueConstraint(name = "pk_accountid", columnNames = "ACCOUNT_ID") // Define the primary key constraint
+)
 @Data
 @NoArgsConstructor
 public class Account {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ACCOUNT_ID")
+    @Column(name = "ACCOUNT_ID", nullable = false, unique = true) // Ensure the column is unique and not null
     private long accountId;
 
     @Column(name = "ACCOUNT_NAME")

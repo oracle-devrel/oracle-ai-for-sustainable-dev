@@ -22,6 +22,14 @@ spec:
                 port:
                   number: 80
           # Rule for accounts endpoint
+          - path: /mern-backend
+            pathType: Prefix
+            backend:
+              service:
+                name: mern-backend
+                port:
+                  number: 5000
+          # Rule for accounts endpoint
           - path: /accounts
             pathType: Prefix
             backend:

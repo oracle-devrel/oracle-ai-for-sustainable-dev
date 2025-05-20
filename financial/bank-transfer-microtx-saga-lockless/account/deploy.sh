@@ -8,5 +8,3 @@ kubectl delete deployment account-springboot  -n financial
 cp account-springboot-deployment_template.yaml account-springboot-deployment.yaml
 sed -i '' "s|IMAGE_PLACEHOLDER|$IMAGE|g" account-springboot-deployment.yaml
 kubectl apply -f account-springboot-deployment.yaml -n financial
-
-kubectl apply -f  account-springboot-deployment.yaml  -n financial

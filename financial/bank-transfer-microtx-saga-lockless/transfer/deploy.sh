@@ -9,4 +9,3 @@ cp transfer-springboot-deployment_template.yaml transfer-springboot-deployment.y
 sed -i '' "s|IMAGE_PLACEHOLDER|$IMAGE|g" transfer-springboot-deployment.yaml
 kubectl apply -f transfer-springboot-deployment.yaml -n financial
 
-kubectl apply -f  transfer-springboot-deployment.yaml  -n financial
