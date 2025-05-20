@@ -192,10 +192,6 @@ EXECUTE DBMS_STATS.GATHER_SCHEMA_STATS(ownname => 'TRANSACTIONS');
 
 
 
-
-
-
-
 --
 --Now loging to truecache instance as trasnactions user..
 --
