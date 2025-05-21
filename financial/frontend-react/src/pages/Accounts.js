@@ -74,6 +74,7 @@ const BASE_MERN_BACKEND_URL =
 
 const Accounts = () => {
   const [formData, setFormData] = useState({
+    _id: '', // Add _id field for accountId
     accountName: '',
     accountType: '',
     customerId: '',
@@ -103,6 +104,7 @@ const Accounts = () => {
       if (response.ok) {
         alert('Account created successfully!');
         setFormData({
+          _id: '', // Reset _id field
           accountName: '',
           accountType: '',
           customerId: '',
@@ -148,6 +150,17 @@ const Accounts = () => {
       {/* Create Account Form */}
       <Form onSubmit={handleSubmit}>
         <h3>Create Account</h3>
+        <Label htmlFor="_id">Account ID</Label>
+        <Input
+          type="text"
+          id="_id"
+          name="_id"
+          value={formData._id}
+          onChange={handleChange}
+          placeholder="Enter account ID"
+          required
+        />
+
         <Label htmlFor="accountName">Account Name</Label>
         <Input
           type="text"
@@ -233,8 +246,8 @@ const Accounts = () => {
           </thead>
           <tbody>
             {accounts.map((account) => (
-              <tr key={account.accountId}>
-                <TableCell>{account.accountId}</TableCell>
+              <tr key={account._id}>
+                <TableCell>{account._id}</TableCell>
                 <TableCell>{account.accountName || 'N/A'}</TableCell>
                 <TableCell>{account.accountType || 'N/A'}</TableCell>
                 <TableCell>{account.customerId || 'N/A'}</TableCell>

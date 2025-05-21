@@ -10,4 +10,3 @@ cp frontend-react-deployment_template.yaml frontend-react-deployment.yaml
 sed -i '' "s|IMAGE_PLACEHOLDER|$IMAGE|g" frontend-react-deployment.yaml
 kubectl apply -f frontend-react-deployment.yaml -n financial
 
-kubectl apply -f  frontend-react-deployment.yaml  -n financial

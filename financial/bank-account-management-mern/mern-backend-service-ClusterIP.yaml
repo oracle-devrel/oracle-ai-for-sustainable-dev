@@ -8,5 +8,5 @@ spec:
     app: mern-backend
   ports:
     - protocol: TCP
-      port: 5000              # External
+      port: 5000
       targetPort: 5000

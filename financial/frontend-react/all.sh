@@ -3,7 +3,8 @@
 export TAG=0.1.$(date +%s)
 echo TAG = $TAG
 
-export IMAGE_NAME=frontend-react
+#export IMAGE_NAME=frontend-react
+export IMAGE_NAME=react-frontend
 export IMAGE_VERSION=$TAG
 export DOCKER_REGISTRY=eu-frankfurt-1.ocir.io/oradbclouducm/financial
 if [ -z "$DOCKER_REGISTRY" ]; then

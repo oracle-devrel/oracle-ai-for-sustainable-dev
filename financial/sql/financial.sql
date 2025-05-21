@@ -70,31 +70,6 @@ mongodb://[financial:Welcome12345@]IJ1TYZIR3WPWLPE-FINANCIALDB.adb.eu-frankfurt-
 
 
 
---CREATE TABLE dept_tab
--- (deptno NUMBER(2,0),
--- dname VARCHAR2(14),
--- code NUMBER(13,0),
--- state VARCHAR2(15),
---
--- country VARCHAR2(15),
--- CONSTRAINT pk_dept PRIMARY KEY (deptno));
---
---
---CREATE JSON RELATIONAL DUALITY VIEW dept_dv AS
--- SELECT JSON {'_id' : d.deptno,
--- 'deptName' : d.dname,
--- 'location' : {zipcode : d.code,
--- country : d.country}
--- FROM dept_tab d WITH UPDATE INSERT DELETE;
-
-CREATE TABLE dept_tab
- (deptno NUMBER(2,0),
- dname VARCHAR2(14),
- code NUMBER(13,0),
- state VARCHAR2(15),
- country VARCHAR2(15),
- CONSTRAINT pk_accountid PRIMARY KEY (ACCOUNT_ID));
-
 --From https://docs.oracle.com/en/database/oracle/oracle-database/23/jsnvu/json-relational-duality-developers-guide.pdf
 
 
