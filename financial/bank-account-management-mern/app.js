@@ -35,7 +35,7 @@ const Account = mongoose.model('accounts_dv', accountSchema);
 // CRUD Endpoints
 
 // Create an account
-app.post('/api/accounts', async (req, res) => {
+app.post(['/api/accounts', '/mern-backend/api/accounts'], async (req, res) => {
   try {
     const account = new Account(req.body);
     await account.save();
@@ -47,7 +47,7 @@ app.post('/api/accounts', async (req, res) => {
 });
 
 // Read all accounts
-app.get('/api/accounts', async (req, res) => {
+app.get(['/api/accounts', '/mern-backend/api/accounts'], async (req, res) => {
   try {
     const accounts = await Account.find({});
     res.json(accounts);
@@ -58,7 +58,7 @@ app.get('/api/accounts', async (req, res) => {
 });
 
 // Read a single account by ID
-app.get('/api/accounts/:id', async (req, res) => {
+app.get(['/api/accounts/:id', '/mern-backend/api/accounts/:id'], async (req, res) => {
   try {
     const account = await Account.findById(req.params.id);
     if (!account) {
@@ -72,7 +72,7 @@ app.get('/api/accounts/:id', async (req, res) => {
 });
 
 // Update an account by ID
-app.put('/api/accounts/:id', async (req, res) => {
+app.put(['/api/accounts/:id', '/mern-backend/api/accounts/:id'], async (req, res) => {
   try {
     const account = await Account.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
@@ -89,7 +89,7 @@ app.put('/api/accounts/:id', async (req, res) => {
 });
 
 // Delete an account by ID
-app.delete('/api/accounts/:id', async (req, res) => {
+app.delete(['/api/accounts/:id', '/mern-backend/api/accounts/:id'], async (req, res) => {
   try {
     const account = await Account.findByIdAndDelete(req.params.id);
     if (!account) {

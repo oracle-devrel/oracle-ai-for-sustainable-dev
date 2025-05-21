@@ -3,14 +3,14 @@ package oracle.examples.cloudbank.model;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+//import jakarta.persistence.GeneratedValue;
+//import jakarta.persistence.GenerationType;
 import jakarta.persistence.Column;
 import jakarta.persistence.UniqueConstraint;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Generated;
-import org.hibernate.annotations.GenerationTime;
+//import org.hibernate.annotations.Generated;
+//import org.hibernate.annotations.GenerationTime;
 
 import java.util.Date;
 
@@ -37,8 +37,9 @@ public class Account {
     @Column(name = "CUSTOMER_ID")
     private String accountCustomerId;
 
-    @Generated(GenerationTime.INSERT)
-    @Column(name = "ACCOUNT_OPENED_DATE", updatable = false, insertable = false)
+//    @Generated(GenerationTime.INSERT)
+//    @Column(name = "ACCOUNT_OPENED_DATE", updatable = false, insertable = false)
+    @Column(name = "ACCOUNT_OPENED_DATE")
     private Date accountOpenedDate;
 
     @Column(name = "ACCOUNT_OTHER_DETAILS")

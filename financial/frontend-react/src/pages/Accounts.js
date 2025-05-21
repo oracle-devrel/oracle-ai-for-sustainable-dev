@@ -129,7 +129,9 @@ const Accounts = () => {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      const data = await response.json();
+
+      const text = await response.text(); // Read the response as text
+      const data = text ? JSON.parse(text) : []; // Parse JSON if not empty
       setAccounts(data); // Populate the accounts table
       setLoading(false);
     } catch (error) {
@@ -246,8 +248,8 @@ const Accounts = () => {
           </thead>
           <tbody>
             {accounts.map((account) => (
-              <tr key={account._id}>
-                <TableCell>{account._id}</TableCell>
+              <tr key={account.accountId}>
+                <TableCell>{account.accountId}</TableCell>
                 <TableCell>{account.accountName || 'N/A'}</TableCell>
                 <TableCell>{account.accountType || 'N/A'}</TableCell>
                 <TableCell>{account.customerId || 'N/A'}</TableCell>
