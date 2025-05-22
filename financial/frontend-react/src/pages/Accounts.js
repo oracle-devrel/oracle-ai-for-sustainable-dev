@@ -68,6 +68,38 @@ const TableCell = styled.td`
   color: #ffffff;
 `;
 
+const CollapsiblePanel = styled.div`
+  margin-top: 20px;
+  padding: 10px;
+  border: 1px solid #444;
+  border-radius: 8px;
+  background-color: #1e1e1e;
+  color: #ffffff;
+`;
+
+const ToggleButton = styled.button`
+  background-color: #1abc9c;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 10px;
+
+  &:hover {
+    background-color: #16a085;
+  }
+`;
+
+const SidePanel = styled.div`
+  border: 1px solid #444;
+  padding: 10px;
+  border-radius: 8px;
+  background-color: #1e1e1e;
+  color: #ffffff;
+  margin-top: 20px;
+`;
+
 const BASE_URL = process.env.REACT_APP_MICROTX_ACCOUNT_SERVICE_URL || 'http://localhost:8080';
 const BASE_MERN_BACKEND_URL =
   process.env.REACT_APP_MERN_BACKEND_SERVICE_URL || 'http://localhost:5000';
@@ -81,9 +113,12 @@ const Accounts = () => {
     accountOpenedDate: new Date().toISOString().split('T')[0],
     accountOtherDetails: '',
     accountBalance: '',
+    writeOption: 'MongoDB API', // Default write option
+    readOption: 'MongoDB API',  // Default read option
   });
   const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showDeveloperDetails, setShowDeveloperDetails] = useState(true); // State for collapsible panel
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -111,6 +146,8 @@ const Accounts = () => {
           accountOpenedDate: new Date().toISOString().split('T')[0],
           accountOtherDetails: '',
           accountBalance: '',
+          writeOption: 'MongoDB API', // Reset write option
+          readOption: 'MongoDB API',  // Reset read option
         });
         fetchAccounts(); // Refresh the accounts table
       } else {
@@ -148,6 +185,68 @@ const Accounts = () => {
     <PageContainer>
       <h2>Process: Create and view accounts</h2>
       <h2>Tech: MongoDB/MERN stack</h2>
+      <h2>Reference: Decimal Point Analytics</h2>
+
+      {/* Collapsible Developer Details Panel */}
+      <SidePanel>
+        <ToggleButton onClick={() => setShowDeveloperDetails(!showDeveloperDetails)}>
+          {showDeveloperDetails ? 'Hide Developer Details' : 'Show Developer Details'}
+        </ToggleButton>
+        {!showDeveloperDetails && (
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div style={{ flex: 1, marginRight: '20px' }}>
+              <div>
+                <a
+                  href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier-financial/index.html"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: '#1abc9c', textDecoration: 'none' }}
+                >
+                  Click here for workshop lab and further information
+                </a>
+              </div>
+              <div>
+                <a
+                  href="https://github.com/paulparkinson/oracle-ai-for-sustainable-dev/tree/main/financial/bank-account-management-mern"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: '#1abc9c', textDecoration: 'none' }}
+                >
+                  Direct link to source code on GitHub
+                </a>
+              </div>
+              <h4>Financial Process:</h4>
+              <ul>
+                <li>Create and view accounts</li>
+              </ul>
+              <h4>Developer Notes:</h4>
+              <ul>
+                <li>Uses MongoDB/MERN stack for account management</li>
+                <li>Connected to Oracle JSON Duality View via MongoDB API</li>
+                <li>Query the same data using SQL or MongoDB API</li>
+              </ul>
+              <h4>Differentiators:</h4>
+              <ul>
+                <li>Oracle Database JSON Duality provides the ability to use JSON, SQL, and Graph operations (read and write) against the same data</li>
+                <li>Oracle Database can be accessed via MongoDB API by simply changing the URL to point to Oracle Database (no code changes required)</li>
+              </ul>
+            </div>
+            <div style={{ flexShrink: 0, width: '40%' }}>
+              <h4>Walkthrough Video:</h4>
+              <iframe
+                width="100%"
+                height="315"
+                src="https://www.youtube.com/embed/3p8X-i1y43U"
+                title="YouTube video player"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                style={{ borderRadius: '8px', border: '1px solid #444' }}
+              ></iframe>
+            </div>
+          </div>
+        )}
+      </SidePanel>
 
       {/* Create Account Form */}
       <Form onSubmit={handleSubmit}>
@@ -226,6 +325,56 @@ const Accounts = () => {
           placeholder="Enter balance"
           required
         />
+
+        {/* Write Data Using */}
+        <h4>Write data using...</h4>
+        <div>
+          <label>
+            <input
+              type="radio"
+              name="writeOption"
+              value="MongoDB API"
+              checked={formData.writeOption === 'MongoDB API'}
+              onChange={handleChange}
+            />
+            MongoDB API
+          </label>
+          <label style={{ marginLeft: '20px' }}>
+            <input
+              type="radio"
+              name="writeOption"
+              value="SQL"
+              checked={formData.writeOption === 'SQL'}
+              onChange={handleChange}
+            />
+            SQL
+          </label>
+        </div>
+
+        {/* Read Data Using */}
+        <h4>Read data using...</h4>
+        <div>
+          <label>
+            <input
+              type="radio"
+              name="readOption"
+              value="MongoDB API"
+              checked={formData.readOption === 'MongoDB API'}
+              onChange={handleChange}
+            />
+            MongoDB API
+          </label>
+          <label style={{ marginLeft: '20px' }}>
+            <input
+              type="radio"
+              name="readOption"
+              value="SQL"
+              checked={formData.readOption === 'SQL'}
+              onChange={handleChange}
+            />
+            SQL
+          </label>
+        </div>
 
         <Button type="submit">Create Account</Button>
       </Form>

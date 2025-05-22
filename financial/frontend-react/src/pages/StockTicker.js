@@ -177,7 +177,7 @@ const StockTicker = () => {
         </ToggleButton>
         {!isCollapsed && (
           <CollapsibleContent>
-            <TextContent>
+            <TextContent>se Oracle Event Hub for event streamin
               <div>
                 <a
                   href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier-financial/index.html"
@@ -200,15 +200,11 @@ const StockTicker = () => {
               </div>
               <h4>Financial Process:</h4>
               <ul>
-                <li>Stream real-time stock prices using Oracle Streaming Service</li>
-                <li>Analyze stock trends with Oracle Database</li>
-                <li>Visualize stock performance in real-time</li>
+                <li>Stream real-time stock prices using True Cache</li>
               </ul>
               <h4>Developer Notes:</h4>
               <ul>
-                <li>Use Oracle Event Hub for event streaming</li>
-                <li>Integrate with Kafka APIs for seamless event processing</li>
-                <li>Leverage Oracle Database for advanced analytics</li>
+                <li>Compare code when using Redis (uses proprietary API) vs True Cache (uses SQL)</li>
               </ul>
               <h4>Differentiators:</h4>
               <ul>
