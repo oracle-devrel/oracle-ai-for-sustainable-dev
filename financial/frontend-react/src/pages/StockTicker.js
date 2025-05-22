@@ -133,6 +133,7 @@ const StockTicker = () => {
   const [formData, setFormData] = useState({
     stock: '',
     shares: '',
+    cacheOption: 'True Cache', // Default option for cache
   });
 
   const [isCollapsed, setIsCollapsed] = useState(true); // Set to true to make the panel collapsed by default
@@ -177,7 +178,7 @@ const StockTicker = () => {
         </ToggleButton>
         {!isCollapsed && (
           <CollapsibleContent>
-            <TextContent>se Oracle Event Hub for event streamin
+            <TextContent>
               <div>
                 <a
                   href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier-financial/index.html"
@@ -200,11 +201,13 @@ const StockTicker = () => {
               </div>
               <h4>Financial Process:</h4>
               <ul>
-                <li>Stream real-time stock prices using True Cache</li>
+                <li>Stream real-time stock prices using Oracle Streaming Service</li>
               </ul>
               <h4>Developer Notes:</h4>
               <ul>
-                <li>Compare code when using Redis (uses proprietary API) vs True Cache (uses SQL)</li>
+                <li>Use Oracle Event Hub for event streaming</li>
+                <li>Integrate with Kafka APIs for seamless event processing</li>
+                <li>Leverage Oracle Database for advanced analytics</li>
               </ul>
               <h4>Differentiators:</h4>
               <ul>
@@ -268,6 +271,31 @@ const StockTicker = () => {
           placeholder="Enter stock price"
           required
         />
+
+        {/* Cache Option Radio Buttons */}
+        <h4>Cache Option</h4>
+        <div>
+          <label>
+            <input
+              type="radio"
+              name="cacheOption"
+              value="Redis"
+              checked={formData.cacheOption === 'Redis'}
+              onChange={handleChange}
+            />
+            Use Redis
+          </label>
+          <label style={{ marginLeft: '20px' }}>
+            <input
+              type="radio"
+              name="cacheOption"
+              value="True Cache"
+              checked={formData.cacheOption === 'True Cache'}
+              onChange={handleChange}
+            />
+            Use True Cache
+          </label>
+        </div>
 
         <Button type="button" onClick={(e) => handleStockSubmit(e, 'buy')}>
           Buy

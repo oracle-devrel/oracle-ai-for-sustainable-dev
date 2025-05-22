@@ -116,10 +116,11 @@ public class AIHoloController {
             model.addAttribute("voiceName", "hi-IN-Wavenet-A");
         else if (languageCode.equals("he-IL") )
             model.addAttribute("voiceName", "he-IL-Wavenet-A");
-        else if (languageCode.equals("en-US") || languageCode.equals("en-GB"))
+        else if (languageCode.equals("en-US") )
+            model.addAttribute("voiceName", "en-US-Wavenet-A");
+        else if (languageCode.equals("en-GB"))
             model.addAttribute("voiceName", "en-GB-Wavenet-A");
-//        else model.addAttribute("voiceName", "en-GB-Wavenet-A"); //default to GB
-        else model.addAttribute("voiceName", "en-GB-Wavenet-A"); //default to GB
+        else model.addAttribute("voiceName", "en-US-Wavenet-A");
         return "aiholo";
     }
 
@@ -146,13 +147,13 @@ public class AIHoloController {
     @GetMapping("/play")
     @ResponseBody
     public String play(@RequestParam("question") String question,
-        @RequestParam("selectedMode") String selectedMode,
-        @RequestParam("languageCode") String languageCode,
-         @RequestParam("voiceName") String voicename) throws Exception {
+                   @RequestParam("selectedMode") String selectedMode,
+                   @RequestParam("languageCode") String languageCode,
+                   @RequestParam("voiceName") String voicename) throws Exception {
         System.out.println(
                 "play question: " + question + " selectedMode: " + selectedMode +
-                        " languageCode:"+ languageCode+ " voicename:"+ voicename);
-        System.out.println("modified question: " + question );
+                        " languageCode:" + languageCode + " voicename:" + voicename);
+        System.out.println("modified question: " + question);
         theValue = "question";
         String filePath = "C:/Users/opc/aiholo_output.txt";
         try (FileWriter writer = new FileWriter(filePath)) {
@@ -163,6 +164,16 @@ public class AIHoloController {
         } catch (IOException e) {
             return "Error writing to file: " + e.getMessage();
         }
+
+        // Start a new thread to call TTSAndAudio2Face.sendToAudio2Face
+        new Thread(() -> {
+            try {
+                TTSAndAudio2Face.sendToAudio2Face("tts-en-USFEMALEAoede_Sure!Illcheck.wav");
+            } catch (Exception e) {
+                System.err.println("Error in sendToAudio2Face: " + e.getMessage());
+            }
+        }).start();
+
         String action = "chat";
         String answer;
         if (languageCode.equals("pt-BR")) answer = "Desculpe. Não consegui encontrar uma resposta no banco de dados";
@@ -171,7 +182,6 @@ public class AIHoloController {
         else if (languageCode.equals("zh-SG")) answer = "抱歉，我在数据库中找不到答案";
         else answer = "I'm sorry. I couldn't find an answer in the database";
         if (selectedMode.contains("use vector")) {
-//  doesn't matter as its not select ai          action = "vectorrag";
             question = question.replace("use vectorrag", "").trim();
             question += ". Respond in 20 words or less";
             answer = executeSandbox(question);
@@ -184,7 +194,7 @@ public class AIHoloController {
             }
             question += ". Respond in 20 words or less";
             try (Connection connection = dataSource.getConnection();
-                    PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
                 System.out.println("Database Connection : " + connection);
                 String response = null;
                 preparedStatement.setString(1, question);

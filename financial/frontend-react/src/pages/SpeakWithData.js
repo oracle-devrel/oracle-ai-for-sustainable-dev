@@ -126,7 +126,7 @@ const SpeakWithData = () => {
               </ul>
             </TextContent>
             <VideoWrapper>
-            <h4>Walkthrough Video:</h4>
+              <h4>Walkthrough Video:</h4>
               <iframe
                 width="100%"
                 height="315"
@@ -150,7 +150,32 @@ const SpeakWithData = () => {
 
       <IframesContainer>
         {/* Image */}
-        <Image src="/images/aiholopage.png" alt="SpeakWithData" />
+        <div style={{ width: '100%', height: 'auto' }}>
+          <Image
+            src="/images/aiholotwitchsnippet.png"
+            alt="AI Holo Twitch Snippet"
+            style={{
+              width: '100%',
+              borderRadius: '8px',
+              border: '1px solid #444',
+            }}
+          />
+        </div>
+
+        {/* Video Snippet */}
+        <div style={{ width: '100%', height: 'auto' }}>
+          <video
+            src="/images/aiholotwitchsnippet.mp4"
+            autoPlay
+            loop
+            muted
+            style={{
+              width: '100%',
+              borderRadius: '8px',
+              border: '1px solid #444',
+            }}
+          ></video>
+        </div>
 
         {/* Twitch Embed */}
         <TwitchEmbed>

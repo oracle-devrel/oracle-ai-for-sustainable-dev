@@ -146,7 +146,7 @@ const Sidebar = () => {
             </IconWrapper>
             <TextContainer>
               <HighlightedText>Architecture and setup</HighlightedText>
-              {showDetails && <div>Kubernetes, Observability, etc.</div>}
+              {showDetails && <div>Kubernetes, Observability, BaaS,etc.</div>}
             </TextContainer>
           </StyledNavLink>
         </SidebarItem>
