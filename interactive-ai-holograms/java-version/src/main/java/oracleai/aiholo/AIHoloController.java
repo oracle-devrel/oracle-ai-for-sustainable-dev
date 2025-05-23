@@ -168,7 +168,9 @@ public class AIHoloController {
         // Start a new thread to call TTSAndAudio2Face.sendToAudio2Face
         new Thread(() -> {
             try {
-                TTSAndAudio2Face.sendToAudio2Face("tts-en-USFEMALEAoede_Sure!Illcheck.wav");
+                // languagecode:es-MX voicename:es-US-Wavenet-A
+                if (languageCode.equals("es-MX")) TTSAndAudio2Face.sendToAudio2Face("tts-es-USFEMALEes-US-Wavenet-A_¡Claro!¡U.wav");
+                else TTSAndAudio2Face.sendToAudio2Face("tts-en-USFEMALEAoede_Sure!Illcheck.wav");
             } catch (Exception e) {
                 System.err.println("Error in sendToAudio2Face: " + e.getMessage());
             }
