@@ -100,25 +100,27 @@ const SidePanel = styled.div`
   margin-top: 20px;
 `;
 
-const BASE_URL = process.env.REACT_APP_MICROTX_ACCOUNT_SERVICE_URL || 'http://localhost:8080';
-const BASE_MERN_BACKEND_URL =
-  process.env.REACT_APP_MERN_BACKEND_SERVICE_URL || 'http://localhost:5000';
+const REACT_APP_MERN_MONGODB_SERVICE_URL = process.env.REACT_APP_MERN_MONGODB_SERVICE_URL || 'http://localhost:8080';
+const REACT_APP_MERN_MONGODB_JSONDUALITY_ORACLE_SERVICE_URL =
+  process.env.REACT_APP_MERN_MONGODB_JSONDUALITY_ORACLE_SERVICE_URL || 'http://localhost:5000';
+const REACT_APP_MERN_SQL_ORACLE_SERVICE_URL =
+  process.env.REACT_APP_MERN_SQL_ORACLE_SERVICE_URL || 'http://localhost:6000';
 
 const Accounts = () => {
   const [formData, setFormData] = useState({
-    _id: '', // Add _id field for accountId
+    _id: '',
     accountName: '',
     accountType: '',
     customerId: '',
     accountOpenedDate: new Date().toISOString().split('T')[0],
     accountOtherDetails: '',
     accountBalance: '',
-    writeOption: 'MongoDB API', // Default write option
-    readOption: 'MongoDB API',  // Default read option
+    writeOption: 'MongoDB API accessing Oracle Database', // Default write option
+    readOption: 'SQL',  // Default read option
   });
   const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showDeveloperDetails, setShowDeveloperDetails] = useState(true); // State for collapsible panel
+  const [showDeveloperDetails, setShowDeveloperDetails] = useState(true);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -127,8 +129,18 @@ const Accounts = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    let postUrl;
+    if (formData.writeOption === 'SQL') {
+      postUrl = `${REACT_APP_MERN_SQL_ORACLE_SERVICE_URL}/api/accounts`;
+    } else if (formData.writeOption === 'MongoDB API') {
+      postUrl = `${REACT_APP_MERN_MONGODB_SERVICE_URL}/api/accounts`;
+    } else if (formData.writeOption === 'MongoDB API accessing Oracle Database') {
+      postUrl = `${REACT_APP_MERN_SQL_ORACLE_SERVICE_URL}/api/accounts`;
+    }
+
     try {
-      const response = await fetch(`${BASE_MERN_BACKEND_URL}/api/accounts`, {
+      const response = await fetch(postUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -139,15 +151,15 @@ const Accounts = () => {
       if (response.ok) {
         alert('Account created successfully!');
         setFormData({
-          _id: '', // Reset _id field
+          _id: '',
           accountName: '',
           accountType: '',
           customerId: '',
           accountOpenedDate: new Date().toISOString().split('T')[0],
           accountOtherDetails: '',
           accountBalance: '',
-          writeOption: 'MongoDB API', // Reset write option
-          readOption: 'MongoDB API',  // Reset read option
+          writeOption: 'MongoDB API accessing Oracle Database',
+          readOption: 'SQL',
         });
         fetchAccounts(); // Refresh the accounts table
       } else {
@@ -161,15 +173,24 @@ const Accounts = () => {
   };
 
   const fetchAccounts = async () => {
+    let fetchUrl;
+    if (formData.readOption === 'SQL') {
+      fetchUrl = `${REACT_APP_MERN_SQL_ORACLE_SERVICE_URL}/accounts`;
+    } else if (formData.readOption === 'MongoDB API') {
+      fetchUrl = `${REACT_APP_MERN_MONGODB_SERVICE_URL}/accounts`;
+    } else if (formData.readOption === 'MongoDB API accessing Oracle Database') {
+      fetchUrl = `${REACT_APP_MERN_SQL_ORACLE_SERVICE_URL}/accounts`;
+    }
+
     try {
-      const response = await fetch(`${BASE_URL}/accounts`);
+      const response = await fetch(fetchUrl);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const text = await response.text(); // Read the response as text
-      const data = text ? JSON.parse(text) : []; // Parse JSON if not empty
-      setAccounts(data); // Populate the accounts table
+      const text = await response.text();
+      const data = text ? JSON.parse(text) : [];
+      setAccounts(data);
       setLoading(false);
     } catch (error) {
       console.error('Error fetching accounts:', error);
@@ -179,7 +200,8 @@ const Accounts = () => {
 
   useEffect(() => {
     fetchAccounts();
-  }, []);
+    // eslint-disable-next-line
+  }, [formData.readOption]);
 
   return (
     <PageContainer>
@@ -349,6 +371,16 @@ const Accounts = () => {
             />
             SQL
           </label>
+          <label style={{ marginLeft: '20px' }}>
+            <input
+              type="radio"
+              name="writeOption"
+              value="MongoDB API accessing Oracle Database"
+              checked={formData.writeOption === 'MongoDB API accessing Oracle Database'}
+              onChange={handleChange}
+            />
+            MongoDB API accessing Oracle Database
+          </label>
         </div>
 
         {/* Read Data Using */}
@@ -373,6 +405,16 @@ const Accounts = () => {
               onChange={handleChange}
             />
             SQL
+          </label>
+          <label style={{ marginLeft: '20px' }}>
+            <input
+              type="radio"
+              name="readOption"
+              value="MongoDB API accessing Oracle Database"
+              checked={formData.readOption === 'MongoDB API accessing Oracle Database'}
+              onChange={handleChange}
+            />
+            MongoDB API accessing Oracle Database
           </label>
         </div>
 
