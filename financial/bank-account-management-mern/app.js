@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const fetch = require('node-fetch');
 
 // Initialize Express app
 const app = express();
@@ -99,6 +100,28 @@ app.delete(['/api/accounts/:id', '/mern-backend/api/accounts/:id'], async (req, 
   } catch (err) {
     console.error('Error deleting account:', err);
     res.status(500).json({ error: 'Failed to delete account' });
+  }
+});
+
+// Proxy endpoint to create an account using a dynamic backend URL
+app.post('/accounts/api/accounts', async (req, res) => {
+  const { url, accountData } = req.body;
+  if (!url || !accountData) {
+    return res.status(400).json({ error: 'Missing url or accountData in request body' });
+  }
+
+  try {
+    const backendRes = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(accountData),
+    });
+
+    const data = await backendRes.json();
+    res.status(backendRes.status).json(data);
+  } catch (err) {
+    console.error('Error forwarding account creation:', err);
+    res.status(500).json({ error: 'Failed to create account via backend' });
   }
 });
 

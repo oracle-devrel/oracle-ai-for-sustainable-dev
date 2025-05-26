@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -189,6 +190,38 @@ public class AccountAndJournalAdminService {
         } catch (Exception e) {
             log.error("Error updating account balance for accountId: " + accountId, e);
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // Create an account from form parameters (for /accounts/api/accounts)
+    @CrossOrigin
+    @PostMapping("/api/accounts")
+    public ResponseEntity<?> createAccountFromApi(@RequestBody Account account) {
+        log.info("ACCOUNT: createAccountFromApi via /accounts/api/accounts");
+        log.info("Received Account: accountId={}, accountName={}, accountType={}, accountOtherDetails={}, accountCustomerId={}, accountOpenedDate={}, accountBalance={}",
+                account.getAccountId(),
+                account.getAccountName(),
+                account.getAccountType(),
+                account.getAccountOtherDetails(),
+                account.getAccountCustomerId(),
+                account.getAccountOpenedDate(),
+                account.getAccountBalance());
+        try {
+            Account entity = new Account();
+            entity.setAccountId(account.getAccountId());
+            entity.setAccountName(account.getAccountName());
+            entity.setAccountType(account.getAccountType());
+            entity.setAccountOtherDetails(account.getAccountOtherDetails());
+            entity.setAccountCustomerId(account.getAccountCustomerId());
+            entity.setAccountOpenedDate(account.getAccountOpenedDate());
+            entity.setAccountBalance(account.getAccountBalance());
+            Account saved = accountRepository.save(entity);
+            return new ResponseEntity<>(saved, HttpStatus.CREATED);
+        } catch (Exception e) {
+            log.error("Error creating account from API", e);
+            // Return the error message to the React app
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error creating account: " + e.getMessage());
         }
     }
 }

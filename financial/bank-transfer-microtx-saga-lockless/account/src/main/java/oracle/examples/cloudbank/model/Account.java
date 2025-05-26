@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 //import org.hibernate.annotations.GenerationTime;
 
 import java.util.Date;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Table(
@@ -26,6 +27,7 @@ public class Account {
     @Id
     // @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ACCOUNT_ID", nullable = false, unique = true) // Ensure the column is unique and not null
+    @JsonProperty("_id")
     private long accountId;
 
     @Column(name = "ACCOUNT_NAME")

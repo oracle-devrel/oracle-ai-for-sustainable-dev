@@ -283,8 +283,8 @@ const ATM = () => {
           <input
             type="radio"
             name="language"
-            value="Java (Spring Boot)"
-            checked={formData.language === 'Java (Spring Boot)'}
+            value="Java - Spring Boot (using Spring Data JPA for ORM)"
+            checked={formData.language === 'Java - Spring Boot (using Spring Data JPA for ORM)'}
             onChange={handleChange}
           />
           Java (Spring Boot)
@@ -293,8 +293,8 @@ const ATM = () => {
           <input
             type="radio"
             name="language"
-            value="JS"
-            checked={formData.language === 'JS'}
+            value="JavaScript (Node.js)"
+            checked={formData.language === 'JavaScript (Node.js)'}
             onChange={handleChange}
           />
           JS
@@ -303,7 +303,7 @@ const ATM = () => {
           <input
             type="radio"
             name="language"
-            value="Python"
+            value="Python (using SQLAlchemy for ORM)" 
             checked={formData.language === 'Python'}
             onChange={handleChange}
           />
@@ -323,7 +323,7 @@ const ATM = () => {
           <input
             type="radio"
             name="language"
-            value="Go"
+            value="Go (using BunDB for ORM)"
             checked={formData.language === 'Go'}
             onChange={handleChange}
           />

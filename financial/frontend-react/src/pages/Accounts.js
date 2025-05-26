@@ -139,13 +139,19 @@ const Accounts = () => {
       postUrl = `${REACT_APP_MERN_SQL_ORACLE_SERVICE_URL}/api/accounts`;
     }
 
+    const payload = {
+      ...formData,
+      accountId: formData._id,
+      accountCustomerId: formData.customerId,
+    };
+
     try {
       const response = await fetch(postUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
 
       if (response.ok) {
@@ -383,8 +389,12 @@ const Accounts = () => {
           </label>
         </div>
 
+        <div style={{ height: '20px' }}></div> {/* Add space before the button */}
+
+        <Button type="submit">Create Account</Button>
+
         {/* Read Data Using */}
-        <h4>Read data using...</h4>
+        <h4 style={{ marginTop: '32px' }}>Read data using...</h4>
         <div>
           <label>
             <input
@@ -417,8 +427,6 @@ const Accounts = () => {
             MongoDB API accessing Oracle Database
           </label>
         </div>
-
-        <Button type="submit">Create Account</Button>
       </Form>
 
       {/* Table to display all accounts */}
@@ -440,10 +448,10 @@ const Accounts = () => {
           <tbody>
             {accounts.map((account) => (
               <tr key={account.accountId}>
-                <TableCell>{account.accountId}</TableCell>
+                <TableCell>{account.accountId || account._id || 'N/A'}</TableCell>
                 <TableCell>{account.accountName || 'N/A'}</TableCell>
                 <TableCell>{account.accountType || 'N/A'}</TableCell>
-                <TableCell>{account.customerId || 'N/A'}</TableCell>
+                <TableCell>{account.accountCustomerId || account.customerId || 'N/A'}</TableCell>
                 <TableCell>{account.accountOpenedDate || 'N/A'}</TableCell>
                 <TableCell>{account.accountOtherDetails || 'N/A'}</TableCell>
                 <TableCell>{account.accountBalance}</TableCell>

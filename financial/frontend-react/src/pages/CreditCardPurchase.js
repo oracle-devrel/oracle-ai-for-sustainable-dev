@@ -126,15 +126,6 @@ const NotebookWrapper = styled.div`
   overflow: hidden;
 `;
 
-const Image = styled.img`
-  display: block;
-  max-width: 90%;
-  height: auto;
-  margin: 20px auto;
-  border: 1px solid #444;
-  border-radius: 8px;
-`;
-
 const CreditCardPurchase = () => {
   const [formData, setFormData] = useState({
     cardNumber: '',
@@ -254,9 +245,19 @@ const CreditCardPurchase = () => {
                 <li>Use OML4Py and notebooks locally or in execution environment as part of database</li>
                 <li>Spatial queries, JSON, graph, and AI with no plugins required nor scale trade-offs</li>
               </ul>
+              {/* Notebook Section moved here */}
+              <NotebookWrapper>
+                <iframe
+                  src="http://localhost:8888/notebooks/prebuilt-notebook.ipynb"
+                  title="Jupyter Notebook"
+                  width="100%"
+                  height="100%"
+                  style={{ border: 'none' }}
+                ></iframe>
+              </NotebookWrapper>
             </TextContent>
             <VideoWrapper>
-            <h4>Walkthrough Video:</h4>
+              <h4>Walkthrough Video:</h4>
               <iframe
                 width="100%"
                 height="315"
@@ -352,17 +353,6 @@ const CreditCardPurchase = () => {
           ))}
         </MapContainer>
       </MapWrapper>
-
-      {/* Notebook Section */}
-      <NotebookWrapper>
-        <iframe
-          src="http://localhost:8888/notebooks/prebuilt-notebook.ipynb"
-          title="Jupyter Notebook"
-          width="100%"
-          height="100%"
-          style={{ border: 'none' }}
-        ></iframe>
-      </NotebookWrapper>
 
       {/* Images */}
       {/* <Image src="/images/spatial-suspicious.png" alt="Spatial Suspicious Transactions" /> */}
