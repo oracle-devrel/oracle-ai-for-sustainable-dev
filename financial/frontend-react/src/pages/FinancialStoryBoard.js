@@ -44,19 +44,18 @@ const StyledListItem = styled.li`
 const Dashboard = () => {
   // List of JavaScript files in the "pages" directory
   const pages = [
-    { name: 'Architecture and Setup: k8s and otel', complete: '80%', notes: 'More text description and Grafana console for prod env.' },
-    { name: 'API: ORDS', complete: '100%', notes: 'Update or remove 2nd video' },
-    { name: 'Accounts: MERN', complete: '100%', notes: 'Add crash option back in' },
-    { name: 'ATM: Polyglot', complete: '100%', notes: 'Add last few languages.' },
-    { name: 'Transfer: MicroTx and Lock-free', complete: '100%', notes: 'Update video' },
+    { name: 'Architecture and Setup: k8s and otel', complete: '100%', notes: 'Update video, design work, finish workshop doc' },
+    { name: 'API: ORDS', complete: '100%', notes: 'Update video, design work, finish workshop doc' },
+    { name: 'Accounts: MERN', complete: '100%', notes: 'Update video, design work, finish workshop doc, eventually add crash/test option back in' },
+    { name: 'ATM: Polyglot', complete: '100%', notes: 'Update video, design work, finish workshop doc, Add last few languages.' },
+    { name: 'Transfer: MicroTx and Lock-free', complete: '100%', notes: 'Update video, design work, finish workshop doc' },
     { name: 'Suspicious Purchases: GDD, Spatial', complete: '90%', notes: 'Update video, show purchases, Jupyter on prod version' },
     { name: 'Circular payments: Graph', complete: '80%', notes: 'Update video, use new graph server container' },
     { name: 'Transfer to brokerage: Kafka TxEventQ', complete: '80%', notes: 'Update video, change naming and queue creation' },
     { name: 'Stock ticker: True Cache', complete: '90%', notes: 'Update video, make stock price directly updatable, ie not via stock average, and mod names' },
     { name: 'Financial Insights: AI Agents, MCP, Vector search', complete: '70%', notes: 'Update video' },
-    { name: 'Speak with data: Speech AI, Select AI', complete: '100%', notes: 'Update video, Add regin to accounting table and return audio rather than play it' },
-    { name: 'Frontened design work', complete: '20%', notes: 'Incorporate design from Fernanda' },
-    { name: 'ADD ABILITY FOR MULTIPLE USERS TO RUN APP', complete: '100%', notes: 'I currently simply ask that everyone create their own accounts.' }
+    { name: 'Speak with data: Speech AI, Select AI', complete: '100%', notes: 'UUpdate video, design work, finish workshop doc, add region to accounting table, add option to play audio rather than rely on avatar/metahuman to say it' },
+    { name: 'ADD ABILITY FOR MULTIPLE USERS TO RUN APP', complete: '100%', notes: 'I currently simply ask that everyone create their own bank accounts (see Create Accounts/ MERN page) and use them.' }
   ];
 
   return (
@@ -68,10 +67,10 @@ const Dashboard = () => {
       <h2>Is the application ready to test?</h2>
       <StyledList>
         <StyledListItem>
-          Yes, however, the app is in beta and constantly being worked - the status and remaining work in priority is listed below.
+          Yes, however, the app is in beta  - the status and remaining work is listed below.
         </StyledListItem>
         <StyledListItem>
-          In order to allow multiple people to use the application at the same time, please create your own account in the "Create Account" page
+          So that multiple people to use the app concurrently, please create your own account in the "Create Account" page for any testing
         </StyledListItem>
       </StyledList>
 
@@ -80,8 +79,8 @@ const Dashboard = () => {
         <thead>
           <tr>
             <TableHeader>Task</TableHeader>
-            <TableHeader>% Complete</TableHeader>
-            <TableHeader>Notes</TableHeader>
+            <TableHeader>% Functionally Complete</TableHeader>
+            <TableHeader>Notes/Remaining work</TableHeader>
           </tr>
         </thead>
         <tbody>
@@ -96,6 +95,19 @@ const Dashboard = () => {
           ))}
         </tbody>
       </Table>
+      {/* Add YouTube video below the table */}
+      <div style={{ marginTop: '32px', textAlign: 'center' }}>
+        <iframe
+          width="560"
+          height="315"
+          src="https://www.youtube.com/embed/-o16D-Sq-mU"
+          title="YouTube video player"
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+          style={{ borderRadius: '8px', border: '1px solid #444' }}
+        ></iframe>
+      </div>
     </div>
   );
 };

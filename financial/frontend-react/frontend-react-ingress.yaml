@@ -106,6 +106,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: grafana-external
+                name: grafana-manual
                 port:
                   number: 80

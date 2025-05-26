@@ -80,17 +80,17 @@ const DashBoard = () => {
         />
       </ImageContainer>
 
-      {/* Walkthrough Video */}
+
+      {/* Grafana iframe */}
       <VideoContainer>
-        <h4>Walkthrough Video:</h4>
-        <video
-          controls
+        <h4>Grafana Dashboard (admin/Welcome12345*):</h4>
+        <iframe
+          src="https://oracleai-financial.org/grafana"
+          title="Grafana Dashboard"
           width="100%"
-          style={{ borderRadius: '8px', border: '1px solid #444' }}
-        >
-          <source src="/images/financial-app-walkthrough.mov" type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
+          height="600"
+          style={{ border: '1px solid #444', borderRadius: '8px', background: '#fff' }}
+        ></iframe>
       </VideoContainer>
     </PageContainer>
   );

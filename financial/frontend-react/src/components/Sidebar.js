@@ -134,8 +134,8 @@ const Sidebar = () => {
               <FaChartLine />
             </IconWrapper>
             <TextContainer>
-              <HighlightedText>Financial Storyboard</HighlightedText>
-              {showDetails && <div>Details about Financial Storyboard</div>}
+              <HighlightedText>About this app</HighlightedText>
+              {showDetails && <div>Info and status</div>}
             </TextContainer>
           </StyledNavLink>
         </SidebarItem>
