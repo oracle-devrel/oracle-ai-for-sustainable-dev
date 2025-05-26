@@ -2,6 +2,10 @@
 brew install python
 pip3 install notebook
 pip3 install jupyterlab
+
+pip install oracledb cryptography geopandas shapely folium matplotlib mapclassify st_dbscan
+
+
 cd /path/to/your/folder
 jupyter notebook
 http://localhost:8888

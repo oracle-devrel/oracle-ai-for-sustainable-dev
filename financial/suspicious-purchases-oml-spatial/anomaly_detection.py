@@ -1,3 +1,4 @@
+import os
 import oracledb
 import geopandas as gpd
 import shapely
@@ -14,9 +15,11 @@ gdfAnomaly = None
 def create_connection():
     
     global connection
-    my_pwd = open('./my-pwd.txt','r').readline().strip()
-    my_dsn = open('./my-dsn.txt','r').readline().strip()
-    connection = oracledb.connect(user="admin", password=my_pwd, dsn=my_dsn)
+    # my_pwd = open('./my-pwd.txt','r').readline().strip()
+    # my_dsn = open('./my-dsn.txt','r').readline().strip()
+    os.environ["TNS_ADMIN"] = "/Users/pparkins/Downloads/Wallet_financialdb"
+
+    connection = oracledb.connect(user="financial", password="Welcome12345", dsn="financialdb_high")
      
 def get_cluster_centroids(cust):
     

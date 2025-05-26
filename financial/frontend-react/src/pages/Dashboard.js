@@ -88,7 +88,7 @@ const DashBoard = () => {
           src="https://oracleai-financial.org/grafana"
           title="Grafana Dashboard"
           width="100%"
-          height="600"
+          height="1000"
           style={{ border: '1px solid #444', borderRadius: '8px', background: '#fff' }}
         ></iframe>
       </VideoContainer>
