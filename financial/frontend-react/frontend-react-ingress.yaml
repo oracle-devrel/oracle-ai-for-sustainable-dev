@@ -101,3 +101,11 @@ spec:
                 name: selectai
                 port:
                   number: 8080
+          # Rule for grafana endpoint
+          - path: /grafana
+            pathType: Prefix
+            backend:
+              service:
+                name: grafana-external
+                port:
+                  number: 80
