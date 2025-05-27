@@ -1,7 +1,7 @@
 #!/bin/bash
 
 export IMAGE_VERSION=$TAG
-export DOCKER_REGISTRY=eu-frankfurt-1.ocir.io/oradbclouducm/financial
+export DOCKER_REGISTRY=$DOCKER_REGISTRY
 
 if [ -z "$DOCKER_REGISTRY" ]; then
     echo "Error: DOCKER_REGISTRY env variable needs to be set!"

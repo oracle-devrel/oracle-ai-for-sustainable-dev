@@ -1,4 +1,4 @@
-package oracleai;
+package oracleai.financial;
 
 import com.opencsv.CSVWriter;
 import oracle.jdbc.OracleConnection;

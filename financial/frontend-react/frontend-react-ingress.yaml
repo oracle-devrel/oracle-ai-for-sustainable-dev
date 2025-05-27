@@ -46,7 +46,7 @@ spec:
                 port:
                   number: 8081
           # Rule for accountdetail endpoint
-          - path: /accountdetail
+          - path: /graph
             pathType: Prefix
             backend:
               service:
@@ -70,11 +70,11 @@ spec:
                 port:
                   number: 8080
           # Rule for gdd_spatial endpoint
-          - path: /gdd_spatial
+          - path: /globallydistributeddatabase
             pathType: Prefix
             backend:
               service:
-                name: gdd-spatial
+                name: globallydistributeddatabase
                 port:
                   number: 8080
           # Rule for kafka endpoint

@@ -5,8 +5,8 @@
 #kubectl apply -f  backend-springboot-service-ClusterIP.yaml  -n financial
 kubectl delete deployment backend-springboot  -n financial
 
-cp backend-springboot-deployment_template.yaml backend-springboot-deployment.yaml
-sed -i '' "s|IMAGE_PLACEHOLDER|$IMAGE|g" backend-springboot-deployment.yaml
-kubectl apply -f backend-springboot-deployment.yaml -n financial
+cp globallydistributeddatabase-springboot-deployment_template.yaml globallydistributeddatabase-springboot-deployment.yaml
+sed -i '' "s|IMAGE_PLACEHOLDER|$IMAGE|g" globallydistributeddatabase-springboot-deployment.yaml
+kubectl apply -f globallydistributeddatabase-springboot-deployment.yaml -n financial
 
-kubectl apply -f  backend-springboot-deployment.yaml  -n financial
+kubectl apply -f  globallydistributeddatabase-springboot-deployment.yaml  -n financial

@@ -1,12 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: backend
+  name: graph
+  namespace: financial
 spec:
   type: ClusterIP
   selector:
     app: backend
   ports:
     - protocol: TCP
-      port: 443              # External HTTPS port
-      targetPort: 443
+      port: 8080              # External HTTPS port
+      targetPort: 8080

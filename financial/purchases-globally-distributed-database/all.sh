@@ -5,7 +5,7 @@ echo TAG = $TAG
 
 export IMAGE_NAME=backend-springboot
 export IMAGE_VERSION=$TAG
-export DOCKER_REGISTRY=eu-frankfurt-1.ocir.io/oradbclouducm/financial
+export DOCKER_REGISTRY=$DOCKER_REGISTRY
 if [ -z "$DOCKER_REGISTRY" ]; then
     echo "Error: DOCKER_REGISTRY env variable needs to be set!"
     exit 1
@@ -17,5 +17,5 @@ echo ${IMAGE}
 
 ./build.sh
 ./deploy.sh
-echo logpod backend
-logpod backend
+echo logpod backend-springboot
+logpod backend-springboot
