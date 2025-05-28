@@ -49,11 +49,11 @@ const Dashboard = () => {
     { name: 'Accounts: MERN', complete: '100%', notes: 'Update video, design work, finish workshop doc' },
     { name: 'ATM: Polyglot', complete: '100%', notes: 'Update video, design work, finish workshop doc, Add last few languages.' },
     { name: 'Transfer: MicroTx and Lock-free', complete: '100%', notes: 'Update video, design work, finish workshop doc' },
-    { name: 'Suspicious Purchases: GDD, Spatial', complete: '90%', notes: 'Update video, show purchases, Jupyter on prod version' },
-    { name: 'Circular payments: Graph', complete: '80%', notes: 'Update video, use new graph server container' },
-    { name: 'Transfer to brokerage: Kafka TxEventQ', complete: '80%', notes: 'Update video, change naming and queue creation' },
-    { name: 'Stock ticker: True Cache', complete: '90%', notes: 'Update video, make stock price directly updatable, ie not via stock average, and mod names' },
-    { name: 'Financial Insights: AI Agents, MCP, Vector search', complete: '70%', notes: 'Update video' },
+    { name: 'Suspicious Purchases: GDD, Spatial', complete: '90% ETA today', notes: 'Update video, show purchases, Jupyter on prod version' },
+    { name: 'Circular payments: Graph', complete: '80% ETA Thursday', notes: 'Update video, use new graph server container' },
+    { name: 'Transfer to brokerage: Kafka TxEventQ', complete: '80% ETA today', notes: 'Update video, change naming and queue creation' },
+    { name: 'Stock ticker: True Cache', complete: '90% ETA today', notes: 'Update video, make stock price directly updatable, ie not via stock average, and mod names' },
+    { name: 'Financial Insights: AI Agents, MCP, Vector search ETA Friday/Monday', complete: '70%', notes: 'Update video' },
     { name: 'Speak with data: Speech AI, Select AI', complete: '100%', notes: 'Update video, design work, finish workshop doc, add region to accounting table, add option to play audio rather than rely on avatar/metahuman to say it' },
     { name: 'ADD ABILITY FOR MULTIPLE USERS TO RUN APP', complete: '100%', notes: 'I currently simply ask that everyone create their own bank accounts (see Create Accounts/ MERN page) and use them.' }
   ];

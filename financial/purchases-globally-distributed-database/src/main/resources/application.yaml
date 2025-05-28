@@ -65,16 +65,16 @@ spring:
 ##    key-alias: springboot
 #    key-alias: aiholoorg
 server:
-  #  port: 8080
+  #  port: 443
   #  port: 8444
-  port: 443
+  port: 8080
   tomcat:
     max-swallow-size: 200MB
-  ssl:
-    enabled: true
-    key-store-type: PKCS12
+#  ssl:
+#    enabled: true
+#    key-store-type: PKCS12
 #    key-store: classpath:keystore.p12
-    key-store: classpath:oracledatabasefinancialorg.p12
-    key-store-password: Welcome1
+#    key-store: classpath:oracledatabasefinancialorg.p12
+#    key-store-password: Welcome1
 #    key-alias: springboot
-    key-alias: oracledatabasefinancialorg
+#    key-alias: oracledatabasefinancialorg
