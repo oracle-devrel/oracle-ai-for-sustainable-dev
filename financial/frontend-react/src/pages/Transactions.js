@@ -307,8 +307,8 @@ const Transactions = () => {
               Select an account
             </option>
             {fromAccounts.map((account) => (
-              <option key={account.accountId} value={account.accountId}>
-                {account.accountId}
+              <option key={account._id} value={account._id}>
+                {account._id}
               </option>
             ))}
           </Select>
@@ -325,8 +325,8 @@ const Transactions = () => {
               Select an account
             </option>
             {toAccounts.map((account) => (
-              <option key={account.accountId} value={account.accountId}>
-                {account.accountId}
+              <option key={account._id} value={account._id}>
+                {account._id}
               </option>
             ))}
           </Select>
@@ -422,8 +422,8 @@ const Transactions = () => {
           </thead>
           <tbody>
             {allAccounts.map((account) => (
-              <tr key={account.accountId}>
-                <TableCell>{account.accountId}</TableCell>
+              <tr key={account._id}>
+                <TableCell>{account._id}</TableCell>
                 <TableCell>{account.accountName || 'N/A'}</TableCell>
                 <TableCell>{account.accountType || 'N/A'}</TableCell>
                 <TableCell>{account.accountCustomerId || 'N/A'}</TableCell>

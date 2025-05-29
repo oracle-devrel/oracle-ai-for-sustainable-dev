@@ -66,10 +66,10 @@ public class TransferService {
                 " crashSimulation:" + crashSimulation + " useLockFreeReservations:" + useLockFreeReservations);
         boolean isCompensate = false;
         String returnString = "";
-        returnString += withdraw(new URI(lraId), fromAccount, amount);
+        returnString += withdraw(new URI(lraId), fromAccount, amount, crashSimulation);
         log.info(returnString);
         if (returnString.contains("succeeded") && sagaAction.equalsIgnoreCase("complete") && crashSimulation.equals("noCrash")) {
-            returnString += " " + deposit(new URI(lraId), toAccount, amount);
+            returnString += " " + deposit(new URI(lraId), toAccount, amount, crashSimulation);
             log.info(returnString);
             if (returnString.contains("failed")) isCompensate = true; //deposit failed
         } else isCompensate = true; //withdraw failed
@@ -84,28 +84,39 @@ public class TransferService {
         System.out.println("TransferService.transfer transferConfirmUri:" + transferConfirmUri.toASCIIString());
         restTemplate.postForEntity(completionUri, requestEntity, String.class);
         return ResponseEntity.ok("transfer status:" + returnString);
-
     }
 
-    private String withdraw(URI lraId, long accountId, long amount) {
+    private String withdraw(URI lraId, long accountId, long amount, String crashSimulation) {
         log.info("withdraw accountId = " + accountId + ", amount = " + amount);
         URI accountUri = getTarget(withdrawUri)
                 .queryParam("accountId", accountId)
                 .queryParam("amount", amount)
                 .build()
                 .toUri();
-        String withdrawOutcome = restTemplate.postForEntity(accountUri, null, String.class).getBody();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("crashSimulation", crashSimulation);
+        HttpEntity<String> requestEntity = new HttpEntity<>(null, headers);
+        String withdrawOutcome = restTemplate.postForEntity(accountUri, requestEntity, String.class).getBody();
+//        String withdrawOutcome = restTemplate.postForEntity(accountUri, null, String.class).getBody();
         log.info("withdraw lraId = " + lraId);
         return withdrawOutcome;
     }
-    private String deposit(URI lraId, long accountId, long amount) {
+
+    private String deposit(URI lraId, long accountId, long amount, String crashSimulation) {
         log.info("deposit accountId = " + accountId + ", amount = " + amount);
         URI accountUri = getTarget(depositUri)
                 .queryParam("accountId", accountId)
                 .queryParam("amount", amount)
                 .build()
                 .toUri();
-        String depositOutcome = restTemplate.postForEntity(accountUri, null, String.class).getBody();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("crashSimulation", crashSimulation);
+        HttpEntity<String> requestEntity = new HttpEntity<>(null, headers);
+        String depositOutcome = restTemplate.postForEntity(accountUri, requestEntity, String.class).getBody();
+//        String depositOutcome = restTemplate.postForEntity(accountUri, null, String.class).getBody();
+        log.info("deposit lraId = " + lraId);
         return depositOutcome;
     }
 

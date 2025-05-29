@@ -302,15 +302,27 @@ const Accounts = () => {
         />
 
         <Label htmlFor="accountType">Account Type</Label>
-        <Input
-          type="text"
+        <select
           id="accountType"
           name="accountType"
           value={formData.accountType}
           onChange={handleChange}
-          placeholder="Enter account type"
           required
-        />
+          style={{
+            width: '100%',
+            marginBottom: '16px',
+            padding: '8px',
+            border: '1px solid #555',
+            borderRadius: '4px',
+            backgroundColor: '#2c2c2c',
+            color: '#ffffff'
+          }}
+        >
+          <option value="" disabled>Select account type</option>
+          <option value="checking">checking</option>
+          <option value="savings">savings</option>
+          <option value="brokerage">brokerage</option>
+        </select>
 
         <Label htmlFor="customerId">Customer ID</Label>
         <Input

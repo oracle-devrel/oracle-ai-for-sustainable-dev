@@ -1,1 +1,0 @@
-**If you choose to use Autonomous database then download the client credential wallet, delete this file and copy the contents of the wallet into this folder.

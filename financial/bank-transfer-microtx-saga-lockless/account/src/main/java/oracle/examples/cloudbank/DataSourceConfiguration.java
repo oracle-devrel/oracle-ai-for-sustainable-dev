@@ -3,6 +3,7 @@ package oracle.examples.cloudbank;
 import oracle.jdbc.pool.OracleDataSource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 import javax.sql.DataSource;
@@ -10,6 +11,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 @Configuration
+@ComponentScan("com.oracle")
 public class DataSourceConfiguration {
 
     @Value("${spring.datasource.username}")

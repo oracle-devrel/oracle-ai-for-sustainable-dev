@@ -7,6 +7,7 @@ import jakarta.persistence.PersistenceContext;
 import oracle.examples.cloudbank.model.Account;
 import oracle.examples.cloudbank.model.Journal;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +26,7 @@ public class AccountsDepositService {
     @PersistenceContext
     private EntityManager entityManager; // Inject the EntityManager
 
-    //    @Autowired
+    @Autowired
     private MicroTxLockFreeReservation microTxLockFreeReservation;
 
     /**
@@ -36,9 +37,15 @@ public class AccountsDepositService {
     @LRA(value = LRA.Type.MANDATORY, end = false)
     @Transactional
     public ResponseEntity<?> deposit(@RequestHeader(LRA_HTTP_CONTEXT_HEADER) String lraId,
+                                     @RequestHeader("crashSimulation") String crashSimulation,
                                      @RequestParam("accountId") long accountId,
                                      @RequestParam("amount") long depositAmount) {
-        log.info("...deposit " + depositAmount + " in account:" + accountId +
+        boolean isCrashBeforeFirstBankCommit = "crashBeforeFirstBankCommit".equals(crashSimulation);
+        boolean isCrashAfterFirstBankCommit = "crashAfterFirstBankCommit".equals(crashSimulation);
+        boolean isCrashAfterSecondBankCommit = "crashAfterSecondBankCommit".equals(crashSimulation);
+        log.info(
+                "...deposit " + depositAmount + " in account:" + accountId +
+                "...deposit " + depositAmount + " in account:" + accountId +
                 " (lraId:" + lraId + ") finished (in pending state)");
         Account account = AccountTransferDAO.instance().getAccountForAccountId(accountId);
         if (account==null) {

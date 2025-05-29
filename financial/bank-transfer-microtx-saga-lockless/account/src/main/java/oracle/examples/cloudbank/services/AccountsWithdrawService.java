@@ -27,7 +27,7 @@ public class AccountsWithdrawService {
     @PersistenceContext
     private EntityManager entityManager; // Inject the EntityManager
 
-//    @Autowired
+    @Autowired
     private MicroTxLockFreeReservation microTxLockFreeReservation;
 
     /**
@@ -36,9 +36,14 @@ public class AccountsWithdrawService {
     @RequestMapping(value = "/withdraw", method = RequestMethod.POST)
     @LRA(value = LRA.Type.MANDATORY, end = false)
     public ResponseEntity<?> withdraw(@RequestHeader(LRA_HTTP_CONTEXT_HEADER) String lraId,
+                                      @RequestHeader("crashSimulation") String crashSimulation,
                             @RequestParam("accountId") long accountId,
                             @RequestParam("amount") long withdrawAmount)  {
-        log.info("withdraw " + withdrawAmount + " in account:" + accountId + " (lraId:" + lraId + ")...");
+        boolean isCrashBeforeFirstBankCommit = "crashBeforeFirstBankCommit".equals(crashSimulation);
+        boolean isCrashAfterFirstBankCommit = "crashAfterFirstBankCommit".equals(crashSimulation);
+        boolean isCrashAfterSecondBankCommit = "crashAfterSecondBankCommit".equals(crashSimulation);
+        log.info("withdraw " + withdrawAmount + " in account:" + accountId + " (lraId:" + lraId + ")... + " +
+                "crashSimulation " + crashSimulation);
         boolean useLockFreeReservations = false;
         Account account = AccountTransferDAO.instance().getAccountForAccountId(accountId);
         if (account == null) {
