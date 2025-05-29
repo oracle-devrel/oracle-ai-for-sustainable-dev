@@ -33,6 +33,11 @@ CREATE TABLE "FINANCIAL"."ACCOUNTS"
     "ACCOUNT_TYPE" VARCHAR2(255 CHAR)
 );
 
-[ORA-55735: Reservable and non-reservable columns cannot be updated in the same statement.
-] [update accounts set account_balance=?,customer_id=?,account_name=?,account_opened_date=?,account_other_details=?,account_type=? where account_id=?]
-org.springframework.orm.jpa.JpaSystemException: could not execute statement [ORA-55735: Reservable and non-reservable columns cannot be updated in the same statement.
+ALTER TABLE FINANCIAL.ACCOUNTS MODIFY ACCOUNT_BALANCE NOT reservable;
+
+--Note, if you are using JPA you may get this for saves/udpates...
+--[ORA-55735: Reservable and non-reservable columns cannot be updated in the same statement.
+--] [update accounts set account_balance=?,customer_id=?,account_name=?,account_opened_date=?,account_other_details=?,account_type=? where account_id=?]
+--org.springframework.orm.jpa.JpaSystemException: could not execute statement [ORA-55735: Reservable and non-reservable columns cannot be updated in the same statement.
+--In which case you will need to instead do this...
+-- entityManager.createNativeQuery("UPDATE accounts SET account_balance = account_balance - ? WHERE account_id = ?" )

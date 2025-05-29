@@ -44,7 +44,7 @@ const ImageContainer = styled.div`
 const DashBoard = () => {
   return (
     <PageContainer>
-      <h2>Technical architecture and setup</h2>
+      <h2>Technical architecture and setup (includes Kubernetes, OpenTelemetry Observability, ...)</h2>
       <ul>
         <li>All pages in this app have corresponding labs in the workshop which is linked to from the page itself.</li>
         <li>Source for all pages is available in the GitHub repo which is linked to from the page itself.</li>
@@ -74,8 +74,17 @@ const DashBoard = () => {
 
       {/* Architecture Image */}
       <ImageContainer>
+      <h2>Architecture</h2>
         <img
           src={`${process.env.PUBLIC_URL}/images/architecture.png`}
+          alt="Technical Architecture"
+        />
+      </ImageContainer>
+      {/* ER diagram Image */}
+      <ImageContainer>
+      <h2>Entity Diagram</h2>
+        <img
+          src={`${process.env.PUBLIC_URL}/images/er_diagram.png`}
           alt="Technical Architecture"
         />
       </ImageContainer>

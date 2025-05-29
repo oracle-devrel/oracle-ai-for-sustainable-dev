@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMapEvent } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
@@ -129,8 +129,6 @@ const NotebookWrapper = styled.div`
 const CreditCardPurchase = () => {
   const [formData, setFormData] = useState({
     cardNumber: '',
-    amount: '',
-    description: '',
     longitude: '',
     latitude: '',
   });
@@ -138,19 +136,18 @@ const CreditCardPurchase = () => {
   const [accountIds, setAccountIds] = useState([]);
   const [coordinates, setCoordinates] = useState([]);
   const [isCollapsed, setIsCollapsed] = useState(true);
+  const mapRef = useRef();
 
   useEffect(() => {
     // Fetch account IDs for the dropdown
     const fetchAccountIds = async () => {
       try {
-        const response = await fetch(
-          'https://ij1tyzir3wpwlpe-financialdb.adb.eu-frankfurt-1.oraclecloudapps.com/ords/financial/ACCOUNT_DETAIL/'
-        );
+        const response = await fetch('https://oracleai-financial.org/accounts/accounts');
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        setAccountIds(data.items || []); // Assuming the data is in the `items` array
+        setAccountIds(Array.isArray(data) ? data : []); // If the endpoint returns an array
       } catch (error) {
         console.error('Error fetching account IDs:', error);
       }
@@ -172,6 +169,17 @@ const CreditCardPurchase = () => {
     fetchCoordinates();
   }, []);
 
+  useEffect(() => {
+    const mapContainer = document.querySelector('.leaflet-container');
+    if (mapContainer) {
+      const preventContextMenu = (e) => e.preventDefault();
+      mapContainer.addEventListener('contextmenu', preventContextMenu);
+      return () => {
+        mapContainer.removeEventListener('contextmenu', preventContextMenu);
+      };
+    }
+  }, []);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -179,7 +187,23 @@ const CreditCardPurchase = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    // Only post cardNumber, longitude, latitude
     alert(`Transaction submitted successfully! Data: ${JSON.stringify(formData)}`);
+    // Example POST (uncomment and adjust URL as needed):
+    // fetch('/your/api/endpoint', {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify(formData),
+    // });
+  };
+
+  const handleMapClick = (e) => {
+    const { lat, lng } = e.latlng;
+    setFormData(prev => ({
+      ...prev,
+      latitude: lat.toFixed(6),
+      longitude: lng.toFixed(6),
+    }));
   };
 
   return (
@@ -274,32 +298,11 @@ const CreditCardPurchase = () => {
             Select an account
           </option>
           {accountIds.map((account) => (
-            <option key={account.account_id} value={account.account_id}>
-              {account.account_id}
+            <option key={account._id} value={account._id}>
+              {account._id}
             </option>
           ))}
         </Select>
-
-        <Label htmlFor="amount">Amount</Label>
-        <Input
-          type="number"
-          id="amount"
-          name="amount"
-          value={formData.amount}
-          onChange={handleChange}
-          placeholder="Enter amount"
-          required
-        />
-
-        <Label htmlFor="description">Description</Label>
-        <Input
-          type="text"
-          id="description"
-          name="description"
-          value={formData.description}
-          onChange={handleChange}
-          placeholder="Enter transaction description"
-        />
 
         <Label htmlFor="longitude">Longitude</Label>
         <Input
@@ -323,12 +326,19 @@ const CreditCardPurchase = () => {
           required
         />
 
-        <Button type="submit">Submit</Button>
+        <Button type="submit">Submit Purchase At This Location</Button>
       </Form>
 
       {/* Map Section */}
       <MapWrapper>
-        <MapContainer center={[39.7392, -104.9903]} zoom={5} scrollWheelZoom={false} style={{ height: '100%', width: '100%' }}>
+        <MapContainer
+          center={[39.7392, -104.9903]}
+          zoom={5}
+          scrollWheelZoom={false}
+          style={{ height: '100%', width: '100%' }}
+          whenCreated={mapInstance => { mapRef.current = mapInstance; }}
+          onClick={handleMapClick}
+        >
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -338,6 +348,7 @@ const CreditCardPurchase = () => {
               <Popup>{coord.description}</Popup>
             </Marker>
           ))}
+          <MapRightClickHandler setFormData={setFormData} />
         </MapContainer>
       </MapWrapper>
 
@@ -347,5 +358,17 @@ const CreditCardPurchase = () => {
     </PageContainer>
   );
 };
+
+function MapRightClickHandler({ setFormData }) {
+  useMapEvent('contextmenu', (e) => {
+    const { lat, lng } = e.latlng;
+    setFormData(prev => ({
+      ...prev,
+      latitude: lat.toFixed(6),
+      longitude: lng.toFixed(6),
+    }));
+  });
+  return null;
+}
 
 export default CreditCardPurchase;

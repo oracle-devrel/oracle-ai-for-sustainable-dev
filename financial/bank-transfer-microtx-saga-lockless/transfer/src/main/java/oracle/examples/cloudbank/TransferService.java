@@ -56,7 +56,7 @@ public class TransferService {
                              @RequestParam("amount") long amount,
                              @RequestParam("sagaAction") String sagaAction,
                              @RequestParam("crashSimulation") String crashSimulation,
-                             @RequestParam("useLockFreeReservations") boolean useLockFreeReservations,
+                             @RequestParam("useLockFreeReservations") String useLockFreeReservations,
                              @RequestHeader( LRA_HTTP_CONTEXT_HEADER) String lraId) throws Exception
     {
         if (lraId == null) {
@@ -66,10 +66,10 @@ public class TransferService {
                 " crashSimulation:" + crashSimulation + " useLockFreeReservations:" + useLockFreeReservations);
         boolean isCompensate = false;
         String returnString = "";
-        returnString += withdraw(new URI(lraId), fromAccount, amount, crashSimulation);
+        returnString += withdraw(new URI(lraId), fromAccount, amount, crashSimulation, useLockFreeReservations);
         log.info(returnString);
         if (returnString.contains("succeeded") && sagaAction.equalsIgnoreCase("complete") && crashSimulation.equals("noCrash")) {
-            returnString += " " + deposit(new URI(lraId), toAccount, amount, crashSimulation);
+            returnString += " " + deposit(new URI(lraId), toAccount, amount, crashSimulation, useLockFreeReservations);
             log.info(returnString);
             if (returnString.contains("failed")) isCompensate = true; //deposit failed
         } else isCompensate = true; //withdraw failed
@@ -86,7 +86,7 @@ public class TransferService {
         return ResponseEntity.ok("transfer status:" + returnString);
     }
 
-    private String withdraw(URI lraId, long accountId, long amount, String crashSimulation) {
+    private String withdraw(URI lraId, long accountId, long amount, String crashSimulation, String useLockFreeReservations) {
         log.info("withdraw accountId = " + accountId + ", amount = " + amount);
         URI accountUri = getTarget(withdrawUri)
                 .queryParam("accountId", accountId)
@@ -96,6 +96,7 @@ public class TransferService {
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("crashSimulation", crashSimulation);
+        headers.add("isUseLockFreeReservations", useLockFreeReservations);
         HttpEntity<String> requestEntity = new HttpEntity<>(null, headers);
         String withdrawOutcome = restTemplate.postForEntity(accountUri, requestEntity, String.class).getBody();
 //        String withdrawOutcome = restTemplate.postForEntity(accountUri, null, String.class).getBody();
@@ -103,7 +104,7 @@ public class TransferService {
         return withdrawOutcome;
     }
 
-    private String deposit(URI lraId, long accountId, long amount, String crashSimulation) {
+    private String deposit(URI lraId, long accountId, long amount, String crashSimulation, String useLockFreeReservations) {
         log.info("deposit accountId = " + accountId + ", amount = " + amount);
         URI accountUri = getTarget(depositUri)
                 .queryParam("accountId", accountId)
@@ -113,6 +114,7 @@ public class TransferService {
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("crashSimulation", crashSimulation);
+        headers.add("isUseLockFreeReservations", useLockFreeReservations);
         HttpEntity<String> requestEntity = new HttpEntity<>(null, headers);
         String depositOutcome = restTemplate.postForEntity(accountUri, requestEntity, String.class).getBody();
 //        String depositOutcome = restTemplate.postForEntity(accountUri, null, String.class).getBody();

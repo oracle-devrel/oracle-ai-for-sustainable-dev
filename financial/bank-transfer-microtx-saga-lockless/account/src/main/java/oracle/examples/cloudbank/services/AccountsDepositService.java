@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Connection;
 import java.util.logging.Logger;
 
 import static com.oracle.microtx.springboot.lra.annotation.LRA.*;
@@ -38,6 +39,7 @@ public class AccountsDepositService {
     @Transactional
     public ResponseEntity<?> deposit(@RequestHeader(LRA_HTTP_CONTEXT_HEADER) String lraId,
                                      @RequestHeader("crashSimulation") String crashSimulation,
+                                     @RequestHeader("isUseLockFreeReservations") boolean isUseLockFreeReservations,
                                      @RequestParam("accountId") long accountId,
                                      @RequestParam("amount") long depositAmount) {
         boolean isCrashBeforeFirstBankCommit = "crashBeforeFirstBankCommit".equals(crashSimulation);
@@ -53,6 +55,15 @@ public class AccountsDepositService {
             AccountTransferDAO.instance().saveJournal(new Journal(DEPOSIT, accountId, 0, lraId,
                     AccountTransferDAO.getStatusString(ParticipantStatus.Active)));
             return ResponseEntity.ok("deposit failed: account does not exist");
+        }
+        if (isUseLockFreeReservations && false) {
+            try {
+                Connection connection = entityManager.unwrap(Connection.class);
+                log.info("microTxLockFreeReservation.join connection: " + connection);
+                microTxLockFreeReservation.join(connection);
+            } catch (Exception e) {
+                log.warning("Failed to retrieve the underlying connection: " + e.getMessage());
+            }
         }
         AccountTransferDAO.instance().saveJournal(new Journal(DEPOSIT, accountId, depositAmount, lraId,
                 AccountTransferDAO.getStatusString(ParticipantStatus.Active)));

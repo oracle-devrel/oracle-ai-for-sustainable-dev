@@ -35,16 +35,18 @@ public class AccountsWithdrawService {
      */
     @RequestMapping(value = "/withdraw", method = RequestMethod.POST)
     @LRA(value = LRA.Type.MANDATORY, end = false)
+    @Transactional
     public ResponseEntity<?> withdraw(@RequestHeader(LRA_HTTP_CONTEXT_HEADER) String lraId,
                                       @RequestHeader("crashSimulation") String crashSimulation,
+                                      @RequestHeader("isUseLockFreeReservations") boolean isUseLockFreeReservations,
                             @RequestParam("accountId") long accountId,
                             @RequestParam("amount") long withdrawAmount)  {
+        boolean isCrashAfterWithdrawBeforeDeposit = "isCrashAfterWithdrawBeforeDeposit".equals(crashSimulation);
         boolean isCrashBeforeFirstBankCommit = "crashBeforeFirstBankCommit".equals(crashSimulation);
         boolean isCrashAfterFirstBankCommit = "crashAfterFirstBankCommit".equals(crashSimulation);
         boolean isCrashAfterSecondBankCommit = "crashAfterSecondBankCommit".equals(crashSimulation);
         log.info("withdraw " + withdrawAmount + " in account:" + accountId + " (lraId:" + lraId + ")... + " +
                 "crashSimulation " + crashSimulation);
-        boolean useLockFreeReservations = false;
         Account account = AccountTransferDAO.instance().getAccountForAccountId(accountId);
         if (account == null) {
             log.info("withdraw failed: account does not exist"); //could also do leave here
@@ -52,7 +54,7 @@ public class AccountsWithdrawService {
                     AccountTransferDAO.getStatusString(ParticipantStatus.Active)));
             return ResponseEntity.ok("withdraw failed: account does not exist");
         }
-        if (useLockFreeReservations) {
+        if (isUseLockFreeReservations && false) {
             try {
                 Connection connection = entityManager.unwrap(Connection.class);
                 log.info("microTxLockFreeReservation.join connection: " + connection);
@@ -63,25 +65,42 @@ public class AccountsWithdrawService {
             } catch (Exception e) {
                 log.warning("Failed to retrieve the underlying connection: " + e.getMessage());
             }
-        } else {
-            if (account.getAccountBalance() < withdrawAmount) {
+        }
+        if (account.getAccountBalance() < withdrawAmount) {
                 log.info("withdraw failed: insufficient funds");
                 AccountTransferDAO.instance().saveJournal(new Journal(WITHDRAW, accountId, 0, lraId,
                         AccountTransferDAO.getStatusString(ParticipantStatus.Active)));
                 return ResponseEntity.ok("withdraw failed: insufficient funds");
             }
-            log.info("withdraw current balance:" + account.getAccountBalance() +
+        log.info("withdraw current balance:" + account.getAccountBalance() +
                     " new balance:" + (account.getAccountBalance() - withdrawAmount));
-        }
         updateAccountBalance(lraId, accountId, withdrawAmount, account);
         return ResponseEntity.ok("withdraw succeeded");
     }
 
 
     @Transactional
-    private void updateAccountBalance(String lraId, long accountId, long withdrawAmount, Account account) {
+    private void updateAccountBalanceOriginal(String lraId, long accountId, long withdrawAmount, Account account) {
         account.setAccountBalance(account.getAccountBalance() - withdrawAmount);
         AccountTransferDAO.instance().saveAccount(account);
+        AccountTransferDAO.instance().saveJournal(new Journal(WITHDRAW, accountId, withdrawAmount, lraId,
+                AccountTransferDAO.getStatusString(ParticipantStatus.Active)));
+    }
+
+
+    @Transactional
+    private void updateAccountBalance(String lraId, long accountId, long withdrawAmount, Account account) {
+        long newBalance = account.getAccountBalance() - withdrawAmount;
+            log.info("updateAccountBalance with createNativeQuery:" + account.getAccountBalance() +
+                    " new balance:" +newBalance);
+        entityManager.createNativeQuery(
+            "UPDATE accounts SET account_balance = account_balance - ? WHERE account_id = ?"
+            // "UPDATE accounts SET account_balance = ? WHERE account_id = ?"
+        )
+        .setParameter(1, withdrawAmount)
+        // .setParameter(1, newBalance)
+        .setParameter(2, accountId)
+        .executeUpdate();
         AccountTransferDAO.instance().saveJournal(new Journal(WITHDRAW, accountId, withdrawAmount, lraId,
                 AccountTransferDAO.getStatusString(ParticipantStatus.Active)));
     }
