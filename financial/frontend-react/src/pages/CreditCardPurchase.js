@@ -136,6 +136,7 @@ const CreditCardPurchase = () => {
   });
 
   const [accountIds, setAccountIds] = useState([]);
+  const [coordinates, setCoordinates] = useState([]);
   const [isCollapsed, setIsCollapsed] = useState(true);
 
   useEffect(() => {
@@ -155,7 +156,20 @@ const CreditCardPurchase = () => {
       }
     };
 
+    // Fetch coordinates for the map
+    const fetchCoordinates = async () => {
+      try {
+        // const response = await fetch('http://globallydistributeddatabase.financial:8080/financial/locations/coordinates');    https://oracleai-financial.org/transfer
+        const response = await fetch('https://oracleai-financial.org/financial/locations/coordinates');
+        const data = await response.json();
+        setCoordinates(data);
+      } catch (error) {
+        console.error('Error fetching coordinates:', error);
+      }
+    };
+
     fetchAccountIds();
+    fetchCoordinates();
   }, []);
 
   const handleChange = (e) => {
@@ -167,33 +181,6 @@ const CreditCardPurchase = () => {
     e.preventDefault();
     alert(`Transaction submitted successfully! Data: ${JSON.stringify(formData)}`);
   };
-
-  // Generate 100 random coordinates clustered around Denver, Houston, New Orleans, and Washington D.C.
-  const generateCoordinates = () => {
-    const clusters = [
-      { lat: 39.7392, lng: -104.9903, name: 'Denver' },
-      { lat: 29.7604, lng: -95.3698, name: 'Houston' },
-      { lat: 29.9511, lng: -90.0715, name: 'New Orleans' },
-      { lat: 38.9072, lng: -77.0369, name: 'Washington D.C.' },
-    ];
-
-    const coordinates = [];
-    for (let i = 0; i < 100; i++) {
-      const cluster = clusters[Math.floor(Math.random() * clusters.length)];
-      const lat = cluster.lat + (Math.random() - 0.5) * 0.5; // Randomize within ~0.5 degrees
-      const lng = cluster.lng + (Math.random() - 0.5) * 0.5;
-      coordinates.push({
-        lat,
-        lng,
-        description: `trans_id: ${Math.floor(Math.random() * 1000)}, location_id: ${Math.floor(
-          Math.random() * 5000
-        )}, trans_epoch_date: ${Math.floor(Date.now() / 1000)}`,
-      });
-    }
-    return coordinates;
-  };
-
-  const coordinates = generateCoordinates();
 
   return (
     <PageContainer>

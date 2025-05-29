@@ -45,14 +45,6 @@ spec:
                 name: transfer
                 port:
                   number: 8081
-          # Rule for accountdetail endpoint
-          - path: /graph
-            pathType: Prefix
-            backend:
-              service:
-                name: accountdetail
-                port:
-                  number: 8080
           # Rule for graph endpoint
           - path: /graph
             pathType: Prefix
@@ -70,7 +62,7 @@ spec:
                 port:
                   number: 8080
           # Rule for gdd_spatial endpoint
-          - path: /globallydistributeddatabase
+          - path: /financial
             pathType: Prefix
             backend:
               service:
