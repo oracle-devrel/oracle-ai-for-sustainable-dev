@@ -16,9 +16,8 @@ public class AnomalyDetectionController {
 
     private WKTReader wktReader = new WKTReader();
 
-    // 1. Create connection (handled by Spring Boot/JdbcTemplate)
 
-    // 2. Get cluster centroids
+    // Get cluster centroids
     @PostMapping("/cluster-centroids/{custId}")
     public List<Map<String, Object>> getClusterCentroids(@PathVariable int custId) throws Exception {
         List<Map<String, Object>> centroids = new ArrayList<>();
@@ -81,7 +80,7 @@ public class AnomalyDetectionController {
         return centroids;
     }
 
-    // 3. Get anomalies
+    //  Get anomalies
     @GetMapping("/anomalies/{custId}")
     public List<Map<String, Object>> getAnomalies(@PathVariable int custId) throws Exception {
         List<Map<String, Object>> anomalies = new ArrayList<>();
@@ -119,7 +118,7 @@ public class AnomalyDetectionController {
         return anomalies;
     }
 
-    // 4. Get map (returns GeoJSON for plotting)
+    //  Get map (returns GeoJSON for plotting)
     @GetMapping("/map/{custId}")
     public Map<String, Object> getMap(@PathVariable int custId) throws Exception {
         Map<String, Object> map = new HashMap<>();

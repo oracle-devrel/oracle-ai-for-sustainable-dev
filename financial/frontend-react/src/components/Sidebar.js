@@ -168,7 +168,7 @@ const Sidebar = () => {
             </IconWrapper>
             <TextContainer>
               <HighlightedText>Create and view accounts</HighlightedText>
-              {showDetails && <div>MongoDB/MERN stack<br/>
+              {showDetails && <div>MongoDB/MERN stack, JSON Duality<br/>
               Decimal Point Analytics</div>}
             </TextContainer>
           </StyledNavLink>

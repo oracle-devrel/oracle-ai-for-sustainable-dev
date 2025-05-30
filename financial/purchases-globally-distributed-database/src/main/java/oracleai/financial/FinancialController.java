@@ -57,4 +57,38 @@ public class FinancialController {
         }
         return coordinates;
     }
+
+    @PostMapping("/locations/check-distance")
+    public ResponseEntity<Boolean> checkDistance(@RequestBody Map<String, Object> payload) {
+        try {
+            Map<String, String> firstLocation = (Map<String, String>) payload.get("firstLocation");
+            Map<String, String> secondLocation = (Map<String, String>) payload.get("secondLocation");
+
+            double lat1 = Double.parseDouble(firstLocation.get("latitude"));
+            double lon1 = Double.parseDouble(firstLocation.get("longitude"));
+            double lat2 = Double.parseDouble(secondLocation.get("latitude"));
+            double lon2 = Double.parseDouble(secondLocation.get("longitude"));
+
+            double distanceKm = haversine(lat1, lon1, lat2, lon2);
+
+            return ResponseEntity.ok(distanceKm > 500.0);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(false);
+        }
+    }
+
+    /**
+     * Haversine formula to calculate the great-circle distance between two points.
+     */
+    private double haversine(double lat1, double lon1, double lat2, double lon2) {
+        final int R = 6371; // Radius of the earth in km
+        double latDistance = Math.toRadians(lat2 - lat1);
+        double lonDistance = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c; // distance in km
+    }
 }

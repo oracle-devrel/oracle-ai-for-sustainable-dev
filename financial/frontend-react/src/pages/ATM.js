@@ -124,12 +124,15 @@ const ATM = () => {
   useEffect(() => {
     const fetchAccountIds = async () => {
       try {
-        const response = await fetch(`${BASE_URL}/accounts`); // Adjust the URL to match your backend
+        const response = await fetch(`${BASE_URL}/accounts`);
         const data = await response.json();
-        const ids = data.map((account) => account.accountId); // Extract account IDs
-        setAccountIds(ids);
-        if (ids.length > 0) {
-          setFormData((prev) => ({ ...prev, accountId: ids[0] })); // Prepopulate with the first account ID
+        setAccountIds(Array.isArray(data) ? data : []);
+        if (data.length > 0) {
+          // Prepopulate with the first account's id
+          setFormData((prev) => ({
+            ...prev,
+            accountId: data[0].accountId || data[0]._id || data[0].id || ''
+          }));
         }
       } catch (error) {
         console.error('Error fetching account IDs:', error);
@@ -260,9 +263,10 @@ const ATM = () => {
           onChange={handleChange}
           required
         >
-          {accountIds.map((id) => (
-            <option key={id} value={id}>
-              {id}
+          <option value="" disabled>Select an account</option>
+          {accountIds.map((account) => (
+            <option key={account.accountId || account._id || account.id} value={account.accountId || account._id || account.id}>
+              {account.accountId || account._id || account.id}
             </option>
           ))}
         </Select>
@@ -304,7 +308,7 @@ const ATM = () => {
             type="radio"
             name="language"
             value="Python (using SQLAlchemy for ORM)" 
-            checked={formData.language === 'Python'}
+            checked={formData.language === 'Python (using SQLAlchemy for ORM)'}
             onChange={handleChange}
           />
           Python
@@ -324,7 +328,7 @@ const ATM = () => {
             type="radio"
             name="language"
             value="Go (using BunDB for ORM)"
-            checked={formData.language === 'Go'}
+            checked={formData.language === 'Go (using BunDB for ORM)'}
             onChange={handleChange}
           />
           Go
@@ -359,7 +363,9 @@ const ATM = () => {
           </thead>
           <tbody>
             <tr>
-              <TableCell>{accountDetails.accountId}</TableCell>
+              <TableCell>
+                {accountDetails.accountId || accountDetails._id || accountDetails.id || 'N/A'}
+              </TableCell>
               <TableCell>{accountDetails.accountName || 'N/A'}</TableCell>
               <TableCell>{accountDetails.accountType || 'N/A'}</TableCell>
               <TableCell>{accountDetails.accountCustomerId || 'N/A'}</TableCell>

@@ -93,7 +93,7 @@ public class Transactions_Maa extends Thread {
     private static String driver_version = "";
 
     private static String tnsAdminFile = "";
-
+    //When set to true, the JDBC driver handles the sharding key and super sharding key for you, so you don't need to provide them explicitly in your application code.
     private static String transparent_ds = "N";
 
     private static int accountSamples = 1000000;

@@ -41,10 +41,6 @@ public class AccountsWithdrawService {
                                       @RequestHeader("isUseLockFreeReservations") boolean isUseLockFreeReservations,
                             @RequestParam("accountId") long accountId,
                             @RequestParam("amount") long withdrawAmount)  {
-        boolean isCrashAfterWithdrawBeforeDeposit = "isCrashAfterWithdrawBeforeDeposit".equals(crashSimulation);
-        boolean isCrashBeforeFirstBankCommit = "crashBeforeFirstBankCommit".equals(crashSimulation);
-        boolean isCrashAfterFirstBankCommit = "crashAfterFirstBankCommit".equals(crashSimulation);
-        boolean isCrashAfterSecondBankCommit = "crashAfterSecondBankCommit".equals(crashSimulation);
         log.info("withdraw " + withdrawAmount + " in account:" + accountId + " (lraId:" + lraId + ")... + " +
                 "crashSimulation " + crashSimulation);
         Account account = AccountTransferDAO.instance().getAccountForAccountId(accountId);
@@ -54,7 +50,7 @@ public class AccountsWithdrawService {
                     AccountTransferDAO.getStatusString(ParticipantStatus.Active)));
             return ResponseEntity.ok("withdraw failed: account does not exist");
         }
-        if (isUseLockFreeReservations && false) {
+        if (isUseLockFreeReservations) {
             try {
                 Connection connection = entityManager.unwrap(Connection.class);
                 log.info("microTxLockFreeReservation.join connection: " + connection);

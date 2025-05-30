@@ -212,7 +212,7 @@ const Accounts = () => {
   return (
     <PageContainer>
       <h2>Process: Create and view accounts</h2>
-      <h2>Tech: MongoDB/MERN stack</h2>
+      <h2>Tech: MongoDB/MERN stack with JSON Duality</h2>
       <h2>Reference: Decimal Point Analytics</h2>
 
       {/* Collapsible Developer Details Panel */}

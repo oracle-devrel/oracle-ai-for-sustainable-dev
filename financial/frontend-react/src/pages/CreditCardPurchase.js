@@ -129,13 +129,18 @@ const NotebookWrapper = styled.div`
 const CreditCardPurchase = () => {
   const [formData, setFormData] = useState({
     cardNumber: '',
-    longitude: '',
-    latitude: '',
+    firstLocation: { longitude: '', latitude: '' },
+    secondLocation: { longitude: '', latitude: '' },
   });
 
   const [accountIds, setAccountIds] = useState([]);
   const [coordinates, setCoordinates] = useState([]);
   const [isCollapsed, setIsCollapsed] = useState(true);
+  const [nextLocation, setNextLocation] = useState('first'); // alternates between 'first' and 'second'
+  const [locationMarkers, setLocationMarkers] = useState({
+    first: null,
+    second: null,
+  });
   const mapRef = useRef();
 
   useEffect(() => {
@@ -182,28 +187,105 @@ const CreditCardPurchase = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    if (name === 'cardNumber') {
+      setFormData({ ...formData, cardNumber: value });
+    } else if (name.startsWith('firstLocation') || name.startsWith('secondLocation')) {
+      const [location, field] = name.split('.');
+      setFormData({
+        ...formData,
+        [location]: {
+          ...formData[location],
+          [field]: value,
+        },
+      });
+      // Also update marker if lat/lng fields are changed manually
+      if (field === 'latitude' || field === 'longitude') {
+        setLocationMarkers(prev => ({
+          ...prev,
+          [location === 'firstLocation' ? 'first' : 'second']:
+            (location === 'firstLocation' && formData.firstLocation.longitude && formData.firstLocation.latitude) ||
+            (location === 'secondLocation' && formData.secondLocation.longitude && formData.secondLocation.latitude)
+              ? {
+                  lat: location === 'firstLocation'
+                    ? (field === 'latitude' ? value : formData.firstLocation.latitude)
+                    : formData.secondLocation.latitude,
+                  lng: location === 'firstLocation'
+                    ? (field === 'longitude' ? value : formData.firstLocation.longitude)
+                    : formData.secondLocation.longitude,
+                }
+              : null,
+        }));
+      }
+    }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Only post cardNumber, longitude, latitude
-    alert(`Transaction submitted successfully! Data: ${JSON.stringify(formData)}`);
-    // Example POST (uncomment and adjust URL as needed):
-    // fetch('/your/api/endpoint', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify(formData),
-    // });
+
+    // Prepare payload for backend
+    const payload = {
+      firstLocation: {
+        latitude: formData.firstLocation.latitude,
+        longitude: formData.firstLocation.longitude,
+      },
+      secondLocation: {
+        latitude: formData.secondLocation.latitude,
+        longitude: formData.secondLocation.longitude,
+      },
+    };
+
+    try {
+      const response = await fetch('https://oracleai-financial.org/financial/locations/check-distance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const isFar = await response.json();
+      if (isFar) {
+        alert('Anomaly detected! Distance between the two locations is greater than 500km.');
+      } else {
+        alert('No anomaly detected.  The distance between the two locations is NOT greater than 500km.');
+      }
+    } catch (error) {
+      alert('Error checking distance: ' + error.message);
+    }
   };
 
-  const handleMapClick = (e) => {
+  // Alternate right-clicks between firstLocation and secondLocation, and update markers
+  const handleMapRightClick = (e) => {
     const { lat, lng } = e.latlng;
-    setFormData(prev => ({
-      ...prev,
-      latitude: lat.toFixed(6),
-      longitude: lng.toFixed(6),
-    }));
+    if (nextLocation === 'first') {
+      setFormData(prev => ({
+        ...prev,
+        firstLocation: {
+          latitude: lat.toFixed(6),
+          longitude: lng.toFixed(6),
+        },
+      }));
+      setLocationMarkers(prev => ({
+        ...prev,
+        first: { lat: parseFloat(lat.toFixed(6)), lng: parseFloat(lng.toFixed(6)) },
+      }));
+      setNextLocation('second');
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        secondLocation: {
+          latitude: lat.toFixed(6),
+          longitude: lng.toFixed(6),
+        },
+      }));
+      setLocationMarkers(prev => ({
+        ...prev,
+        second: { lat: parseFloat(lat.toFixed(6)), lng: parseFloat(lng.toFixed(6)) },
+      }));
+      setNextLocation('first');
+    }
   };
 
   return (
@@ -304,30 +386,53 @@ const CreditCardPurchase = () => {
           ))}
         </Select>
 
-        <Label htmlFor="longitude">Longitude</Label>
+        <Label>First Location</Label>
         <Input
           type="text"
-          id="longitude"
-          name="longitude"
-          value={formData.longitude}
+          id="firstLocation-longitude"
+          name="firstLocation.longitude"
+          value={formData.firstLocation.longitude}
           onChange={handleChange}
-          placeholder="Enter longitude"
+          placeholder="Longitude"
+          required
+        />
+        <Input
+          type="text"
+          id="firstLocation-latitude"
+          name="firstLocation.latitude"
+          value={formData.firstLocation.latitude}
+          onChange={handleChange}
+          placeholder="Latitude"
           required
         />
 
-        <Label htmlFor="latitude">Latitude</Label>
+        <Label>Second Location</Label>
         <Input
           type="text"
-          id="latitude"
-          name="latitude"
-          value={formData.latitude}
+          id="secondLocation-longitude"
+          name="secondLocation.longitude"
+          value={formData.secondLocation.longitude}
           onChange={handleChange}
-          placeholder="Enter latitude"
+          placeholder="Longitude"
+          required
+        />
+        <Input
+          type="text"
+          id="secondLocation-latitude"
+          name="secondLocation.latitude"
+          value={formData.secondLocation.latitude}
+          onChange={handleChange}
+          placeholder="Latitude"
           required
         />
 
-        <Button type="submit">Submit Purchase At This Location</Button>
+        <Button type="submit">Submit Purchases At These Locations</Button>
       </Form>
+
+      {/* Instruction above the map */}
+      <div style={{ margin: '16px 0', fontWeight: 'bold', color: '#1abc9c' }}>
+        Right-click the map in two locations to make two purchases (form will populate) and click Submit Purchases
+      </div>
 
       {/* Map Section */}
       <MapWrapper>
@@ -337,18 +442,29 @@ const CreditCardPurchase = () => {
           scrollWheelZoom={false}
           style={{ height: '100%', width: '100%' }}
           whenCreated={mapInstance => { mapRef.current = mapInstance; }}
-          onClick={handleMapClick}
         >
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           />
+          {/* Show markers for first and second locations if set */}
+          {locationMarkers.first && (
+            <Marker position={[locationMarkers.first.lat, locationMarkers.first.lng]}>
+              <Popup>First Location</Popup>
+            </Marker>
+          )}
+          {locationMarkers.second && (
+            <Marker position={[locationMarkers.second.lat, locationMarkers.second.lng]}>
+              <Popup>Second Location</Popup>
+            </Marker>
+          )}
+          {/* Show any other coordinates from backend */}
           {coordinates.map((coord, index) => (
-            <Marker key={index} position={[coord.lat, coord.lng]}>
+            <Marker key={index + 1000} position={[coord.lat, coord.lng]}>
               <Popup>{coord.description}</Popup>
             </Marker>
           ))}
-          <MapRightClickHandler setFormData={setFormData} />
+          <MapRightClickHandler onRightClick={handleMapRightClick} />
         </MapContainer>
       </MapWrapper>
 
@@ -359,14 +475,10 @@ const CreditCardPurchase = () => {
   );
 };
 
-function MapRightClickHandler({ setFormData }) {
+// Custom right-click handler for the map
+function MapRightClickHandler({ onRightClick }) {
   useMapEvent('contextmenu', (e) => {
-    const { lat, lng } = e.latlng;
-    setFormData(prev => ({
-      ...prev,
-      latitude: lat.toFixed(6),
-      longitude: lng.toFixed(6),
-    }));
+    onRightClick(e);
   });
   return null;
 }
