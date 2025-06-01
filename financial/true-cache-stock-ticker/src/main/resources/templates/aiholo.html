@@ -71,7 +71,6 @@
 
 <!-- Language selection -->
 <div class="flags">
-    <a href="aiholo?languageCode=he-IL"><img src="../images-aiholo/Flags/he-IL.svg" alt="Hebrew"></a>
     <a href="aiholo?languageCode=de-DE"><img src="../images-aiholo/Flags/de-DE.svg" alt="German"></a>
     <a href="aiholo?languageCode=es-MX"><img src="../images-aiholo/Flags/es-MX.svg" alt="Spanish (Mexico)"></a>
     <a href="aiholo?languageCode=hi-IN"><img src="../images-aiholo/Flags/hi-IN.svg" alt="Hindi (India)"></a>
@@ -82,11 +81,11 @@
     <a href="aiholo?languageCode=en-GB"><img src="../images-aiholo/Flags/en-GB.svg" alt="English (GB)"></a>
     <a href="aiholo?languageCode=ar-ae"><img src="../images-aiholo/Flags/ar-ae.svg" alt="Arabic-UAE"></a>
     <a href="aiholo?languageCode=ja-JP"><img src="../images-aiholo/Flags/ja-JP.svg" alt="Japanese"></a>
-    <a href="aiholo?languageCode=fr-FR"><img src="../images-aiholo/Flags/France.svg" alt="France"></a>
-    <a href="aiholo?languageCode=ga-IE"><img src="../images-aiholo/Flags/Ireland.svg" alt="Ireland"></a>
-    <a href="aiholo?languageCode=ro-RO"><img src="../images-aiholo/Flags/Romania.svg" alt="Romania"></a>
-    <a href="aiholo?languageCode=en-AU"><img src="../images-aiholo/Flags/Australia.svg" alt="Australia"></a>
-    <a href="aiholo?languageCode=en-US"><img src="../images-aiholo/Flags/USA.svg" alt="English (United States)"></a>
+    <a href="aiholo?languageCode=France"><img src="../images-aiholo/Flags/France.svg" alt="France"></a>
+    <a href="aiholo?languageCode=Ireland"><img src="../images-aiholo/Flags/Ireland.svg" alt="Ireland"></a>
+    <a href="aiholo?languageCode=Romania"><img src="../images-aiholo/Flags/Romania.svg" alt="Romania"></a>
+    <a href="aiholo?languageCode=AustraliaP"><img src="../images-aiholo/Flags/Australia.svg" alt="Australia"></a>
+    <a href="aiholo?languageCode=USA"><img src="../images-aiholo/Flags/USA.svg" alt="English (United States)"></a>
 
     &nbsp;Current:
     <img th:src="@{'/images-aiholo/Flags/' + ${languageCode} + '.svg'}"
@@ -104,7 +103,6 @@
     var languageCodeSTT = /*[[${languageCode} ?: 'pt-BR']]*/ 'pt-BR';
     var voiceName = /*[[${voiceName} ?: 'pt-BR-Wavenet-D']]*/ 'pt-BR-Wavenet-D';
     console.log("Using Speech Recognition Language: " + languageCodeSTT + " and VoiceName: " + voiceName);
-    console.log("Speech Recognition Language Code:", languageCodeSTT);
 </script>
 
 <div class="container mt-3">
@@ -139,40 +137,26 @@
 <div id="transcription"></div>
 <p id="responseMessage"></p>
 
-<!-- Button Row: Mirror Me, Single Button Mode, Explain This -->
-<div class="d-flex justify-content-center align-items-center" style="gap: 40px; margin-top: 30px; margin-bottom: 30px;">
-    <!-- Mirror Me Button -->
-    <div>
-        <p style="margin-bottom: 8px;">Mirror Me</p>
-        <button id="mirrorMeBtn" class="btn btn-primary" style="background: none; border: none; padding: 0;">
-            <img src="../images-aiholo/Icons/Yellow/Face id.svg" alt="Mirror Me" style="width: 70px; height: auto;">
-        </button>
-    </div>
-    <!-- Single Button Mode Button -->
-    <div>
-        <p style="margin-bottom: 8px;">Single Button Mode</p>
-        <button id="singleBtnMode" class="btn btn-primary" style="background: none; border: none; padding: 0;">
-            <img id="singleBtnIcon" src="../images-aiholo/Icons/Yellow/Microphone.svg" alt="Single Button Mode" style="width: 70px; height: auto;">
-        </button>
-    </div>
-    <!-- Explainer Button -->
-    <div>
-        <p style="margin-bottom: 8px;">Explain Exhibit</p>
-        <button id="explainerBtn" class="btn btn-primary" style="background: none; border: none; padding: 0;">
-            <img src="../images-aiholo/Icons/Yellow/Explain.svg" alt="Explain This" style="width: 70px; height: auto;">
-        </button>
-    </div>
+<div>
+    <p>Click below button to switch to "Mirror Me" mode.</p>
+    <button id="mirrorMeBtn" class="btn btn-primary" style="background: none; border: none; padding: 0;">
+        <img src="../images-aiholo/Icons/Yellow/Face id.svg" alt="Mirror Me" style="width: 70px; height: auto;">
+    </button>
 </div>
-
+<br>
+<div>
+    <p>Click below button to explain this exhibit.</p>
+    <button id="explainerBtn" class="btn btn-primary" style="background: none; border: none; padding: 0;">
+        <img src="../images-aiholo/Icons/Yellow/Explain.svg" alt="Explain This" style="width: 70px; height: auto;">
+    </button>
+</div>
 <hr style="border-top: 2px solid #CC5500; margin: 20px 0;">
 <br>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        console.log("Speech Recognition Language Code:", languageCodeSTT);
         let recognition;
         let isListening = false;
         let transcriptBuffer = "";
-        let conversationHistory = []; // Array to store the last two questions and answers
 
         if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
             recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
@@ -181,7 +165,7 @@
             recognition.lang = languageCodeSTT;
 
             recognition.onstart = () => {
-                console.log("🎤 Speech recognition started with language:", recognition.lang);
+                console.log("🎤 Speech recognition started...");
                 document.getElementById("startBtn").disabled = true;
                 document.getElementById("stopSendBtn").disabled = false;
                 transcriptBuffer = "";
@@ -208,12 +192,8 @@
                         interimTranscript += event.results[i][0].transcript + " ";
                     }
                 }
-                console.log("Final Transcript Buffer:", transcriptBuffer.trim());
-                console.log("Interim Transcript:", interimTranscript.trim());
                 document.getElementById("transcription").innerText = transcriptBuffer.trim() + " " + interimTranscript.trim();
             };
-        } else if (recognition.lang !== "he-IL" && languageCodeSTT === "he-IL") {
-            alert("⚠️ Speech Recognition for specified language is not supported in this browser.");
         } else {
             alert("⚠️ Browser does not support Speech Recognition.");
         }
@@ -223,42 +203,19 @@
         });
 
         document.getElementById("stopSendBtn").addEventListener("click", async () => {
-            console.log("Stop/Send button clicked!");
             if (isListening) recognition.stop();
             const transcriptionText = transcriptBuffer.trim();
-            console.log("Transcription Text Before Sending:", transcriptionText);
             if (!transcriptionText) {
                 alert("⚠️ No text captured. Try sending again.");
                 return;
             }
-
-            // Add the current question to the conversation history
-            conversationHistory.push({ question: transcriptionText });
-
-            // Keep only the last two questions and answers
-            if (conversationHistory.length > 2) {
-                conversationHistory.shift();
-            }
-
-            // Build the conversational context
-            let conversationalContext = conversationHistory
-                .map((entry, index) => `Q${index + 1}: ${entry.question}${entry.answer ? `\nA${index + 1}: ${entry.answer}` : ''}`)
-                .join('\n');
-
             const selectedMode = document.querySelector('input[name="mode"]:checked').value;
-            const modifiedText = `${conversationalContext}\nQ: ${transcriptionText}`;
+            const modifiedText = `${transcriptionText} .`;
             const apiUrl = `https://aiholo.org/aiholo/play?question=${encodeURIComponent(modifiedText)}&selectedMode=${encodeURIComponent(selectedMode)}&languageCode=${encodeURIComponent(languageCodeSTT)}&voiceName=${encodeURIComponent(voiceName)}`;
-
-            console.log("Transcription Text:", transcriptionText); // Debugging
-            console.log("API URL:", apiUrl); // Debugging
 
             try {
                 const response = await fetch(apiUrl, { method: "GET" });
                 const result = await response.text();
-
-                // Add the response to the last question in the conversation history
-                conversationHistory[conversationHistory.length - 1].answer = result;
-
                 document.getElementById("responseMessage").innerText = `✅ Response: ${result}`;
                 document.getElementById("stopSendBtn").disabled = false;
             } catch (error) {
@@ -266,80 +223,36 @@
             }
         });
 
-        // Add event listener for the Clear button
-        document.getElementById("clearBtn").addEventListener("click", () => {
-            console.log("Clear button clicked!"); // Debugging
-            transcriptBuffer = ""; // Clear the transcript buffer
-            document.getElementById("transcription").innerText = ""; // Clear the transcription text field
-            document.getElementById("responseMessage").innerText = ""; // Optionally clear the response message
-            conversationHistory = []; // Clear the conversation history
-        });
-
-        // Add event listener for the Mirror Me button
         document.getElementById("mirrorMeBtn").addEventListener("click", async () => {
             try {
-                const response = await fetch("https://aiholo.org/aiholo/set?value=mirrorme", { method: "GET" });
-                if (response.ok) {
-                    alert("✅ Switched to 'Mirror Me' mode successfully!");
-                } else {
-                    alert("❌ Failed to switch to 'Mirror Me' mode.");
-                }
+                const response = await fetch("https://aiholo.org/aiholo/set?value=mirrorme", {
+                    method: "GET",
+                });
+            if (!response.ok) {
+                throw new Error("❌ Failed to fetch Mirror Me response.");
+            }
+            const imageUrl = await response.text();
+            document.getElementById("responseMessage").innerHTML = `<p>Switched To Mirror Me Mode</p>`;
             } catch (error) {
-                console.error("Error switching to 'Mirror Me' mode:", error);
-                alert("❌ An error occurred while switching to 'Mirror Me' mode.");
+                document.getElementById("responseMessage").innerText = "❌ Error retrieving Mirror Me response.";
             }
         });
 
-        // Add event listener for the Explainer button
         document.getElementById("explainerBtn").addEventListener("click", async () => {
             try {
-                const response = await fetch("https://aiholo.org/aiholo/explainer", { method: "GET" });
-                if (response.ok) {
-                    alert("✅ Explainer mode activated successfully!");
-                } else {
-                    alert("❌ Failed to activate explainer mode.");
-                }
+                const response = await fetch("https://aiholo.org/aiholo/explainer", {
+                    method: "GET",
+                });
+            if (!response.ok) {
+                throw new Error("❌ Failed to fetch Mirror Me response.");
+            }
+            const imageUrl = await response.text();
+            document.getElementById("responseMessage").innerHTML = `<p>Explainer explained</p>`;
             } catch (error) {
-                console.error("Error activating explainer mode:", error);
-                alert("❌ An error occurred while activating explainer mode.");
+                document.getElementById("responseMessage").innerText = "❌ Error retrieving Explainer response.";
             }
         });
 
-        // Single Button Mode toggle logic
-        let singleBtnModeState = false; // false = ready to start, true = ready to stop
-
-        const singleBtnMode = document.getElementById("singleBtnMode");
-        const singleBtnIcon = document.getElementById("singleBtnIcon");
-        const micIcon = "../images-aiholo/Icons/Yellow/Microphone.svg";
-        const stopIcon = "../images-aiholo/Icons/Yellow/Stop recording.svg";
-
-        singleBtnMode.addEventListener("click", () => {
-            if (!singleBtnModeState) {
-                // Act as start
-                if (!isListening) recognition.start();
-                singleBtnIcon.src = stopIcon;
-                singleBtnModeState = true;
-            } else {
-                // Act as stop/send
-                if (isListening) recognition.stop();
-                singleBtnIcon.src = micIcon;
-                singleBtnModeState = false;
-            }
-        });
-
-        // Also update the icon if user uses the regular start/stop buttons
-        if (recognition) {
-            recognition.onstart = () => {
-                // ...existing code...
-                singleBtnIcon.src = stopIcon;
-                singleBtnModeState = true;
-            };
-            recognition.onend = () => {
-                // ...existing code...
-                singleBtnIcon.src = micIcon;
-                singleBtnModeState = false;
-            };
-        }
     });
 </script>
 
