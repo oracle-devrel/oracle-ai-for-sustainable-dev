@@ -156,6 +156,12 @@ const Graph = () => {
       } while (src === dst);
 
       await createAndPlotTransfer(cy, src, dst, Math.floor(Math.random() * 1000), `Transfer ${i + 1}`, i);
+
+      // Run a quick layout after each edge is added
+      cy.layout({ name: 'cose', animate: true, animationDuration: 300 }).run();
+
+      // Optional: add a small delay for visual effect
+      await new Promise(res => setTimeout(res, 200));
     }
 
     // Only run layout once, after all nodes and edges are added

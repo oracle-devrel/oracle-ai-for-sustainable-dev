@@ -17,8 +17,7 @@ import java.util.Map;
 @RequestMapping("/graph")
 //@CrossOrigin(origins = "https://oracledatabase-financial.org")
 @CrossOrigin(origins = "*")
-//@CrossOrigin(origins = "http://158.180.20.119")
-public class FinancialController {
+public class GraphController {
 
     @Autowired
     private DataSource dataSource;
@@ -37,66 +36,8 @@ public class FinancialController {
     }
 
 
-    @GetMapping("/locations/coordinates")
-    public List<Map<String, Object>> getLocationCoordinates() {
-        String sql = "SELECT LON, LAT FROM locations";
-        List<Map<String, Object>> coordinates = new ArrayList<>();
 
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql);
-             ResultSet resultSet = preparedStatement.executeQuery()) {
-
-            while (resultSet.next()) {
-                Map<String, Object> coord = new HashMap<>();
-                coord.put("lat", resultSet.getDouble("LAT"));
-                coord.put("lng", resultSet.getDouble("LON"));
-                coordinates.add(coord);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return coordinates;
-    }
-
-    @PostMapping("/locations/check-distance")
-    public ResponseEntity<Boolean> checkDistance(@RequestBody Map<String, Object> payload) {
-        try {
-            Map<String, String> firstLocation = (Map<String, String>) payload.get("firstLocation");
-            Map<String, String> secondLocation = (Map<String, String>) payload.get("secondLocation");
-
-            double lat1 = Double.parseDouble(firstLocation.get("latitude"));
-            double lon1 = Double.parseDouble(firstLocation.get("longitude"));
-            double lat2 = Double.parseDouble(secondLocation.get("latitude"));
-            double lon2 = Double.parseDouble(secondLocation.get("longitude"));
-
-            double distanceKm = haversine(lat1, lon1, lat2, lon2);
-
-            return ResponseEntity.ok(distanceKm > 500.0);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(false);
-        }
-    }
-
-    /**
-     * Haversine formula to calculate the great-circle distance between two points.
-     */
-    private double haversine(double lat1, double lon1, double lat2, double lon2) {
-        final int R = 6371; // Radius of the earth in km
-        double latDistance = Math.toRadians(lat2 - lat1);
-        double lonDistance = Math.toRadians(lon2 - lon1);
-        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
-                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
-                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return R * c; // distance in km
-    }
-
-
-
-
-    
-    @PostMapping("/transfers")
+    @PostMapping("/createtransfer")
     public ResponseEntity<Map<String, Object>> createTransfer(@RequestBody Map<String, Object> payload) {
         System.out.println("FinancialController.createTransfer");
         String insertSql = "INSERT INTO FINANCIAL.TRANSFERS (TXN_ID, SRC_ACCT_ID, DST_ACCT_ID, AMOUNT, DESCRIPTION) VALUES (TRANSFERS_SEQ.NEXTVAL, ?, ?, ?, ?)";
@@ -165,5 +106,46 @@ public class FinancialController {
             e.printStackTrace();
         }
         return accounts;
+    }
+
+    @GetMapping("/transfers")
+    public List<Map<String, Object>> getTransfers() {
+        String sql = "SELECT TXN_ID, SRC_ACCT_ID, DST_ACCT_ID, AMOUNT, DESCRIPTION FROM FINANCIAL.TRANSFERS";
+        List<Map<String, Object>> transfers = new ArrayList<>();
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+
+            while (resultSet.next()) {
+                Map<String, Object> transfer = new HashMap<>();
+                transfer.put("TXN_ID", resultSet.getObject("TXN_ID"));
+                transfer.put("SRC_ACCT_ID", resultSet.getObject("SRC_ACCT_ID"));
+                transfer.put("DST_ACCT_ID", resultSet.getObject("DST_ACCT_ID"));
+                transfer.put("AMOUNT", resultSet.getObject("AMOUNT"));
+                transfer.put("DESCRIPTION", resultSet.getObject("DESCRIPTION"));
+                transfers.add(transfer);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return transfers;
+    }
+
+    @PostMapping("/cleartransfers")
+    public ResponseEntity<Map<String, Object>> clearTransfers() {
+        Map<String, Object> result = new HashMap<>();
+        String sql = "DELETE FROM FINANCIAL.TRANSFERS";
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+            int rows = ps.executeUpdate();
+            result.put("success", true);
+            result.put("deleted", rows);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("success", false);
+            result.put("message", "Error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
+        }
     }
 }
