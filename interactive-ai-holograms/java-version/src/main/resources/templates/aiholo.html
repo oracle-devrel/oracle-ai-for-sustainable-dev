@@ -222,11 +222,9 @@
             if (!isListening) recognition.start();
         });
 
-        document.getElementById("stopSendBtn").addEventListener("click", async () => {
-            console.log("Stop/Send button clicked!");
-            if (isListening) recognition.stop();
+        // Extract send logic to a function
+        async function sendTranscript() {
             const transcriptionText = transcriptBuffer.trim();
-            console.log("Transcription Text Before Sending:", transcriptionText);
             if (!transcriptionText) {
                 alert("⚠️ No text captured. Try sending again.");
                 return;
@@ -249,9 +247,6 @@
             const modifiedText = `${conversationalContext}\nQ: ${transcriptionText}`;
             const apiUrl = `https://aiholo.org/aiholo/play?question=${encodeURIComponent(modifiedText)}&selectedMode=${encodeURIComponent(selectedMode)}&languageCode=${encodeURIComponent(languageCodeSTT)}&voiceName=${encodeURIComponent(voiceName)}`;
 
-            console.log("Transcription Text:", transcriptionText); // Debugging
-            console.log("API URL:", apiUrl); // Debugging
-
             try {
                 const response = await fetch(apiUrl, { method: "GET" });
                 const result = await response.text();
@@ -261,9 +256,19 @@
 
                 document.getElementById("responseMessage").innerText = `✅ Response: ${result}`;
                 document.getElementById("stopSendBtn").disabled = false;
+
+                // Check for the specific error string in the result
+                if (typeof result === "string" && result.includes("com.google.api.gax.rpc.UnavailableException: io.grpc.StatusRuntimeException: UNAVAILABLE: Credentials failed to obtain metadata")) {
+                    fetch("https://aiholo.org/aiholo/credentialfailed", { method: "GET" });
+                }
             } catch (error) {
                 document.getElementById("responseMessage").innerText = "❌ Error retrieving response.";
             }
+        }
+
+        document.getElementById("stopSendBtn").addEventListener("click", async () => {
+            if (isListening) recognition.stop();
+            await sendTranscript();
         });
 
         // Add event listener for the Clear button
@@ -322,6 +327,8 @@
             } else {
                 // Act as stop/send
                 if (isListening) recognition.stop();
+                // Wait for recognition.onend to fire, then send transcript
+                // We'll call sendTranscript() in recognition.onend
                 singleBtnIcon.src = micIcon;
                 singleBtnModeState = false;
             }
@@ -330,14 +337,16 @@
         // Also update the icon if user uses the regular start/stop buttons
         if (recognition) {
             recognition.onstart = () => {
-                // ...existing code...
                 singleBtnIcon.src = stopIcon;
                 singleBtnModeState = true;
             };
-            recognition.onend = () => {
-                // ...existing code...
+            recognition.onend = async () => {
                 singleBtnIcon.src = micIcon;
                 singleBtnModeState = false;
+                // If stopped by single button mode, send transcript
+                if (transcriptBuffer.trim()) {
+                    await sendTranscript();
+                }
             };
         }
     });

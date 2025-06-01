@@ -144,6 +144,24 @@ public class AIHoloController {
         return "Explained";
     }
 
+    @GetMapping("/credentialfailed")
+    @ResponseBody
+    public String credentialfailed() throws Exception {
+        System.out.println("AIHoloController.explainer");
+        theValue = "explainer";
+        String filePath = "C:/Users/opc/aiholo_output.txt";
+        try (FileWriter writer = new FileWriter(filePath)) {
+            JSONObject json = new JSONObject();
+            json.put("data", theValue); // Store the response inside JSON
+            writer.write(json.toString());
+            writer.flush();
+        } catch (IOException e) {
+            return "Error writing to file: " + e.getMessage();
+        }
+        TTSAndAudio2Face.sendToAudio2Face("credentialfailed.wav");
+        return "Credential Failed";
+    }
+
     @GetMapping("/play")
     @ResponseBody
     public String play(@RequestParam("question") String question,
