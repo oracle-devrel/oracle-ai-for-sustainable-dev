@@ -91,4 +91,71 @@ public class FinancialController {
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         return R * c; // distance in km
     }
+
+
+
+
+    
+    @PostMapping("/transfers")
+    public ResponseEntity<String> createTransfer(@RequestBody Map<String, Object> payload) {
+        System.out.println("FinancialController.createTransfer");
+        String insertSql = "INSERT INTO FINANCIAL.TRANSFERS (SRC_ACCT_ID, DST_ACCT_ID, AMOUNT, DESCRIPTION) VALUES (?, ?, ?, ?)";
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement ps = connection.prepareStatement(insertSql)) {
+
+            // Parse values from payload
+            Object srcAcctIdObj = payload.get("srcAcctId");
+            Object dstAcctIdObj = payload.get("dstAcctId");
+            Object amountObj = payload.get("amount");
+            Object descriptionObj = payload.get("description");
+
+            if (srcAcctIdObj == null || dstAcctIdObj == null || amountObj == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Missing required fields");
+            }
+
+            ps.setObject(1, srcAcctIdObj);
+            ps.setObject(2, dstAcctIdObj);
+            ps.setObject(3, amountObj);
+            ps.setString(4, descriptionObj != null ? descriptionObj.toString() : null);
+
+            int rows = ps.executeUpdate();
+            if (rows > 0) {
+                return ResponseEntity.ok("Transfer inserted successfully");
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Insert failed");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/accounts")
+    public List<Map<String, Object>> getAccounts() {
+        System.out.println("FinancialController.getAccounts");
+        String sql = "SELECT ACCOUNT_ID, ACCOUNT_BALANCE, ACCOUNT_NAME, ACCOUNT_OPENED_DATE, ACCOUNT_OTHER_DETAILS, ACCOUNT_TYPE, CUSTOMER_ID FROM FINANCIAL.ACCOUNTS";
+        List<Map<String, Object>> accounts = new ArrayList<>();
+
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+
+            while (resultSet.next()) {
+                Map<String, Object> account = new HashMap<>();
+                account.put("ACCOUNT_ID", resultSet.getObject("ACCOUNT_ID"));
+                account.put("ACCOUNT_BALANCE", resultSet.getObject("ACCOUNT_BALANCE"));
+                account.put("ACCOUNT_NAME", resultSet.getObject("ACCOUNT_NAME"));
+                // Convert TIMESTAMP to String for JSON serialization
+                Timestamp openedDate = resultSet.getTimestamp("ACCOUNT_OPENED_DATE");
+                account.put("ACCOUNT_OPENED_DATE", openedDate != null ? openedDate.toString() : null);
+                account.put("ACCOUNT_OTHER_DETAILS", resultSet.getObject("ACCOUNT_OTHER_DETAILS"));
+                account.put("ACCOUNT_TYPE", resultSet.getObject("ACCOUNT_TYPE"));
+                account.put("CUSTOMER_ID", resultSet.getObject("CUSTOMER_ID"));
+                accounts.add(account);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return accounts;
+    }
 }

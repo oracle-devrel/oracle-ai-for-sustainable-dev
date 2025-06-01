@@ -1,0 +1,55 @@
+
+
+This app borrows from the these livelabs workshops as far as concepts but uses different tables, open source libraries, etc. as well....
+Graph Studio: Find Circular Payment Chains with Graph Queries in Autonomous Database
+Explore Operational Property Graphs in 23ai
+
+These are two tables used in workshop...
+
+CREATE TABLE "HOL23AI"."BANK_ACCOUNTS" (
+"ID" NUMBER,
+"NAME" VARCHAR2(400) ,
+"BALANCE" NUMBER(20,2),
+PRIMARY KEY ("ID")
+)
+
+CREATE TABLE "HOL23AI"."BANK_TRANSFERS" (
+"TXN_ID" NUMBER,
+"SRC_ACCT_ID" NUMBER,
+"DST_ACCT_ID" NUMBER,
+"DESCRIPTION" VARCHAR2(400),
+"AMOUNT" NUMBER,
+PRIMARY KEY ("TXN_ID"),
+FOREIGN KEY ("SRC_ACCT_ID") REFERENCES "HOL23AI"."BANK_ACCOUNTS" ("ID"),
+FOREIGN KEY ("DST_ACCT_ID") REFERENCES "HOL23AI"."BANK_ACCOUNTS" ("ID")
+);
+
+
+In this dev workshops, we reuse the accounts table...
+
+CREATE TABLE "FINANCIAL"."ACCOUNTS"
+(
+"ACCOUNT_ID" NUMBER(19,0) NOT NULL ENABLE,
+"ACCOUNT_BALANCE" NUMBER(19,0) reservable,
+"CUSTOMER_ID" VARCHAR2(255 CHAR),
+"ACCOUNT_NAME" VARCHAR2(255 CHAR),
+"ACCOUNT_OPENED_DATE" TIMESTAMP (6),
+"ACCOUNT_OTHER_DETAILS" VARCHAR2(255 CHAR),
+"ACCOUNT_TYPE" VARCHAR2(255 CHAR)
+);
+
+and so create the transfers table as this (basically just changing "BANK_ACCOUNTS" ("ID") to "ACCOUNTS" ("ACCOUNT_ID")...
+
+CREATE TABLE TRANSFERS (
+"TXN_ID" NUMBER,
+"SRC_ACCT_ID" NUMBER,
+"DST_ACCT_ID" NUMBER,
+"DESCRIPTION" VARCHAR2(400),
+"AMOUNT" NUMBER,
+PRIMARY KEY ("TXN_ID"),
+FOREIGN KEY ("SRC_ACCT_ID") REFERENCES "ACCOUNTS" ("ACCOUNT_ID"),
+FOREIGN KEY ("DST_ACCT_ID") REFERENCES "ACCOUNTS" ("ACCOUNT_ID")
+);
+
+
+

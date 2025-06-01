@@ -95,40 +95,71 @@ const Graph = () => {
     };
   }, []);
 
-  const generateTransactions = () => {
+  const generateTransactions = async () => {
     if (!cy) return;
-
-    let nodeCount = 0;
-    const maxNodes = 20;
-
-    const interval = setInterval(() => {
-      if (nodeCount >= maxNodes) {
-        clearInterval(interval);
-        return;
-      }
-
-      const currentNodeId = `account${nodeCount}`;
-      cy.add({ data: { id: currentNodeId } });
-
-      // Randomly connect to an existing node
-      if (nodeCount > 0) {
-        const randomTargetNode = `account${Math.floor(Math.random() * nodeCount)}`;
-        cy.add({ data: { id: `edge${nodeCount}`, source: currentNodeId, target: randomTargetNode } });
-      }
-
-      // Occasionally create a random edge between two existing nodes
-      if (nodeCount > 1 && Math.random() > 0.5) {
-        const randomSourceNode = `account${Math.floor(Math.random() * nodeCount)}`;
-        const randomTargetNode = `account${Math.floor(Math.random() * nodeCount)}`;
-        if (randomSourceNode !== randomTargetNode) {
-          cy.add({ data: { id: `edge${nodeCount}-extra`, source: randomSourceNode, target: randomTargetNode } });
-        }
-      }
-
-      nodeCount++;
-      cy.layout({ name: 'cose' }).run(); // Use a force-directed layout for randomness
-    }, 2000);
+    await generateCircularTransfersAndGraph(cy);
   };
+
+  // Create a transfer from srcAcctId to dstAcctId
+  async function createTransfer(srcAcctId, dstAcctId, amount, description) {
+    const response = await fetch('https://oracleai-financial.org/financial/transfers', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        srcAcctId,
+        dstAcctId,
+        amount,
+        description,
+      }),
+    });
+    return response.json();
+  }
+
+  async function fetchGraphData() {
+    const accounts = await fetch('https://oracleai-financial.org/financial/accounts').then(res => res.json());
+    const transfers = await fetch('https://oracleai-financial.org/financial/transfers').then(res => res.json());
+    return { accounts, transfers };
+  }
+
+  function updateCytoscapeGraph(cy, accounts, transfers) {
+    cy.elements().remove(); // Clear old graph
+
+    // Add nodes
+    accounts.forEach(acc => {
+      cy.add({ data: { id: String(acc.ACCOUNT_ID), label: acc.ACCOUNT_NAME || acc.ACCOUNT_ID } });
+    });
+
+    // Add edges
+    transfers.forEach(tx => {
+      cy.add({
+        data: {
+          id: `txn${tx.TXN_ID}`,
+          source: String(tx.SRC_ACCT_ID),
+          target: String(tx.DST_ACCT_ID),
+          label: tx.DESCRIPTION || ''
+        }
+      });
+    });
+
+    cy.layout({ name: 'cose' }).run();
+  }
+
+  async function generateCircularTransfersAndGraph(cy) {
+    // 1. Fetch all accounts (assume at least 20 exist)
+    const accounts = await fetch('https://oracleai-financial.org/financial/accounts').then(res => res.json());
+    const accountIds = accounts.slice(0, 20).map(acc => acc.ACCOUNT_ID);
+
+    // 2. Create 20 transfers in a circle
+    for (let i = 0; i < 20; i++) {
+      const src = accountIds[i];
+      const dst = accountIds[(i + 1) % 20];
+      await createTransfer(src, dst, Math.floor(Math.random() * 1000), `Transfer ${i + 1}`);
+    }
+
+    // 3. Fetch updated graph data and update Cytoscape
+    const { accounts: updatedAccounts, transfers } = await fetchGraphData();
+    updateCytoscapeGraph(cy, updatedAccounts, transfers);
+  }
 
   return (
     <PageContainer>
@@ -142,55 +173,69 @@ const Graph = () => {
           {isCollapsed ? 'Show Developer Details' : 'Hide Developer Details'}
         </ToggleButton>
         {!isCollapsed && (
-          <CollapsibleContent>
-            <TextContent>
-              <div>
-                <a
-                  href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier-financial/index.html"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ color: '#1abc9c', textDecoration: 'none' }}
-                >
-                  Click here for workshop lab and further information
-                </a>
-              </div>
-              <div>
-                <a
-                  href="https://github.com/paulparkinson/oracle-ai-for-sustainable-dev/tree/main/financial"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ color: '#1abc9c', textDecoration: 'none' }}
-                >
-                  Direct link to source code on GitHub
-                </a>
-              </div>
-              <h4>Financial Process:</h4>
-              <ul>
-                <li>Graph analysis is conducted for money laundering</li>
-              </ul>
-              <h4>Developer Notes:</h4>
-              <ul>
-                <li>Leverage Oracle Database Graph</li>
-              </ul>
-              <h4>Differentiators:</h4>
-              <ul>
-                <li>Supports PGQL, SQL, JSONPath, Rest, and Vector​</li>
-              </ul>
-            </TextContent>
-            <VideoWrapper>
-            <h4>Walkthrough Video:</h4>
-              <iframe
-                width="100%"
-                height="315"
-                src="https://www.youtube.com/embed/E1pOaCkd_PM"
-                title="YouTube video player"
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                style={{ borderRadius: '8px', border: '1px solid #444' }}
-              ></iframe>
-            </VideoWrapper>
-          </CollapsibleContent>
+          <>
+            <CollapsibleContent>
+              <TextContent>
+                <div>
+                  <a
+                    href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier-financial/index.html"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: '#1abc9c', textDecoration: 'none' }}
+                  >
+                    Click here for workshop lab and further information
+                  </a>
+                </div>
+                <div>
+                  <a
+                    href="https://github.com/paulparkinson/oracle-ai-for-sustainable-dev/tree/main/financial"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: '#1abc9c', textDecoration: 'none' }}
+                  >
+                    Direct link to source code on GitHub
+                  </a>
+                </div>
+                <h4>Financial Process:</h4>
+                <ul>
+                  <li>Graph analysis is conducted for money laundering</li>
+                </ul>
+                <h4>Developer Notes:</h4>
+                <ul>
+                  <li>Leverage Oracle Database Graph</li>
+                </ul>
+                <h4>Differentiators:</h4>
+                <ul>
+                  <li>Supports PGQL, SQL, JSONPath, Rest, and Vector​</li>
+                </ul>
+              </TextContent>
+              <VideoWrapper>
+                <h4>Walkthrough Video:</h4>
+                <iframe
+                  width="100%"
+                  height="315"
+                  src="https://www.youtube.com/embed/E1pOaCkd_PM"
+                  title="YouTube video player"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  style={{ borderRadius: '8px', border: '1px solid #444' }}
+                ></iframe>
+              </VideoWrapper>
+            </CollapsibleContent>
+            {/* Add Graph Studio link below collapsible content */}
+            <div style={{ marginTop: '24px', width: '100%' }}>
+              <h4>Oracle Graph Studio:</h4>
+              <a
+                href="https://IJ1TYZIR3WPWLPE-FINANCIALDB.adb.eu-frankfurt-1.oraclecloudapps.com/graphstudio/"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: '#1abc9c', textDecoration: 'none', fontWeight: 'bold', fontSize: '1.1em' }}
+              >
+                Open Oracle Graph Studio in a new tab
+              </a>
+            </div>
+          </>
         )}
       </SidePanel>
 
