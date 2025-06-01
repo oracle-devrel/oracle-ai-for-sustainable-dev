@@ -1,4 +1,4 @@
-package oracle.financial;
+package oracleai.financial;
 
 import java.sql.*;
 import java.time.Duration;

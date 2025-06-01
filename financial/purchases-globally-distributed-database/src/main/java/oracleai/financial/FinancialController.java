@@ -207,4 +207,159 @@ public class FinancialController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+    @GetMapping("/stockticker")
+    public List<Map<String, Object>> getStockTicker() {
+        String sql = "SELECT TICKER, COMPANY_NAME, CURRENT_PRICE FROM FINANCIAL.STOCK_PRICES";
+        List<Map<String, Object>> stocks = new ArrayList<>();
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Map<String, Object> stock = new HashMap<>();
+                stock.put("TICKER", rs.getString("TICKER"));
+                stock.put("COMPANY_NAME", rs.getString("COMPANY_NAME"));
+                stock.put("CURRENT_PRICE", rs.getBigDecimal("CURRENT_PRICE"));
+                stocks.add(stock);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return stocks;
+    }
+
+    @PostMapping("/stockpurchase")
+    public ResponseEntity<Map<String, Object>> createStockPurchase(@RequestBody Map<String, Object> payload) {
+        Map<String, Object> result = new HashMap<>();
+        String insertSql = "INSERT INTO FINANCIAL.STOCK_PURCHASES (CUSTOMER_ID, TICKER, QUANTITY, PURCHASE_PRICE) VALUES (?, ?, ?, ?)";
+        String updateSql = "UPDATE FINANCIAL.STOCK_PRICES SET CURRENT_PRICE = CURRENT_PRICE - 1 WHERE TICKER = ?";
+        Connection connection = null;
+        PreparedStatement insertPs = null;
+        PreparedStatement updatePs = null;
+
+        try {
+            connection = dataSource.getConnection();
+            connection.setAutoCommit(false);
+
+            Object customerId = payload.get("customerId");
+            Object ticker = payload.get("ticker");
+            Object quantity = payload.get("quantity");
+            Object purchasePrice = payload.get("purchasePrice");
+
+            if (customerId == null || ticker == null || quantity == null || purchasePrice == null) {
+                result.put("success", false);
+                result.put("message", "Missing required fields");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+            }
+
+            // Insert purchase
+            insertPs = connection.prepareStatement(insertSql);
+            insertPs.setObject(1, customerId);
+            insertPs.setObject(2, ticker);
+            insertPs.setObject(3, quantity);
+            insertPs.setObject(4, purchasePrice);
+            int rows = insertPs.executeUpdate();
+
+            // Update stock price
+            updatePs = connection.prepareStatement(updateSql);
+            updatePs.setObject(1, ticker);
+            updatePs.executeUpdate();
+
+            connection.commit();
+            result.put("success", true);
+            result.put("message", "Stock purchase recorded and price updated");
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (connection != null) try { connection.rollback(); } catch (SQLException ex) { ex.printStackTrace(); }
+            result.put("success", false);
+            result.put("message", "Error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
+        } finally {
+            try { if (insertPs != null) insertPs.close(); } catch (Exception e) { }
+            try { if (updatePs != null) updatePs.close(); } catch (Exception e) { }
+            try { if (connection != null) connection.close(); } catch (Exception e) { }
+        }
+    }
+
+    @PostMapping("/stockbuyorsell")
+    public ResponseEntity<Map<String, Object>> stockBuyOrSell(@RequestBody Map<String, Object> payload) {
+        Map<String, Object> result = new HashMap<>();
+        String insertSql = "INSERT INTO FINANCIAL.STOCK_PURCHASES (CUSTOMER_ID, TICKER, QUANTITY, PURCHASE_PRICE) VALUES (?, ?, ?, ?)";
+        String updateSql = "UPDATE FINANCIAL.STOCK_PRICES SET CURRENT_PRICE = CURRENT_PRICE + ? WHERE TICKER = ?";
+        Connection connection = null;
+        PreparedStatement insertPs = null;
+        PreparedStatement updatePs = null;
+
+        try {
+            connection = dataSource.getConnection();
+            connection.setAutoCommit(false);
+
+            Object customerId = payload.get("customerId");
+            Object ticker = payload.get("ticker");
+            Object quantityObj = payload.get("quantity");
+            Object purchasePrice = payload.get("purchasePrice");
+            Object actionObj = payload.get("action");
+
+            if (customerId == null || ticker == null || quantityObj == null || purchasePrice == null || actionObj == null) {
+                result.put("success", false);
+                result.put("message", "Missing required fields");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+            }
+
+            int quantity = Integer.parseInt(quantityObj.toString());
+            String action = actionObj.toString();
+            // If it's a sell, make the shares negative for the price update
+            int sharesDelta = action.equalsIgnoreCase("sell") ? -quantity : quantity;
+
+            // Insert purchase (quantity is always positive in the purchase record)
+            insertPs = connection.prepareStatement(insertSql);
+            insertPs.setObject(1, customerId);
+            insertPs.setObject(2, ticker);
+            insertPs.setObject(3, quantity);
+            insertPs.setObject(4, purchasePrice);
+            insertPs.executeUpdate();
+
+            // Update stock price (add or subtract based on action)
+            updatePs = connection.prepareStatement(updateSql);
+            updatePs.setInt(1, sharesDelta);
+            updatePs.setObject(2, ticker);
+            updatePs.executeUpdate();
+
+            connection.commit();
+            result.put("success", true);
+            result.put("message", "Stock buy/sell recorded and price updated");
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (connection != null) try { connection.rollback(); } catch (SQLException ex) { ex.printStackTrace(); }
+            result.put("success", false);
+            result.put("message", "Error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
+        } finally {
+            try { if (insertPs != null) insertPs.close(); } catch (Exception e) { }
+            try { if (updatePs != null) updatePs.close(); } catch (Exception e) { }
+            try { if (connection != null) connection.close(); } catch (Exception e) { }
+        }
+    }
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
 
 const PageContainer = styled.div`
@@ -133,10 +133,33 @@ const StockTicker = () => {
   const [formData, setFormData] = useState({
     stock: '',
     shares: '',
-    cacheOption: 'True Cache', // Default option for cache
+    cacheOption: 'True Cache',
+    customerId: '', // Will be set after fetching customerIds
   });
 
-  const [isCollapsed, setIsCollapsed] = useState(true); // Set to true to make the panel collapsed by default
+  const [isCollapsed, setIsCollapsed] = useState(true);
+  const [stockList, setStockList] = useState([]);
+  const [lastAction, setLastAction] = useState(null); // { ticker: 'AAPL', action: 'buy' | 'sell' }
+  const [customerIds, setCustomerIds] = useState([]);
+
+  useEffect(() => {
+    // Fetch stock list
+    fetch('https://oracleai-financial.org/financial/stockticker')
+      .then(res => res.json())
+      .then(data => setStockList(data))
+      .catch(() => setStockList([]));
+
+    // Fetch customer IDs from accounts endpoint
+    fetch('https://oracleai-financial.org/financial/accounts')
+      .then(res => res.json())
+      .then(data => {
+        const ids = Array.from(new Set(data.map(acc => acc.CUSTOMER_ID))).filter(Boolean);
+        setCustomerIds(ids);
+        // Set default customerId if not already set
+        setFormData(f => ({ ...f, customerId: ids[0] || '' }));
+      })
+      .catch(() => setCustomerIds([]));
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -145,18 +168,33 @@ const StockTicker = () => {
 
   const handleStockSubmit = (e, action) => {
     e.preventDefault();
-    fetch('http://oracleai-financial.org/stock', {
+    const payload = {
+      customerId: formData.customerId,
+      ticker: formData.stock,
+      quantity: Number(formData.shares),
+      purchasePrice: Number(formData.shares),
+      action, // "buy" or "sell"
+    };
+
+    fetch('https://oracleai-financial.org/financial/stockbuyorsell', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ ...formData, action }),
+      body: JSON.stringify(payload),
     })
-      .then((response) => {
-        if (response.ok) {
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          setLastAction({ ticker: formData.stock, action });
+          // Refresh ticker after purchase/sale
+          fetch('https://oracleai-financial.org/financial/stockticker')
+            .then(res => res.json())
+            .then(data => setStockList(data))
+            .catch(() => setStockList([]));
           alert(`${action === 'buy' ? 'Purchase' : 'Sale'} successful!`);
         } else {
-          alert(`${action === 'buy' ? 'Purchase' : 'Sale'} failed. Please try again.`);
+          alert(`${action === 'buy' ? 'Purchase' : 'Sale'} failed: ${data.message || 'Please try again.'}`);
         }
       })
       .catch((error) => {
@@ -234,15 +272,51 @@ const StockTicker = () => {
       <TickerContainer>
         <TickerText>
           <TickerContent>
-            ABC1: $100.50 ▲1.25% | ABC2: $200.30 ▼0.45% | ABC3: $300.10 ▲0.75% | ABC4: $400.20 ▲0.95% | ABC5: $500.00 ▼1.10%
+            {stockList.map(stock => {
+              let arrow = '';
+              if (
+                lastAction &&
+                lastAction.ticker === stock.TICKER
+              ) {
+                arrow = lastAction.action === 'buy' ? ' ▲' : ' ▼';
+              }
+              return `${stock.TICKER}: $${Number(stock.CURRENT_PRICE).toFixed(2)}${arrow}`;
+            }).join(' | ')}
           </TickerContent>
           <TickerContent>
-            ABC1: $100.50 ▲1.25% | ABC2: $200.30 ▼0.45% | ABC3: $300.10 ▲0.75% | ABC4: $400.20 ▲0.95% | ABC5: $500.00 ▼1.10%
+            {stockList.map(stock => {
+              let arrow = '';
+              if (
+                lastAction &&
+                lastAction.ticker === stock.TICKER
+              ) {
+                arrow = lastAction.action === 'buy' ? ' ▲' : ' ▼';
+              }
+              return `${stock.TICKER}: $${Number(stock.CURRENT_PRICE).toFixed(2)}${arrow}`;
+            }).join(' | ')}
           </TickerContent>
         </TickerText>
       </TickerContainer>
 
       <Form>
+        <Label htmlFor="customerId">Customer</Label>
+        <Select
+          id="customerId"
+          name="customerId"
+          value={formData.customerId}
+          onChange={handleChange}
+          required
+        >
+          <option value="" disabled>
+            Select a customer
+          </option>
+          {customerIds.map(id => (
+            <option key={id} value={id}>
+              {id}
+            </option>
+          ))}
+        </Select>
+
         <Label htmlFor="stock">Stock</Label>
         <Select
           id="stock"
@@ -254,21 +328,21 @@ const StockTicker = () => {
           <option value="" disabled>
             Select a stock
           </option>
-          <option value="ABC1">Stock ABC1</option>
-          <option value="ABC2">Stock ABC2</option>
-          <option value="ABC3">Stock ABC3</option>
-          <option value="ABC4">Stock ABC4</option>
-          <option value="ABC5">Stock ABC5</option>
+          {stockList.map(stock => (
+            <option key={stock.TICKER} value={stock.TICKER}>
+              {stock.TICKER}
+            </option>
+          ))}
         </Select>
 
-        <Label htmlFor="shares">Set Stock Price</Label>
+        <Label htmlFor="shares">Number Of Shares</Label>
         <Input
           type="number"
           id="shares"
           name="shares"
           value={formData.shares}
           onChange={handleChange}
-          placeholder="Enter stock price"
+          placeholder="Enter number of shares"
           required
         />
 
@@ -297,12 +371,16 @@ const StockTicker = () => {
           </label>
         </div>
 
-        <Button type="button" onClick={(e) => handleStockSubmit(e, 'buy')}>
-          Buy
-        </Button>
-        <Button type="button" onClick={(e) => handleStockSubmit(e, 'sell')}>
-          Sell
-        </Button>
+        {/* Add space above, below, and between buttons */}
+        <div style={{ margin: '24px 0 24px 0', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <Button type="button" onClick={(e) => handleStockSubmit(e, 'buy')}>
+            Buy
+          </Button>
+          <Button type="button" onClick={(e) => handleStockSubmit(e, 'sell')}>
+            Sell
+          </Button>
+        </div>
+
         <p style={{ marginTop: '10px', color: '#1abc9c', fontSize: '14px' }}>
           Buy/sell affects stock value
         </p>
