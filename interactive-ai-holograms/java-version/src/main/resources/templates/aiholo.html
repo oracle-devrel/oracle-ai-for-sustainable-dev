@@ -263,6 +263,10 @@
                 }
             } catch (error) {
                 document.getElementById("responseMessage").innerText = "❌ Error retrieving response.";
+            } finally {
+                // Always clear transcript buffer and field after sending
+                transcriptBuffer = "";
+                document.getElementById("transcription").innerText = "";
             }
         }
 
