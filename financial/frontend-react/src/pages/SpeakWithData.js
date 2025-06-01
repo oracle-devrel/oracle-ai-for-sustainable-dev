@@ -162,6 +162,11 @@ const SpeakWithData = () => {
           />
         </div>
 
+        {/* Notice above the video player */}
+        <div style={{ width: '100%', color: '#e67e22', fontWeight: 'bold', margin: '12px 0 4px 0', textAlign: 'center' }}>
+          THIS FUNCTIONALITY IS CURRENTLY BEING USED AT THE BIGDATA AND AI EVENT - WILL RETURN BY END OF WEEK
+        </div>
+
         {/* Video Snippet */}
         <div style={{ width: '100%', height: 'auto' }}>
           <video
@@ -173,15 +178,22 @@ const SpeakWithData = () => {
               width: '100%',
               borderRadius: '8px',
               border: '1px solid #444',
+              background: '#222', // fallback background
             }}
-          ></video>
+            onError={e => {
+              e.target.poster = '';
+              e.target.style.display = 'none';
+            }}
+          >
+            Your browser does not support the video tag.
+          </video>
         </div>
 
         {/* Twitch Embed */}
         <TwitchEmbed>
           <iframe
             src="https://player.twitch.tv/?channel=aiholo&parent=localhost"
-            style={{ height: '100%', width: '100%' }} /* Ensure iframe fills its container */
+            style={{ height: '100%', width: '100%' }}
             frameBorder="0"
             allowFullScreen={true}
             title="Twitch Stream"

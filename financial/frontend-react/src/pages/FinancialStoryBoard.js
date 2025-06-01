@@ -50,7 +50,7 @@ const Dashboard = () => {
     { name: 'ATM: Polyglot', complete: '100%', notes: 'Update video, design work, finish workshop doc, Add last few languages.' },
     { name: 'Transfer: MicroTx and Lock-free', complete: '100%', notes: 'Update video, design work, finish workshop doc' },
     { name: 'Suspicious Purchases: GDD, Spatial', complete: '100%', notes: 'Update video, show purchases, Jupyter on prod version' },
-    { name: 'Circular payments: Graph', complete: '80% ETA Friday', notes: 'Update video, use new graph server container' },
+    { name: 'Circular payments: Graph', complete: '100%', notes: 'Update video, use new graph server container' },
     { name: 'Transfer to brokerage: Kafka TxEventQ', complete: '80% ETA Friday', notes: 'Update video, change naming and queue creation' },
     { name: 'Stock ticker: True Cache', complete: '90% ETA Friday', notes: 'Update video, make stock price directly updatable, ie not via stock average, and mod names' },
     { name: 'Financial Insights: AI Agents, MCP, Vector search', complete: '70% ETA FMonday', notes: 'Update video' },
