@@ -79,7 +79,7 @@ const Graph = () => {
 
   useEffect(() => {
     const cyInstance = cytoscape({
-      container: document.getElementById('cy'), // Reference to the graph container
+      container: document.getElementById('cy'),
       elements: [],
       style: [
         { selector: 'node', style: { 'label': 'data(id)', 'background-color': '#0074D9' } },
@@ -91,18 +91,25 @@ const Graph = () => {
     setCy(cyInstance);
 
     return () => {
-      cyInstance.destroy(); // Clean up Cytoscape instance on component unmount
+      cyInstance.destroy();
     };
   }, []);
 
-  const generateTransactions = async () => {
-    if (!cy) return;
-    await generateCircularTransfersAndGraph(cy);
-  };
+  // Plot a single transfer edge
+  function plotTransferEdge(cy, tx, index) {
+    cy.add({
+      data: {
+        id: `txn${tx.TXN_ID || `${tx.src}_${tx.dst}_${index}`}`,
+        source: String(tx.SRC_ACCT_ID || tx.src),
+        target: String(tx.DST_ACCT_ID || tx.dst),
+        label: tx.DESCRIPTION || tx.description || ''
+      }
+    });
+  }
 
-  // Create a transfer from srcAcctId to dstAcctId
-  async function createTransfer(srcAcctId, dstAcctId, amount, description) {
-    const response = await fetch('https://oracleai-financial.org/financial/transfers', {
+  // Create a transfer from srcAcctId to dstAcctId and plot it
+  async function createAndPlotTransfer(cy, srcAcctId, dstAcctId, amount, description, index) {
+    const response = await fetch('https://oracleai-financial.org/financial/createtransfer', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -112,53 +119,56 @@ const Graph = () => {
         description,
       }),
     });
-    return response.json();
+    const result = await response.json();
+    plotTransferEdge(cy, {
+      src: srcAcctId,
+      dst: dstAcctId,
+      description,
+    }, index);
   }
 
-  async function fetchGraphData() {
+  function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
+
+  // Generate and plot 20 circular transfers one by one
+  async function generateCircularTransfersAndGraph(cy) {
+    // Clear graph
+    cy.elements().remove();
+
+    // Fetch and add nodes
     const accounts = await fetch('https://oracleai-financial.org/financial/accounts').then(res => res.json());
-    const transfers = await fetch('https://oracleai-financial.org/financial/transfers').then(res => res.json());
-    return { accounts, transfers };
-  }
-
-  function updateCytoscapeGraph(cy, accounts, transfers) {
-    cy.elements().remove(); // Clear old graph
-
-    // Add nodes
-    accounts.forEach(acc => {
+    const accountIds = accounts.slice(0, 20).map(acc => acc.ACCOUNT_ID);
+    accounts.slice(0, 20).forEach(acc => {
       cy.add({ data: { id: String(acc.ACCOUNT_ID), label: acc.ACCOUNT_NAME || acc.ACCOUNT_ID } });
     });
 
-    // Add edges
-    transfers.forEach(tx => {
-      cy.add({
-        data: {
-          id: `txn${tx.TXN_ID}`,
-          source: String(tx.SRC_ACCT_ID),
-          target: String(tx.DST_ACCT_ID),
-          label: tx.DESCRIPTION || ''
-        }
-      });
-    });
+    // Add random edges
+    for (let i = 0; i < 20; i++) {
+      let src, dst;
+      do {
+        src = accountIds[Math.floor(Math.random() * accountIds.length)];
+        dst = accountIds[Math.floor(Math.random() * accountIds.length)];
+      } while (src === dst);
 
+      await createAndPlotTransfer(cy, src, dst, Math.floor(Math.random() * 1000), `Transfer ${i + 1}`, i);
+    }
+
+    // Only run layout once, after all nodes and edges are added
     cy.layout({ name: 'cose' }).run();
   }
 
-  async function generateCircularTransfersAndGraph(cy) {
-    // 1. Fetch all accounts (assume at least 20 exist)
-    const accounts = await fetch('https://oracleai-financial.org/financial/accounts').then(res => res.json());
-    const accountIds = accounts.slice(0, 20).map(acc => acc.ACCOUNT_ID);
-
-    // 2. Create 20 transfers in a circle
-    for (let i = 0; i < 20; i++) {
-      const src = accountIds[i];
-      const dst = accountIds[(i + 1) % 20];
-      await createTransfer(src, dst, Math.floor(Math.random() * 1000), `Transfer ${i + 1}`);
+  // Clear all transfers in backend and graph
+  async function clearAllTransfers() {
+    await fetch('https://oracleai-financial.org/financial/cleartransfers', { method: 'POST' });
+    if (cy) {
+      cy.elements('edge').remove();
+      cy.layout({ name: 'cose' }).run();
     }
-
-    // 3. Fetch updated graph data and update Cytoscape
-    const { accounts: updatedAccounts, transfers } = await fetchGraphData();
-    updateCytoscapeGraph(cy, updatedAccounts, transfers);
   }
 
   return (
@@ -243,7 +253,12 @@ const Graph = () => {
       <GraphContainer id="cy"></GraphContainer>
 
       {/* Generate Transactions Button */}
-      <GenerateButton onClick={generateTransactions}>Generate transactions to see corresponding graph</GenerateButton>
+      <GenerateButton onClick={() => generateCircularTransfersAndGraph(cy)}>
+        Generate transactions to see corresponding graph
+      </GenerateButton>
+      <GenerateButton style={{ backgroundColor: '#e74c3c', marginLeft: '10px' }} onClick={clearAllTransfers}>
+        Clear all transfer history
+      </GenerateButton>
     </PageContainer>
   );
 };

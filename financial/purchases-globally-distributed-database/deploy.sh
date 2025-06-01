@@ -9,4 +9,3 @@ cp globallydistributeddatabase-springboot-deployment_template.yaml globallydistr
 sed -i '' "s|IMAGE_PLACEHOLDER|$IMAGE|g" globallydistributeddatabase-springboot-deployment.yaml
 kubectl apply -f globallydistributeddatabase-springboot-deployment.yaml -n financial
 
-kubectl apply -f  globallydistributeddatabase-springboot-deployment.yaml  -n financial

@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/financial")
+@RequestMapping("/graph")
 //@CrossOrigin(origins = "https://oracledatabase-financial.org")
 @CrossOrigin(origins = "*")
 //@CrossOrigin(origins = "http://158.180.20.119")
@@ -96,7 +96,7 @@ public class FinancialController {
 
 
     
-    @PostMapping("/createtransfer")
+    @PostMapping("/transfers")
     public ResponseEntity<Map<String, Object>> createTransfer(@RequestBody Map<String, Object> payload) {
         System.out.println("FinancialController.createTransfer");
         String insertSql = "INSERT INTO FINANCIAL.TRANSFERS (TXN_ID, SRC_ACCT_ID, DST_ACCT_ID, AMOUNT, DESCRIPTION) VALUES (TRANSFERS_SEQ.NEXTVAL, ?, ?, ?, ?)";
@@ -165,46 +165,5 @@ public class FinancialController {
             e.printStackTrace();
         }
         return accounts;
-    }
-
-    @GetMapping("/transfers")
-    public List<Map<String, Object>> getTransfers() {
-        String sql = "SELECT TXN_ID, SRC_ACCT_ID, DST_ACCT_ID, AMOUNT, DESCRIPTION FROM FINANCIAL.TRANSFERS";
-        List<Map<String, Object>> transfers = new ArrayList<>();
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql);
-             ResultSet resultSet = preparedStatement.executeQuery()) {
-
-            while (resultSet.next()) {
-                Map<String, Object> transfer = new HashMap<>();
-                transfer.put("TXN_ID", resultSet.getObject("TXN_ID"));
-                transfer.put("SRC_ACCT_ID", resultSet.getObject("SRC_ACCT_ID"));
-                transfer.put("DST_ACCT_ID", resultSet.getObject("DST_ACCT_ID"));
-                transfer.put("AMOUNT", resultSet.getObject("AMOUNT"));
-                transfer.put("DESCRIPTION", resultSet.getObject("DESCRIPTION"));
-                transfers.add(transfer);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return transfers;
-    }
-
-    @PostMapping("/cleartransfers")
-    public ResponseEntity<Map<String, Object>> clearTransfers() {
-        Map<String, Object> result = new HashMap<>();
-        String sql = "DELETE FROM FINANCIAL.TRANSFERS";
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement ps = connection.prepareStatement(sql)) {
-            int rows = ps.executeUpdate();
-            result.put("success", true);
-            result.put("deleted", rows);
-            return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            e.printStackTrace();
-            result.put("success", false);
-            result.put("message", "Error: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
-        }
     }
 }
