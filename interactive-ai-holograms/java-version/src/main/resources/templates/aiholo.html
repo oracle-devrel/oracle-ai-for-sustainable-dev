@@ -330,14 +330,11 @@
                 singleBtnModeState = true;
                 singleBtnMode.disabled = false;
             } else {
-                // Stop recognition
-                if (isListening) {
-                    recognition.stop();
-                    singleBtnMode.disabled = true; // Prevent double clicks
-                    // Only clear the display, NOT the buffer!
-                    document.getElementById("transcription").innerText = "";
-                }
-                // Icon and state will be reset in onend
+                // Stop recognition (always call stop, let onend handle the rest)
+                recognition.stop();
+                singleBtnMode.disabled = true; // Prevent double clicks
+                // Only clear the display for feedback, NOT the buffer!
+                document.getElementById("transcription").innerText = "";
             }
         });
 
@@ -351,11 +348,7 @@
                 singleBtnIcon.src = micIcon;
                 singleBtnModeState = false;
                 singleBtnMode.disabled = false;
-                // Only send transcript if buffer is not empty
-                if (transcriptBuffer.trim()) {
-                    await sendTranscript();
-                }
-                // Always clear buffer and display after sending
+                await sendTranscript(); // Always call, will handle empty transcript
                 transcriptBuffer = "";
                 document.getElementById("transcription").innerText = "";
             };
