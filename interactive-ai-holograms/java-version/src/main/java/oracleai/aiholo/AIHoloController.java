@@ -117,7 +117,7 @@ public class AIHoloController {
         else if (languageCode.equals("he-IL") )
             model.addAttribute("voiceName", "he-IL-Wavenet-A");
         else if (languageCode.equals("en-US") )
-            model.addAttribute("voiceName", "en-US-Wavenet-A");
+            model.addAttribute("voiceName", "en-US-Chirp3-HD-Aoede");
         else if (languageCode.equals("en-GB"))
             model.addAttribute("voiceName", "en-GB-Wavenet-A");
         else model.addAttribute("voiceName", "en-US-Wavenet-A");
