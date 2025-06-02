@@ -108,8 +108,16 @@ public class AIHoloController {
             model.addAttribute("voiceName", "es-US-Wavenet-A");
         else if (languageCode.equals("it-IT") )
             model.addAttribute("voiceName", "it-IT-Wavenet-A");
-        else if (languageCode.equals("ar-ae") )
-            model.addAttribute("voiceName", "ar-ae-Wavenet-A");
+        else if (languageCode.equals("fr-FR") )
+            model.addAttribute("voiceName", "fr-FR-Wavenet-A");
+        else if (languageCode.equals("ro-RO") )
+            model.addAttribute("voiceName", "ro-RO-Wavenet-A");
+        else if (languageCode.equals("en-AU") )
+            model.addAttribute("voiceName", "en-AU-Wavenet-A");
+        else if (languageCode.equals("ga-GA") )
+            model.addAttribute("voiceName", "ga-GA-Wavenet-A");
+        else if (languageCode.equals("ar-AE") )
+            model.addAttribute("voiceName", "ar-AE-Wavenet-A");
         else if (languageCode.equals("ja-JP") )
             model.addAttribute("voiceName", "ja-JP-Wavenet-A");
         else if (languageCode.equals("hi-IN") )
@@ -117,7 +125,7 @@ public class AIHoloController {
         else if (languageCode.equals("he-IL") )
             model.addAttribute("voiceName", "he-IL-Wavenet-A");
         else if (languageCode.equals("en-US") )
-            model.addAttribute("voiceName", "en-US-Chirp3-HD-Aoede");
+            model.addAttribute("voiceName", "Aoede");
         else if (languageCode.equals("en-GB"))
             model.addAttribute("voiceName", "en-GB-Wavenet-A");
         else model.addAttribute("voiceName", "en-US-Wavenet-A");
