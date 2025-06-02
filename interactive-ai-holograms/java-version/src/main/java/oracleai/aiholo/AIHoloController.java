@@ -54,6 +54,7 @@ public class AIHoloController {
     private static final String SANDBOX_API_URL = System.getenv("SANDBOX_API_URL");
     private static final String SANDBOX_AUTH_TOKEN = System.getenv("SANDBOX_AUTH_TOKEN");
     static final String AUDIO_DIR_PATH = System.getenv("AUDIO_DIR_PATH");
+    static int currentAnswerIntro = 0;
     private static final String DEFAULT_LANGUAGE_CODE = "es-ES";
     private static final String DEFAULT_VOICE_NAME = "es-ES-Wavenet-D";
     private final static String sql = """
@@ -92,7 +93,7 @@ public class AIHoloController {
 
 
     @GetMapping("")
-    public String home(@RequestParam(value = "languageCode", defaultValue = "en-GB") String languageCode, Model model) {
+    public String home(@RequestParam(value = "languageCode", defaultValue = "en-US") String languageCode, Model model) {
         System.out.println("AIHolo root languageCode = " + languageCode );
         this.languageCode = languageCode;
         model.addAttribute("languageCode", languageCode);
@@ -191,12 +192,30 @@ public class AIHoloController {
             return "Error writing to file: " + e.getMessage();
         }
 
-        // Start a new thread to call TTSAndAudio2Face.sendToAudio2Face
+        // Start a new thread to call TTSAndAudio2Face.sendToAudio2Face with intro switching
         new Thread(() -> {
             try {
                 // languagecode:es-MX voicename:es-US-Wavenet-A
-                if (languageCode.equals("es-MX")) TTSAndAudio2Face.sendToAudio2Face("tts-es-USFEMALEes-US-Wavenet-A_¡Claro!¡U.wav");
-                else TTSAndAudio2Face.sendToAudio2Face("tts-en-USFEMALEAoede_Sure!Illcheck.wav");
+                if (languageCode.equals("es-MX")) {
+                    TTSAndAudio2Face.sendToAudio2Face("tts-es-USFEMALEes-US-Wavenet-A_¡Claro!¡U.wav");
+                } else {
+                    // Switch for currentAnswerIntro
+                    switch (currentAnswerIntro) {
+                        case 0:
+                            TTSAndAudio2Face.sendToAudio2Face("tts-en-USFEMALEAoede_Sure!Illcheck.wav");
+                            break;
+                        case 1:
+                            TTSAndAudio2Face.sendToAudio2Face("tts-en-USFEMALEAoede_on_it.wav");
+                            break;
+                        case 2:
+                            TTSAndAudio2Face.sendToAudio2Face("tts-en-USFEMALEAoede_one_sec.wav");
+                            break;
+                        default:
+                            TTSAndAudio2Face.sendToAudio2Face("tts-en-USFEMALEAoede_Sure!Illcheck.wav");
+                    }
+                    currentAnswerIntro++;
+                    if (currentAnswerIntro > 2) currentAnswerIntro = 0;
+                }
             } catch (Exception e) {
                 System.err.println("Error in sendToAudio2Face: " + e.getMessage());
             }
