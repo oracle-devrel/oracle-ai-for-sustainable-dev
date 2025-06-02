@@ -126,7 +126,8 @@ public class AIHoloController {
         else if (languageCode.equals("he-IL") )
             model.addAttribute("voiceName", "he-IL-Wavenet-A");
         else if (languageCode.equals("en-US") )
-            model.addAttribute("voiceName", "en-US-Chirp3-HD-Aoede");
+            model.addAttribute("voiceName", "Aoede");
+//            model.addAttribute("voiceName", "en-US-Chirp3-HD-Aoede");
         else if (languageCode.equals("en-GB"))
             model.addAttribute("voiceName", "en-GB-Wavenet-A");
         else model.addAttribute("voiceName", "en-US-Wavenet-A");
@@ -153,23 +154,6 @@ public class AIHoloController {
         return "Explained";
     }
 
-    @GetMapping("/credentialfailed")
-    @ResponseBody
-    public String credentialfailed() throws Exception {
-        System.out.println("AIHoloController.explainer");
-        theValue = "explainer";
-        String filePath = "C:/Users/opc/aiholo_output.txt";
-        try (FileWriter writer = new FileWriter(filePath)) {
-            JSONObject json = new JSONObject();
-            json.put("data", theValue); // Store the response inside JSON
-            writer.write(json.toString());
-            writer.flush();
-        } catch (IOException e) {
-            return "Error writing to file: " + e.getMessage();
-        }
-        TTSAndAudio2Face.sendToAudio2Face("credentialfailed.wav");
-        return "Credential Failed";
-    }
 
     @GetMapping("/play")
     @ResponseBody
@@ -210,11 +194,14 @@ public class AIHoloController {
                         case 2:
                             TTSAndAudio2Face.sendToAudio2Face("tts-en-USFEMALEAoede_one_sec.wav");
                             break;
+                        case 3:
+                            TTSAndAudio2Face.sendToAudio2Face("tts-en-USFEMALEAoede_hmm.wav");
+                            break;
                         default:
                             TTSAndAudio2Face.sendToAudio2Face("tts-en-USFEMALEAoede_Sure!Illcheck.wav");
                     }
                     currentAnswerIntro++;
-                    if (currentAnswerIntro > 2) currentAnswerIntro = 0;
+                    if (currentAnswerIntro > 3) currentAnswerIntro = 0;
                 }
             } catch (Exception e) {
                 System.err.println("Error in sendToAudio2Face: " + e.getMessage());

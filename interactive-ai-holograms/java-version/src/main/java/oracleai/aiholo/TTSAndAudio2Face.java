@@ -30,7 +30,7 @@ public class TTSAndAudio2Face {
                 // will occur if token expired
                 //TODO might be funny and helpful to do this, ie have the system gives its status and ask for help ...
                 // sendToAudio2Face("uhoh-lookslikeIneedanewTTStoken.wav");
-                sendToAudio2Face("../audio-aiholo/explainer.wav");
+                sendToAudio2Face(AIHoloController.AUDIO_DIR_PATH + "tts-en-USFEMALEAoede_SorrySpeechToken.wav");
 //                sendToAudio2Face("hello-brazil.wav");
             }
 
@@ -57,9 +57,9 @@ public class TTSAndAudio2Face {
             SynthesizeSpeechResponse response =
                     textToSpeechClient.synthesizeSpeech(input, voice, audioConfig);
             ByteString audioContents = response.getAudioContent();
-            try (OutputStream out = new FileOutputStream(fileName)) {
+            String fullPath = AIHoloController.AUDIO_DIR_PATH + fileName;
+            try (OutputStream out = new FileOutputStream(fullPath)) {
                 out.write(audioContents.toByteArray());
-//                System.out.println("Audio content written to file:" + fileName);
             }
         }
     }
