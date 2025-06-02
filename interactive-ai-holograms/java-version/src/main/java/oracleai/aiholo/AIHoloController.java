@@ -126,7 +126,7 @@ public class AIHoloController {
         else if (languageCode.equals("he-IL") )
             model.addAttribute("voiceName", "he-IL-Wavenet-A");
         else if (languageCode.equals("en-US") )
-            model.addAttribute("voiceName", "Aoede");
+            model.addAttribute("voiceName", "en-US-Chirp3-HD-Aoede");
         else if (languageCode.equals("en-GB"))
             model.addAttribute("voiceName", "en-GB-Wavenet-A");
         else model.addAttribute("voiceName", "en-US-Wavenet-A");
@@ -324,8 +324,8 @@ public class AIHoloController {
                                                          @RequestParam("languageCode") String languageCode,
                                                          @RequestParam("ssmlGender") String ssmlGender,
                                                          @RequestParam("voiceName") String voiceName) throws Exception {
-        String info= "tts for textToConvert " + textToConvert;
-        System.out.println("in TTS GCP info:" + info);
+        System.out.println("TTS GCP  textToConvert = " + textToConvert + ", languageCode = " + languageCode +
+                ", ssmlGender = " + ssmlGender + ", voiceName = " + voiceName);
         try (TextToSpeechClient textToSpeechClient = TextToSpeechClient.create()) {
             System.out.println("in TTS GCP textToSpeechClient:" + textToSpeechClient + " languagecode:" + languageCode);
             SynthesisInput input = SynthesisInput.newBuilder().setText(textToConvert).build();
