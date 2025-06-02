@@ -324,24 +324,23 @@
 
         singleBtnMode.addEventListener("click", () => {
             if (!singleBtnModeState) {
-                // Act as start
+                // Start recognition
                 if (!isListening) recognition.start();
                 singleBtnIcon.src = stopIcon;
                 singleBtnModeState = true;
-                singleBtnMode.disabled = false; // Ensure enabled on start
+                singleBtnMode.disabled = false;
             } else {
-                // Act as stop/send
+                // Stop recognition
                 if (isListening) {
                     recognition.stop();
-                    singleBtnMode.disabled = true; // Disable until onend
-                    // Clear interim transcript immediately for feedback
+                    singleBtnMode.disabled = true; // Prevent double clicks
+                    // Only clear the display, NOT the buffer!
                     document.getElementById("transcription").innerText = "";
                 }
                 // Icon and state will be reset in onend
             }
         });
 
-        // Also update the icon if user uses the regular start/stop buttons
         if (recognition) {
             recognition.onstart = () => {
                 singleBtnIcon.src = stopIcon;
@@ -351,8 +350,14 @@
             recognition.onend = async () => {
                 singleBtnIcon.src = micIcon;
                 singleBtnModeState = false;
-                singleBtnMode.disabled = false; // Re-enable after stop
-                await sendTranscript(); // Always call, it will handle empty transcript
+                singleBtnMode.disabled = false;
+                // Only send transcript if buffer is not empty
+                if (transcriptBuffer.trim()) {
+                    await sendTranscript();
+                }
+                // Always clear buffer and display after sending
+                transcriptBuffer = "";
+                document.getElementById("transcription").innerText = "";
             };
         }
     });
