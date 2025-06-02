@@ -328,13 +328,16 @@
                 if (!isListening) recognition.start();
                 singleBtnIcon.src = stopIcon;
                 singleBtnModeState = true;
+                singleBtnMode.disabled = false; // Ensure enabled on start
             } else {
                 // Act as stop/send
-                if (isListening) recognition.stop();
-                // Wait for recognition.onend to fire, then send transcript
-                // We'll call sendTranscript() in recognition.onend
-                singleBtnIcon.src = micIcon;
-                singleBtnModeState = false;
+                if (isListening) {
+                    recognition.stop();
+                    singleBtnMode.disabled = true; // Disable until onend
+                    // Clear interim transcript immediately for feedback
+                    document.getElementById("transcription").innerText = "";
+                }
+                // Icon and state will be reset in onend
             }
         });
 
@@ -343,10 +346,12 @@
             recognition.onstart = () => {
                 singleBtnIcon.src = stopIcon;
                 singleBtnModeState = true;
+                singleBtnMode.disabled = false;
             };
             recognition.onend = async () => {
                 singleBtnIcon.src = micIcon;
                 singleBtnModeState = false;
+                singleBtnMode.disabled = false; // Re-enable after stop
                 // If stopped by single button mode, send transcript
                 if (transcriptBuffer.trim()) {
                     await sendTranscript();
