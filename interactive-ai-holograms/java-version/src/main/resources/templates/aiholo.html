@@ -108,18 +108,21 @@
 </script>
 
 <div class="container mt-3">
-    <div class="row text-left">
+    <div class="row text-left align-items-center">
         <div class="col-md-4">
             <p>1. Select one...</p>
             <div class="radio-group">
                 <label><input type="radio" name="mode" value="use chat" checked>ask LLM directly</label>
-                <!-- <label><input type="radio" name="mode" value="use narrate">narrate: to use Select AI</label> -->
                 <label><input type="radio" name="mode" value="use vector">use Select AI and RAG with vector search</label>
             </div>
         </div>
         <div class="col-md-4">
-            <p>2. Click the mic below and speak your question.<br>3. Click button again to send your question.<br>&nbsp;&nbsp;&nbsp;&nbsp;(Click the trash bin to clear conversation)</p>
-            <!-- Move Single Button Mode here, remove original start/stop buttons -->
+            <p>
+                2. Click the mic below and speak your question.<br>
+                3. Click button again to send your question.<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;(Click the trash bin to clear conversation)
+            </p>
+            <!-- Single Button Mode and Clear Button -->
             <button id="singleBtnMode" class="btn btn-primary" style="background: none; border: none; padding: 0;">
                 <img id="singleBtnIcon" src="../images-aiholo/Icons/Yellow/Microphone.svg" alt="Single Button Mode" style="width: 70px; height: auto;">
             </button>
@@ -127,12 +130,15 @@
                 <img src="../images-aiholo/Icons/Yellow/Trash bin.svg" alt="Clear" style="width: 70px; height: auto;">
             </button>
         </div>
-        <div class="col-md-4">
-            <p></p>
-            <!-- Remove the original stop button -->
-            <!-- <button id="stopSendBtn" class="btn btn-primary" style="background: none; border: none; padding: 0;">
-                <img src="../images-aiholo/Icons/Yellow/Stop recording.svg" alt="Stop" style="width: 70px; height: auto;">
-            </button> -->
+        <div class="col-md-4 d-flex justify-content-end align-items-center" style="gap: 32px;">
+            <!-- Mirror Me Button -->
+            <button id="mirrorMeBtn" class="btn btn-primary" style="background: none; border: none; padding: 0;" title="Mirror Me">
+                <img src="../images-aiholo/Icons/Yellow/Face id.svg" alt="Mirror Me" style="width: 70px; height: auto;">
+            </button>
+            <!-- Explainer Button -->
+            <button id="explainerBtn" class="btn btn-primary" style="background: none; border: none; padding: 0;" title="Explain Exhibit">
+                <img src="../images-aiholo/Icons/Yellow/Explain.svg" alt="Explain This" style="width: 70px; height: auto;">
+            </button>
         </div>
     </div>
 </div>
@@ -140,24 +146,6 @@
 <!-- ✅ Transcription field restored -->
 <div id="transcription"></div>
 <p id="responseMessage"></p>
-
-<!-- Button Row: Mirror Me, Single Button Mode, Explain This -->
-<div class="d-flex justify-content-center align-items-center" style="gap: 40px; margin-top: 30px; margin-bottom: 30px;">
-    <!-- Mirror Me Button -->
-    <div>
-        <p style="margin-bottom: 8px;">Mirror Me</p>
-        <button id="mirrorMeBtn" class="btn btn-primary" style="background: none; border: none; padding: 0;">
-            <img src="../images-aiholo/Icons/Yellow/Face id.svg" alt="Mirror Me" style="width: 70px; height: auto;">
-        </button>
-    </div>
-    <!-- Explainer Button -->
-    <div>
-        <p style="margin-bottom: 8px;">Explain Exhibit</p>
-        <button id="explainerBtn" class="btn btn-primary" style="background: none; border: none; padding: 0;">
-            <img src="../images-aiholo/Icons/Yellow/Explain.svg" alt="Explain This" style="width: 70px; height: auto;">
-        </button>
-    </div>
-</div>
 
 <hr style="border-top: 2px solid #CC5500; margin: 20px 0;">
 <br>
