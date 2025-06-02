@@ -109,13 +109,18 @@
 
 <div class="container mt-3">
     <div class="row text-left align-items-center">
+        <!-- 1. Select one (now at the top, spanning all columns) -->
+        <div class="col-12">
+            <p style="margin-bottom: 8px;">1. Select one...</p>
+        </div>
+        <!-- Radio group left column -->
         <div class="col-md-4">
-            <p>1. Select one...</p>
             <div class="radio-group">
                 <label><input type="radio" name="mode" value="use chat" checked>ask LLM directly</label>
                 <label><input type="radio" name="mode" value="use vector">use Select AI and RAG with vector search</label>
             </div>
         </div>
+        <!-- Center column: instructions and mic/clear buttons -->
         <div class="col-md-4">
             <p>
                 2. Click the mic below and speak your question.<br>
@@ -130,15 +135,22 @@
                 <img src="../images-aiholo/Icons/Yellow/Trash bin.svg" alt="Clear" style="width: 70px; height: auto;">
             </button>
         </div>
-        <div class="col-md-4 d-flex justify-content-end align-items-center" style="gap: 32px;">
-            <!-- Mirror Me Button -->
-            <button id="mirrorMeBtn" class="btn btn-primary" style="background: none; border: none; padding: 0;" title="Mirror Me">
-                <img src="../images-aiholo/Icons/Yellow/Face id.svg" alt="Mirror Me" style="width: 70px; height: auto;">
-            </button>
-            <!-- Explainer Button -->
-            <button id="explainerBtn" class="btn btn-primary" style="background: none; border: none; padding: 0;" title="Explain Exhibit">
-                <img src="../images-aiholo/Icons/Yellow/Explain.svg" alt="Explain This" style="width: 70px; height: auto;">
-            </button>
+        <!-- Right column: Mirror Me and Explainer, with labels above each button -->
+        <div class="col-md-4 d-flex flex-column align-items-end" style="gap: 8px;">
+            <div class="d-flex flex-row align-items-end" style="gap: 32px;">
+                <div class="d-flex flex-column align-items-center">
+                    <span style="font-size: 14px; margin-bottom: 2px;">Switch to mirror me mode</span>
+                    <button id="mirrorMeBtn" class="btn btn-primary" style="background: none; border: none; padding: 0;" title="Mirror Me">
+                        <img src="../images-aiholo/Icons/Yellow/Face id.svg" alt="Mirror Me" style="width: 70px; height: auto;">
+                    </button>
+                </div>
+                <div class="d-flex flex-column align-items-center">
+                    <span style="font-size: 14px; margin-bottom: 2px;">Explain this exhibit</span>
+                    <button id="explainerBtn" class="btn btn-primary" style="background: none; border: none; padding: 0;" title="Explain Exhibit">
+                        <img src="../images-aiholo/Icons/Yellow/Explain.svg" alt="Explain This" style="width: 70px; height: auto;">
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </div>
