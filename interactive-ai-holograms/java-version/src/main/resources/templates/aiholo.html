@@ -352,10 +352,7 @@
                 singleBtnIcon.src = micIcon;
                 singleBtnModeState = false;
                 singleBtnMode.disabled = false; // Re-enable after stop
-                // If stopped by single button mode, send transcript
-                if (transcriptBuffer.trim()) {
-                    await sendTranscript();
-                }
+                await sendTranscript(); // Always call, it will handle empty transcript
             };
         }
     });
