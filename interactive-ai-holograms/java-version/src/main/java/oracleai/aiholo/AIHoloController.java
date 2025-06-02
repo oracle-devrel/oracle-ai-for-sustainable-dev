@@ -87,7 +87,7 @@ public class AIHoloController {
 //            TTSAndAudio2Face.processMetahuman(
 //                        fileName,  TimeInWords.getTimeInWords(languageCode),
 //                    DEFAULT_LANGUAGE_CODE, DEFAULT_VOICE_NAME);
-            TTSAndAudio2Face.sendToAudio2Face("../audio-aiholo/explainer.wav");
+            TTSAndAudio2Face.sendToAudio2Face("explainer.wav");
         }, 1, 15, TimeUnit.MINUTES);
     }
 
