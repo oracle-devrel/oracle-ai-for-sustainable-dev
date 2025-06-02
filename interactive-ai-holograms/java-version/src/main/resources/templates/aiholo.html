@@ -322,6 +322,10 @@
         const micIcon = "../images-aiholo/Icons/Yellow/Microphone.svg";
         const stopIcon = "../images-aiholo/Icons/Yellow/Stop recording.svg";
 
+        // Get audio elements
+        const listeningSound = document.getElementById("listeningSound");
+        const sendingSound = document.getElementById("sendingSound");
+
         singleBtnMode.addEventListener("click", () => {
             if (!singleBtnModeState) {
                 // Start recognition
@@ -329,12 +333,18 @@
                 singleBtnIcon.src = stopIcon;
                 singleBtnModeState = true;
                 singleBtnMode.disabled = false;
+                // Play listening sound
+                listeningSound.currentTime = 0;
+                listeningSound.play();
             } else {
                 // Stop recognition (always call stop, let onend handle the rest)
                 recognition.stop();
                 singleBtnMode.disabled = true; // Prevent double clicks
                 // Only clear the display for feedback, NOT the buffer!
                 document.getElementById("transcription").innerText = "";
+                // Play sending sound
+                sendingSound.currentTime = 0;
+                sendingSound.play();
             }
         });
 
@@ -355,6 +365,10 @@
         }
     });
 </script>
+
+<!-- Add these audio elements just before your closing </body> tag -->
+<audio id="listeningSound" src="../audio-aiholo/listening.wav" preload="auto"></audio>
+<audio id="sendingSound" src="../audio-aiholo/sending.wav" preload="auto"></audio>
 
 <!--<div class="bottom-links">-->
 <br>
