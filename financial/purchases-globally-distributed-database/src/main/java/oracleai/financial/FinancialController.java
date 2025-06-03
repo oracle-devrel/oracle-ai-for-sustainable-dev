@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.http.*;
 
 import javax.sql.DataSource;
 import java.sql.*;
@@ -360,6 +361,186 @@ public class FinancialController {
             try { if (insertPs != null) insertPs.close(); } catch (Exception e) { }
             try { if (updatePs != null) updatePs.close(); } catch (Exception e) { }
             try { if (connection != null) connection.close(); } catch (Exception e) { }
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    // --- Messaging.js endpoints ---
+
+    @PostMapping("/kafka/transfer")
+    public ResponseEntity<String> kafkaTransfer(@RequestBody Map<String, Object> payload) {
+        // Display all form field values
+        StringBuilder sb = new StringBuilder();
+        sb.append("Received /kafka/transfer POST\n");
+        sb.append("Fields:\n");
+        for (Map.Entry<String, Object> entry : payload.entrySet()) {
+            sb.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+        }
+        return ResponseEntity.ok(sb.toString());
+    }
+
+    @PostMapping("/orders/deleteAll")
+    public ResponseEntity<String> deleteAllOrders(@RequestBody(required = false) Map<String, Object> payload) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Received /orders/deleteAll POST\n");
+        if (payload != null) {
+            sb.append("Fields:\n");
+            for (Map.Entry<String, Object> entry : payload.entrySet()) {
+                sb.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+            }
+        }
+        sb.append("All orders deleted.");
+        return ResponseEntity.ok(sb.toString());
+    }
+
+    @PostMapping("/orders/place")
+    public ResponseEntity<String> placeOrder(@RequestBody Map<String, Object> payload) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Received /orders/place POST\n");
+        sb.append("Fields:\n");
+        for (Map.Entry<String, Object> entry : payload.entrySet()) {
+            sb.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+        }
+        sb.append("Order placed.");
+        return ResponseEntity.ok(sb.toString());
+    }
+
+    @PostMapping("/orders/show")
+    public ResponseEntity<String> showOrder(@RequestBody Map<String, Object> payload) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Received /orders/show POST\n");
+        sb.append("Fields:\n");
+        for (Map.Entry<String, Object> entry : payload.entrySet()) {
+            sb.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+        }
+        sb.append("Order(s) shown.");
+        return ResponseEntity.ok(sb.toString());
+    }
+
+    @PostMapping("/inventory/add")
+    public ResponseEntity<String> addInventory(@RequestBody Map<String, Object> payload) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Received /inventory/add POST\n");
+        sb.append("Fields:\n");
+        for (Map.Entry<String, Object> entry : payload.entrySet()) {
+            sb.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+        }
+        sb.append("Inventory added.");
+        return ResponseEntity.ok(sb.toString());
+    }
+
+    @PostMapping("/inventory/remove")
+    public ResponseEntity<String> removeInventory(@RequestBody Map<String, Object> payload) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Received /inventory/remove POST\n");
+        sb.append("Fields:\n");
+        for (Map.Entry<String, Object> entry : payload.entrySet()) {
+            sb.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+        }
+        sb.append("Inventory removed.");
+        return ResponseEntity.ok(sb.toString());
+    }
+
+    @PostMapping("/inventory/get")
+    public ResponseEntity<String> getInventory(@RequestBody Map<String, Object> payload) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Received /inventory/get POST\n");
+        sb.append("Fields:\n");
+        for (Map.Entry<String, Object> entry : payload.entrySet()) {
+            sb.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+        }
+        sb.append("Inventory retrieved.");
+        return ResponseEntity.ok(sb.toString());
+    }
+
+
+
+
+
+    
+    @PostMapping("/stockinfoforcustid")
+    public ResponseEntity<List<Map<String, Object>>> getStockInfoForCustomer(@RequestBody Map<String, Object> payload) {
+        Object customerIdObj = payload.get("customerId");
+        if (customerIdObj == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ArrayList<>());
+        }
+        String customerId = customerIdObj.toString();
+
+        String sql = "SELECT sp.TICKER, sp.COMPANY_NAME, sp.CURRENT_PRICE, sp.LAST_UPDATED, " +
+                     "p.PURCHASE_ID, p.QUANTITY, p.PURCHASE_PRICE, p.PURCHASE_DATE " +
+                     "FROM FINANCIAL.STOCK_PURCHASES p " +
+                     "JOIN FINANCIAL.STOCK_PRICES sp ON p.TICKER = sp.TICKER " +
+                     "WHERE p.CUSTOMER_ID = ? " +
+                     "ORDER BY p.PURCHASE_DATE DESC";
+
+        List<Map<String, Object>> results = new ArrayList<>();
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+
+            ps.setString(1, customerId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Map<String, Object> row = new HashMap<>();
+                    row.put("TICKER", rs.getString("TICKER"));
+                    row.put("COMPANY_NAME", rs.getString("COMPANY_NAME"));
+                    row.put("CURRENT_PRICE", rs.getBigDecimal("CURRENT_PRICE"));
+                    row.put("LAST_UPDATED", rs.getTimestamp("LAST_UPDATED") != null ? rs.getTimestamp("LAST_UPDATED").toString() : null);
+                    row.put("PURCHASE_ID", rs.getObject("PURCHASE_ID"));
+                    row.put("QUANTITY", rs.getObject("QUANTITY"));
+                    row.put("PURCHASE_PRICE", rs.getBigDecimal("PURCHASE_PRICE"));
+                    row.put("PURCHASE_DATE", rs.getTimestamp("PURCHASE_DATE") != null ? rs.getTimestamp("PURCHASE_DATE").toString() : null);
+                    results.add(row);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ArrayList<>());
+        }
+        return ResponseEntity.ok(results);
+    }
+
+
+
+
+
+
+
+
+
+
+    @PostMapping("/query")
+    public ResponseEntity<String> proxyQuery(@RequestBody Map<String, Object> payload) {
+        String backendUrl = "http://141.148.204.74:8000/query";
+        RestTemplate restTemplate = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(payload, headers);
+
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(
+                backendUrl,
+                HttpMethod.POST,
+                requestEntity,
+                String.class
+            );
+            return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("{\"error\": \"Proxy failed: " + e.getMessage() + "\"}");
         }
     }
 }

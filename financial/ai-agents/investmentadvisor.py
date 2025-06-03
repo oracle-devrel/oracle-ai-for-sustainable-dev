@@ -48,11 +48,11 @@ if ORACLE_DB_AVAILABLE:
         print("Using Oracle DB 23ai for vector storage")
     except Exception as e:
         print(f"Error initializing Oracle DB: {str(e)}")
-        print("Falling back to ChromaDB")
+        # print("Falling back to ChromaDB")
         vector_store = VectorStore()
 else:
     vector_store = VectorStore()
-    print("Using ChromaDB for vector storage (Oracle DB not available)")
+    # print("Using ChromaDB for vector storage (Oracle DB not available)")
 
 # Initialize agents
 hf_token = load_config()
@@ -280,12 +280,8 @@ def chat(message: str, history: List[List[str]], agent_type: str, use_cot: bool,
 
 def create_interface():
     """Create Gradio interface"""
-    with gr.Blocks(title="Personalized Investment Report Generation (AI Agents, Vector Search, MCP, langgraph)", theme=gr.themes.Soft()) as interface:
-        gr.Markdown("""
-        # Personalized Investment Report Generation (AI Agents, Vector Search, MCP, langgraph)
-        
-        """)
-        
+    # Removed title and initial Markdown header as requested
+    with gr.Blocks() as interface:
         # Show Oracle DB status
         if ORACLE_DB_AVAILABLE and hasattr(vector_store, 'connection'):
             gr.Markdown("""
@@ -296,7 +292,7 @@ def create_interface():
         else:
             gr.Markdown("""
             <div style="padding: 10px; background-color: #f8d7da; color: #721c24; border-radius: 5px; margin-bottom: 15px;">
-            ✅ <strong>ChromeDB</strong> is active and being used for vector storage.
+            ✅ <strong>Oracle DB 23ai</strong> is active and being used for vector and private data search.
             </div>
             """)
         
@@ -482,8 +478,8 @@ def create_interface():
         
         # Replace Instructions with an image
         gr.Markdown("## Personalized Investment Report Generation")
-        gr.Image(value="img/PersonalizedInvestmentReportGeneration.png", label="Instructions Image")
-        gr.Image(value="img/financialaiagentssolution.png", label="Instructions Image")
+        # gr.Image(value="img/PersonalizedInvestmentReportGeneration.png", label="Instructions Image")
+        gr.Image(value="img/financialaiagentssolution.png", label="Architecture of AI Agent System")
 
     return interface
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 
 const PageContainer = styled.div`
@@ -41,7 +41,28 @@ const ImageContainer = styled.div`
   }
 `;
 
+const CollapsibleSection = styled.div`
+  margin-bottom: 24px;
+  background: #181818;
+  border-radius: 8px;
+  border: 1px solid #333;
+  padding: 12px;
+`;
+
+const CollapsibleHeader = styled.div`
+  cursor: pointer;
+  font-weight: bold;
+  color: #1abc9c;
+  margin-bottom: 8px;
+`;
+
+const CollapsibleContent = styled.div`
+  margin-top: 8px;
+`;
+
 const DashBoard = () => {
+  const [showCollapsible, setShowCollapsible] = useState(false);
+
   return (
     <PageContainer>
       <h2>Technical architecture and setup (includes Kubernetes, OpenTelemetry Observability, ...)</h2>
@@ -51,6 +72,25 @@ const DashBoard = () => {
         <li>All pages/labs share the same schema but can be run a la carte as there are no interdependencies.</li>
         <li>All pages are microservices that can be run either in Kubernetes or standalone.</li>
       </ul>
+
+      {/* Collapsible Section */}
+      <CollapsibleSection>
+        <CollapsibleHeader onClick={() => setShowCollapsible(!showCollapsible)}>
+          {showCollapsible ? '▼' : '►'} Observability & Dashboards
+        </CollapsibleHeader>
+        {showCollapsible && (
+          <CollapsibleContent>
+            <a
+              href="https://oracleai-financial.org/grafana"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: '#1abc9c', textDecoration: 'underline' }}
+            >
+              Open Grafana Dashboard (admin/Welcome12345*)
+            </a>
+          </CollapsibleContent>
+        )}
+      </CollapsibleSection>
 
       {/* Links */}
       <LinksContainer>
@@ -74,7 +114,7 @@ const DashBoard = () => {
 
       {/* Architecture Image */}
       <ImageContainer>
-      <h2>Architecture</h2>
+        <h2>Architecture</h2>
         <img
           src={`${process.env.PUBLIC_URL}/images/architecture.png`}
           alt="Technical Architecture"
@@ -82,13 +122,12 @@ const DashBoard = () => {
       </ImageContainer>
       {/* ER diagram Image */}
       <ImageContainer>
-      <h2>Entity Diagram</h2>
+        <h2>Entity Diagram</h2>
         <img
           src={`${process.env.PUBLIC_URL}/images/er_diagram.png`}
           alt="Technical Architecture"
         />
       </ImageContainer>
-
 
       {/* Grafana iframe */}
       <VideoContainer>

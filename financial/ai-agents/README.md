@@ -1,3 +1,6 @@
+TLDR python main.py python investmentadvisor.py
+
+
 # Personalized Investment Report Generation (AI Agents, Vector Search, MCP, langgraph)
 
 ## Introduction
