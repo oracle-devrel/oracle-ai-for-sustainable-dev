@@ -378,18 +378,6 @@ public class FinancialController {
     
     // --- Messaging.js endpoints ---
 
-    @PostMapping("/kafka/transfer")
-    public ResponseEntity<String> kafkaTransfer(@RequestBody Map<String, Object> payload) {
-        // Display all form field values
-        StringBuilder sb = new StringBuilder();
-        sb.append("Received /kafka/transfer POST\n");
-        sb.append("Fields:\n");
-        for (Map.Entry<String, Object> entry : payload.entrySet()) {
-            sb.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
-        }
-        return ResponseEntity.ok(sb.toString());
-    }
-
     @PostMapping("/orders/deleteAll")
     public ResponseEntity<String> deleteAllOrders(@RequestBody(required = false) Map<String, Object> payload) {
         StringBuilder sb = new StringBuilder();
@@ -404,14 +392,39 @@ public class FinancialController {
         return ResponseEntity.ok(sb.toString());
     }
 
+    private static boolean isOrderCalledAlready = false;
+
     @PostMapping("/orders/place")
-    public ResponseEntity<String> placeOrder(@RequestBody Map<String, Object> payload) {
+    public ResponseEntity<?> placeOrder(@RequestBody Map<String, Object> payload) {
+        String txnCrashOption = (String) payload.get("txnCrashOption");
+        String messagingOption = (String) payload.get("messagingOption");
+        String orderId = payload.get("orderId") != null ? payload.get("orderId").toString() : null;
+        String nft = payload.get("nftDrop") != null ? payload.get("nftDrop").toString() : null;
+
+        // Check for the crashOrderAfterInventoryMsg scenario
+        if ("crashOrderAfterInventoryMsg".equals(txnCrashOption)) {
+            isOrderCalledAlready = true;
+            if ("Kafka with MongoDB and Postgres".equals(messagingOption)) {
+                Map<String, Object> result = new HashMap<>();
+                result.put("orderId", orderId);
+                result.put("nft", nft);
+                result.put("status", "pending");
+                return ResponseEntity.ok(result);
+            } else {
+                Map<String, Object> result = new HashMap<>();
+                result.put("status", "pending");
+                return ResponseEntity.ok(result);
+            }
+        }
+
+        // Default: Print all form fields, including messagingOption
         StringBuilder sb = new StringBuilder();
         sb.append("Received /orders/place POST\n");
         sb.append("Fields:\n");
         for (Map.Entry<String, Object> entry : payload.entrySet()) {
             sb.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
         }
+        sb.append("Selected messagingOption: ").append(messagingOption).append("\n");
         sb.append("Order placed.");
         return ResponseEntity.ok(sb.toString());
     }
@@ -428,40 +441,91 @@ public class FinancialController {
         return ResponseEntity.ok(sb.toString());
     }
 
+
+    
     @PostMapping("/inventory/add")
     public ResponseEntity<String> addInventory(@RequestBody Map<String, Object> payload) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Received /inventory/add POST\n");
-        sb.append("Fields:\n");
-        for (Map.Entry<String, Object> entry : payload.entrySet()) {
-            sb.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+        String inventoryId = (String) payload.get("nftDrop");
+        String inventoryLocation = (String) payload.getOrDefault("inventoryLocation", null);
+        Integer amount = null;
+        try {
+            amount = Integer.parseInt(payload.get("amount").toString());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Invalid or missing amount");
         }
-        sb.append("Inventory added.");
-        return ResponseEntity.ok(sb.toString());
+
+        String upsertSql = "MERGE INTO INVENTORY i " +
+                "USING (SELECT ? AS inventoryid FROM dual) src " +
+                "ON (i.inventoryid = src.inventoryid) " +
+                "WHEN MATCHED THEN UPDATE SET i.inventorycount = i.inventorycount + ?, i.inventorylocation = NVL(?, i.inventorylocation) " +
+                "WHEN NOT MATCHED THEN INSERT (inventoryid, inventorylocation, inventorycount) VALUES (?, ?, ?)";
+
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement ps = connection.prepareStatement(upsertSql)) {
+            ps.setString(1, inventoryId);
+            ps.setInt(2, amount);
+            ps.setString(3, inventoryLocation);
+            ps.setString(4, inventoryId);
+            ps.setString(5, inventoryLocation);
+            ps.setInt(6, amount);
+            int rows = ps.executeUpdate();
+            return ResponseEntity.ok("Inventory added/updated. Rows affected: " + rows);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+        }
     }
 
     @PostMapping("/inventory/remove")
     public ResponseEntity<String> removeInventory(@RequestBody Map<String, Object> payload) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Received /inventory/remove POST\n");
-        sb.append("Fields:\n");
-        for (Map.Entry<String, Object> entry : payload.entrySet()) {
-            sb.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+        String inventoryId = (String) payload.get("nftDrop");
+        Integer amount = null;
+        try {
+            amount = Integer.parseInt(payload.get("amount").toString());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Invalid or missing amount");
         }
-        sb.append("Inventory removed.");
-        return ResponseEntity.ok(sb.toString());
+
+        String updateSql = "UPDATE INVENTORY SET inventorycount = inventorycount - ? WHERE inventoryid = ? AND inventorycount >= ?";
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement ps = connection.prepareStatement(updateSql)) {
+            ps.setInt(1, amount);
+            ps.setString(2, inventoryId);
+            ps.setInt(3, amount);
+            int rows = ps.executeUpdate();
+            if (rows > 0) {
+                return ResponseEntity.ok("Inventory removed. Rows affected: " + rows);
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Not enough inventory or inventory not found.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+        }
     }
 
     @PostMapping("/inventory/get")
-    public ResponseEntity<String> getInventory(@RequestBody Map<String, Object> payload) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Received /inventory/get POST\n");
-        sb.append("Fields:\n");
-        for (Map.Entry<String, Object> entry : payload.entrySet()) {
-            sb.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+    public ResponseEntity<Map<String, Object>> getInventory(@RequestBody Map<String, Object> payload) {
+        String inventoryId = (String) payload.get("nftDrop");
+        String selectSql = "SELECT inventoryid, inventorylocation, inventorycount FROM INVENTORY WHERE inventoryid = ?";
+        Map<String, Object> result = new HashMap<>();
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement ps = connection.prepareStatement(selectSql)) {
+            ps.setString(1, inventoryId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    result.put("inventoryid", rs.getString("inventoryid"));
+                    result.put("inventorylocation", rs.getString("inventorylocation"));
+                    result.put("inventorycount", rs.getInt("inventorycount"));
+                    return ResponseEntity.ok(result);
+                } else {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
-        sb.append("Inventory retrieved.");
-        return ResponseEntity.ok(sb.toString());
     }
 
 

@@ -99,13 +99,15 @@ const DevPanel = styled.div`
 `;
 
 const Messaging = () => {
-  const BASE_URL = process.env.REACT_APP_MICROTX_ACCOUNT_SERVICE_URL || 'http://localhost:8080';
+  const BASE_URL = 'https://oracleai-financial.org/financial/accounts';
+  const ACCOUNT_FETCH_URL = process.env.REACT_APP_MICROTX_ACCOUNT_SERVICE_URL || 'http://localhost:8080';
 
   const [formData, setFormData] = useState({
+    orderId: '',
     amount: '',
     fromAccount: '',
     nftDrop: '',
-    messagingOption: 'Kafka with Oracle Database',
+    messagingOption: 'Kafka (backed by TxEventQ) with Oracle Database',
     crashOption: 'noCrash',
   });
 
@@ -126,18 +128,19 @@ const Messaging = () => {
   useEffect(() => {
     const fetchFromAccounts = async () => {
       try {
-        const response = await fetch(`${BASE_URL}/accounts`);
+        const response = await fetch(`${ACCOUNT_FETCH_URL}/accounts`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
+        // ATM.js expects data.items to be an array of objects with ACCOUNT_ID
         setFromAccounts(data.items || []);
       } catch (error) {
         console.error('Error fetching from accounts:', error);
       }
     };
     fetchFromAccounts();
-  }, [BASE_URL]);
+  }, [ACCOUNT_FETCH_URL]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -197,7 +200,7 @@ const Messaging = () => {
 
   return (
     <PageContainer>
-      <h2>Process: Transfer to brokerage accounts</h2>
+      <h2>Process: Purchase Assets/NFTs</h2>
       <h2>Tech: Kafka and TxEventQ</h2>
       <h2>Reference: FSGBU</h2>
 
@@ -233,10 +236,6 @@ const Messaging = () => {
                   Direct link to source code on GitHub
                 </a>
               </div>
-              <h4>Financial Process:</h4>
-              <ul>
-                <li>Transfer to brokerage accounts</li>
-              </ul>
               <h4>Developer Notes:</h4>
               <ul>
                 <li>Use Kafka and TxEventQ for messaging</li>
@@ -261,6 +260,17 @@ const Messaging = () => {
 
       <ContentContainer>
         <Form>
+          {/* Order Id field */}
+          <Label htmlFor="orderId">Order Id</Label>
+          <Input
+            type="text"
+            id="orderId"
+            name="orderId"
+            value={formData.orderId || ""}
+            onChange={handleChange}
+            placeholder="Enter order id"
+          />
+
           {/* From Account dropdown */}
           <Label htmlFor="fromAccount">From Account</Label>
           <Select
@@ -274,8 +284,8 @@ const Messaging = () => {
               Select an account
             </option>
             {fromAccounts.map((account) => (
-              <option key={account.account_id} value={account.account_id}>
-                {account.account_id}
+              <option key={account.ACCOUNT_ID} value={account.ACCOUNT_ID}>
+                {account.ACCOUNT_ID}
               </option>
             ))}
           </Select>
@@ -309,9 +319,43 @@ const Messaging = () => {
             required
           />
 
+          <Section>
+            <h4>Messaging Option</h4>
+            <RadioLabel>
+              <input
+                type="radio"
+                name="messagingOption"
+                value="Kafka with MongoDB and Postgres"
+                checked={formData.messagingOption === "Kafka with MongoDB and Postgres"}
+                onChange={handleChange}
+              />
+              Use Kafka with MongoDB and Postgres
+            </RadioLabel>
+            <RadioLabel>
+              <input
+                type="radio"
+                name="messagingOption"
+                value="Kafka (backed by TxEventQ) with Oracle Database"
+                checked={formData.messagingOption === "Kafka (backed by TxEventQ) with Oracle Database"}
+                onChange={handleChange}
+              />
+              Use Kafka (backed by TxEventQ) with Oracle Database
+            </RadioLabel>
+          </Section>
+
           {/* Radio buttons under NFT Drop and Amount */}
           <Section>
             <h4>Transactional Exactly-Once Message Delivery Tests...</h4>
+            <RadioLabel>
+              <input
+                type="radio"
+                name="txnCrashOption"
+                value="noCrash"
+                checked={txnCrashOption === 'noCrash'}
+                onChange={e => setTxnCrashOption(e.target.value)}
+              />
+              No Crash
+            </RadioLabel>
             <RadioLabel>
               <input
                 type="radio"
