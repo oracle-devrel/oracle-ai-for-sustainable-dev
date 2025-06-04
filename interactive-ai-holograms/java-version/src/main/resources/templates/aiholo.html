@@ -381,41 +381,18 @@
 <hr style="border-top: 2px solid #CC5500; margin: 20px 0;">
 <br>
 <div class="footer">
-    <div class="input-group">
-        <input type="text" id="speechInput" class="form-control" placeholder="Type something to say directly...">
+    <form id="footerSayForm" class="input-group" action="https://aiholo.org/aiholo/playarbitrary" method="POST">
+        <input type="text" id="speechInput" name="answer" class="form-control" placeholder="Type something to say directly..." required>
+        <input type="hidden" name="fileName" value="footer.wav">
+        <input type="hidden" name="languageCode" value="en-US">
+        <input type="hidden" name="voiceName" value="en-US-Wavenet-A">
         <div class="input-group-append">
-            <img src="../images-aiholo/Icons/Yellow/Stop recording.svg" onclick="submitQuery()" style="cursor:pointer;">
+            <button type="submit" style="background:none; border:none; padding:0;">
+                <img src="../images-aiholo/Icons/Yellow/Stop recording.svg" style="cursor:pointer;">
+            </button>
         </div>
-    </div>
+    </form>
 </div>
-
-<script>
-    function submitQuery() {
-        var inputVal = document.getElementById('speechInput').value;
-        var url = 'https://aiholo.org/aiholo/saything?whattosay=' + encodeURIComponent(inputVal);
-        window.open(url, '_blank');
-    }
-</script>
-
-<footer>
-  <button onclick="playFooterAudio()">Play Footer Audio</button>
-  <script>
-    function playFooterAudio() {
-      fetch('https://aiholo.org/aiholo/playarbitrary', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({
-          fileName: 'footer.wav',
-          answer: 'Thank you for visiting!',
-          languageCode: 'en-US',
-          voiceName: 'en-US-Wavenet-A'
-        })
-      })
-      .then(res => res.text())
-      .then(alert);
-    }
-  </script>
-</footer>
 
 </body>
 </html>
