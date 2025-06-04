@@ -245,6 +245,12 @@ public class AIHoloController {
             }
         }
         String fileName = "output.wav";
+
+// Strip out any "A:", "A2:", "A3:", etc. at the beginning of the answer string
+if (answer != null) {
+    answer = answer.replaceFirst("^A\\d*:\\s*", "");
+}
+
         System.out.println("about to TTS and sendAudioToAudio2Face for answer: " + answer);
         TTSAndAudio2Face.processMetahuman(fileName, answer, languageCode, voicename);
         return answer;
@@ -444,7 +450,18 @@ public class AIHoloController {
             @RequestParam("answer") String answer,
             @RequestParam("languageCode") String languageCode,
             @RequestParam("voiceName") String voicename) {
+        System.out.println("playarbitrary fileName = " + fileName + ", answer = " + answer + ", languageCode = " + languageCode + ", voicename = " + voicename);
         try {
+            theValue = "question";
+            String filePath = "C:/Users/opc/aiholo_output.txt";
+            try (FileWriter writer = new FileWriter(filePath)) {
+                JSONObject json = new JSONObject();
+                json.put("data", theValue); // Store the response inside JSON
+                writer.write(json.toString());
+                writer.flush();
+            } catch (IOException e) {
+                return "Error writing to file: " + e.getMessage();
+            }
             TTSAndAudio2Face.processMetahuman(fileName, answer, languageCode, voicename);
             return "OK";
         } catch (Exception e) {

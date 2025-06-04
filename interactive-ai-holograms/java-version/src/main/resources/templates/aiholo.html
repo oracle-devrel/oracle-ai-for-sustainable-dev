@@ -165,7 +165,7 @@
         let recognition;
         let isListening = false;
         let transcriptBuffer = "";
-        let conversationHistory = []; // Array to store the last two questions and answers
+        let conversationHistory = [];
 
         if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
             recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
@@ -237,7 +237,7 @@
                 return;
             }
 
-            // Add the current question to the conversation history
+
             conversationHistory.push({ question: transcriptionText });
 
             // Keep only the last two questions and answers
@@ -245,9 +245,9 @@
                 conversationHistory.shift();
             }
 
-            // Build the conversational context `\nA${index + 1}: ${entry.answer}` : ''}`)
+            // Build the conversational context
             let conversationalContext = conversationHistory
-                .map((entry, index) => `Q${index + 1}: ${entry.question}${entry.answer ? ` ${entry.answer}` : ''}`)
+                .map((entry, index) => `Q${index + 1}: ${entry.question}${entry.answer ?  `\nA${index + 1}: ${entry.answer}` : ''}`)
                 .join('\n');
 
             const selectedMode = document.querySelector('input[name="mode"]:checked').value;
@@ -258,20 +258,17 @@
                 const response = await fetch(apiUrl, { method: "GET" });
                 const result = await response.text();
 
-                // Add the response to the last question in the conversation history
                 conversationHistory[conversationHistory.length - 1].answer = result;
 
                 document.getElementById("responseMessage").innerText = `✅ Response: ${result}`;
             } catch (error) {
                 document.getElementById("responseMessage").innerText = "❌ Error retrieving response.";
             } finally {
-                // Always clear transcript buffer and field after sending
                 transcriptBuffer = "";
                 document.getElementById("transcription").innerText = "";
             }
         }
 
-        // Add event listener for the Clear button
         document.getElementById("clearBtn").addEventListener("click", () => {
             console.log("Clear button clicked!"); // Debugging
             transcriptBuffer = ""; // Clear the transcript buffer
@@ -280,7 +277,6 @@
             conversationHistory = []; // Clear the conversation history
         });
 
-        // Add event listener for the Mirror Me button
         document.getElementById("mirrorMeBtn").addEventListener("click", async () => {
             try {
                 const response = await fetch("https://aiholo.org/aiholo/set?value=mirrorme", { method: "GET" });
@@ -295,7 +291,6 @@
             }
         });
 
-        // Add event listener for the Explainer button
         document.getElementById("explainerBtn").addEventListener("click", async () => {
             try {
                 const response = await fetch("https://aiholo.org/aiholo/explainer", { method: "GET" });
@@ -354,7 +349,7 @@
                 singleBtnIcon.src = micIcon;
                 singleBtnModeState = false;
                 singleBtnMode.disabled = false;
-                await sendTranscript(); // Always call, will handle empty transcript
+                await sendTranscript();
                 transcriptBuffer = "";
                 document.getElementById("transcription").innerText = "";
             };
@@ -362,7 +357,6 @@
     });
 </script>
 
-<!-- Add these audio elements just before your closing </body> tag -->
 <audio id="listeningSound" src="../audio-aiholo/listening-chime.mp4" preload="auto"></audio>
 <audio id="sendingSound" src="../audio-aiholo/sendingquestion-chime.mp4" preload="auto"></audio>
 
@@ -407,7 +401,7 @@
   <button onclick="playFooterAudio()">Play Footer Audio</button>
   <script>
     function playFooterAudio() {
-      fetch('/aiholo/playarbitrary', {
+      fetch('https://aiholo.org/aiholo/playarbitrary', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({
