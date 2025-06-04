@@ -437,6 +437,21 @@ public class AIHoloController {
         return theValue;
     }
 
+    @PostMapping("/playarbitrary")
+    @ResponseBody
+    public String playArbitrary(
+            @RequestParam("fileName") String fileName,
+            @RequestParam("answer") String answer,
+            @RequestParam("languageCode") String languageCode,
+            @RequestParam("voiceName") String voicename) {
+        try {
+            TTSAndAudio2Face.processMetahuman(fileName, answer, languageCode, voicename);
+            return "OK";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Error: " + e.getMessage();
+        }
+    }
 }
 
 /**

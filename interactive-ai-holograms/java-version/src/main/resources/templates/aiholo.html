@@ -245,9 +245,9 @@
                 conversationHistory.shift();
             }
 
-            // Build the conversational context
+            // Build the conversational context `\nA${index + 1}: ${entry.answer}` : ''}`)
             let conversationalContext = conversationHistory
-                .map((entry, index) => `Q${index + 1}: ${entry.question}${entry.answer ? `\nA${index + 1}: ${entry.answer}` : ''}`)
+                .map((entry, index) => `Q${index + 1}: ${entry.question}${entry.answer ? ` ${entry.answer}` : ''}`)
                 .join('\n');
 
             const selectedMode = document.querySelector('input[name="mode"]:checked').value;
@@ -402,6 +402,26 @@
         window.open(url, '_blank');
     }
 </script>
+
+<footer>
+  <button onclick="playFooterAudio()">Play Footer Audio</button>
+  <script>
+    function playFooterAudio() {
+      fetch('/aiholo/playarbitrary', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          fileName: 'footer.wav',
+          answer: 'Thank you for visiting!',
+          languageCode: 'en-US',
+          voiceName: 'en-US-Wavenet-A'
+        })
+      })
+      .then(res => res.text())
+      .then(alert);
+    }
+  </script>
+</footer>
 
 </body>
 </html>
