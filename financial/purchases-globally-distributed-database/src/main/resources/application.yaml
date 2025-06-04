@@ -34,6 +34,11 @@ spring:
     password: ${DB_PASSWORD:Welcome12345} # Default to 'Welcome12345', overridden by environment variable DB_PASSWORD
     url: ${DB_URL:jdbc:oracle:thin:@financialdb_high?TNS_ADMIN=/Users/pparkins/Downloads/Wallet_financialdb} # Default URL, overridden by environment variable DB_URL
 
+  kafka:
+    bootstrap-servers: kafka-service:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
 #  ai:
 #    vectorstore:
 #      oracle:

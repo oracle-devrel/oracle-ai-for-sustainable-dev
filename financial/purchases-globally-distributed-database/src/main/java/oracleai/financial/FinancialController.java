@@ -1,5 +1,7 @@
 package oracleai.financial;
 
+import oracleai.kafka.AdminUtil;
+import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
@@ -444,46 +446,48 @@ public class FinancialController {
 
     
     @PostMapping("/inventory/add")
-    public ResponseEntity<String> addInventory(@RequestBody Map<String, Object> payload) {
+    public ResponseEntity<Map<String, Object>> addInventory(@RequestBody Map<String, Object> payload) {
         String inventoryId = (String) payload.get("nftDrop");
-        String inventoryLocation = (String) payload.getOrDefault("inventoryLocation", null);
         Integer amount = null;
+        Map<String, Object> result = new HashMap<>();
         try {
             amount = Integer.parseInt(payload.get("amount").toString());
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Invalid or missing amount");
+            result.put("error", "Invalid or missing amount");
+            return ResponseEntity.badRequest().body(result);
         }
 
-        String upsertSql = "MERGE INTO INVENTORY i " +
-                "USING (SELECT ? AS inventoryid FROM dual) src " +
-                "ON (i.inventoryid = src.inventoryid) " +
-                "WHEN MATCHED THEN UPDATE SET i.inventorycount = i.inventorycount + ?, i.inventorylocation = NVL(?, i.inventorylocation) " +
-                "WHEN NOT MATCHED THEN INSERT (inventoryid, inventorylocation, inventorycount) VALUES (?, ?, ?)";
-
+        String updateSql = "UPDATE INVENTORY SET inventorycount = inventorycount + ? WHERE inventoryid = ?";
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement ps = connection.prepareStatement(upsertSql)) {
-            ps.setString(1, inventoryId);
-            ps.setInt(2, amount);
-            ps.setString(3, inventoryLocation);
-            ps.setString(4, inventoryId);
-            ps.setString(5, inventoryLocation);
-            ps.setInt(6, amount);
+             PreparedStatement ps = connection.prepareStatement(updateSql)) {
+            ps.setInt(1, amount);
+            ps.setString(2, inventoryId);
             int rows = ps.executeUpdate();
-            return ResponseEntity.ok("Inventory added/updated. Rows affected: " + rows);
+            if (rows > 0) {
+                result.put("message", "Inventory updated.");
+                result.put("rowsAffected", rows);
+                return ResponseEntity.ok(result);
+            } else {
+                result.put("error", "Inventory ID not found.");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(result);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+            result.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
         }
     }
 
     @PostMapping("/inventory/remove")
-    public ResponseEntity<String> removeInventory(@RequestBody Map<String, Object> payload) {
+    public ResponseEntity<Map<String, Object>> removeInventory(@RequestBody Map<String, Object> payload) {
         String inventoryId = (String) payload.get("nftDrop");
         Integer amount = null;
+        Map<String, Object> result = new HashMap<>();
         try {
             amount = Integer.parseInt(payload.get("amount").toString());
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Invalid or missing amount");
+            result.put("error", "Invalid or missing amount");
+            return ResponseEntity.badRequest().body(result);
         }
 
         String updateSql = "UPDATE INVENTORY SET inventorycount = inventorycount - ? WHERE inventoryid = ? AND inventorycount >= ?";
@@ -494,13 +498,17 @@ public class FinancialController {
             ps.setInt(3, amount);
             int rows = ps.executeUpdate();
             if (rows > 0) {
-                return ResponseEntity.ok("Inventory removed. Rows affected: " + rows);
+                result.put("message", "Inventory removed.");
+                result.put("rowsAffected", rows);
+                return ResponseEntity.ok(result);
             } else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Not enough inventory or inventory not found.");
+                result.put("error", "Not enough inventory or inventory not found.");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+            result.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
         }
     }
 
@@ -519,12 +527,14 @@ public class FinancialController {
                     result.put("inventorycount", rs.getInt("inventorycount"));
                     return ResponseEntity.ok(result);
                 } else {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+                    result.put("error", "Inventory not found");
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(result);
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+            result.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
         }
     }
 
@@ -605,6 +615,31 @@ public class FinancialController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("{\"error\": \"Proxy failed: " + e.getMessage() + "\"}");
+        }
+    }
+
+    @PostMapping("/admin/create-topic")
+    public ResponseEntity<Map<String, Object>> createTopicIfNotExists(@RequestBody Map<String, Object> payload) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            String topicName = (String) payload.get("topicName");
+            if (topicName == null || topicName.trim().isEmpty()) {
+                result.put("success", false);
+                result.put("message", "Missing or empty topicName");
+                return ResponseEntity.badRequest().body(result);
+            }
+
+            NewTopic topic = new NewTopic(topicName, 1, (short) 0);
+            boolean created = AdminUtil.createTopicIfNotExists(topic);
+            result.put("success", true);
+            result.put("created", created);
+            result.put("message", created ? "Topic created." : "Topic already exists.");
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("success", false);
+            result.put("message", "Error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
         }
     }
 }

@@ -17,6 +17,7 @@
 	<properties>
 		<oci.sdk.version>3.52.1</oci.sdk.version>
 		<oracle.jdbc.version>21.7.0.0</oracle.jdbc.version>
+		<okafka.version>23.5.0.0</okafka.version>
 	</properties>
 
 
@@ -95,16 +96,11 @@
 		</dependency>
 
 
-		<!-- <dependency>
-            <groupId>com.oracle.database.spring</groupId>
-            <artifactId>oracle-spring-boot-starter-ucp</artifactId>
-            <version>23.4.0</version>
-        </dependency> -->
-<!-- <dependency>
-    <groupId>com.oracle.database.spring</groupId>
-    <artifactId>oracle-spring-boot-starter-wallet</artifactId>
-    <version>23.4.0</version>
-</dependency> -->
+		<dependency>
+			<groupId>com.oracle.database.messaging</groupId>
+			<artifactId>okafka</artifactId>
+			<version>${okafka.version}</version>
+		</dependency>
 
 		<dependency>
 			<groupId>com.oracle.database.jdbc</groupId>

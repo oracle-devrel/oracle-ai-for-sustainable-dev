@@ -99,7 +99,7 @@ const DevPanel = styled.div`
 `;
 
 const Messaging = () => {
-  const BASE_URL = 'https://oracleai-financial.org/financial/accounts';
+  const BASE_URL = 'https://oracleai-financial.org/financial';
   const ACCOUNT_FETCH_URL = process.env.REACT_APP_MICROTX_ACCOUNT_SERVICE_URL || 'http://localhost:8080';
 
   const [formData, setFormData] = useState({
@@ -128,7 +128,7 @@ const Messaging = () => {
   useEffect(() => {
     const fetchFromAccounts = async () => {
       try {
-        const response = await fetch(`${ACCOUNT_FETCH_URL}/accounts`);
+        const response = await fetch(`${BASE_URL}/accounts`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -140,7 +140,7 @@ const Messaging = () => {
       }
     };
     fetchFromAccounts();
-  }, [ACCOUNT_FETCH_URL]);
+  }, [BASE_URL]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -166,7 +166,8 @@ const Messaging = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ nftDrop: inventoryForm.nftDrop, amount: inventoryForm.amount }),
       });
-      const data = await response.json();
+      const text = await response.text();
+      const data = text ? JSON.parse(text) : {};
       setInventoryResult(JSON.stringify(data));
     } catch (err) {
       setInventoryResult('❌ Error: ' + err.message);
@@ -189,7 +190,8 @@ const Messaging = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
-      const data = await response.json();
+      const text = await response.text();
+      const data = text ? JSON.parse(text) : {};
       setOrderResult(JSON.stringify(data));
     } catch (err) {
       setOrderResult('❌ Error: ' + err.message);
