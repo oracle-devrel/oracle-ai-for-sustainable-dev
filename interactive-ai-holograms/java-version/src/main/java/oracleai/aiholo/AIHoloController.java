@@ -443,14 +443,13 @@ if (answer != null) {
         return theValue;
     }
 
-    @PostMapping("/playarbitrary")
+    @GetMapping("/playarbitrary")
     @ResponseBody
     public String playArbitrary(
-            @RequestParam("fileName") String fileName,
             @RequestParam("answer") String answer,
             @RequestParam("languageCode") String languageCode,
             @RequestParam("voiceName") String voicename) {
-        System.out.println("playarbitrary fileName = " + fileName + ", answer = " + answer + ", languageCode = " + languageCode + ", voicename = " + voicename);
+        System.out.println("playarbitrary answer = " + answer + ", languageCode = " + languageCode + ", voicename = " + voicename);
         try {
             theValue = "question";
             String filePath = "C:/Users/opc/aiholo_output.txt";
@@ -462,7 +461,7 @@ if (answer != null) {
             } catch (IOException e) {
                 return "Error writing to file: " + e.getMessage();
             }
-            TTSAndAudio2Face.processMetahuman(fileName, answer, languageCode, voicename);
+            TTSAndAudio2Face.processMetahuman("output.wav", answer, languageCode, voicename);
             return "OK";
         } catch (Exception e) {
             e.printStackTrace();

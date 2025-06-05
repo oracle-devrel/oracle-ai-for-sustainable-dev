@@ -381,15 +381,15 @@
 <hr style="border-top: 2px solid #CC5500; margin: 20px 0;">
 <br>
 <div class="footer">
-    <form id="footerSayForm" class="input-group" action="https://aiholo.org/aiholo/playarbitrary" method="POST">
+    <form id="footerSayForm" class="input-group" action="https://aiholo.org/aiholo/playarbitrary" method="GET">
         <input type="text" id="speechInput" name="answer" class="form-control" placeholder="Type something to say directly..." required>
-        <input type="hidden" name="fileName" value="footer.wav">
         <input type="hidden" name="languageCode" value="en-US">
         <input type="hidden" name="voiceName" value="en-US-Wavenet-A">
         <div class="input-group-append">
-            <button type="submit" style="background:none; border:none; padding:0;">
+            <button type="submit" style="background:none; border:none; padding:0;" title="Submit">
                 <img src="../images-aiholo/Icons/Yellow/Stop recording.svg" style="cursor:pointer;">
             </button>
+            <button type="submit" class="btn btn-primary" style="margin-left: 10px;">Say It</button>
         </div>
     </form>
 </div>
