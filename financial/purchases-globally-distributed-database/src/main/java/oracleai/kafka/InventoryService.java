@@ -16,7 +16,7 @@ import java.util.stream.Stream;
  * After limit records have been produced, the TransactionalProducer simulates a processing error,
  * and aborts the current producer batch.
  */
-public class TransationalProducer implements AutoCloseable {
+public class InventoryService implements AutoCloseable {
     private static final String insertRecord = """
             insert into records (data, idx) values (?, ?)
             """;
@@ -27,9 +27,9 @@ public class TransationalProducer implements AutoCloseable {
     // Simulate an message processing error after limit messages have been produced
     private final int limit;
 
-    public TransationalProducer(KafkaProducer<String, String> producer,
-                                String topic,
-                                int limit) {
+    public InventoryService(KafkaProducer<String, String> producer,
+                            String topic,
+                            int limit) {
         this.producer = producer;
         this.topic = topic;
         this.limit = limit;

@@ -18,5 +18,5 @@ data:
 kind: Secret
 metadata:
   name: ragdb-wallet-secret
-  namespace: msdataworkshop
+  namespace: financial
 !

@@ -10,7 +10,7 @@ GRANT OML_DEVELOPER TO FINANCIAL;
 GRANT RESOURCE TO FINANCIAL;
 ALTER USER FINANCIAL DEFAULT ROLE CONSOLE_DEVELOPER, DWROLE, GRAPH_DEVELOPER, OML_DEVELOPER;
 
---For TxEventQ/OKafka
+--For TxEventQ/OKafka on container
 grant resource, connect, unlimited tablespace to FINANCIAL;
 grant aq_user_role to FINANCIAL;
 grant execute on dbms_aq to  FINANCIAL;
@@ -25,6 +25,14 @@ grant select on user_queue_partition_assignment_table to FINANCIAL;
 exec dbms_aqadm.GRANT_PRIV_FOR_RM_PLAN('FINANCIAL');
 commit;
 
+
+--For TxEventQ/OKafka on cloud
+grant resource, connect, unlimited tablespace to FINANCIAL;
+grant aq_user_role to FINANCIAL;
+grant execute on dbms_aq to  FINANCIAL;
+grant execute on dbms_aqadm to FINANCIAL;
+exec dbms_aqadm.GRANT_PRIV_FOR_RM_PLAN('FINANCIAL');
+commit;
 
 -- REST ENABLE
 BEGIN

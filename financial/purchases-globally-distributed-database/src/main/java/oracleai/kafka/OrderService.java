@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import java.time.Duration;
 import java.util.List;
 
-public class TransactionalConsumer implements AutoCloseable, Runnable {
+public class OrderService implements AutoCloseable, Runnable {
     private static final String insertRecord = """
             insert into records (data, idx) values (?, ?)
             """;
@@ -20,9 +20,9 @@ public class TransactionalConsumer implements AutoCloseable, Runnable {
     private final int expectedMessages;
     private final boolean isCommitted;
 
-    public TransactionalConsumer(KafkaConsumer<String, String> consumer,
-                                 List<String> topics, int expectedMessages,
-                                 boolean isCommitted) {
+    public OrderService(KafkaConsumer<String, String> consumer,
+                        List<String> topics, int expectedMessages,
+                        boolean isCommitted) {
         this.consumer = consumer;
         this.topics = topics;
         this.expectedMessages = expectedMessages;

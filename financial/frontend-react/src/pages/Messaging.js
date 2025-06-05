@@ -64,15 +64,15 @@ const RadioLabel = styled.label`
 
 const Button = styled.button`
   padding: 10px;
-  background-color: #1abc9c;
-  color: white;
+  background-color: #5884A7;
+  color: #F9F9F9;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   margin-right: 8px;
   margin-bottom: 8px;
   &:hover {
-    background-color: #16a085;
+    background-color: #354F64;
   }
 `;
 
@@ -124,6 +124,8 @@ const Messaging = () => {
   const [orderResult, setOrderResult] = useState('');
   const [inventoryResult, setInventoryResult] = useState('');
   const [isCollapsed, setIsCollapsed] = useState(true);
+  const [topicName, setTopicName] = useState('');
+  const [topicResult, setTopicResult] = useState('');
 
   useEffect(() => {
     const fetchFromAccounts = async () => {
@@ -200,6 +202,26 @@ const Messaging = () => {
     }
   };
 
+  const handleCreateTopic = async (e) => {
+    e.preventDefault();
+    setTopicResult('');
+    setLoading(true);
+    try {
+      const response = await fetch(`${BASE_URL}/admin/create-topic`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ topicName }),
+      });
+      const text = await response.text();
+      const data = text ? JSON.parse(text) : {};
+      setTopicResult(JSON.stringify(data));
+    } catch (err) {
+      setTopicResult('❌ Error: ' + err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <PageContainer>
       <h2>Process: Purchase Assets/NFTs</h2>
@@ -248,6 +270,46 @@ const Messaging = () => {
                 <li>Only Oracle Database has a built-in messaging engine (TxEventQ) which allows database and messaging operations in the same local transaction</li>
                 <li>TxEventQ can be used via Kafka API, JMS, PL/SQL and via any language</li>
               </ul>
+              {/* Moved Create Kafka Topic form here */}
+              <Section>
+                <h4>Create Kafka Topic (one time call to setup, ie not needed if app is already running)</h4>
+                <form
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                    marginBottom: '16px'
+                  }}
+                  onSubmit={handleCreateTopic}
+                >
+                  <Label htmlFor="topicName" style={{ marginBottom: 0 }}>Topic Name</Label>
+                  <Input
+                    type="text"
+                    id="topicName"
+                    name="topicName"
+                    value={topicName}
+                    onChange={e => setTopicName(e.target.value)}
+                    placeholder="Enter topic name"
+                    style={{ width: 220, marginBottom: 0 }}
+                    required
+                  />
+                  <Button type="submit" disabled={loading}>Create Topic</Button>
+                </form>
+                {topicResult && (
+                  <div style={{
+                    background: "#181818",
+                    color: "#fff",
+                    border: "1px solid #444",
+                    borderRadius: "8px",
+                    padding: "16px",
+                    marginTop: "12px",
+                    whiteSpace: "pre-wrap"
+                  }}>
+                    <strong>Topic Result:</strong>
+                    <div>{topicResult}</div>
+                  </div>
+                )}
+              </Section>
             </div>
             <div style={{ flex: 1, marginLeft: '20px', textAlign: 'center' }}>
               <img

@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 
 @SpringBootApplication
-public class AIApplication {
+public class Application {
 
     public static final String COMPARTMENT_ID = System.getenv("COMPARTMENT_ID");
     public static final String OBJECTSTORAGE_NAMESPACE = System.getenv("OBJECTSTORAGE_NAMESPACE");
@@ -30,7 +30,7 @@ public class AIApplication {
 //        RetryConfiguration retryConfiguration = RetryConfiguration.builder()
 //                .terminationStrategy(RetryUtils.createExponentialBackoffStrategy(500, 5)) // Configure limits
 //                .build();
-        SpringApplication.run(AIApplication.class, args);
+        SpringApplication.run(Application.class, args);
     }
 
 }

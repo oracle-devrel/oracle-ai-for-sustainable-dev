@@ -1,7 +1,11 @@
 package oracleai.financial;
 
-import oracleai.kafka.AdminUtil;
+import oracleai.kafka.OrderProducerService;
+import org.apache.kafka.clients.admin.Admin;
 import org.apache.kafka.clients.admin.NewTopic;
+import org.apache.kafka.common.errors.TopicExistsException;
+import org.oracle.okafka.clients.admin.AdminClient;
+import org.oracle.okafka.clients.producer.KafkaProducer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
@@ -10,11 +14,10 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.http.*;
 
 import javax.sql.DataSource;
+import java.io.File;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/financial")
@@ -224,7 +227,7 @@ public class FinancialController {
 
 
 
-
+//TRUE CACHE.....
 
 
 
@@ -369,15 +372,164 @@ public class FinancialController {
 
 
 
-
-
-
-
-
-
-
-
     
+    @PostMapping("/stockinfoforcustid")
+    public ResponseEntity<List<Map<String, Object>>> getStockInfoForCustomer(@RequestBody Map<String, Object> payload) {
+        Object customerIdObj = payload.get("customerId");
+        if (customerIdObj == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ArrayList<>());
+        }
+        String customerId = customerIdObj.toString();
+
+        String sql = "SELECT sp.TICKER, sp.COMPANY_NAME, sp.CURRENT_PRICE, sp.LAST_UPDATED, " +
+                     "p.PURCHASE_ID, p.QUANTITY, p.PURCHASE_PRICE, p.PURCHASE_DATE " +
+                     "FROM FINANCIAL.STOCK_PURCHASES p " +
+                     "JOIN FINANCIAL.STOCK_PRICES sp ON p.TICKER = sp.TICKER " +
+                     "WHERE p.CUSTOMER_ID = ? " +
+                     "ORDER BY p.PURCHASE_DATE DESC";
+
+        List<Map<String, Object>> results = new ArrayList<>();
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+
+            ps.setString(1, customerId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Map<String, Object> row = new HashMap<>();
+                    row.put("TICKER", rs.getString("TICKER"));
+                    row.put("COMPANY_NAME", rs.getString("COMPANY_NAME"));
+                    row.put("CURRENT_PRICE", rs.getBigDecimal("CURRENT_PRICE"));
+                    row.put("LAST_UPDATED", rs.getTimestamp("LAST_UPDATED") != null ? rs.getTimestamp("LAST_UPDATED").toString() : null);
+                    row.put("PURCHASE_ID", rs.getObject("PURCHASE_ID"));
+                    row.put("QUANTITY", rs.getObject("QUANTITY"));
+                    row.put("PURCHASE_PRICE", rs.getBigDecimal("PURCHASE_PRICE"));
+                    row.put("PURCHASE_DATE", rs.getTimestamp("PURCHASE_DATE") != null ? rs.getTimestamp("PURCHASE_DATE").toString() : null);
+                    results.add(row);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ArrayList<>());
+        }
+        return ResponseEntity.ok(results);
+    }
+
+
+
+
+
+
+//AI AGENTS.....
+
+
+
+
+    @PostMapping("/query")
+    public ResponseEntity<String> proxyQuery(@RequestBody Map<String, Object> payload) {
+        String backendUrl = "http://141.148.204.74:8000/query";
+        RestTemplate restTemplate = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(payload, headers);
+
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(
+                    backendUrl,
+                    HttpMethod.POST,
+                    requestEntity,
+                    String.class
+            );
+            return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("{\"error\": \"Proxy failed: " + e.getMessage() + "\"}");
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+    //Kafka....
+
+
+
+
+    @PostMapping("/admin/create-topic")
+    public ResponseEntity<Map<String, Object>> createTopicIfNotExists(@RequestBody Map<String, Object> payload) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            String topicName = (String) payload.get("topicName");
+            NewTopic topic = new NewTopic(topicName, 1, (short) 0);
+            boolean created = createTopicIfNotExists(topic);
+            result.put("message", created ? "Topic created." : "Topic already exists.");
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("success", false);
+            result.put("message", "Error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
+        }
+    }
+
+
+    public  boolean createTopicIfNotExists(  NewTopic newTopic) throws Exception {
+        try (Admin admin = AdminClient.create(getOKafkaConnectionProperties())) {
+            admin.createTopics(Collections.singletonList(newTopic))
+                    .all()
+                    .get();
+        } catch (ExecutionException | InterruptedException e) {
+            if (e.getCause() instanceof TopicExistsException) {
+                System.out.println(newTopic.name() + " topic already exists, skipping creation");
+                return false;
+            } else {
+                throw new Exception(e);
+            }
+        }
+        System.out.println(newTopic.name() + " topic created");
+        return true;
+    }
+
+    private Properties getOKafkaConnectionProperties() {
+
+        Properties props = new Properties();
+        props.put("security.protocol", "SSL");
+        //location containing Oracle Wallet, tnsname.ora and ojdbc.properties file...
+        props.put("oracle.net.tns_admin", "/oraclefinancial/creds"); //location of ojdbc.properties file
+        props.put("tns.alias", "financialdb_high");
+//PLAINTEXT, container db version...
+//        props.put("oracle.service.name", "freepdb1");
+//        props.put("security.protocol", "PLAINTEXT");
+//        props.put("bootstrap.servers", String.format("localhost:%d",
+//                Objects.requireNonNullElse(1521, 1521)));
+//        props.put("oracle.net.tns_admin", "ojdbc.properties");
+        return props;
+
+
+
+
+//        props.put("oracle.service.name", "freepdb1");
+//        props.put("security.protocol", "PLAINTEXT");
+//        props.put("bootstrap.servers", "localhost:1521");
+//        props.put("oracle.net.tns_admin", ojbdcFilePath);
+//        return props;
+    }
+
+
+
+
+
+
     // --- Messaging.js endpoints ---
 
     @PostMapping("/orders/deleteAll")
@@ -398,6 +550,8 @@ public class FinancialController {
 
     @PostMapping("/orders/place")
     public ResponseEntity<?> placeOrder(@RequestBody Map<String, Object> payload) {
+        System.out.println("FinancialController.placeOrder orderid:" + payload.get("orderId").toString());
+        System.out.println("FinancialController.placeOrder nftDrop:" + payload.get("nftDrop").toString());
         String txnCrashOption = (String) payload.get("txnCrashOption");
         String messagingOption = (String) payload.get("messagingOption");
         String orderId = payload.get("orderId") != null ? payload.get("orderId").toString() : null;
@@ -427,7 +581,14 @@ public class FinancialController {
             sb.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
         }
         sb.append("Selected messagingOption: ").append(messagingOption).append("\n");
-        sb.append("Order placed.");
+        sb.append("Order placed, sending message....");
+        Properties producerProps = getOKafkaConnectionProperties();
+        producerProps.put("enable.idempotence", "true");
+        producerProps.put("oracle.transactional.producer", "true");
+        producerProps.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        producerProps.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        KafkaProducer<String, String> okafkaProducer = new KafkaProducer<>(producerProps);
+        new OrderProducerService(okafkaProducer, "financial.order").produce("test"); // ORA-24000: invalid value ORDER, QUEUE_NAME should be of the form [SCHEMA.]NAME Cannot read the array length because "serializedKey" is null
         return ResponseEntity.ok(sb.toString());
     }
 
@@ -444,7 +605,9 @@ public class FinancialController {
     }
 
 
-    
+
+//    kafka inventory
+
     @PostMapping("/inventory/add")
     public ResponseEntity<Map<String, Object>> addInventory(@RequestBody Map<String, Object> payload) {
         String inventoryId = (String) payload.get("nftDrop");
@@ -541,105 +704,4 @@ public class FinancialController {
 
 
 
-
-    
-    @PostMapping("/stockinfoforcustid")
-    public ResponseEntity<List<Map<String, Object>>> getStockInfoForCustomer(@RequestBody Map<String, Object> payload) {
-        Object customerIdObj = payload.get("customerId");
-        if (customerIdObj == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ArrayList<>());
-        }
-        String customerId = customerIdObj.toString();
-
-        String sql = "SELECT sp.TICKER, sp.COMPANY_NAME, sp.CURRENT_PRICE, sp.LAST_UPDATED, " +
-                     "p.PURCHASE_ID, p.QUANTITY, p.PURCHASE_PRICE, p.PURCHASE_DATE " +
-                     "FROM FINANCIAL.STOCK_PURCHASES p " +
-                     "JOIN FINANCIAL.STOCK_PRICES sp ON p.TICKER = sp.TICKER " +
-                     "WHERE p.CUSTOMER_ID = ? " +
-                     "ORDER BY p.PURCHASE_DATE DESC";
-
-        List<Map<String, Object>> results = new ArrayList<>();
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement ps = connection.prepareStatement(sql)) {
-
-            ps.setString(1, customerId);
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    Map<String, Object> row = new HashMap<>();
-                    row.put("TICKER", rs.getString("TICKER"));
-                    row.put("COMPANY_NAME", rs.getString("COMPANY_NAME"));
-                    row.put("CURRENT_PRICE", rs.getBigDecimal("CURRENT_PRICE"));
-                    row.put("LAST_UPDATED", rs.getTimestamp("LAST_UPDATED") != null ? rs.getTimestamp("LAST_UPDATED").toString() : null);
-                    row.put("PURCHASE_ID", rs.getObject("PURCHASE_ID"));
-                    row.put("QUANTITY", rs.getObject("QUANTITY"));
-                    row.put("PURCHASE_PRICE", rs.getBigDecimal("PURCHASE_PRICE"));
-                    row.put("PURCHASE_DATE", rs.getTimestamp("PURCHASE_DATE") != null ? rs.getTimestamp("PURCHASE_DATE").toString() : null);
-                    results.add(row);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ArrayList<>());
-        }
-        return ResponseEntity.ok(results);
-    }
-
-
-
-
-
-
-
-
-
-
-    @PostMapping("/query")
-    public ResponseEntity<String> proxyQuery(@RequestBody Map<String, Object> payload) {
-        String backendUrl = "http://141.148.204.74:8000/query";
-        RestTemplate restTemplate = new RestTemplate();
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(payload, headers);
-
-        try {
-            ResponseEntity<String> response = restTemplate.exchange(
-                backendUrl,
-                HttpMethod.POST,
-                requestEntity,
-                String.class
-            );
-            return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("{\"error\": \"Proxy failed: " + e.getMessage() + "\"}");
-        }
-    }
-
-    @PostMapping("/admin/create-topic")
-    public ResponseEntity<Map<String, Object>> createTopicIfNotExists(@RequestBody Map<String, Object> payload) {
-        Map<String, Object> result = new HashMap<>();
-        try {
-            String topicName = (String) payload.get("topicName");
-            if (topicName == null || topicName.trim().isEmpty()) {
-                result.put("success", false);
-                result.put("message", "Missing or empty topicName");
-                return ResponseEntity.badRequest().body(result);
-            }
-
-            NewTopic topic = new NewTopic(topicName, 1, (short) 0);
-            boolean created = AdminUtil.createTopicIfNotExists(topic);
-            result.put("success", true);
-            result.put("created", created);
-            result.put("message", created ? "Topic created." : "Topic already exists.");
-            return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            e.printStackTrace();
-            result.put("success", false);
-            result.put("message", "Error: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
-        }
-    }
 }
