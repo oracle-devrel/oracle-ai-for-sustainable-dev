@@ -383,8 +383,8 @@
 <div class="footer">
     <form id="footerSayForm" class="input-group" action="https://aiholo.org/aiholo/playarbitrary" method="GET">
         <input type="text" id="speechInput" name="answer" class="form-control" placeholder="Type something to say directly..." required>
-        <input type="hidden" name="languageCode" value="en-US">
-        <input type="hidden" name="voiceName" value="en-US-Wavenet-A">
+        <input type="hidden" id="footerLanguageCode" name="languageCode" value="" />
+        <input type="hidden" id="footerVoiceName" name="voiceName" value="" />
         <div class="input-group-append">
             <button type="submit" style="background:none; border:none; padding:0;" title="Submit">
                 <img src="../images-aiholo/Icons/Yellow/Stop recording.svg" style="cursor:pointer;">
@@ -393,6 +393,22 @@
         </div>
     </form>
 </div>
+<script>
+    // Set the languageCode and voiceName from the JS variables used elsewhere
+    document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("footerLanguageCode").value = typeof languageCodeSTT !== "undefined" ? languageCodeSTT : "en-US";
+        document.getElementById("footerVoiceName").value = typeof voiceName !== "undefined" ? voiceName : "en-US-Wavenet-A";
 
+        document.getElementById("footerSayForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+            const answer = document.getElementById("speechInput").value;
+            const languageCode = document.getElementById("footerLanguageCode").value;
+            const voiceName = document.getElementById("footerVoiceName").value;
+            const fileName = "footer.wav";
+            const url = `https://aiholo.org/aiholo/playarbitrary?fileName=${encodeURIComponent(fileName)}&answer=${encodeURIComponent(answer)}&languageCode=${encodeURIComponent(languageCode)}&voiceName=${encodeURIComponent(voiceName)}`;
+            window.open(url, "aiholoFooterSay", "width=600,height=400");
+        });
+    });
+</script>
 </body>
 </html>

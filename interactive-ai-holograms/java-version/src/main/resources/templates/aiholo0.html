@@ -108,29 +108,47 @@
 </script>
 
 <div class="container mt-3">
-    <div class="row text-left">
-        <div class="col-md-4">
-            <p>1. Select one...</p>
-            <div class="radio-group">
+    <div class="row text-left align-items-start">
+        <!-- 1. Select one (now at the top, left column, not bold, aligned with other columns) -->
+        <div class="col-md-4" style="margin-top: 0;">
+            <span style="margin-bottom: 0; font-weight: normal; font-size: 1rem; display: block;">1. Select one...</span>
+            <div class="radio-group" style="margin-top: 0;">
                 <label><input type="radio" name="mode" value="use chat" checked>ask LLM directly</label>
-                <!--                <label><input type="radio" name="mode" value="use narrate">narrate: to use Select AI</label>-->
                 <label><input type="radio" name="mode" value="use vector">use Select AI and RAG with vector search</label>
             </div>
         </div>
-        <div class="col-md-4">
-            <p>2. Click the mic below and speak your question.<br>&nbsp;&nbsp;&nbsp;&nbsp;(Click the trash bin to clear the textfield)</p>
-            <button id="startBtn" class="btn btn-primary" style="background: none; border: none; padding: 0;">
-                <img src="../images-aiholo/Icons/Yellow/Microphone.svg" alt="Start" style="width: 70px; height: auto;">
-            </button>
-            <button id="clearBtn" class="btn btn-primary" style="background: none; border: none; padding: 0;">
-                <img src="../images-aiholo/Icons/Yellow/Trash bin.svg" alt="Clear" style="width: 70px; height: auto;">
-            </button>
+        <!-- Center column: instructions and mic/clear buttons, aligned top -->
+        <div class="col-md-4" style="margin-top: 0;">
+            <div style="display: flex; flex-direction: column; align-items: flex-start;">
+                <p style="margin-bottom: 4px; margin-top: 0;">
+                    2. Click the mic below and speak your question.<br>
+                    3. Click button again to send your question.<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;(Click the trash bin to clear conversation)
+                </p>
+                <div>
+                    <button id="singleBtnMode" class="btn btn-primary" style="background: none; border: none; padding: 0;">
+                        <img id="singleBtnIcon" src="../images-aiholo/Icons/Yellow/Microphone.svg" alt="Single Button Mode" style="width: 70px; height: auto;">
+                    </button>
+                    <button id="clearBtn" class="btn btn-primary" style="background: none; border: none; padding: 0;">
+                        <img src="../images-aiholo/Icons/Yellow/Trash bin.svg" alt="Clear" style="width: 70px; height: auto;">
+                    </button>
+                </div>
+            </div>
         </div>
-        <div class="col-md-4">
-            <p>3. Click stop button to send your question.</p>
-            <button id="stopSendBtn" class="btn btn-primary" style="background: none; border: none; padding: 0;">
-                <img src="../images-aiholo/Icons/Yellow/Stop recording.svg" alt="Stop" style="width: 70px; height: auto;">
-            </button>
+        <!-- Right column: Mirror Me and Explainer, aligned top -->
+        <div class="col-md-4 d-flex flex-row align-items-start justify-content-end" style="gap: 32px; margin-top: 0;">
+            <div class="d-flex flex-column align-items-center">
+                <span style="font-size: 14px; margin-bottom: 2px;">Switch to mirror me mode</span>
+                <button id="mirrorMeBtn" class="btn btn-primary" style="background: none; border: none; padding: 0;" title="Mirror Me">
+                    <img src="../images-aiholo/Icons/Yellow/Face id.svg" alt="Mirror Me" style="width: 70px; height: auto;">
+                </button>
+            </div>
+            <div class="d-flex flex-column align-items-center">
+                <span style="font-size: 14px; margin-bottom: 2px;">Explain this exhibit</span>
+                <button id="explainerBtn" class="btn btn-primary" style="background: none; border: none; padding: 0;" title="Explain Exhibit">
+                    <img src="../images-aiholo/Icons/Yellow/Explain.svg" alt="Explain This" style="width: 70px; height: auto;">
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -138,31 +156,6 @@
 <!-- ✅ Transcription field restored -->
 <div id="transcription"></div>
 <p id="responseMessage"></p>
-
-<!-- Button Row: Mirror Me, Single Button Mode, Explain This -->
-<div class="d-flex justify-content-center align-items-center" style="gap: 40px; margin-top: 30px; margin-bottom: 30px;">
-    <!-- Mirror Me Button -->
-    <div>
-        <p style="margin-bottom: 8px;">Mirror Me</p>
-        <button id="mirrorMeBtn" class="btn btn-primary" style="background: none; border: none; padding: 0;">
-            <img src="../images-aiholo/Icons/Yellow/Face id.svg" alt="Mirror Me" style="width: 70px; height: auto;">
-        </button>
-    </div>
-    <!-- Single Button Mode Button -->
-    <div>
-        <p style="margin-bottom: 8px;">Single Button Mode</p>
-        <button id="singleBtnMode" class="btn btn-primary" style="background: none; border: none; padding: 0;">
-            <img id="singleBtnIcon" src="../images-aiholo/Icons/Yellow/Microphone.svg" alt="Single Button Mode" style="width: 70px; height: auto;">
-        </button>
-    </div>
-    <!-- Explainer Button -->
-    <div>
-        <p style="margin-bottom: 8px;">Explain Exhibit</p>
-        <button id="explainerBtn" class="btn btn-primary" style="background: none; border: none; padding: 0;">
-            <img src="../images-aiholo/Icons/Yellow/Explain.svg" alt="Explain This" style="width: 70px; height: auto;">
-        </button>
-    </div>
-</div>
 
 <hr style="border-top: 2px solid #CC5500; margin: 20px 0;">
 <br>
@@ -172,7 +165,7 @@
         let recognition;
         let isListening = false;
         let transcriptBuffer = "";
-        let conversationHistory = []; // Array to store the last two questions and answers
+        let conversationHistory = [];
 
         if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
             recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
@@ -218,10 +211,6 @@
             alert("⚠️ Browser does not support Speech Recognition.");
         }
 
-        document.getElementById("startBtn").addEventListener("click", () => {
-            if (!isListening) recognition.start();
-        });
-
         // Extract send logic to a function
         async function sendTranscript() {
             const transcriptionText = transcriptBuffer.trim();
@@ -230,7 +219,25 @@
                 return;
             }
 
-            // Add the current question to the conversation history
+            // Check for "mirror me" command
+            if (transcriptionText.toLowerCase() === "mirror me") {
+                try {
+                    const response = await fetch("https://aiholo.org/aiholo/set?value=mirrorme", { method: "GET" });
+                    if (response.ok) {
+                        document.getElementById("responseMessage").innerText = "✅ Switched to 'Mirror Me' mode successfully!";
+                    } else {
+                        document.getElementById("responseMessage").innerText = "❌ Failed to switch to 'Mirror Me' mode.";
+                    }
+                } catch (error) {
+                    document.getElementById("responseMessage").innerText = "❌ An error occurred while switching to 'Mirror Me' mode.";
+                } finally {
+                    transcriptBuffer = "";
+                    document.getElementById("transcription").innerText = "";
+                }
+                return;
+            }
+
+
             conversationHistory.push({ question: transcriptionText });
 
             // Keep only the last two questions and answers
@@ -240,7 +247,7 @@
 
             // Build the conversational context
             let conversationalContext = conversationHistory
-                .map((entry, index) => `Q${index + 1}: ${entry.question}${entry.answer ? `\nA${index + 1}: ${entry.answer}` : ''}`)
+                .map((entry, index) => `Q${index + 1}: ${entry.question}${entry.answer ?  `\nA${index + 1}: ${entry.answer}` : ''}`)
                 .join('\n');
 
             const selectedMode = document.querySelector('input[name="mode"]:checked').value;
@@ -251,31 +258,17 @@
                 const response = await fetch(apiUrl, { method: "GET" });
                 const result = await response.text();
 
-                // Add the response to the last question in the conversation history
                 conversationHistory[conversationHistory.length - 1].answer = result;
 
                 document.getElementById("responseMessage").innerText = `✅ Response: ${result}`;
-                document.getElementById("stopSendBtn").disabled = false;
-
-                // Check for the specific error string in the result
-                if (typeof result === "string" && result.includes("com.google.api.gax.rpc.UnavailableException: io.grpc.StatusRuntimeException: UNAVAILABLE: Credentials failed to obtain metadata")) {
-                    fetch("https://aiholo.org/aiholo/credentialfailed", { method: "GET" });
-                }
             } catch (error) {
                 document.getElementById("responseMessage").innerText = "❌ Error retrieving response.";
             } finally {
-                // Always clear transcript buffer and field after sending
                 transcriptBuffer = "";
                 document.getElementById("transcription").innerText = "";
             }
         }
 
-        document.getElementById("stopSendBtn").addEventListener("click", async () => {
-            if (isListening) recognition.stop();
-            await sendTranscript();
-        });
-
-        // Add event listener for the Clear button
         document.getElementById("clearBtn").addEventListener("click", () => {
             console.log("Clear button clicked!"); // Debugging
             transcriptBuffer = ""; // Clear the transcript buffer
@@ -284,7 +277,6 @@
             conversationHistory = []; // Clear the conversation history
         });
 
-        // Add event listener for the Mirror Me button
         document.getElementById("mirrorMeBtn").addEventListener("click", async () => {
             try {
                 const response = await fetch("https://aiholo.org/aiholo/set?value=mirrorme", { method: "GET" });
@@ -299,7 +291,6 @@
             }
         });
 
-        // Add event listener for the Explainer button
         document.getElementById("explainerBtn").addEventListener("click", async () => {
             try {
                 const response = await fetch("https://aiholo.org/aiholo/explainer", { method: "GET" });
@@ -358,7 +349,7 @@
                 singleBtnIcon.src = micIcon;
                 singleBtnModeState = false;
                 singleBtnMode.disabled = false;
-                await sendTranscript(); // Always call, will handle empty transcript
+                await sendTranscript();
                 transcriptBuffer = "";
                 document.getElementById("transcription").innerText = "";
             };
@@ -366,7 +357,6 @@
     });
 </script>
 
-<!-- Add these audio elements just before your closing </body> tag -->
 <audio id="listeningSound" src="../audio-aiholo/listening-chime.mp4" preload="auto"></audio>
 <audio id="sendingSound" src="../audio-aiholo/sendingquestion-chime.mp4" preload="auto"></audio>
 
@@ -391,21 +381,18 @@
 <hr style="border-top: 2px solid #CC5500; margin: 20px 0;">
 <br>
 <div class="footer">
-    <div class="input-group">
-        <input type="text" id="speechInput" class="form-control" placeholder="Type something to say directly...">
+    <form id="footerSayForm" class="input-group" action="https://aiholo.org/aiholo/playarbitrary" method="GET">
+        <input type="text" id="speechInput" name="answer" class="form-control" placeholder="Type something to say directly..." required>
+        <input type="hidden" name="languageCode" value="en-US">
+        <input type="hidden" name="voiceName" value="en-US-Wavenet-A">
         <div class="input-group-append">
-            <img src="../images-aiholo/Icons/Yellow/Stop recording.svg" onclick="submitQuery()" style="cursor:pointer;">
+            <button type="submit" style="background:none; border:none; padding:0;" title="Submit">
+                <img src="../images-aiholo/Icons/Yellow/Stop recording.svg" style="cursor:pointer;">
+            </button>
+            <button type="submit" class="btn btn-primary" style="margin-left: 10px;">Say It</button>
         </div>
-    </div>
+    </form>
 </div>
-
-<script>
-    function submitQuery() {
-        var inputVal = document.getElementById('speechInput').value;
-        var url = 'https://aiholo.org/aiholo/saything?whattosay=' + encodeURIComponent(inputVal);
-        window.open(url, '_blank');
-    }
-</script>
 
 </body>
 </html>
