@@ -61,7 +61,7 @@ const IconWrapper = styled.div`
 `;
 
 const HighlightedText = styled.span`
-  color: ${bankerAccent};
+  color: ${bankerPanel}; // Use the bankerPanel (darker blue) for highlight
   font-weight: bold;
   background: none;
   display: inline;
