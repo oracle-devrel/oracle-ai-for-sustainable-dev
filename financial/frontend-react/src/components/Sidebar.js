@@ -129,12 +129,9 @@ const Sidebar = () => {
 
   return (
     <SidebarContainer>
-      <SidebarHeader>
-        Please send any feedback to <strong>devreldb_ww@oracle.com</strong> 
-      </SidebarHeader>
-
-      <SidebarMenu>
-        <SidebarItem>
+      <SidebarMenu style={{ marginTop: 0 }}>
+        {/* "About this app" is now flush to the top */}
+        <SidebarItem style={{ marginTop: 0, paddingTop: 32 }}>
           <StyledNavLink to="/financialstoryboard">
             <IconWrapper>
               <img src="/images/Side Menu Icons/About this App.svg" alt="About this app" />

@@ -38,27 +38,6 @@ const TableCell = styled.td`
   color: ${bankerText};
 `;
 
-const HighlightedText = styled.p`
-  font-size: 1.8rem;
-  font-weight: bold;
-  margin-bottom: 20px;
-  color: ${bankerAccent};
-`;
-
-const StyledList = styled.ul`
-  list-style-type: none;
-  padding: 0;
-  margin: 20px 0;
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: ${bankerAccent};
-`;
-
-const StyledListItem = styled.li`
-  margin-bottom: 10px;
-  text-align: center;
-`;
-
 const VideoWrapper = styled.div`
   margin-top: 32px;
   text-align: center;
@@ -66,69 +45,60 @@ const VideoWrapper = styled.div`
     border-radius: 8px;
     border: 1px solid ${bankerAccent};
     background: ${bankerPanel};
+    width: 900px;
+    height: 506px;
+    max-width: 100%;
   }
 `;
 
 const FinancialStoryBoard = () => {
   // List of JavaScript files in the "pages" directory
   const pages = [
-    { name: 'Architecture and Setup: k8s and otel', complete: '100%', notes: 'Update video, design work, finish workshop doc' },
-    { name: 'API: ORDS', complete: '100%', notes: 'Update video, design work, finish workshop doc' },
-    { name: 'Accounts: MERN', complete: '100%', notes: 'Update video, design work, finish workshop doc - mongodb save issue/bug being worked with dev team' },
-    { name: 'ATM: Polyglot', complete: '100%', notes: 'Update video, design work, finish workshop doc, Add last few languages.' },
-    { name: 'Transfer: MicroTx and Lock-free', complete: '100%', notes: 'Update video, design work, finish workshop doc' },
-    { name: 'Suspicious Purchases: GDD, Spatial', complete: '100%', notes: 'Update video, show purchases, Jupyter on prod version' },
-    { name: 'Circular payments: Graph', complete: '100%', notes: 'Update video, use new graph server container' },
-    { name: 'Transfer to brokerage: Kafka TxEventQ', complete: '100%', notes: 'Update video, change naming and queue creation' },
-    { name: 'Stock ticker: True Cache', complete: '100%', notes: 'Update video, make stock price directly updatable, ie not via stock average, and mod names' },
-    { name: 'Financial Insights: AI Agents, MCP, Vector search', complete: '100%', notes: 'Update video' },
-    { name: 'Speak with data: Speech AI, Select AI', complete: '100%', notes: 'Update video, design work, finish workshop doc, add region to accounting table, add option to play audio rather than rely on avatar/metahuman to say it' },
-    { name: 'Nice to have on home page: Vector search of app itself', complete: '70%', notes: ' Question asked like `which page uses distributed database? ' },
-    { name: 'ADD ABILITY FOR MULTIPLE USERS TO RUN APP', complete: '100%', notes: 'I currently simply ask that everyone create their own bank accounts (see Create Accounts/ MERN page) and use them.' }
+    { name: 'Architecture and Setup', notes: 'Kubernetes, OpenTelemetry Observability, Grafana, Kubeview' },
+    { name: 'APIs', notes: 'ORDS' },
+    { name: 'Accounts', notes: 'MERN, MongoDB API for Oracle Database and JSON Duality' },
+    { name: 'ATM', notes: 'Polyglot: Java, JavaScript, Python, .NET, Go, Ruby' },
+    { name: 'Transfer', notes: 'MicroTx and Lock-free' },
+    { name: 'Suspicious Purchases', notes: 'Globally Distributed Database, Spatial' },
+    { name: 'Circular payments', notes: 'Graph' },
+    { name: 'Transfer to brokerage', notes: 'Kafka TxEventQ' },
+    { name: 'Stock ticker', notes: 'True Cache' },
+    { name: 'Financial Insights', notes: 'AI Agents, MCP, Vector search' },
+    { name: 'Speak with data', notes: 'Speech AI, Select AI' }
   ];
 
   return (
     <PageContainer>
-      <h2>Who is this application and workshop for?</h2>
-      <StyledList>
-        <StyledListItem>SEs, Architects, ... AND developers</StyledListItem>
-      </StyledList>
-      <h2>Is the application ready to test?</h2>
-      <StyledList>
-        <StyledListItem>
-          The status and remaining work is listed below.
-        </StyledListItem>
-        <StyledListItem>
-          Please create your own account(s) in the "Create Account" page for any testing you do.
-        </StyledListItem>
-      </StyledList>
-
-      {/* Table for tasks */}
+      <div
+        style={{
+          fontWeight: 'bold',
+          color: bankerAccent,
+          marginBottom: 32,
+          fontSize: '2.5rem', 
+        }}
+      >
+        Please send any feedback to devreldb_ww@oracle.com
+      </div>
       <Table>
         <thead>
           <tr>
-            <TableHeader>Task</TableHeader>
-            <TableHeader>% Functionally Complete</TableHeader>
-            <TableHeader>Notes/Remaining work</TableHeader>
+            <TableHeader>Page</TableHeader>
+            <TableHeader>Tech Used</TableHeader>
           </tr>
         </thead>
         <tbody>
           {pages.map((page, index) => (
             <tr key={index}>
               <TableCell>{page.name}</TableCell>
-              <TableCell>
-                {page.complete === '100%' ? '✅' : page.complete}
-              </TableCell>
               <TableCell>{page.notes}</TableCell>
             </tr>
           ))}
         </tbody>
       </Table>
-      {/* Add YouTube video below the table */}
       <VideoWrapper>
         <iframe
-          width="560"
-          height="315"
+          width="900"
+          height="506"
           src="https://www.youtube.com/embed/-o16D-Sq-mU"
           title="YouTube video player"
           frameBorder="0"
