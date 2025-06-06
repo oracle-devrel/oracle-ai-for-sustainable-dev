@@ -1,39 +1,49 @@
 import React from 'react';
 import styled from 'styled-components';
 
+// Banker blue theme colors
+const bankerBg = "#354F64";
+const bankerAccent = "#5884A7";
+const bankerText = "#F9F9F9";
+const bankerPanel = "#223142";
+
 const PageContainer = styled.div`
-  background-color: #121212; /* Dark background */
-  color: #ffffff; /* Light text */
+  background-color: ${bankerBg};
+  color: ${bankerText};
   width: 100%;
-  height: 100vh;
+  min-height: 100vh;
   padding: 20px;
-  overflow-y: auto; /* Allow scrolling if content overflows */
+  overflow-y: auto;
 `;
 
 const Iframe = styled.iframe`
   width: 100%;
-  height: calc(50vh - 40px); /* Adjust height to fit within the page */
+  height: calc(50vh - 40px);
   border: none;
   margin-top: 20px;
+  border-radius: 8px;
+  background: ${bankerPanel};
+  border: 1px solid ${bankerAccent};
 `;
 
 const Image = styled.img`
   display: block;
-  width: 100%; /* Make the image take the full width of the container */
-  max-width: 1200px; /* Limit the maximum width */
-  height: auto; /* Maintain aspect ratio */
+  width: 100%;
+  max-width: 1200px;
+  height: auto;
   margin: 20px auto;
-  border: 1px solid #444; /* Optional border for better visibility */
+  border: 1px solid ${bankerAccent};
   border-radius: 8px;
+  background: ${bankerPanel};
 `;
 
 const SidePanel = styled.div`
-  border: 1px solid #444; /* Darker border */
+  border: 1px solid ${bankerAccent};
   padding: 10px;
   border-radius: 8px;
-  background-color: #1e1e1e; /* Darker background for the side panel */
-  color: #ffffff; /* Light text */
-  margin-top: 20px; /* Add spacing above the side panel */
+  background-color: ${bankerPanel};
+  color: ${bankerText};
+  margin-top: 20px;
 `;
 
 const Observability = () => {

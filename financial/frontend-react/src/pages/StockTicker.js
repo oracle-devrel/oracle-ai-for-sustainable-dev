@@ -1,21 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
 
+// Banker blue theme colors
+const bankerBg = "#354F64";
+const bankerAccent = "#5884A7";
+const bankerText = "#F9F9F9";
+const bankerPanel = "#223142";
+
 const PageContainer = styled.div`
-  background-color: #121212; /* Dark background */
-  color: #ffffff; /* Light text */
+  background-color: ${bankerBg};
+  color: ${bankerText};
   width: 100%;
   height: 100vh;
   padding: 20px;
-  overflow-y: auto; /* Allow scrolling if content overflows */
+  overflow-y: auto;
 `;
 
 const TickerContainer = styled.div`
   width: 100%;
-  background-color: #1e1e1e; /* Darker background for the ticker */
+  background-color: ${bankerPanel};
   overflow: hidden;
   white-space: nowrap;
-  border: 1px solid #444; /* Darker border */
+  border: 1px solid ${bankerAccent};
   padding: 10px 0;
   position: relative;
 `;
@@ -32,84 +38,86 @@ const scrollAnimation = keyframes`
 const TickerText = styled.div`
   display: flex;
   animation: ${scrollAnimation} 15s linear infinite;
-  color: #1abc9c; /* Accent color for the ticker text */
+  color: ${bankerAccent};
   font-weight: bold;
   white-space: nowrap;
 `;
 
 const TickerContent = styled.div`
   display: inline-block;
-  padding-right: 50px; /* Add space between the duplicate text */
+  padding-right: 50px;
 `;
 
 const Form = styled.form`
   max-width: 600px;
   margin: 20px auto;
   padding: 20px;
-  border: 1px solid #444; /* Darker border */
+  border: 1px solid ${bankerAccent};
   border-radius: 8px;
-  background-color: #1e1e1e; /* Darker background for the form */
+  background-color: ${bankerPanel};
 `;
 
 const Label = styled.label`
   display: block;
   margin-bottom: 8px;
   font-weight: bold;
-  color: #ffffff; /* Light text */
+  color: ${bankerText};
 `;
 
 const Select = styled.select`
   width: 100%;
   margin-bottom: 16px;
   padding: 8px;
-  border: 1px solid #555; /* Darker border */
+  border: 1px solid ${bankerAccent};
   border-radius: 4px;
-  background-color: #2c2c2c; /* Darker select background */
-  color: #ffffff; /* Light text */
+  background-color: #406080;
+  color: ${bankerText};
 `;
 
 const Input = styled.input`
   width: 100%;
   margin-bottom: 16px;
   padding: 8px;
-  border: 1px solid #555; /* Darker border */
+  border: 1px solid ${bankerAccent};
   border-radius: 4px;
-  background-color: #2c2c2c; /* Darker input background */
-  color: #ffffff; /* Light text */
+  background-color: #406080;
+  color: ${bankerText};
 `;
 
 const Button = styled.button`
   padding: 10px;
-  background-color: #1abc9c;
-  color: white;
+  background-color: ${bankerAccent};
+  color: ${bankerText};
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  font-weight: bold;
   &:hover {
-    background-color: #16a085;
+    background-color: ${bankerBg};
   }
 `;
 
 const SidePanel = styled.div`
-  border: 1px solid #444; /* Darker border */
+  border: 1px solid ${bankerAccent};
   padding: 10px;
   border-radius: 8px;
-  background-color: #1e1e1e; /* Darker background for the side panel */
-  color: #ffffff; /* Light text */
-  margin-bottom: 20px; /* Add spacing below the side panel */
+  background-color: ${bankerPanel};
+  color: ${bankerText};
+  margin-bottom: 20px;
 `;
 
 const ToggleButton = styled.button`
-  background-color: #1abc9c;
-  color: white;
+  background-color: ${bankerAccent};
+  color: ${bankerText};
   border: none;
   padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
   margin-bottom: 10px;
+  font-weight: bold;
 
   &:hover {
-    background-color: #16a085;
+    background-color: ${bankerBg};
   }
 `;
 
@@ -121,12 +129,12 @@ const CollapsibleContent = styled.div`
 
 const TextContent = styled.div`
   flex: 1;
-  margin-right: 20px; /* Add spacing between text and video */
+  margin-right: 20px;
 `;
 
 const VideoWrapper = styled.div`
   flex-shrink: 0;
-  width: 40%; /* Set the width of the video */
+  width: 40%;
 `;
 
 const StockTicker = () => {
@@ -134,28 +142,25 @@ const StockTicker = () => {
     stock: '',
     shares: '',
     cacheOption: 'True Cache',
-    customerId: '', // Will be set after fetching customerIds
+    customerId: '',
   });
 
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [stockList, setStockList] = useState([]);
-  const [lastAction, setLastAction] = useState(null); // { ticker: 'AAPL', action: 'buy' | 'sell' }
+  const [lastAction, setLastAction] = useState(null);
   const [customerIds, setCustomerIds] = useState([]);
 
   useEffect(() => {
-    // Fetch stock list
     fetch('https://oracleai-financial.org/financial/stockticker')
       .then(res => res.json())
       .then(data => setStockList(data))
       .catch(() => setStockList([]));
 
-    // Fetch customer IDs from accounts endpoint
     fetch('https://oracleai-financial.org/financial/accounts')
       .then(res => res.json())
       .then(data => {
         const ids = Array.from(new Set(data.map(acc => acc.CUSTOMER_ID))).filter(Boolean);
         setCustomerIds(ids);
-        // Set default customerId if not already set
         setFormData(f => ({ ...f, customerId: ids[0] || '' }));
       })
       .catch(() => setCustomerIds([]));
@@ -173,7 +178,7 @@ const StockTicker = () => {
       ticker: formData.stock,
       quantity: Number(formData.shares),
       purchasePrice: Number(formData.shares),
-      action, // "buy" or "sell"
+      action,
     };
 
     fetch('https://oracleai-financial.org/financial/stockbuyorsell', {
@@ -187,7 +192,6 @@ const StockTicker = () => {
       .then((data) => {
         if (data.success) {
           setLastAction({ ticker: formData.stock, action });
-          // Refresh ticker after purchase/sale
           fetch('https://oracleai-financial.org/financial/stockticker')
             .then(res => res.json())
             .then(data => setStockList(data))
@@ -222,7 +226,7 @@ const StockTicker = () => {
                   href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier-financial/index.html"
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{ color: '#1abc9c', textDecoration: 'none' }}
+                  style={{ color: bankerAccent, textDecoration: 'none' }}
                 >
                   Click here for workshop lab and further information
                 </a>
@@ -232,7 +236,7 @@ const StockTicker = () => {
                   href="https://github.com/paulparkinson/oracle-ai-for-sustainable-dev/tree/main/financial"
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{ color: '#1abc9c', textDecoration: 'none' }}
+                  style={{ color: bankerAccent, textDecoration: 'none' }}
                 >
                   Direct link to source code on GitHub
                 </a>
@@ -262,7 +266,7 @@ const StockTicker = () => {
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
-                style={{ borderRadius: '8px', border: '1px solid #444' }}
+                style={{ borderRadius: '8px', border: `1px solid ${bankerAccent}` }}
               ></iframe>
             </VideoWrapper>
           </CollapsibleContent>
@@ -371,7 +375,6 @@ const StockTicker = () => {
           </label>
         </div>
 
-        {/* Add space above, below, and between buttons */}
         <div style={{ margin: '24px 0 24px 0', display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <Button type="button" onClick={(e) => handleStockSubmit(e, 'buy')}>
             Buy
@@ -381,7 +384,7 @@ const StockTicker = () => {
           </Button>
         </div>
 
-        <p style={{ marginTop: '10px', color: '#1abc9c', fontSize: '14px' }}>
+        <p style={{ marginTop: '10px', color: bankerAccent, fontSize: '14px' }}>
           Buy/sell affects stock value
         </p>
       </Form>

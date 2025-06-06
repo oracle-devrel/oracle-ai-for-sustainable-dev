@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
+// Banker blue theme colors
+const bankerBg = "#354F64";
+const bankerAccent = "#5884A7";
+const bankerText = "#F9F9F9";
+const bankerPanel = "#223142";
+
 const PageContainer = styled.div`
-  background-color: #121212;
-  color: #ffffff;
+  background-color: ${bankerBg};
+  color: ${bankerText};
   width: 100%;
-  height: 100vh;
+  min-height: 100vh;
   padding: 20px;
   overflow-y: auto;
 `;
@@ -13,38 +19,58 @@ const PageContainer = styled.div`
 const Form = styled.form`
   margin-top: 20px;
   padding: 20px;
-  border: 1px solid #444;
+  border: 1px solid ${bankerAccent};
   border-radius: 8px;
-  background-color: #1e1e1e;
-  color: #ffffff;
+  background-color: ${bankerPanel};
+  color: ${bankerText};
 `;
 
 const Label = styled.label`
   display: block;
   margin-bottom: 8px;
   font-weight: bold;
+  color: ${bankerText};
 `;
 
 const Input = styled.input`
   width: 100%;
   margin-bottom: 16px;
   padding: 8px;
-  border: 1px solid #555;
+  border: 1px solid ${bankerAccent};
   border-radius: 4px;
-  background-color: #2c2c2c;
-  color: #ffffff;
+  background-color: #406080;
+  color: ${bankerText};
+  &:focus {
+    border-color: ${bankerAccent};
+    outline: 1px solid ${bankerAccent};
+  }
+`;
+
+const Select = styled.select`
+  width: 100%;
+  margin-bottom: 16px;
+  padding: 8px;
+  border: 1px solid ${bankerAccent};
+  border-radius: 4px;
+  background-color: #406080;
+  color: ${bankerText};
+  &:focus {
+    border-color: ${bankerAccent};
+    outline: 1px solid ${bankerAccent};
+  }
 `;
 
 const Button = styled.button`
   padding: 10px 20px;
-  background-color: #1abc9c;
-  color: white;
+  background-color: ${bankerAccent};
+  color: ${bankerText};
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  font-weight: bold;
 
   &:hover {
-    background-color: #16a085;
+    background-color: ${bankerBg};
   }
 `;
 
@@ -55,48 +81,49 @@ const Table = styled.table`
 `;
 
 const TableHeader = styled.th`
-  border: 1px solid #444;
+  border: 1px solid ${bankerAccent};
   padding: 8px;
-  background-color: #1e1e1e;
-  color: #ffffff;
+  background-color: ${bankerPanel};
+  color: ${bankerText};
   text-align: left;
 `;
 
 const TableCell = styled.td`
-  border: 1px solid #444;
+  border: 1px solid ${bankerAccent};
   padding: 8px;
-  color: #ffffff;
+  color: ${bankerText};
 `;
 
 const CollapsiblePanel = styled.div`
   margin-top: 20px;
   padding: 10px;
-  border: 1px solid #444;
+  border: 1px solid ${bankerAccent};
   border-radius: 8px;
-  background-color: #1e1e1e;
-  color: #ffffff;
+  background-color: ${bankerPanel};
+  color: ${bankerText};
 `;
 
 const ToggleButton = styled.button`
-  background-color: #1abc9c;
-  color: white;
+  background-color: ${bankerAccent};
+  color: ${bankerText};
   border: none;
   padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
   margin-bottom: 10px;
+  font-weight: bold;
 
   &:hover {
-    background-color: #16a085;
+    background-color: ${bankerBg};
   }
 `;
 
 const SidePanel = styled.div`
-  border: 1px solid #444;
+  border: 1px solid ${bankerAccent};
   padding: 10px;
   border-radius: 8px;
-  background-color: #1e1e1e;
-  color: #ffffff;
+  background-color: ${bankerPanel};
+  color: ${bankerText};
   margin-top: 20px;
 `;
 
@@ -228,7 +255,7 @@ const Accounts = () => {
                   href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier-financial/index.html"
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{ color: '#1abc9c', textDecoration: 'none' }}
+                  style={{ color: bankerAccent, textDecoration: 'none' }}
                 >
                   Click here for workshop lab and further information
                 </a>
@@ -238,7 +265,7 @@ const Accounts = () => {
                   href="https://github.com/paulparkinson/oracle-ai-for-sustainable-dev/tree/main/financial/bank-account-management-mern"
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{ color: '#1abc9c', textDecoration: 'none' }}
+                  style={{ color: bankerAccent, textDecoration: 'none' }}
                 >
                   Direct link to source code on GitHub
                 </a>
@@ -269,7 +296,7 @@ const Accounts = () => {
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
-                style={{ borderRadius: '8px', border: '1px solid #444' }}
+                style={{ borderRadius: '8px', border: `1px solid ${bankerAccent}` }}
               ></iframe>
             </div>
           </div>
@@ -302,27 +329,18 @@ const Accounts = () => {
         />
 
         <Label htmlFor="accountType">Account Type</Label>
-        <select
+        <Select
           id="accountType"
           name="accountType"
           value={formData.accountType}
           onChange={handleChange}
           required
-          style={{
-            width: '100%',
-            marginBottom: '16px',
-            padding: '8px',
-            border: '1px solid #555',
-            borderRadius: '4px',
-            backgroundColor: '#2c2c2c',
-            color: '#ffffff'
-          }}
         >
           <option value="" disabled>Select account type</option>
           <option value="checking">checking</option>
           <option value="savings">savings</option>
           <option value="brokerage">brokerage</option>
-        </select>
+        </Select>
 
         <Label htmlFor="customerId">Customer ID</Label>
         <Input
@@ -459,7 +477,7 @@ const Accounts = () => {
           </thead>
           <tbody>
             {accounts.map((account) => (
-              <tr key={account.accountId}>
+              <tr key={account.accountId || account._id}>
                 <TableCell>{account.accountId || account._id || 'N/A'}</TableCell>
                 <TableCell>{account.accountName || 'N/A'}</TableCell>
                 <TableCell>{account.accountType || 'N/A'}</TableCell>

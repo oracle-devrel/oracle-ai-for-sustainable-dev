@@ -1,9 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
+// Banker blue theme colors
+const bankerBg = "#354F64";
+const bankerAccent = "#5884A7";
+const bankerText = "#F9F9F9";
+const bankerPanel = "#223142";
+
 const PageContainer = styled.div`
-  background-color: #121212;
-  color: #ffffff;
+  background-color: ${bankerBg};
+  color: ${bankerText};
   width: 100%;
   min-height: 100vh;
   padding: 20px;
@@ -24,55 +30,56 @@ const Form = styled.form`
   flex-direction: column;
   max-width: 800px;
   padding: 20px;
-  border: 1px solid #444;
+  border: 1px solid ${bankerAccent};
   border-radius: 8px;
-  background-color: #1e1e1e;
+  background-color: ${bankerPanel};
 `;
 
 const Label = styled.label`
   display: block;
   margin-bottom: 8px;
   font-weight: bold;
-  color: #ffffff;
+  color: ${bankerText};
 `;
 
 const Input = styled.input`
   width: 100%;
   margin-bottom: 16px;
   padding: 8px;
-  border: 1px solid #555;
+  border: 1px solid ${bankerAccent};
   border-radius: 4px;
-  background-color: #2c2c2c;
-  color: #ffffff;
+  background-color: #406080;
+  color: ${bankerText};
 `;
 
 const Select = styled.select`
   width: 100%;
   margin-bottom: 16px;
   padding: 8px;
-  border: 1px solid #555;
+  border: 1px solid ${bankerAccent};
   border-radius: 4px;
-  background-color: #2c2c2c;
-  color: #ffffff;
+  background-color: #406080;
+  color: ${bankerText};
 `;
 
 const RadioLabel = styled.label`
   display: block;
   margin-bottom: 8px;
-  color: #ffffff;
+  color: ${bankerText};
 `;
 
 const Button = styled.button`
   padding: 10px;
-  background-color: #5884A7;
-  color: #F9F9F9;
+  background-color: ${bankerAccent};
+  color: ${bankerText};
   border: none;
   border-radius: 4px;
   cursor: pointer;
   margin-right: 8px;
   margin-bottom: 8px;
+  font-weight: bold;
   &:hover {
-    background-color: #354F64;
+    background-color: ${bankerBg};
   }
 `;
 
@@ -81,21 +88,26 @@ const Section = styled.div`
 `;
 
 const ToggleButton = styled.button`
-  background: none;
+  background-color: ${bankerAccent};
+  color: ${bankerText};
   border: none;
-  color: #1abc9c;
-  font-size: 1.1rem;
+  padding: 8px 16px;
+  border-radius: 4px;
   cursor: pointer;
-  margin-bottom: 12px;
-  text-decoration: underline;
+  margin-bottom: 10px;
+  font-weight: bold;
+  &:hover {
+    background-color: ${bankerBg};
+  }
 `;
 
 const DevPanel = styled.div`
-  border: 1px solid #444;
+  border: 1px solid ${bankerAccent};
   border-radius: 8px;
-  background: #181818;
+  background: ${bankerPanel};
   padding: 24px;
   margin-bottom: 32px;
+  color: ${bankerText};
 `;
 
 const Messaging = () => {
@@ -130,12 +142,11 @@ const Messaging = () => {
   useEffect(() => {
     const fetchFromAccounts = async () => {
       try {
-        const response = await fetch(`${BASE_URL}/accounts`);
+        const response = await fetch(`${ACCOUNT_FETCH_URL}/accounts`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        // ATM.js expects data.items to be an array of objects with ACCOUNT_ID
         setFromAccounts(data.items || []);
       } catch (error) {
         console.error('Error fetching from accounts:', error);
@@ -228,15 +239,14 @@ const Messaging = () => {
       <h2>Tech: Kafka and TxEventQ</h2>
       <h2>Reference: FSGBU</h2>
 
-      {/* Developer Details Collapsible Panel - moved before the form, styled like other pages */}
+      {/* Developer Details Collapsible Panel */}
       <DevPanel>
-        <Button
+        <ToggleButton
           type="button"
           onClick={() => setIsCollapsed(!isCollapsed)}
-          style={{ marginBottom: 16, minWidth: 220 }}
         >
           {isCollapsed ? 'Show Developer Details' : 'Hide Developer Details'}
-        </Button>
+        </ToggleButton>
         {!isCollapsed && (
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div style={{ flex: 1, marginRight: '20px' }}>
@@ -245,7 +255,7 @@ const Messaging = () => {
                   href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier-financial/index.html"
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{ color: '#1abc9c', textDecoration: 'none' }}
+                  style={{ color: bankerAccent, textDecoration: 'none' }}
                 >
                   Click here for workshop lab and further information
                 </a>
@@ -255,7 +265,7 @@ const Messaging = () => {
                   href="https://github.com/paulparkinson/oracle-ai-for-sustainable-dev/tree/main/financial/brokerage-transfer-kafka"
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{ color: '#1abc9c', textDecoration: 'none' }}
+                  style={{ color: bankerAccent, textDecoration: 'none' }}
                 >
                   Direct link to source code on GitHub
                 </a>
@@ -270,7 +280,6 @@ const Messaging = () => {
                 <li>Only Oracle Database has a built-in messaging engine (TxEventQ) which allows database and messaging operations in the same local transaction</li>
                 <li>TxEventQ can be used via Kafka API, JMS, PL/SQL and via any language</li>
               </ul>
-              {/* Moved Create Kafka Topic form here */}
               <Section>
                 <h4>Create Kafka Topic (one time call to setup, ie not needed if app is already running)</h4>
                 <form
@@ -297,9 +306,9 @@ const Messaging = () => {
                 </form>
                 {topicResult && (
                   <div style={{
-                    background: "#181818",
-                    color: "#fff",
-                    border: "1px solid #444",
+                    background: bankerPanel,
+                    color: bankerText,
+                    border: `1px solid ${bankerAccent}`,
                     borderRadius: "8px",
                     padding: "16px",
                     marginTop: "12px",
@@ -315,7 +324,7 @@ const Messaging = () => {
               <img
                 src="/images/mongopostgreskafka_vs_OracleAQ.png"
                 alt="Mongo/Postgres/Kafka vs Oracle AQ"
-                style={{ width: '100%', borderRadius: '8px', border: '1px solid #444' }}
+                style={{ width: '100%', borderRadius: '8px', border: `1px solid ${bankerAccent}` }}
               />
             </div>
           </div>
@@ -470,9 +479,9 @@ const Messaging = () => {
             <Button onClick={() => handleOrderAction('show')} disabled={loading} type="button">Show Order</Button>
             {orderResult && (
               <div style={{
-                background: "#181818",
-                color: "#fff",
-                border: "1px solid #444",
+                background: bankerPanel,
+                color: bankerText,
+                border: `1px solid ${bankerAccent}`,
                 borderRadius: "8px",
                 padding: "16px",
                 marginTop: "12px",
@@ -531,9 +540,9 @@ const Messaging = () => {
         </form>
         {inventoryResult && (
           <div style={{
-            background: "#181818",
-            color: "#fff",
-            border: "1px solid #444",
+            background: bankerPanel,
+            color: bankerText,
+            border: `1px solid ${bankerAccent}`,
             borderRadius: "8px",
             padding: "16px",
             marginTop: "12px",
@@ -548,9 +557,9 @@ const Messaging = () => {
       {/* Main form result */}
       {result && (
         <div style={{
-          background: "#181818",
-          color: "#fff",
-          border: "1px solid #444",
+          background: bankerPanel,
+          color: bankerText,
+          border: `1px solid ${bankerAccent}`,
           borderRadius: "8px",
           padding: "16px",
           marginTop: "24px",

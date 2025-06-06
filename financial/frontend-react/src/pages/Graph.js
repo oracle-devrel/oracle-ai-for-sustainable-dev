@@ -2,22 +2,28 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import cytoscape from 'cytoscape';
 
+// Banker blue theme colors
+const bankerBg = "#354F64";
+const bankerAccent = "#5884A7";
+const bankerText = "#F9F9F9";
+const bankerPanel = "#223142";
+
 const PageContainer = styled.div`
-  background-color: #121212; /* Dark background */
-  color: #ffffff; /* Light text */
+  background-color: ${bankerBg};
+  color: ${bankerText};
   width: 100%;
   height: 100vh;
   padding: 20px;
-  overflow-y: auto; /* Allow scrolling if content overflows */
+  overflow-y: auto;
 `;
 
 const SidePanel = styled.div`
-  border: 1px solid #444; /* Darker border */
+  border: 1px solid ${bankerAccent};
   padding: 10px;
   border-radius: 8px;
-  background-color: #1e1e1e; /* Darker background for the side panel */
-  color: #ffffff; /* Light text */
-  margin-top: 20px; /* Add spacing above the side panel */
+  background-color: ${bankerPanel};
+  color: ${bankerText};
+  margin-top: 20px;
 `;
 
 const CollapsibleContent = styled.div`
@@ -28,48 +34,59 @@ const CollapsibleContent = styled.div`
 
 const TextContent = styled.div`
   flex: 1;
-  margin-right: 20px; /* Add spacing between text and video */
+  margin-right: 20px;
 `;
 
 const VideoWrapper = styled.div`
   flex-shrink: 0;
-  width: 40%; /* Set the width of the video */
+  width: 40%;
 `;
 
 const GraphContainer = styled.div`
   width: 100%;
-  height: 400px; /* Set a fixed height for the graph container */
+  height: 400px;
   margin-top: 20px;
-  border: 1px solid #444; /* Optional border for better visibility */
+  border: 1px solid ${bankerAccent};
   border-radius: 8px;
-  background-color: #1e1e1e; /* Darker background for the graph container */
+  background-color: ${bankerPanel};
 `;
 
 const GenerateButton = styled.button`
   margin-top: 20px;
   padding: 10px 20px;
-  background-color: #0074D9;
-  color: white;
+  background-color: ${bankerAccent};
+  color: ${bankerText};
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  font-weight: bold;
 
   &:hover {
-    background-color: #005bb5;
+    background-color: ${bankerBg};
+  }
+`;
+
+const DangerButton = styled(GenerateButton)`
+  background-color: #e74c3c;
+  margin-left: 10px;
+
+  &:hover {
+    background-color: #c0392b;
   }
 `;
 
 const ToggleButton = styled.button`
-  background-color: #1abc9c;
-  color: white;
+  background-color: ${bankerAccent};
+  color: ${bankerText};
   border: none;
   padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
   margin-bottom: 10px;
+  font-weight: bold;
 
   &:hover {
-    background-color: #16a085;
+    background-color: ${bankerBg};
   }
 `;
 
@@ -82,7 +99,7 @@ const Graph = () => {
       container: document.getElementById('cy'),
       elements: [],
       style: [
-        { selector: 'node', style: { 'label': 'data(id)', 'background-color': '#0074D9' } },
+        { selector: 'node', style: { 'label': 'data(id)', 'background-color': bankerAccent } },
         { selector: 'edge', style: { 'width': 2, 'line-color': '#ccc' } }
       ],
       layout: { name: 'grid' }
@@ -197,7 +214,7 @@ const Graph = () => {
                     href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier-financial/index.html"
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{ color: '#1abc9c', textDecoration: 'none' }}
+                    style={{ color: bankerAccent, textDecoration: 'none' }}
                   >
                     Click here for workshop lab and further information
                   </a>
@@ -207,7 +224,7 @@ const Graph = () => {
                     href="https://github.com/paulparkinson/oracle-ai-for-sustainable-dev/tree/main/financial"
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{ color: '#1abc9c', textDecoration: 'none' }}
+                    style={{ color: bankerAccent, textDecoration: 'none' }}
                   >
                     Direct link to source code on GitHub
                   </a>
@@ -235,7 +252,7 @@ const Graph = () => {
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
-                  style={{ borderRadius: '8px', border: '1px solid #444' }}
+                  style={{ borderRadius: '8px', border: `1px solid ${bankerAccent}` }}
                 ></iframe>
               </VideoWrapper>
             </CollapsibleContent>
@@ -246,7 +263,7 @@ const Graph = () => {
                 href="https://IJ1TYZIR3WPWLPE-FINANCIALDB.adb.eu-frankfurt-1.oraclecloudapps.com/graphstudio/"
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ color: '#1abc9c', textDecoration: 'none', fontWeight: 'bold', fontSize: '1.1em' }}
+                style={{ color: bankerAccent, textDecoration: 'none', fontWeight: 'bold', fontSize: '1.1em' }}
               >
                 Open Oracle Graph Studio in a new tab
               </a>
@@ -262,9 +279,9 @@ const Graph = () => {
       <GenerateButton onClick={() => generateCircularTransfersAndGraph(cy)}>
         Generate transactions to see corresponding graph
       </GenerateButton>
-      <GenerateButton style={{ backgroundColor: '#e74c3c', marginLeft: '10px' }} onClick={clearAllTransfers}>
+      <DangerButton onClick={clearAllTransfers}>
         Clear all transfer history
-      </GenerateButton>
+      </DangerButton>
     </PageContainer>
   );
 };

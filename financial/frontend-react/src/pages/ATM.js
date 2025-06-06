@@ -1,90 +1,107 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
+// Banker blue theme colors
+const bankerBg = "#354F64";
+const bankerAccent = "#5884A7";
+const bankerText = "#F9F9F9";
+const bankerPanel = "#223142";
+
 const PageContainer = styled.div`
-  background-color: #121212; /* Dark background */
-  color: #ffffff; /* Light text */
+  background-color: ${bankerBg};
+  color: ${bankerText};
   width: 100%;
-  height: 100vh;
+  min-height: 100vh;
   padding: 20px;
 `;
 
 const SidePanel = styled.div`
-  border: 1px solid #444; /* Darker border */
+  border: 1px solid ${bankerAccent};
   padding: 10px;
   border-radius: 8px;
-  background-color: #1e1e1e; /* Darker background for the side panel */
-  color: #ffffff; /* Light text */
-  margin-bottom: 20px; /* Add spacing below the side panel */
+  background-color: ${bankerPanel};
+  color: ${bankerText};
+  margin-bottom: 20px;
 `;
 
 const ToggleButton = styled.button`
-  background-color: #1abc9c;
-  color: white;
+  background-color: ${bankerAccent};
+  color: ${bankerText};
   border: none;
   padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
   margin-bottom: 10px;
+  font-weight: bold;
 
   &:hover {
-    background-color: #16a085;
+    background-color: ${bankerBg};
   }
 `;
 
 const Form = styled.form`
   display: flex;
-  flex-direction: column; /* Stack form elements vertically */
+  flex-direction: column;
   max-width: 800px;
   margin: 20px auto;
   padding: 20px;
-  border: 1px solid #444; /* Darker border */
+  border: 1px solid ${bankerAccent};
   border-radius: 8px;
-  background-color: #1e1e1e; /* Darker background for the form */
+  background-color: ${bankerPanel};
+  color: ${bankerText};
 `;
 
 const Label = styled.label`
   display: block;
   margin-bottom: 8px;
   font-weight: bold;
-  color: #ffffff; /* Light text */
+  color: ${bankerText};
 `;
 
 const Input = styled.input`
   width: 100%;
   margin-bottom: 16px;
   padding: 8px;
-  border: 1px solid #555; /* Darker border */
+  border: 1px solid ${bankerAccent};
   border-radius: 4px;
-  background-color: #2c2c2c; /* Darker input background */
-  color: #ffffff; /* Light text */
+  background-color: #406080;
+  color: ${bankerText};
+  &:focus {
+    border-color: ${bankerAccent};
+    outline: 1px solid ${bankerAccent};
+  }
 `;
 
 const Select = styled.select`
   width: 100%;
   margin-bottom: 16px;
   padding: 8px;
-  border: 1px solid #555;
+  border: 1px solid ${bankerAccent};
   border-radius: 4px;
-  background-color: #2c2c2c;
-  color: #ffffff;
+  background-color: #406080;
+  color: ${bankerText};
+  &:focus {
+    border-color: ${bankerAccent};
+    outline: 1px solid ${bankerAccent};
+  }
 `;
 
 const RadioLabel = styled.label`
   display: block;
   margin-bottom: 8px;
-  color: #ffffff; /* Light text */
+  color: ${bankerText};
 `;
 
 const Button = styled.button`
   padding: 10px;
-  background-color: #1abc9c;
-  color: white;
+  background-color: ${bankerAccent};
+  color: ${bankerText};
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  font-weight: bold;
   &:hover {
-    background-color: #16a085;
+    background-color: ${bankerBg};
   }
 `;
 
@@ -95,32 +112,31 @@ const Table = styled.table`
 `;
 
 const TableHeader = styled.th`
-  background-color: #2c2c2c;
-  color: #ffffff;
+  background-color: ${bankerPanel};
+  color: ${bankerText};
   padding: 10px;
-  border: 1px solid #444;
+  border: 1px solid ${bankerAccent};
 `;
 
 const TableCell = styled.td`
-  background-color: #121212;
-  color: #ffffff;
+  background-color: ${bankerBg};
+  color: ${bankerText};
   padding: 10px;
-  border: 1px solid #444;
+  border: 1px solid ${bankerAccent};
 `;
 
 const ATM = () => {
-  const [isCollapsed, setIsCollapsed] = useState(true); // Set to true to make the details box collapsed by default
+  const [isCollapsed, setIsCollapsed] = useState(true);
   const [formData, setFormData] = useState({
     accountId: '',
     amount: '',
     language: '',
   });
   const [accountIds, setAccountIds] = useState([]);
-  const [accountDetails, setAccountDetails] = useState(null); // State to store the account details
+  const [accountDetails, setAccountDetails] = useState(null);
 
-  const BASE_URL = process.env.REACT_APP_MICROTX_ACCOUNT_SERVICE_URL; // Use the same URL prefix as in Transactions.js
+  const BASE_URL = process.env.REACT_APP_MICROTX_ACCOUNT_SERVICE_URL;
 
-  // Fetch account IDs from the API
   useEffect(() => {
     const fetchAccountIds = async () => {
       try {
@@ -128,7 +144,6 @@ const ATM = () => {
         const data = await response.json();
         setAccountIds(Array.isArray(data) ? data : []);
         if (data.length > 0) {
-          // Prepopulate with the first account's id
           setFormData((prev) => ({
             ...prev,
             accountId: data[0].accountId || data[0]._id || data[0].id || ''
@@ -144,10 +159,10 @@ const ATM = () => {
 
   const fetchAccountDetails = async (accountId) => {
     try {
-      const response = await fetch(`${BASE_URL}/account/${accountId}`); // Fetch details for a specific account
+      const response = await fetch(`${BASE_URL}/account/${accountId}`);
       if (response.ok) {
         const data = await response.json();
-        setAccountDetails(data); // Update the account details state
+        setAccountDetails(data);
       } else {
         console.error(`Failed to fetch account details for accountId: ${accountId}`);
       }
@@ -172,13 +187,13 @@ const ATM = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(parseFloat(formData.amount)), // Send the amount as a number
+        body: JSON.stringify(parseFloat(formData.amount)),
       });
 
       if (response.ok) {
         alert(`Transaction successful! Account ID: ${formData.accountId}, Amount: ${formData.amount}`);
-        setFormData({ ...formData, amount: '' }); // Reset the amount field
-        fetchAccountDetails(formData.accountId); // Refresh the account details table
+        setFormData({ ...formData, amount: '' });
+        fetchAccountDetails(formData.accountId);
       } else {
         const errorText = await response.text();
         alert(`Transaction failed: ${errorText}`);
@@ -207,7 +222,7 @@ const ATM = () => {
                   href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier-financial/index.html"
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{ color: '#1abc9c', textDecoration: 'none' }}
+                  style={{ color: bankerAccent, textDecoration: 'none' }}
                 >
                   Click here for workshop lab and further information
                 </a>
@@ -217,7 +232,7 @@ const ATM = () => {
                   href="https://github.com/paulparkinson/oracle-ai-for-sustainable-dev/tree/main/financial/atm-polyglot"
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{ color: '#1abc9c', textDecoration: 'none' }}
+                  style={{ color: bankerAccent, textDecoration: 'none' }}
                 >
                   Direct link to source code on GitHub
                 </a>
@@ -247,7 +262,7 @@ const ATM = () => {
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
-                style={{ borderRadius: '8px', border: '1px solid #444' }}
+                style={{ borderRadius: '8px', border: `1px solid ${bankerAccent}` }}
               ></iframe>
             </div>
           </div>

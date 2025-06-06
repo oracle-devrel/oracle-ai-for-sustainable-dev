@@ -4,6 +4,12 @@ import { MapContainer, TileLayer, Marker, Popup, useMapEvent } from 'react-leafl
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
+// Banker blue theme colors
+const bankerBg = "#354F64";
+const bankerAccent = "#5884A7";
+const bankerText = "#F9F9F9";
+const bankerPanel = "#223142";
+
 // Fix for default marker icons in Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -13,10 +19,10 @@ L.Icon.Default.mergeOptions({
 });
 
 const PageContainer = styled.div`
-  background-color: #121212;
-  color: #ffffff;
+  background-color: ${bankerBg};
+  color: ${bankerText};
   width: 100%;
-  height: 100vh;
+  min-height: 100vh;
   padding: 20px;
   overflow-y: auto;
 `;
@@ -32,72 +38,75 @@ const Form = styled.form`
   display: flex;
   flex-direction: column;
   padding: 20px;
-  border: 1px solid #444;
+  border: 1px solid ${bankerAccent};
   border-radius: 8px;
-  background-color: #1e1e1e;
+  background-color: ${bankerPanel};
   margin-bottom: 20px;
+  color: ${bankerText};
 `;
 
 const Label = styled.label`
   display: block;
   margin-bottom: 8px;
   font-weight: bold;
-  color: #ffffff;
+  color: ${bankerText};
 `;
 
 const Select = styled.select`
   width: 100%;
   margin-bottom: 16px;
   padding: 8px;
-  border: 1px solid #555;
+  border: 1px solid ${bankerAccent};
   border-radius: 4px;
-  background-color: #2c2c2c;
-  color: #ffffff;
+  background-color: #406080;
+  color: ${bankerText};
 `;
 
 const Input = styled.input`
   width: 100%;
   margin-bottom: 16px;
   padding: 8px;
-  border: 1px solid #555;
+  border: 1px solid ${bankerAccent};
   border-radius: 4px;
-  background-color: #2c2c2c;
-  color: #ffffff;
+  background-color: #406080;
+  color: ${bankerText};
 `;
 
 const Button = styled.button`
   padding: 10px;
-  background-color: #1abc9c;
-  color: white;
+  background-color: ${bankerAccent};
+  color: ${bankerText};
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  font-weight: bold;
 
   &:hover {
-    background-color: #16a085;
+    background-color: ${bankerBg};
   }
 `;
 
 const SidePanel = styled.div`
-  border: 1px solid #444;
+  border: 1px solid ${bankerAccent};
   padding: 10px;
   border-radius: 8px;
-  background-color: #1e1e1e;
-  color: #ffffff;
+  background-color: ${bankerPanel};
+  color: ${bankerText};
   margin-bottom: 20px;
 `;
 
 const ToggleButton = styled.button`
-  background-color: #1abc9c;
-  color: white;
+  background-color: ${bankerAccent};
+  color: ${bankerText};
   border: none;
   padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
   margin-bottom: 10px;
+  font-weight: bold;
 
   &:hover {
-    background-color: #16a085;
+    background-color: ${bankerBg};
   }
 `;
 
@@ -119,9 +128,9 @@ const VideoWrapper = styled.div`
 
 const NotebookWrapper = styled.div`
   width: 100%;
-  height: 600px; /* Set a fixed height for the iframe */
-  margin-top: 20px; /* Add spacing above the iframe */
-  border: 1px solid #444; /* Optional border for better visibility */
+  height: 600px;
+  margin-top: 20px;
+  border: 1px solid ${bankerAccent};
   border-radius: 8px;
   overflow: hidden;
 `;
@@ -136,7 +145,7 @@ const CreditCardPurchase = () => {
   const [accountIds, setAccountIds] = useState([]);
   const [coordinates, setCoordinates] = useState([]);
   const [isCollapsed, setIsCollapsed] = useState(true);
-  const [nextLocation, setNextLocation] = useState('first'); // alternates between 'first' and 'second'
+  const [nextLocation, setNextLocation] = useState('first');
   const [locationMarkers, setLocationMarkers] = useState({
     first: null,
     second: null,
@@ -144,7 +153,6 @@ const CreditCardPurchase = () => {
   const mapRef = useRef();
 
   useEffect(() => {
-    // Fetch account IDs for the dropdown
     const fetchAccountIds = async () => {
       try {
         const response = await fetch('https://oracleai-financial.org/accounts/accounts');
@@ -152,16 +160,14 @@ const CreditCardPurchase = () => {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        setAccountIds(Array.isArray(data) ? data : []); // If the endpoint returns an array
+        setAccountIds(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error('Error fetching account IDs:', error);
       }
     };
 
-    // Fetch coordinates for the map
     const fetchCoordinates = async () => {
       try {
-        // const response = await fetch('http://globallydistributeddatabase.financial:8080/financial/locations/coordinates');    https://oracleai-financial.org/transfer
         const response = await fetch('https://oracleai-financial.org/financial/locations/coordinates');
         const data = await response.json();
         setCoordinates(data);
@@ -198,7 +204,6 @@ const CreditCardPurchase = () => {
           [field]: value,
         },
       });
-      // Also update marker if lat/lng fields are changed manually
       if (field === 'latitude' || field === 'longitude') {
         setLocationMarkers(prev => ({
           ...prev,
@@ -222,7 +227,6 @@ const CreditCardPurchase = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Prepare payload for backend
     const payload = {
       firstLocation: {
         latitude: formData.firstLocation.latitude,
@@ -256,7 +260,6 @@ const CreditCardPurchase = () => {
     }
   };
 
-  // Alternate right-clicks between firstLocation and secondLocation, and update markers
   const handleMapRightClick = (e) => {
     const { lat, lng } = e.latlng;
     if (nextLocation === 'first') {
@@ -307,7 +310,7 @@ const CreditCardPurchase = () => {
                   href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier-financial/index.html"
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{ color: '#1abc9c', textDecoration: 'none' }}
+                  style={{ color: bankerAccent, textDecoration: 'none' }}
                 >
                   Click here for workshop lab and further information
                 </a>
@@ -317,7 +320,7 @@ const CreditCardPurchase = () => {
                   href="https://github.com/paulparkinson/oracle-ai-for-sustainable-dev/tree/main/financial"
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{ color: '#1abc9c', textDecoration: 'none' }}
+                  style={{ color: bankerAccent, textDecoration: 'none' }}
                 >
                   Direct link to source code on GitHub
                 </a>
@@ -338,7 +341,6 @@ const CreditCardPurchase = () => {
                 <li>Use OML4Py and notebooks locally or in execution environment as part of database</li>
                 <li>Spatial queries, JSON, graph, and AI with no plugins required nor scale trade-offs</li>
               </ul>
-              {/* Notebook Section moved here */}
               <NotebookWrapper>
                 <iframe
                   src="http://localhost:8888/notebooks/prebuilt-notebook.ipynb"
@@ -359,7 +361,7 @@ const CreditCardPurchase = () => {
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
-                style={{ borderRadius: '8px', border: '1px solid #444' }}
+                style={{ borderRadius: '8px', border: `1px solid ${bankerAccent}` }}
               ></iframe>
             </VideoWrapper>
           </CollapsibleContent>
@@ -429,12 +431,10 @@ const CreditCardPurchase = () => {
         <Button type="submit">Submit Purchases At These Locations</Button>
       </Form>
 
-      {/* Instruction above the map */}
-      <div style={{ margin: '16px 0', fontWeight: 'bold', color: '#1abc9c' }}>
+      <div style={{ margin: '16px 0', fontWeight: 'bold', color: bankerAccent }}>
         Right-click the map in two locations to make two purchases (form will populate) and click Submit Purchases
       </div>
 
-      {/* Map Section */}
       <MapWrapper>
         <MapContainer
           center={[39.7392, -104.9903]}
@@ -447,7 +447,6 @@ const CreditCardPurchase = () => {
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           />
-          {/* Show markers for first and second locations if set */}
           {locationMarkers.first && (
             <Marker position={[locationMarkers.first.lat, locationMarkers.first.lng]}>
               <Popup>First Location</Popup>
@@ -458,7 +457,6 @@ const CreditCardPurchase = () => {
               <Popup>Second Location</Popup>
             </Marker>
           )}
-          {/* Show any other coordinates from backend */}
           {coordinates.map((coord, index) => (
             <Marker key={index + 1000} position={[coord.lat, coord.lng]}>
               <Popup>{coord.description}</Popup>
@@ -467,15 +465,10 @@ const CreditCardPurchase = () => {
           <MapRightClickHandler onRightClick={handleMapRightClick} />
         </MapContainer>
       </MapWrapper>
-
-      {/* Images */}
-      {/* <Image src="/images/spatial-suspicious.png" alt="Spatial Suspicious Transactions" /> */}
-      {/* <Image src="/images/spatial-agg-03.png" alt="Spatial Aggregated Data" /> */}
     </PageContainer>
   );
 };
 
-// Custom right-click handler for the map
 function MapRightClickHandler({ onRightClick }) {
   useMapEvent('contextmenu', (e) => {
     onRightClick(e);

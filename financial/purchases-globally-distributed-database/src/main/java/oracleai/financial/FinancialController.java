@@ -3,6 +3,7 @@ package oracleai.financial;
 import oracleai.kafka.OrderProducerService;
 import org.apache.kafka.clients.admin.Admin;
 import org.apache.kafka.clients.admin.NewTopic;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.errors.TopicExistsException;
 import org.oracle.okafka.clients.admin.AdminClient;
 import org.oracle.okafka.clients.producer.KafkaProducer;
@@ -14,7 +15,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.http.*;
 
 import javax.sql.DataSource;
-import java.io.File;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.oracle.okafka.clients.producer.KafkaProducer;
 import java.sql.*;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
@@ -582,13 +584,25 @@ public class FinancialController {
         }
         sb.append("Selected messagingOption: ").append(messagingOption).append("\n");
         sb.append("Order placed, sending message....");
-        Properties producerProps = getOKafkaConnectionProperties();
+        Properties producerProps  = new Properties();
+        producerProps.put("security.protocol", "SSL");
+        //location containing Oracle Wallet, tnsname.ora and ojdbc.properties file...
+        producerProps.put("oracle.net.tns_admin", "/oraclefinancial/creds"); //location of ojdbc.properties file
+        producerProps.put("tns.alias", "financialdb_high");
         producerProps.put("enable.idempotence", "true");
         producerProps.put("oracle.transactional.producer", "true");
         producerProps.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         producerProps.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        KafkaProducer<String, String> okafkaProducer = new KafkaProducer<>(producerProps);
-        new OrderProducerService(okafkaProducer, "financial.order").produce("test"); // ORA-24000: invalid value ORDER, QUEUE_NAME should be of the form [SCHEMA.]NAME Cannot read the array length because "serializedKey" is null
+        KafkaProducer<String, String> kafkaProducer = new KafkaProducer<>(producerProps);
+//        producer.beginTransaction();
+//        Connection conn = producer.getDBConnection();
+        String message = "testmessage";
+        ProducerRecord<String, String> producerRecord = new ProducerRecord<>("FINANCIAL.ORDER", message);
+        kafkaProducer.send(producerRecord);
+        System.out.println("OrderProducerService.produce message sent:" + message);
+//        producer.commitTransaction();
+        System.out.println("OrderProducerService.produce message committed:" + message);
+        new OrderProducerService(kafkaProducer, "FINANCIAL.ORDER").produce("test"); // ORA-24000: invalid value ORDER, QUEUE_NAME should be of the form [SCHEMA.]NAME Cannot read the array length because "serializedKey" is null
         return ResponseEntity.ok(sb.toString());
     }
 

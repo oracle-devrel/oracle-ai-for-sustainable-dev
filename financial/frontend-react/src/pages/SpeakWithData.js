@@ -1,35 +1,42 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
+// Banker blue theme colors
+const bankerBg = "#354F64";
+const bankerAccent = "#5884A7";
+const bankerText = "#F9F9F9";
+const bankerPanel = "#223142";
+
 const PageContainer = styled.div`
-  background-color: #121212; /* Dark background */
-  color: #ffffff; /* Light text */
+  background-color: ${bankerBg};
+  color: ${bankerText};
   width: 100%;
   height: 100vh;
   padding: 20px;
-  overflow-y: auto; /* Allow scrolling if content overflows */
+  overflow-y: auto;
 `;
 
 const SidePanel = styled.div`
-  border: 1px solid #444; /* Darker border */
+  border: 1px solid ${bankerAccent};
   padding: 10px;
   border-radius: 8px;
-  background-color: #1e1e1e; /* Darker background for the side panel */
-  color: #ffffff; /* Light text */
-  margin-bottom: 20px; /* Add spacing below the side panel */
+  background-color: ${bankerPanel};
+  color: ${bankerText};
+  margin-bottom: 20px;
 `;
 
 const ToggleButton = styled.button`
-  background-color: #1abc9c;
-  color: white;
+  background-color: ${bankerAccent};
+  color: ${bankerText};
   border: none;
   padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
   margin-bottom: 10px;
+  font-weight: bold;
 
   &:hover {
-    background-color: #16a085;
+    background-color: ${bankerBg};
   }
 `;
 
@@ -41,34 +48,44 @@ const CollapsibleContent = styled.div`
 
 const TextContent = styled.div`
   flex: 1;
-  margin-right: 20px; /* Add spacing between text and video */
+  margin-right: 20px;
 `;
 
 const VideoWrapper = styled.div`
   flex-shrink: 0;
-  width: 40%; /* Set the width of the video */
+  width: 40%;
 `;
 
 const IframesContainer = styled.div`
   display: flex;
-  flex-direction: column; /* Stack elements vertically */
+  flex-direction: column;
   width: 100%;
-  height: 100%; /* Use full height */
-  gap: 20px; /* Space between the elements */
+  height: 100%;
+  gap: 20px;
 `;
 
 const Image = styled.img`
-  width: 100%; /* Make the image take the full width */
-  max-height: 50%; /* Limit the height to half the container */
-  object-fit: contain; /* Maintain aspect ratio */
-  border: none;
+  width: 100%;
+  max-height: 50%;
+  object-fit: contain;
+  border-radius: 8px;
+  border: 1px solid ${bankerAccent};
+  background: ${bankerPanel};
 `;
 
 const TwitchEmbed = styled.div`
-  flex: 1; /* Allow the Twitch iframe to take the remaining space */
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
+`;
+
+const Notice = styled.div`
+  width: 100%;
+  color: #e67e22;
+  font-weight: bold;
+  margin: 12px 0 4px 0;
+  text-align: center;
 `;
 
 const SpeakWithData = () => {
@@ -93,7 +110,7 @@ const SpeakWithData = () => {
                   href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier-financial/index.html"
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{ color: '#1abc9c', textDecoration: 'none' }}
+                  style={{ color: bankerAccent, textDecoration: 'none' }}
                 >
                   Click here for workshop lab and further information
                 </a>
@@ -103,7 +120,7 @@ const SpeakWithData = () => {
                   href="https://github.com/paulparkinson/oracle-ai-for-sustainable-dev/tree/main/financial"
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{ color: '#1abc9c', textDecoration: 'none' }}
+                  style={{ color: bankerAccent, textDecoration: 'none' }}
                 >
                   Direct link to source code on GitHub
                 </a>
@@ -135,7 +152,7 @@ const SpeakWithData = () => {
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
-                style={{ borderRadius: '8px', border: '1px solid #444' }}
+                style={{ borderRadius: '8px', border: `1px solid ${bankerAccent}` }}
               ></iframe>
             </VideoWrapper>
           </CollapsibleContent>
@@ -154,18 +171,13 @@ const SpeakWithData = () => {
           <Image
             src="/images/aiholotwitchsnippet.png"
             alt="AI Holo Twitch Snippet"
-            style={{
-              width: '100%',
-              borderRadius: '8px',
-              border: '1px solid #444',
-            }}
           />
         </div>
 
         {/* Notice above the video player */}
-        <div style={{ width: '100%', color: '#e67e22', fontWeight: 'bold', margin: '12px 0 4px 0', textAlign: 'center' }}>
+        <Notice>
           THIS FUNCTIONALITY IS CURRENTLY BEING USED AT THE BIGDATA AND AI EVENT - WILL RETURN BY END OF WEEK
-        </div>
+        </Notice>
 
         {/* Video Snippet */}
         <div style={{ width: '100%', height: 'auto' }}>
@@ -177,8 +189,8 @@ const SpeakWithData = () => {
             style={{
               width: '100%',
               borderRadius: '8px',
-              border: '1px solid #444',
-              background: '#222', // fallback background
+              border: `1px solid ${bankerAccent}`,
+              background: bankerPanel,
             }}
             onError={e => {
               e.target.poster = '';

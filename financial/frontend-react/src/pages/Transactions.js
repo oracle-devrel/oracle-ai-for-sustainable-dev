@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
+// Banker blue theme colors
+const bankerBg = "#354F64";
+const bankerAccent = "#5884A7";
+const bankerText = "#F9F9F9";
+const bankerPanel = "#223142";
+
 const PageContainer = styled.div`
-  background-color: #121212;
-  color: #ffffff;
-  width: 100%; /* Ensure it spans the full width of the screen */
-  height: 100vh;
+  background-color: ${bankerBg};
+  color: ${bankerText};
+  width: 100%;
+  min-height: 100vh;
   padding: 20px;
   overflow-y: auto;
   display: flex;
@@ -14,110 +20,111 @@ const PageContainer = styled.div`
 
 const ContentContainer = styled.div`
   display: flex;
-  flex-direction: column; /* Stack SidePanel and Form vertically */
-  width: 100%; /* Use the full width of the page */
-  max-width: 1200px; /* Add a maximum width for better readability */
-  margin: 0 auto; /* Center the content horizontally within the page */
+  flex-direction: column;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
 `;
 
 const Form = styled.form`
-  width: 100%; /* Make the Form span the full width */
+  width: 100%;
   display: flex;
   flex-direction: column;
   padding: 20px;
-  border: 1px solid #444;
+  border: 1px solid ${bankerAccent};
   border-radius: 8px;
-  background-color: #1e1e1e;
+  background-color: ${bankerPanel};
 `;
 
 const SidePanel = styled.div`
-  width: 100%; /* Make the SidePanel span the full width */
-  border: 1px solid #444;
+  width: 100%;
+  border: 1px solid ${bankerAccent};
   padding: 10px;
   border-radius: 8px;
-  background-color: #1e1e1e;
-  color: #ffffff;
+  background-color: ${bankerPanel};
+  color: ${bankerText};
   font-size: 1.1rem;
-  margin-bottom: 20px; /* Add spacing between the SidePanel and the Form */
+  margin-bottom: 20px;
 `;
 
 const Label = styled.label`
   display: block;
   margin-bottom: 8px;
   font-weight: bold;
-  color: #ffffff;
+  color: ${bankerText};
 `;
 
 const Input = styled.input`
   width: 100%;
   margin-bottom: 16px;
   padding: 8px;
-  border: 1px solid #555;
+  border: 1px solid ${bankerAccent};
   border-radius: 4px;
-  background-color: #2c2c2c;
-  color: #ffffff;
+  background-color: #406080;
+  color: ${bankerText};
 `;
 
 const Select = styled.select`
   width: 100%;
   margin-bottom: 16px;
   padding: 8px;
-  border: 1px solid #555;
+  border: 1px solid ${bankerAccent};
   border-radius: 4px;
-  background-color: #2c2c2c;
-  color: #ffffff;
+  background-color: #406080;
+  color: ${bankerText};
 `;
 
 const RadioLabel = styled.label`
   display: block;
   margin-bottom: 8px;
-  color: #ffffff;
+  color: ${bankerText};
 `;
 
 const CheckboxLabel = styled.label`
   display: flex;
   align-items: center;
   margin-top: 10px;
-  color: #ffffff;
+  color: ${bankerText};
 `;
 
 const Button = styled.button`
   padding: 10px;
-  background-color: #1abc9c;
-  color: white;
+  background-color: ${bankerAccent};
+  color: ${bankerText};
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  font-weight: bold;
   &:hover {
-    background-color: #16a085;
+    background-color: ${bankerBg};
   }
 `;
 
 const ToggleButton = styled.button`
-  background-color: #1abc9c;
-  color: white;
+  background-color: ${bankerAccent};
+  color: ${bankerText};
   border: none;
   padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
   margin-bottom: 10px;
-
+  font-weight: bold;
   &:hover {
-    background-color: #16a085;
+    background-color: ${bankerBg};
   }
 `;
 
 const CollapsibleContent = styled.div`
   display: flex;
-  flex-direction: row; /* Arrange text and video side by side */
+  flex-direction: row;
   justify-content: space-between;
   align-items: flex-start;
-  width: 100%; /* Make it span the full width of the page */
+  width: 100%;
 `;
 
 const TextContainer = styled.div`
   flex: 1;
-  margin-right: 20px; /* Add spacing between text and video */
+  margin-right: 20px;
 `;
 
 const VideoContainer = styled.div`
@@ -128,23 +135,23 @@ const Table = styled.table`
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
-  background-color: #1e1e1e;
-  color: #ffffff;
+  background-color: ${bankerPanel};
+  color: ${bankerText};
 `;
 
 const TableHeader = styled.th`
-  border: 1px solid #444;
+  border: 1px solid ${bankerAccent};
   padding: 8px;
   text-align: left;
 `;
 
 const TableCell = styled.td`
-  border: 1px solid #444;
+  border: 1px solid ${bankerAccent};
   padding: 8px;
 `;
 
 const Transactions = () => {
-  const [isCollapsed, setIsCollapsed] = useState(true); // Set to true to make the panel collapsed by default
+  const [isCollapsed, setIsCollapsed] = useState(true);
 
   const [formData, setFormData] = useState({
     amount: '',
@@ -159,7 +166,6 @@ const Transactions = () => {
   const [toAccounts, setToAccounts] = useState([]);
   const [allAccounts, setAllAccounts] = useState([]);
 
-  // Define fetchAccounts function
   const fetchAccounts = async () => {
     try {
       const BASE_URL = process.env.REACT_APP_MICROTX_ACCOUNT_SERVICE_URL;
@@ -176,7 +182,6 @@ const Transactions = () => {
     }
   };
 
-  // Fetch accounts on component mount
   useEffect(() => {
     fetchAccounts();
   }, []);
@@ -210,7 +215,7 @@ const Transactions = () => {
         Saga Action: ${formData.sagaAction}, 
         Lock-free Reservations: ${formData.useLockFreeReservations}, 
         Crash Simulation: ${formData.crashSimulation}`);
-          fetchAccounts(); // Refresh the accounts table
+          fetchAccounts();
         } else {
           alert('Transfer failed. Please try again.');
         }
@@ -239,7 +244,7 @@ const Transactions = () => {
                     href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier-financial/index.html"
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{ color: '#1abc9c', textDecoration: 'none' }}
+                    style={{ color: bankerAccent, textDecoration: 'none' }}
                   >
                     Click here for workshop lab and further information
                   </a>
@@ -249,7 +254,7 @@ const Transactions = () => {
                     href="https://github.com/paulparkinson/oracle-ai-for-sustainable-dev/tree/main/financial"
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{ color: '#1abc9c', textDecoration: 'none' }}
+                    style={{ color: bankerAccent, textDecoration: 'none' }}
                   >
                     Direct link to source code on GitHub
                   </a>
@@ -278,6 +283,7 @@ const Transactions = () => {
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
+                  style={{ borderRadius: '8px', border: `1px solid ${bankerAccent}` }}
                 ></iframe>
               </VideoContainer>
             </CollapsibleContent>

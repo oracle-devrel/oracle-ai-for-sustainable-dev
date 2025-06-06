@@ -1,47 +1,75 @@
 import React from 'react';
 import styled from 'styled-components';
 
+// Banker blue theme colors
+const bankerBg = "#354F64";
+const bankerAccent = "#5884A7";
+const bankerText = "#F9F9F9";
+const bankerPanel = "#223142";
+
+const PageContainer = styled.div`
+  background-color: ${bankerBg};
+  color: ${bankerText};
+  width: 100%;
+  min-height: 100vh;
+  padding: 20px;
+  overflow-y: auto;
+`;
+
 const Table = styled.table`
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
-  background-color: #1e1e1e;
-  color: #ffffff;
+  background-color: ${bankerPanel};
+  color: ${bankerText};
 `;
 
 const TableHeader = styled.th`
-  border: 1px solid #444;
+  border: 1px solid ${bankerAccent};
   padding: 8px;
   text-align: left;
-  background-color: #1abc9c;
+  background-color: ${bankerAccent};
+  color: ${bankerText};
 `;
 
 const TableCell = styled.td`
-  border: 1px solid #444;
+  border: 1px solid ${bankerAccent};
   padding: 8px;
+  color: ${bankerText};
 `;
 
 const HighlightedText = styled.p`
-  font-size: 1.8rem; /* Larger font size */
+  font-size: 1.8rem;
   font-weight: bold;
   margin-bottom: 20px;
+  color: ${bankerAccent};
 `;
 
 const StyledList = styled.ul`
-  list-style-type: none; /* Remove default bullet points */
+  list-style-type: none;
   padding: 0;
   margin: 20px 0;
-  font-size: 1.5rem; /* Increase font size */
-  font-weight: bold; /* Make text bold */
-  color: #1abc9c; /* Add a color to match the theme */
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: ${bankerAccent};
 `;
 
 const StyledListItem = styled.li`
-  margin-bottom: 10px; /* Add spacing between list items */
-  text-align: center; /* Center-align the text */
+  margin-bottom: 10px;
+  text-align: center;
 `;
 
-const Dashboard = () => {
+const VideoWrapper = styled.div`
+  margin-top: 32px;
+  text-align: center;
+  iframe {
+    border-radius: 8px;
+    border: 1px solid ${bankerAccent};
+    background: ${bankerPanel};
+  }
+`;
+
+const FinancialStoryBoard = () => {
   // List of JavaScript files in the "pages" directory
   const pages = [
     { name: 'Architecture and Setup: k8s and otel', complete: '100%', notes: 'Update video, design work, finish workshop doc' },
@@ -60,7 +88,7 @@ const Dashboard = () => {
   ];
 
   return (
-    <div>
+    <PageContainer>
       <h2>Who is this application and workshop for?</h2>
       <StyledList>
         <StyledListItem>SEs, Architects, ... AND developers</StyledListItem>
@@ -97,7 +125,7 @@ const Dashboard = () => {
         </tbody>
       </Table>
       {/* Add YouTube video below the table */}
-      <div style={{ marginTop: '32px', textAlign: 'center' }}>
+      <VideoWrapper>
         <iframe
           width="560"
           height="315"
@@ -106,11 +134,10 @@ const Dashboard = () => {
           frameBorder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
-          style={{ borderRadius: '8px', border: '1px solid #444' }}
         ></iframe>
-      </div>
-    </div>
+      </VideoWrapper>
+    </PageContainer>
   );
 };
 
-export default Dashboard;
+export default FinancialStoryBoard;

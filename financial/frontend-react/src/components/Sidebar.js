@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import styled from 'styled-components';
-import { FaTachometerAlt, FaWallet, FaExchangeAlt, FaChartPie, FaPiggyBank, FaHandHoldingUsd, FaFileInvoiceDollar, FaShieldAlt, FaUserShield, FaCogs, FaChartLine } from 'react-icons/fa';
+
+// Banker blue theme colors
+const bankerBg = "#354F64";
+const bankerAccent = "#5884A7";
+const bankerText = "#F9F9F9";
+const bankerPanel = "#223142";
 
 const SidebarContainer = styled.div`
   width: 350px;
-  background-color: #2c3e50;
+  background-color: ${bankerBg};
   height: 100vh;
   position: fixed;
   display: flex;
@@ -15,10 +20,10 @@ const SidebarContainer = styled.div`
 
 const SidebarHeader = styled.div`
   padding: 20px;
-  color: #ecf0f1;
+  color: ${bankerText};
   font-size: 14px;
   text-align: center;
-  border-bottom: 1px solid #34495e;
+  border-bottom: 1px solid ${bankerAccent};
 `;
 
 const SidebarMenu = styled.ul`
@@ -28,9 +33,9 @@ const SidebarMenu = styled.ul`
 
 const SidebarItem = styled.li`
   padding: 20px;
-  color: #ecf0f1;
+  color: ${bankerText};
   &:hover {
-    background-color: #34495e;
+    background-color: ${bankerPanel};
   }
 `;
 
@@ -38,31 +43,33 @@ const StyledNavLink = styled(NavLink)`
   color: inherit;
   text-decoration: none;
   display: flex;
-  align-items: center; /* Align icon and first line of text horizontally */
+  align-items: center;
   &.active {
-    background-color: #1abc9c;
+    background-color: ${bankerAccent};
   }
 `;
 
 const IconWrapper = styled.div`
-  margin-right: 10px; /* Add spacing between the icon and text */
+  margin-right: 10px;
   display: flex;
   align-items: center;
-  svg {
-    font-size: 24px; /* Make the icons smaller */
+  img {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
   }
 `;
 
 const HighlightedText = styled.span`
-  color: #1abc9c; /* Slightly different color for the first line */
+  color: ${bankerAccent};
   font-weight: bold;
-  background: none; /* Ensure no background is applied */
-  display: inline; /* Ensure it behaves like inline text */
+  background: none;
+  display: inline;
 `;
 
 const TextContainer = styled.div`
   display: flex;
-  flex-direction: column; /* Stack the first line and additional details vertically */
+  flex-direction: column;
 `;
 
 const ToggleSwitchContainer = styled.div`
@@ -85,7 +92,7 @@ const ToggleSwitchInput = styled.input`
   height: 0;
 
   &:checked + span {
-    background-color: #1abc9c;
+    background-color: ${bankerAccent};
   }
 
   &:checked + span:before {
@@ -118,11 +125,10 @@ const ToggleSwitchSlider = styled.span`
 `;
 
 const Sidebar = () => {
-  const [showDetails, setShowDetails] = useState(true); // Toggle state for showing details
+  const [showDetails, setShowDetails] = useState(true);
 
   return (
     <SidebarContainer>
-      {/* Header Note */}
       <SidebarHeader>
         Please send any feedback to <strong>devreldb_ww@oracle.com</strong> 
       </SidebarHeader>
@@ -131,7 +137,7 @@ const Sidebar = () => {
         <SidebarItem>
           <StyledNavLink to="/financialstoryboard">
             <IconWrapper>
-              <FaChartLine />
+              <img src="/images/Side Menu Icons/About this App.svg" alt="About this app" />
             </IconWrapper>
             <TextContainer>
               <HighlightedText>About this app</HighlightedText>
@@ -142,7 +148,7 @@ const Sidebar = () => {
         <SidebarItem>
           <StyledNavLink to="/dashboard">
             <IconWrapper>
-              <FaTachometerAlt />
+              <img src="/images/Side Menu Icons/Architecture and Setup.svg" alt="Architecture and setup" />
             </IconWrapper>
             <TextContainer>
               <HighlightedText>Architecture and setup</HighlightedText>
@@ -153,7 +159,7 @@ const Sidebar = () => {
         <SidebarItem>
           <StyledNavLink to="/apis">
             <IconWrapper>
-              <FaShieldAlt />
+              <img src="/images/Side Menu Icons/Publish Financial APIs.svg" alt="Publish financial APIs" />
             </IconWrapper>
             <TextContainer>
               <HighlightedText>Publish financial APIs</HighlightedText>
@@ -164,7 +170,7 @@ const Sidebar = () => {
         <SidebarItem>
           <StyledNavLink to="/accounts">
             <IconWrapper>
-              <FaWallet />
+              <img src="/images/Side Menu Icons/Create and View Accounts.svg" alt="Create and view accounts" />
             </IconWrapper>
             <TextContainer>
               <HighlightedText>Create and view accounts</HighlightedText>
@@ -176,7 +182,7 @@ const Sidebar = () => {
         <SidebarItem>
           <StyledNavLink to="/atm">
             <IconWrapper>
-              <FaExchangeAlt />
+              <img src="/images/Side Menu Icons/Deposit Withdraw Money ATM.svg" alt="Deposit/withdraw money (ATM)" />
             </IconWrapper>
             <TextContainer>
               <HighlightedText>Deposit/withdraw money (ATM)</HighlightedText>
@@ -190,7 +196,7 @@ const Sidebar = () => {
         <SidebarItem>
           <StyledNavLink to="/transactions">
             <IconWrapper>
-              <FaExchangeAlt />
+              <img src="/images/Side Menu Icons/Transfer to External Bank.svg" alt="Transfer to external bank" />
             </IconWrapper>
             <TextContainer>
               <HighlightedText>Transfer to external bank</HighlightedText>
@@ -204,7 +210,7 @@ const Sidebar = () => {
         <SidebarItem>
           <StyledNavLink to="/creditcardpurchase">
             <IconWrapper>
-              <FaPiggyBank />
+              <img src="/images/Side Menu Icons/Make Purchases and Visualize Fraud.svg" alt="Make purchases and visualize fraud" />
             </IconWrapper>
             <TextContainer>
               <HighlightedText>Make purchases and visualize fraud</HighlightedText>
@@ -218,7 +224,7 @@ const Sidebar = () => {
         <SidebarItem>
           <StyledNavLink to="/graph">
             <IconWrapper>
-              <FaCogs />
+              <img src="/images/Side Menu Icons/Detect Money Laundering.svg" alt="Detect money laundering" />
             </IconWrapper>
             <TextContainer>
               <HighlightedText>Detect money laundering</HighlightedText>
@@ -232,7 +238,7 @@ const Sidebar = () => {
         <SidebarItem>
           <StyledNavLink to="/messaging">
             <IconWrapper>
-              <FaChartPie />
+              <img src="/images/Side Menu Icons/Transfer to External Bank.svg" alt="Transfer to brokerage accounts" />
             </IconWrapper>
             <TextContainer>
               <HighlightedText>Transfer to brokerage accounts</HighlightedText>
@@ -246,7 +252,7 @@ const Sidebar = () => {
         <SidebarItem>
           <StyledNavLink to="/stockticker">
             <IconWrapper>
-              <FaFileInvoiceDollar />
+              <img src="/images/Side Menu Icons/View Stock Ticker and Buy:Sell Stock.svg" alt="View stock ticker and buy/sell stock" />
             </IconWrapper>
             <TextContainer>
               <HighlightedText>View stock ticker and buy/sell stock</HighlightedText>
@@ -261,7 +267,7 @@ const Sidebar = () => {
         <SidebarItem>
           <StyledNavLink to="/investments">
             <IconWrapper>
-              <FaHandHoldingUsd />
+              <img src="/images/Side Menu Icons/Get Personal Financial Insights.svg" alt="Get personal financial insights" />
             </IconWrapper>
             <TextContainer>
               <HighlightedText>Get personal financial insights</HighlightedText>
@@ -275,7 +281,7 @@ const Sidebar = () => {
         <SidebarItem>
           <StyledNavLink to="/speakwithdata">
             <IconWrapper>
-              <FaUserShield />
+              <img src="/images/Side Menu Icons/Speak with your Financial Data.svg" alt="Speak with your financial data" />
             </IconWrapper>
             <TextContainer>
               <HighlightedText>Speak with your financial data</HighlightedText>
@@ -296,7 +302,7 @@ const Sidebar = () => {
           />
           <ToggleSwitchSlider />
         </ToggleSwitchLabel>
-        <span style={{ marginLeft: '10px', color: '#ecf0f1' }}>
+        <span style={{ marginLeft: '10px', color: bankerText }}>
           {showDetails ? 'Hide Details' : 'Show Details'}
         </span>
       </ToggleSwitchContainer>

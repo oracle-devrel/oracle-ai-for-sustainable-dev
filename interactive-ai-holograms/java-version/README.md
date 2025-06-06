@@ -9,9 +9,7 @@ Aside from AIApplication.java and WebConfig.java all of the functionality/depend
 Ie, there are examples for various AI services in app but none of them are needed by ai holo, and therefore, it is not necessary to populate the value in the env.properties file.
 
 
-## REQUIRED ENVIRONMENT/VARIABLES 
-
-It is not necessary to populate the value in the env.properties file. This is for functionality in the app that the 
+## REQUIRED ENVIRONMENT/VARIABLES
 
 It is necessary to export a few values. Here's is the contents of build_and_runrun.ps1 to give the idea...
 ```commandline

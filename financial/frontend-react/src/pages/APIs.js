@@ -1,12 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
+// Banker blue theme colors
+const bankerBg = "#354F64";
+const bankerAccent = "#5884A7";
+const bankerText = "#F9F9F9";
+const bankerPanel = "#223142";
+
 const PageContainer = styled.div`
-  background-color: #121212; /* Dark background */
-  color: #ffffff; /* Light text */
+  background-color: ${bankerBg};
+  color: ${bankerText};
   width: 100%;
-  height: 100vh;
+  min-height: 100vh;
   padding: 20px;
+  overflow-y: auto;
 `;
 
 const Table = styled.table`
@@ -16,44 +23,45 @@ const Table = styled.table`
 `;
 
 const TableHeader = styled.th`
-  border: 1px solid #444; /* Darker border */
+  border: 1px solid ${bankerAccent};
   padding: 8px;
-  background-color: #1e1e1e; /* Darker background for the header */
-  color: #ffffff; /* Light text for visibility */
+  background-color: ${bankerPanel};
+  color: ${bankerText};
   text-align: left;
 `;
 
 const TableCell = styled.td`
-  border: 1px solid #444; /* Darker border */
+  border: 1px solid ${bankerAccent};
   padding: 8px;
-  color: #ffffff; /* Light text for table cells */
+  color: ${bankerText};
 `;
 
 const SidePanel = styled.div`
-  border: 1px solid #444; /* Darker border */
+  border: 1px solid ${bankerAccent};
   padding: 10px;
   border-radius: 8px;
-  background-color: #1e1e1e; /* Darker background for the side panel */
-  color: #ffffff; /* Light text */
-  margin-top: 20px; /* Add spacing above the side panel */
+  background-color: ${bankerPanel};
+  color: ${bankerText};
+  margin-top: 20px;
 `;
 
 const ToggleButton = styled.button`
-  background-color: #1abc9c;
-  color: white;
+  background-color: ${bankerAccent};
+  color: ${bankerText};
   border: none;
   padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
   margin-bottom: 10px;
+  font-weight: bold;
 
   &:hover {
-    background-color: #16a085;
+    background-color: ${bankerBg};
   }
 `;
 
 const APIs = () => {
-  const [isCollapsed, setIsCollapsed] = useState(true); // First panel hidden by default
+  const [isCollapsed, setIsCollapsed] = useState(true);
   const [accountData, setAccountData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -69,7 +77,7 @@ const APIs = () => {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        setAccountData(data.items || []); // Assuming the data is in the `items` array
+        setAccountData(data.items || []);
         setLoading(false);
       } catch (err) {
         setError(err.message);
@@ -80,7 +88,6 @@ const APIs = () => {
     fetchData();
   }, []);
 
-  // Dynamically generate table headers based on the new data format
   const tableHeaders = [
     'account_id',
     'account_balance',
@@ -91,12 +98,11 @@ const APIs = () => {
     'account_type',
   ];
 
-  // Helper function to safely render table cell content
   const renderCellContent = (value) => {
     if (typeof value === 'object' && value !== null) {
-      return JSON.stringify(value); // Convert objects to JSON strings
+      return JSON.stringify(value);
     }
-    return value !== null && value !== undefined ? value : 'N/A'; // Handle null/undefined values
+    return value !== null && value !== undefined ? value : 'N/A';
   };
 
   return (
@@ -118,7 +124,7 @@ const APIs = () => {
                   href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier-financial/index.html"
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{ color: '#1abc9c', textDecoration: 'none' }}
+                  style={{ color: bankerAccent, textDecoration: 'none' }}
                 >
                   Click here for workshop lab and further information
                 </a>
@@ -128,7 +134,7 @@ const APIs = () => {
                   href="https://github.com/paulparkinson/oracle-ai-for-sustainable-dev/tree/main/financial"
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{ color: '#1abc9c', textDecoration: 'none' }}
+                  style={{ color: bankerAccent, textDecoration: 'none' }}
                 >
                   Direct link to source code on GitHub
                 </a>
@@ -155,7 +161,7 @@ const APIs = () => {
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
-                style={{ borderRadius: '8px', border: '1px solid #444' }}
+                style={{ borderRadius: '8px', border: `1px solid ${bankerAccent}` }}
               ></iframe>
             </div>
           </div>

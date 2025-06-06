@@ -1,26 +1,32 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
+// Banker blue theme colors
+const bankerBg = "#354F64";
+const bankerAccent = "#5884A7";
+const bankerText = "#F9F9F9";
+const bankerPanel = "#223142";
+
 const PageContainer = styled.div`
-  background-color: #121212; /* Dark background */
-  color: #ffffff; /* Light text */
+  background-color: ${bankerBg};
+  color: ${bankerText};
   width: 100%;
-  height: 100vh;
+  min-height: 100vh;
   padding: 20px;
 `;
 
 const VideoContainer = styled.div`
   margin-top: 20px;
-  border: 1px solid #444;
+  border: 1px solid ${bankerAccent};
   border-radius: 8px;
   padding: 10px;
-  background-color: #1e1e1e;
+  background-color: ${bankerPanel};
 `;
 
 const LinksContainer = styled.div`
   margin-bottom: 20px;
   a {
-    color: #1abc9c;
+    color: ${bankerAccent};
     text-decoration: none;
     margin-right: 15px;
 
@@ -37,22 +43,23 @@ const ImageContainer = styled.div`
   img {
     max-width: 100%;
     border-radius: 8px;
-    border: 1px solid #444;
+    border: 1px solid ${bankerAccent};
+    background: ${bankerPanel};
   }
 `;
 
 const CollapsibleSection = styled.div`
   margin-bottom: 24px;
-  background: #181818;
+  background: ${bankerPanel};
   border-radius: 8px;
-  border: 1px solid #333;
+  border: 1px solid ${bankerAccent};
   padding: 12px;
 `;
 
 const CollapsibleHeader = styled.div`
   cursor: pointer;
   font-weight: bold;
-  color: #1abc9c;
+  color: ${bankerAccent};
   margin-bottom: 8px;
 `;
 
@@ -84,7 +91,7 @@ const DashBoard = () => {
               href="https://oracleai-financial.org/grafana"
               target="_blank"
               rel="noopener noreferrer"
-              style={{ color: '#1abc9c', textDecoration: 'underline' }}
+              style={{ color: bankerAccent, textDecoration: 'underline' }}
             >
               Open Grafana Dashboard (admin/Welcome12345*)
             </a>
@@ -137,7 +144,7 @@ const DashBoard = () => {
           title="Grafana Dashboard"
           width="100%"
           height="1000"
-          style={{ border: '1px solid #444', borderRadius: '8px', background: '#fff' }}
+          style={{ border: `1px solid ${bankerAccent}`, borderRadius: '8px', background: '#fff' }}
         ></iframe>
       </VideoContainer>
     </PageContainer>
