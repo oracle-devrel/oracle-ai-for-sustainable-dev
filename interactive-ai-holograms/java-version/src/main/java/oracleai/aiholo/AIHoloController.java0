@@ -52,7 +52,7 @@ public class AIHoloController {
     private String theValue = "mirrorme";
     private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private static final String SANDBOX_API_URL = System.getenv("SANDBOX_API_URL");
-    private static final String SANDBOX_AUTH_TOKEN = System.getenv("SANDBOX_AUTH_TOKEN");
+    private static final String AI_OPTIMZER = System.getenv("AI_OPTIMZER");
     static final String AUDIO_DIR_PATH = System.getenv("AUDIO_DIR_PATH");
     private static final String DEFAULT_LANGUAGE_CODE = "es-ES";
     private static final String DEFAULT_VOICE_NAME = "es-ES-Wavenet-D";
@@ -233,7 +233,7 @@ public class AIHoloController {
         JSONObject jsonPayload = new JSONObject(payload);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("Authorization", SANDBOX_AUTH_TOKEN);
+        headers.set("Authorization", AI_OPTIMZER);
         headers.set("Accept", "application/json");
         headers.set("client", "server");
         HttpEntity<String> request = new HttpEntity<>(jsonPayload.toString(), headers);

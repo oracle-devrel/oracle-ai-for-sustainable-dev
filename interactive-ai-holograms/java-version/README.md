@@ -14,7 +14,7 @@ Ie, there are examples for various AI services in app but none of them are neede
 It is necessary to export a few values. Here's is the contents of build_and_runrun.ps1 to give the idea...
 ```commandline
 $env:SANDBOX_API_URL = "http://129.80.247.232:8000/v1/chat/completions"
-$env:SANDBOX_AUTH_TOKEN = "Bearer asdf"
+$env:AI_OPTIMZER = "Bearer asdf"
 $env:AIHOLO_HOST_URL = "https://aiholo.org/"
 $env:AUDIO_DIR_PATH = "C:/Users/opc/src/github.com/paulparkinson/oracle-ai-for-sustainable-dev/interactive-ai-holograms/java-version/src/main/resources/static/audio-aiholo"
 

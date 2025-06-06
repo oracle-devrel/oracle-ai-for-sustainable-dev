@@ -318,23 +318,43 @@
         const listeningSound = document.getElementById("listeningSound");
         const sendingSound = document.getElementById("sendingSound");
 
-        singleBtnMode.addEventListener("click", () => {
-            if (!singleBtnModeState) {
-                // Start recognition
-                if (!isListening) recognition.start();
+        // Mouse down/up logic for press-to-talk
+        singleBtnMode.addEventListener("mousedown", () => {
+            if (!isListening && recognition) {
+                recognition.start();
                 singleBtnIcon.src = stopIcon;
-                singleBtnModeState = true;
                 singleBtnMode.disabled = false;
-                // Play listening sound
                 listeningSound.currentTime = 0;
                 listeningSound.play();
-            } else {
-                // Stop recognition (always call stop, let onend handle the rest)
+            }
+        });
+
+        singleBtnMode.addEventListener("mouseup", () => {
+            if (isListening && recognition) {
                 recognition.stop();
-                singleBtnMode.disabled = true; // Prevent double clicks
-                // Only clear the display for feedback, NOT the buffer!
-                document.getElementById("transcription").innerText = "";
-                // Play sending sound
+                singleBtnMode.disabled = true; // Prevent double triggers
+                sendingSound.currentTime = 0;
+                sendingSound.play();
+            }
+        });
+
+        // Also support touch devices
+        singleBtnMode.addEventListener("touchstart", (e) => {
+            e.preventDefault();
+            if (!isListening && recognition) {
+                recognition.start();
+                singleBtnIcon.src = stopIcon;
+                singleBtnMode.disabled = false;
+                listeningSound.currentTime = 0;
+                listeningSound.play();
+            }
+        });
+
+        singleBtnMode.addEventListener("touchend", (e) => {
+            e.preventDefault();
+            if (isListening && recognition) {
+                recognition.stop();
+                singleBtnMode.disabled = true;
                 sendingSound.currentTime = 0;
                 sendingSound.play();
             }
@@ -343,12 +363,12 @@
         if (recognition) {
             recognition.onstart = () => {
                 singleBtnIcon.src = stopIcon;
-                singleBtnModeState = true;
+                isListening = true;
                 singleBtnMode.disabled = false;
             };
             recognition.onend = async () => {
                 singleBtnIcon.src = micIcon;
-                singleBtnModeState = false;
+                isListening = false;
                 singleBtnMode.disabled = false;
                 await sendTranscript();
                 transcriptBuffer = "";

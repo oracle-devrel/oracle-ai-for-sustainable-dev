@@ -79,36 +79,31 @@ def executeSelectAI(cummulativeResult: str = None):
         {"containsWord": "satellites", "latestQuestion": "satellites", "latestAnswer": "satellites"},
         {"containsWord": "spatial", "latestQuestion": "spatial", "latestAnswer": "spatial"}
     ]
-    # other profiles includes AIHOLO ,  VIDEOGAMES_PROFILE, MOVIESTREAM
+    # profile_name(s) specify what LLMs, tables, vectors, etc. to use.
     chatquery = """SELECT DBMS_CLOUD_AI.GENERATE(
                 prompt       => :prompt,
-                profile_name => 'AIHOLO', 
-                action       => 'chat')
-            FROM dual"""
+                profile_name => 'AIHOLO_OCIGENAI', 
+                action       => 'chat')"""
 
     narratequery = """SELECT DBMS_CLOUD_AI.GENERATE(
                 prompt       => :prompt,
                 profile_name => 'AIHOLO', 
-                action       => 'narrate')
-            FROM dual"""
+                action       => 'narrate')"""
     
     runsqlquery = """SELECT DBMS_CLOUD_AI.GENERATE(
                 prompt       => :prompt,
                 profile_name => 'AIHOLO', 
-                action       => 'runsql')
-            FROM dual"""
+                action       => 'runsql')"""
 
     showssqlquery = """SELECT DBMS_CLOUD_AI.GENERATE(
                 prompt       => :prompt,
                 profile_name => 'AIHOLO', 
-                action       => 'showsql')
-            FROM dual"""
+                action       => 'showsql')"""
     
     explainsqlquery = """SELECT DBMS_CLOUD_AI.GENERATE(
                 prompt       => :prompt,
                 profile_name => 'AIHOLO', 
-                action       => 'explainsql')
-            FROM dual"""
+                action       => 'explainsql')"""
 
     if isShowSQL:
         query = showssqlquery
