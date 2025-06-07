@@ -83,7 +83,7 @@ const DashBoard = () => {
       {/* Collapsible Section */}
       <CollapsibleSection>
         <CollapsibleHeader onClick={() => setShowCollapsible(!showCollapsible)}>
-          {showCollapsible ? '▼' : '►'} Observability & Dashboards
+          {showCollapsible ? '▼' : '►'} Show/Hide Developer Details
         </CollapsibleHeader>
         {showCollapsible && (
           <CollapsibleContent>
@@ -95,6 +95,18 @@ const DashBoard = () => {
             >
               Open Grafana Dashboard (admin/Welcome12345*)
             </a>
+            <div style={{ marginTop: 24 }}>
+              <iframe
+                width="900"
+                height="506"
+                src="https://www.youtube.com/embed/Uuj9MCiYTPo"
+                title="Developer Details"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                style={{ borderRadius: '8px', border: `1px solid ${bankerAccent}`, background: '#fff' }}
+              ></iframe>
+            </div>
           </CollapsibleContent>
         )}
       </CollapsibleSection>
@@ -135,18 +147,6 @@ const DashBoard = () => {
           alt="Technical Architecture"
         />
       </ImageContainer>
-
-      {/* Grafana iframe */}
-      <VideoContainer>
-        <h4>Grafana Dashboard (admin/Welcome12345*):</h4>
-        <iframe
-          src="https://oracleai-financial.org/grafana"
-          title="Grafana Dashboard"
-          width="100%"
-          height="1000"
-          style={{ border: `1px solid ${bankerAccent}`, borderRadius: '8px', background: '#fff' }}
-        ></iframe>
-      </VideoContainer>
     </PageContainer>
   );
 };

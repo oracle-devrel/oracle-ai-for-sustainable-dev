@@ -131,7 +131,7 @@ const Messaging = () => {
   const [fromAccounts, setFromAccounts] = useState([]);
   const [result, setResult] = useState('');
   const [loading, setLoading] = useState(false);
-  const [txnCrashOption, setTxnCrashOption] = useState('');
+  const [txnCrashOption, setTxnCrashOption] = useState('noCrash');
   const [txnCrashResult, setTxnCrashResult] = useState('');
   const [orderResult, setOrderResult] = useState('');
   const [inventoryResult, setInventoryResult] = useState('');
@@ -147,13 +147,15 @@ const Messaging = () => {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        setFromAccounts(data.items || []);
+        // Transactions.js expects data.items, fallback to data if not present
+        const accounts = data.items || data;
+        setFromAccounts(accounts);
       } catch (error) {
         console.error('Error fetching from accounts:', error);
       }
     };
     fetchFromAccounts();
-  }, [BASE_URL]);
+  }, [ACCOUNT_FETCH_URL]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -204,8 +206,14 @@ const Messaging = () => {
         body: JSON.stringify(formData),
       });
       const text = await response.text();
-      const data = text ? JSON.parse(text) : {};
-      setOrderResult(JSON.stringify(data));
+      // Try to parse JSON, otherwise show raw response
+      let data;
+      try {
+        data = text ? JSON.parse(text) : {};
+        setOrderResult(JSON.stringify(data));
+      } catch (err) {
+        setOrderResult(text); // Show raw response if not JSON
+      }
     } catch (err) {
       setOrderResult('❌ Error: ' + err.message);
     } finally {
@@ -356,10 +364,12 @@ const Messaging = () => {
             <option value="" disabled>
               Select an account
             </option>
-            {fromAccounts.map((account) => (
-              <option key={account.ACCOUNT_ID} value={account.ACCOUNT_ID}>
-                {account.ACCOUNT_ID}
-              </option>
+            {fromAccounts && fromAccounts.length > 0 && fromAccounts.map((account) => (
+              account && account.ACCOUNT_ID ? (
+                <option key={account.ACCOUNT_ID} value={account.ACCOUNT_ID}>
+                  {account.ACCOUNT_ID}
+                </option>
+              ) : null
             ))}
           </Select>
 

@@ -584,25 +584,25 @@ public class FinancialController {
         }
         sb.append("Selected messagingOption: ").append(messagingOption).append("\n");
         sb.append("Order placed, sending message....");
-        Properties producerProps  = new Properties();
-        producerProps.put("security.protocol", "SSL");
+        Properties properties  = new Properties();
+        properties.put("security.protocol", "SSL");
         //location containing Oracle Wallet, tnsname.ora and ojdbc.properties file...
-        producerProps.put("oracle.net.tns_admin", "/oraclefinancial/creds"); //location of ojdbc.properties file
-        producerProps.put("tns.alias", "financialdb_high");
-        producerProps.put("enable.idempotence", "true");
-        producerProps.put("oracle.transactional.producer", "true");
-        producerProps.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        producerProps.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        KafkaProducer<String, String> kafkaProducer = new KafkaProducer<>(producerProps);
+        properties.put("oracle.net.tns_admin", "/oraclefinancial/creds"); //location of ojdbc.properties file
+        properties.put("tns.alias", "financialdb_high");
+        properties.put("enable.idempotence", "true");
+        properties.put("oracle.transactional.producer", "true");
+        properties.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        properties.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        KafkaProducer<String, String> kafkaProducer = new KafkaProducer<>(properties);
 //        producer.beginTransaction();
 //        Connection conn = producer.getDBConnection();
         String message = "testmessage";
-        ProducerRecord<String, String> producerRecord = new ProducerRecord<>("FINANCIAL.ORDER", message);
+        ProducerRecord<String, String> producerRecord = new ProducerRecord<>("NFTORDER", "defaultKey", message);
         kafkaProducer.send(producerRecord);
         System.out.println("OrderProducerService.produce message sent:" + message);
 //        producer.commitTransaction();
         System.out.println("OrderProducerService.produce message committed:" + message);
-        new OrderProducerService(kafkaProducer, "FINANCIAL.ORDER").produce("test"); // ORA-24000: invalid value ORDER, QUEUE_NAME should be of the form [SCHEMA.]NAME Cannot read the array length because "serializedKey" is null
+        new OrderProducerService(kafkaProducer, "NFTORDER").produce("testmessage");
         return ResponseEntity.ok(sb.toString());
     }
 

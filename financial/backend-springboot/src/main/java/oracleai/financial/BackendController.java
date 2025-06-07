@@ -18,7 +18,7 @@ import java.util.Map;
 //@CrossOrigin(origins = "https://oracledatabase-financial.org")
 @CrossOrigin(origins = "*")
 //@CrossOrigin(origins = "http://158.180.20.119")
-public class FinancialController {
+public class BackendController {
 
     @Autowired
     private DataSource dataSource;

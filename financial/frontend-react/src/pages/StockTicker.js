@@ -151,7 +151,7 @@ const StockTicker = () => {
   const [customerIds, setCustomerIds] = useState([]);
 
   useEffect(() => {
-    fetch('https://oracleai-financial.org/financial/stockticker')
+    fetch('https://oracleai-financial.org/financial/truecache/stockticker')
       .then(res => res.json())
       .then(data => setStockList(data))
       .catch(() => setStockList([]));
@@ -181,7 +181,7 @@ const StockTicker = () => {
       action,
     };
 
-    fetch('https://oracleai-financial.org/financial/stockbuyorsell', {
+    fetch('https://oracleai-financial.org/financial/truecache/stockbuyorsell', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -192,7 +192,7 @@ const StockTicker = () => {
       .then((data) => {
         if (data.success) {
           setLastAction({ ticker: formData.stock, action });
-          fetch('https://oracleai-financial.org/financial/stockticker')
+          fetch('https://oracleai-financial.org/financial/truecache/stockticker')
             .then(res => res.json())
             .then(data => setStockList(data))
             .catch(() => setStockList([]));
@@ -261,7 +261,7 @@ const StockTicker = () => {
               <iframe
                 width="100%"
                 height="315"
-                src="https://www.youtube.com/embed/E1pOaCkd_PM"
+                src="https://www.youtube.com/embed/OHOlL9no2Sc"
                 title="YouTube video player"
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

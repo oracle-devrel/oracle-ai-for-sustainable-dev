@@ -291,7 +291,7 @@ const Accounts = () => {
               <iframe
                 width="100%"
                 height="315"
-                src="https://www.youtube.com/embed/3p8X-i1y43U"
+                src="https://www.youtube.com/embed/UljBwo_wGnE"
                 title="YouTube video player"
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

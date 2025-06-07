@@ -4,16 +4,14 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.oracle.okafka.clients.producer.KafkaProducer;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 
 
-public class OrderProducerService implements AutoCloseable {
+public class InventoryProducerService implements AutoCloseable {
 
     private final KafkaProducer<String, String> producer;
     private final String topic;
 
-    public OrderProducerService(KafkaProducer<String, String> producer, String topic) {
+    public InventoryProducerService(KafkaProducer<String, String> producer, String topic) {
         this.producer = producer;
         this.topic = topic;
         this.producer.initTransactions();

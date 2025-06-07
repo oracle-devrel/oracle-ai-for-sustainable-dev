@@ -11,19 +11,19 @@ GRANT RESOURCE TO FINANCIAL;
 ALTER USER FINANCIAL DEFAULT ROLE CONSOLE_DEVELOPER, DWROLE, GRAPH_DEVELOPER, OML_DEVELOPER;
 
 --For TxEventQ/OKafka on container
-grant resource, connect, unlimited tablespace to FINANCIAL;
-grant aq_user_role to FINANCIAL;
-grant execute on dbms_aq to  FINANCIAL;
-grant execute on dbms_aqadm to FINANCIAL;
-grant select on gv_$session to FINANCIAL;
-grant select on v_$session to FINANCIAL;
-grant select on gv_$instance to FINANCIAL;
-grant select on gv_$listener_network to FINANCIAL;
-grant select on SYS.DBA_RSRC_PLAN_DIRECTIVES to FINANCIAL;
-grant select on gv_$pdbs to FINANCIAL;
-grant select on user_queue_partition_assignment_table to FINANCIAL;
-exec dbms_aqadm.GRANT_PRIV_FOR_RM_PLAN('FINANCIAL');
-commit;
+GRANT AQ_USER_ROLE to FINANCIAL;
+GRANT CONNECT, RESOURCE, unlimited tablespace to FINANCIAL;
+GRANT EXECUTE on DBMS_AQ to FINANCIAL;
+GRANT EXECUTE on DBMS_AQADM to FINANCIAL;
+GRANT EXECUTE on DBMS_AQIN to FINANCIAL;
+GRANT EXECUTE on DBMS_TEQK to FINANCIAL;
+GRANT SELECT on GV$SESSION to FINANCIAL;
+GRANT SELECT on V$SESSION to FINANCIAL;
+GRANT SELECT on GV$INSTANCE to FINANCIAL;
+GRANT SELECT on GV$LISTENER_NETWORK to FINANCIAL;
+GRANT SELECT on GV$PDBS to FINANCIAL;
+GRANT SELECT on SYS.DBA_RSRC_PLAN_DIRECTIVES to FINANCIAL;
+EXEC DBMS_AQADM.GRANT_PRIV_FOR_RM_PLAN('FINANCIAL');
 
 
 --For TxEventQ/OKafka on cloud
