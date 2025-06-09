@@ -365,9 +365,9 @@ const Messaging = () => {
               Select an account
             </option>
             {fromAccounts && fromAccounts.length > 0 && fromAccounts.map((account) => (
-              account && account.ACCOUNT_ID ? (
-                <option key={account.ACCOUNT_ID} value={account.ACCOUNT_ID}>
-                  {account.ACCOUNT_ID}
+              account && account._id ? (
+                <option key={account._id} value={account._id}>
+                  {account._id}
                 </option>
               ) : null
             ))}

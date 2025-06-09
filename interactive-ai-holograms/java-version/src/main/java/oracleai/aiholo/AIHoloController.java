@@ -150,7 +150,7 @@ public class AIHoloController {
         } catch (IOException e) {
             return "Error writing to file: " + e.getMessage();
         }
-        TTSAndAudio2Face.sendToAudio2Face("explainer.wav");
+        TTSAndAudio2Face.sendToAudio2Face("explainer-es-MX.wav");
         return "Explained";
     }
 

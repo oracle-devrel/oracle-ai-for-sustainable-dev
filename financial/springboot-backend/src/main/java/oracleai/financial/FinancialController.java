@@ -1,12 +1,5 @@
 package oracleai.financial;
 
-import oracleai.kafka.OrderProducerService;
-import org.apache.kafka.clients.admin.Admin;
-import org.apache.kafka.clients.admin.NewTopic;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.errors.TopicExistsException;
-import org.oracle.okafka.clients.admin.AdminClient;
-import org.oracle.okafka.clients.producer.KafkaProducer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
@@ -15,11 +8,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.http.*;
 
 import javax.sql.DataSource;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.oracle.okafka.clients.producer.KafkaProducer;
 import java.sql.*;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/financial")
