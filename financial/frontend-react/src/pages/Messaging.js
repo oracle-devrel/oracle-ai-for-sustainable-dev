@@ -111,7 +111,7 @@ const DevPanel = styled.div`
 `;
 
 const Messaging = () => {
-  const BASE_URL = 'https://oracleai-financial.org/financial';
+  const BASE_URL = 'https://oracleai-financial.org/financial/kafka';
   const ACCOUNT_FETCH_URL = process.env.REACT_APP_MICROTX_ACCOUNT_SERVICE_URL || 'http://localhost:8080';
 
   const [formData, setFormData] = useState({

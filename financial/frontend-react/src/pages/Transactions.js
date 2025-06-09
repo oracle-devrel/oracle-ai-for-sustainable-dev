@@ -267,6 +267,7 @@ const Transactions = () => {
                 <ul>
                   <li>The only database that provides auto-compensating sagas (microservice transactions) and highest throughput for hotspots/fields</li>
                   <li>Simplified development (~80% less code)</li>
+                  <li>More background on sagas can be found here: https://youtu.be/3p8X-i1y43U</li>
                 </ul>
                 <h4>Differentiators:</h4>
                 <ul>
@@ -278,7 +279,7 @@ const Transactions = () => {
                 <iframe
                   width="100%"
                   height="315"
-                  src="https://www.youtube.com/embed/3p8X-i1y43U"
+                  src="https://www.youtube.com/embed/tWQePUX1Y2U"
                   title="YouTube video player"
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
