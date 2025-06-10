@@ -73,11 +73,20 @@ const FinancialStoryBoard = () => {
         style={{
           fontWeight: 'bold',
           color: bankerAccent,
-          marginBottom: 32,
-          fontSize: '2.5rem', 
+          marginBottom: 8,
+          fontSize: '1.5rem', 
         }}
       >
         Please send any feedback to devreldb_ww@oracle.com
+      </div>
+      <div
+        style={{
+          color: bankerText,
+          fontSize: '1rem',
+          marginBottom: 24,
+        }}
+      >
+        Each page has a 'Developer Details' button that when clicked expands to show a walkthrough video, code and workshop links, etc.
       </div>
       <Table>
         <thead>
@@ -95,7 +104,7 @@ const FinancialStoryBoard = () => {
           ))}
         </tbody>
       </Table>
-      <VideoWrapper>
+      {/* <VideoWrapper>
         <iframe
           width="900"
           height="506"
@@ -105,7 +114,7 @@ const FinancialStoryBoard = () => {
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
         ></iframe>
-      </VideoWrapper>
+      </VideoWrapper> */}
     </PageContainer>
   );
 };

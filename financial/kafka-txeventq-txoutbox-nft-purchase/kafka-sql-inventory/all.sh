@@ -3,7 +3,7 @@
 export TAG=0.1.$(date +%s)
 echo TAG = $TAG
 
-export IMAGE_NAME=backend-springboot
+export IMAGE_NAME=kafka-sql-inventory
 export IMAGE_VERSION=$TAG
 export DOCKER_REGISTRY=$DOCKER_REGISTRY
 if [ -z "$DOCKER_REGISTRY" ]; then
@@ -17,6 +17,6 @@ echo ${IMAGE}
 
 ./build.sh
 ./deploy.sh
-echo logpod backend-springboot
+echo logpod kafka-sql-inventory
 sleep 5
-logpod backend-springboot
+logpod kafka-sql-inventory

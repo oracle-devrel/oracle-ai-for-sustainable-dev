@@ -245,7 +245,7 @@ const Accounts = () => {
       {/* Collapsible Developer Details Panel */}
       <SidePanel>
         <ToggleButton onClick={() => setShowDeveloperDetails(!showDeveloperDetails)}>
-          {showDeveloperDetails ? 'Hide Developer Details' : 'Show Developer Details'}
+          {showDeveloperDetails ? 'Show Developer Details' : 'Hide Developer Details'}
         </ToggleButton>
         {!showDeveloperDetails && (
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>

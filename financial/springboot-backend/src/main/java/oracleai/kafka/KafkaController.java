@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.sql.DataSource;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -173,15 +174,7 @@ public class KafkaController {
         properties.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         properties.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         KafkaProducer<String, String> kafkaProducer = new KafkaProducer<>(properties);
-//        producer.beginTransaction();
-//        Connection conn = producer.getDBConnection();
-        String message = "testmessage";
-        ProducerRecord<String, String> producerRecord = new ProducerRecord<>("NFTORDER", "defaultKey", message);
-        kafkaProducer.send(producerRecord);
-        System.out.println("OrderProducerService.produce message sent:" + message);
-//        producer.commitTransaction();
-        System.out.println("OrderProducerService.produce message committed:" + message);
-        new OrderProducerService(kafkaProducer, "NFTORDER").produce("testmessage");
+        new OrderProducerService(kafkaProducer, "INVENTORYREQ").produce("test message from orderservice INVENTORYREQ");
         return ResponseEntity.ok(sb.toString());
     }
 

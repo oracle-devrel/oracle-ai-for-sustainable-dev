@@ -6,6 +6,7 @@ import org.oracle.okafka.clients.producer.KafkaProducer;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.nio.charset.StandardCharsets;
 
 
 public class OrderProducerService implements AutoCloseable {
@@ -24,6 +25,8 @@ public class OrderProducerService implements AutoCloseable {
         Connection conn = producer.getDBConnection();
         System.out.println("OrderProducerService.produce message conn:" + conn);
         ProducerRecord<String, String> producerRecord = new ProducerRecord<>(topic, "defaultKey", message);
+//        ProducerRecord<String, String> record = new ProducerRecord<>(topic, key, value);
+//        producerRecord.headers().add("type", "inventory".getBytes(StandardCharsets.UTF_8));
         producer.send(producerRecord);
         System.out.println("OrderProducerService.produce message sent:" + message);
         producer.commitTransaction();

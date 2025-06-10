@@ -3,8 +3,14 @@ package oracleai.kafka;
 import jakarta.annotation.PostConstruct;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.Header;
 import org.oracle.okafka.clients.consumer.KafkaConsumer;
+import org.oracle.okafka.clients.producer.KafkaProducer;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.sql.Connection;
@@ -12,14 +18,16 @@ import java.sql.SQLException;
 import java.time.Duration;
 import java.util.List;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
+import java.util.Properties;
 
 @Service
-public class OrderConsumerService implements AutoCloseable {
+public class InventoryConsumerService implements AutoCloseable {
 
     private final KafkaConsumer<String, String> consumer;
     private final List<String> topics;
 
-    public OrderConsumerService(
+    public InventoryConsumerService(
         KafkaConsumer<String, String> consumer,
         List<String> topics // No @Qualifier needed
     ) {
@@ -50,7 +58,21 @@ public class OrderConsumerService implements AutoCloseable {
                         type = new String(typeHeader.value(), StandardCharsets.UTF_8);
                     }
                 }
-                System.out.println("OrderConsumerService.runConsumer conn:" + conn + " record.value():" + record.value()+ " type:" + type);
+//                if ("inventory".equals(type)) {
+                    // process message
+                System.out.println("OrderConsumerService.runConsumer conn:" + conn + " record.value():" + record.value());
+//                }
+                Properties properties  = new Properties();
+                properties.put("security.protocol", "SSL");
+                //location containing Oracle Wallet, tnsname.ora and ojdbc.properties file...
+                properties.put("oracle.net.tns_admin", "/oraclefinancial/creds"); //location of ojdbc.properties file
+                properties.put("tns.alias", "financialdb_high");
+                properties.put("enable.idempotence", "true");
+                properties.put("oracle.transactional.producer", "true");
+                properties.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+                properties.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+                KafkaProducer<String, String> kafkaProducer = new KafkaProducer<>(properties);
+                new InventoryProducerService(kafkaProducer, "INVENTORYRESP").produce("test message from inventoryservice INVENTORYRESP");
             }
             consumer.commitSync();
         }
