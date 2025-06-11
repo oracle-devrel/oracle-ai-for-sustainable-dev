@@ -61,7 +61,7 @@ const IconWrapper = styled.div`
 `;
 
 const HighlightedText = styled.span`
-  color: ${bankerPanel}; // Use the bankerPanel (darker blue) for highlight
+  color: #e3f2fd; // Lighter blue for better visibility, still in theme
   font-weight: bold;
   background: none;
   display: inline;

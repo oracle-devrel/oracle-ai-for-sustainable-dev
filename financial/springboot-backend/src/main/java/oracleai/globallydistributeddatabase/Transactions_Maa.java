@@ -1,4 +1,4 @@
-package oracleai.financial;
+package oracleai.globallydistributeddatabase;
 
 import com.opencsv.CSVWriter;
 import oracle.jdbc.OracleConnection;
@@ -41,7 +41,7 @@ import static java.lang.Thread.sleep;
 public class Transactions_Maa extends Thread {
 
     private static double version = 1.9;
-    protected static PoolDataSource pds = null;
+    protected static PoolDataSource poolDataSource = null;
     protected static int NUM_OF_THREADS = 3;
 
     private static int POOL_SIZE = 0;
@@ -236,26 +236,26 @@ public class Transactions_Maa extends Thread {
 
     public static void create_pool() throws SQLException {
         //System.out.println("  -> Create UCP POOL " );
-        pds = PoolDataSourceFactory.getPoolDataSource();
+        poolDataSource = PoolDataSourceFactory.getPoolDataSource();
         // PoolDataSource and UCP configuration
         //set the connection properties on the data source and pool properties
-        pds.setUser(userName);
-        pds.setPassword(password);
-        pds.setURL(url);
-        pds.setConnectionFactoryClassName("oracle.jdbc.pool.OracleDataSource");
-        pds.setInitialPoolSize(MAX_POOL_SIZE);
-        pds.setMinPoolSize(MAX_POOL_SIZE);
-        pds.setFastConnectionFailoverEnabled(true);
-        pds.setValidateConnectionOnBorrow(true);
-        pds.setMaxPoolSize(MAX_POOL_SIZE);
+        poolDataSource.setUser(userName);
+        poolDataSource.setPassword(password);
+        poolDataSource.setURL(url);
+        poolDataSource.setConnectionFactoryClassName("oracle.jdbc.pool.OracleDataSource");
+        poolDataSource.setInitialPoolSize(MAX_POOL_SIZE);
+        poolDataSource.setMinPoolSize(MAX_POOL_SIZE);
+        poolDataSource.setFastConnectionFailoverEnabled(true);
+        poolDataSource.setValidateConnectionOnBorrow(true);
+        poolDataSource.setMaxPoolSize(MAX_POOL_SIZE);
         Properties connProps = new Properties();
-        pds.setConnectionProperty(OracleConnection.CONNECTION_PROPERTY_AUTOCOMMIT, "false");
+        poolDataSource.setConnectionProperty(OracleConnection.CONNECTION_PROPERTY_AUTOCOMMIT, "false");
         if (tnsAdminFile != null && !tnsAdminFile.isEmpty()) {
-            pds.setConnectionProperty(OracleConnection.CONNECTION_PROPERTY_TNS_ADMIN, tnsAdminFile);
+            poolDataSource.setConnectionProperty(OracleConnection.CONNECTION_PROPERTY_TNS_ADMIN, tnsAdminFile);
         }
         if (transparent_ds.equalsIgnoreCase("Y")) {
-            pds.setConnectionProperty("oracle.jdbc.useShardingDriverConnection", "true");
-            pds.setConnectionProperty("oracle.jdbc.allowSingleShardTransactionSupport", "true");
+            poolDataSource.setConnectionProperty("oracle.jdbc.useShardingDriverConnection", "true");
+            poolDataSource.setConnectionProperty("oracle.jdbc.allowSingleShardTransactionSupport", "true");
         }
 
     }
@@ -269,8 +269,8 @@ public class Transactions_Maa extends Thread {
 
     public void displayPoolDetails() throws SQLException, UniversalConnectionPoolException {
         System.out.println("-----------");
-        System.out.println("NumberOfAvailableConnections: " + pds.getAvailableConnectionsCount());
-        System.out.println("BorrowedConnectionsCount: " + pds.getBorrowedConnectionsCount());
+        System.out.println("NumberOfAvailableConnections: " + poolDataSource.getAvailableConnectionsCount());
+        System.out.println("BorrowedConnectionsCount: " + poolDataSource.getBorrowedConnectionsCount());
         UniversalConnectionPoolManager mgr = UniversalConnectionPoolManagerImpl
                 .getUniversalConnectionPoolManager();
         UniversalConnectionPoolImpl pool = (UniversalConnectionPoolImpl) mgr.getConnectionPool("mypool");
@@ -314,13 +314,13 @@ public class Transactions_Maa extends Thread {
             double connectionTime = 0.0;
             //System.out.println("selected sharding key:"+ accountId);
             if (transparent_ds.equalsIgnoreCase("Y")) {
-                connection = (OracleConnection) pds.getConnection();
+                connection = (OracleConnection) poolDataSource.getConnection();
             } else {
-                shardKey = pds.createShardingKeyBuilder()
+                shardKey = poolDataSource.createShardingKeyBuilder()
                         .subkey(accountId, OracleType.NUMBER)
                         .build();
 
-                connection = (OracleConnection) pds.createConnectionBuilder()
+                connection = (OracleConnection) poolDataSource.createConnectionBuilder()
                         .shardingKey(shardKey)
                         .build();
             }
@@ -870,7 +870,7 @@ class TransactionsMaaTimer extends TimerTask {
     @Override
     public void run() {
         try {
-            System.out.printf("%-22s%-22s%-22s%-22s%-22s%-22s%-22s%-22s\n",Instant.now().truncatedTo(ChronoUnit.SECONDS),Transactions_Maa.NUM_OF_THREADS,Transactions_Maa.counter,Transactions_Maa.errorcount,String.format("%.2f",(Transactions_Maa.counter.doubleValue()-lastcount)),Transactions_Maa.shardMap,"\t",Transactions_Maa.pds.getAvailableConnectionsCount()+":"+Transactions_Maa.pds.getBorrowedConnectionsCount());
+            System.out.printf("%-22s%-22s%-22s%-22s%-22s%-22s%-22s%-22s\n",Instant.now().truncatedTo(ChronoUnit.SECONDS),Transactions_Maa.NUM_OF_THREADS,Transactions_Maa.counter,Transactions_Maa.errorcount,String.format("%.2f",(Transactions_Maa.counter.doubleValue()-lastcount)),Transactions_Maa.shardMap,"\t",Transactions_Maa.poolDataSource.getAvailableConnectionsCount()+":"+Transactions_Maa.poolDataSource.getBorrowedConnectionsCount());
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

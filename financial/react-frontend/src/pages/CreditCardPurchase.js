@@ -135,6 +135,41 @@ const NotebookWrapper = styled.div`
   overflow: hidden;
 `;
 
+const TwoColumnContainer = styled.div`
+  display: flex;
+  gap: 32px;
+  width: 100%;
+  @media (max-width: 900px) {
+    flex-direction: column;
+    gap: 0;
+  }
+`;
+
+const LeftColumn = styled.div`
+  flex: 1;
+  min-width: 320px;
+`;
+
+const RightColumn = styled.div`
+  flex: 1;
+  min-width: 320px;
+  background: ${bankerPanel};
+  border: 1px solid ${bankerAccent};
+  border-radius: 8px;
+  padding: 20px;
+  color: ${bankerText};
+  font-family: 'Fira Mono', 'Consolas', 'Menlo', monospace;
+  font-size: 0.98rem;
+  white-space: pre-wrap;
+  overflow-x: auto;
+`;
+
+const CodeTitle = styled.div`
+  font-weight: bold;
+  color: ${bankerAccent};
+  margin-bottom: 12px;
+`;
+
 const CreditCardPurchase = () => {
   const [formData, setFormData] = useState({
     cardNumber: '',
@@ -293,8 +328,17 @@ const CreditCardPurchase = () => {
 
   return (
     <PageContainer>
-      <h2>Process: Make purchases and visualize fraud</h2>
-      <h2>Tech: Globally Distributed DB, OML, Spatial</h2>
+      <h2>Process: Make purchases, detect and visualize fraud/anomalies</h2>
+      <h2>
+        Tech:
+        <br />
+        <span style={{ display: 'block', marginLeft: 24 }}>
+          • Globally Distributed DB is used to manage (insert, etc.) purchases
+        </span>
+        <span style={{ display: 'block', marginLeft: 24 }}>
+          • OML and Spatial are used to detect anomalies and visualize data
+        </span>
+      </h2>
       <h2>Reference: AMEX</h2>
 
       {/* Collapsible SidePanel */}
@@ -325,11 +369,6 @@ const CreditCardPurchase = () => {
                   Direct link to source code on GitHub
                 </a>
               </div>
-              <h4>Financial Process:</h4>
-              <ul>
-                <li>Manage credit card transactions with Globally Distributed Database</li>
-                <li>Detect suspicious credit card transactions using ML/AI and spatial</li>
-              </ul>
               <h4>Developer Notes:</h4>
               <ul>
                 <li>Leverage Oracle Spatial for advanced visualization and analysis</li>
@@ -341,15 +380,6 @@ const CreditCardPurchase = () => {
                 <li>Use OML4Py and notebooks locally or in execution environment as part of database</li>
                 <li>Spatial queries, JSON, graph, and AI with no plugins required nor scale trade-offs</li>
               </ul>
-              <NotebookWrapper>
-                <iframe
-                  src="http://localhost:8888/notebooks/prebuilt-notebook.ipynb"
-                  title="Jupyter Notebook"
-                  width="100%"
-                  height="100%"
-                  style={{ border: 'none' }}
-                ></iframe>
-              </NotebookWrapper>
             </TextContent>
             <VideoWrapper>
               <h4>Walkthrough Video:</h4>
@@ -368,103 +398,125 @@ const CreditCardPurchase = () => {
         )}
       </SidePanel>
 
-      {/* Form Section */}
-      <Form onSubmit={handleSubmit}>
-        <Label htmlFor="cardNumber">Card/Account Number</Label>
-        <Select
-          id="cardNumber"
-          name="cardNumber"
-          value={formData.cardNumber}
-          onChange={handleChange}
-          required
-        >
-          <option value="" disabled>
-            Select an account
-          </option>
-          {accountIds.map((account) => (
-            <option key={account._id} value={account._id}>
-              {account._id}
-            </option>
-          ))}
-        </Select>
+      {/* Form and Map Section */}
+      <TwoColumnContainer>
+        <LeftColumn>
+          <Form onSubmit={handleSubmit}>
+            <Label htmlFor="cardNumber">Card/Account Number</Label>
+            <Select
+              id="cardNumber"
+              name="cardNumber"
+              value={formData.cardNumber}
+              onChange={handleChange}
+              required
+            >
+              <option value="" disabled>
+                Select an account
+              </option>
+              {accountIds.map((account) => (
+                <option key={account._id} value={account._id}>
+                  {account._id}
+                </option>
+              ))}
+            </Select>
 
-        <Label>First Location</Label>
-        <Input
-          type="text"
-          id="firstLocation-longitude"
-          name="firstLocation.longitude"
-          value={formData.firstLocation.longitude}
-          onChange={handleChange}
-          placeholder="Longitude"
-          required
-        />
-        <Input
-          type="text"
-          id="firstLocation-latitude"
-          name="firstLocation.latitude"
-          value={formData.firstLocation.latitude}
-          onChange={handleChange}
-          placeholder="Latitude"
-          required
-        />
+            <Label>First Location</Label>
+            <Input
+              type="text"
+              id="firstLocation-longitude"
+              name="firstLocation.longitude"
+              value={formData.firstLocation.longitude}
+              onChange={handleChange}
+              placeholder="Longitude"
+              required
+            />
+            <Input
+              type="text"
+              id="firstLocation-latitude"
+              name="firstLocation.latitude"
+              value={formData.firstLocation.latitude}
+              onChange={handleChange}
+              placeholder="Latitude"
+              required
+            />
 
-        <Label>Second Location</Label>
-        <Input
-          type="text"
-          id="secondLocation-longitude"
-          name="secondLocation.longitude"
-          value={formData.secondLocation.longitude}
-          onChange={handleChange}
-          placeholder="Longitude"
-          required
-        />
-        <Input
-          type="text"
-          id="secondLocation-latitude"
-          name="secondLocation.latitude"
-          value={formData.secondLocation.latitude}
-          onChange={handleChange}
-          placeholder="Latitude"
-          required
-        />
+            <Label>Second Location</Label>
+            <Input
+              type="text"
+              id="secondLocation-longitude"
+              name="secondLocation.longitude"
+              value={formData.secondLocation.longitude}
+              onChange={handleChange}
+              placeholder="Longitude"
+              required
+            />
+            <Input
+              type="text"
+              id="secondLocation-latitude"
+              name="secondLocation.latitude"
+              value={formData.secondLocation.latitude}
+              onChange={handleChange}
+              placeholder="Latitude"
+              required
+            />
 
-        <Button type="submit">Submit Purchases At These Locations</Button>
-      </Form>
+            <Button type="submit">Submit Purchases At These Locations</Button>
+          </Form>
+          <div style={{ margin: '16px 0', fontWeight: 'bold', color: '#fff' }}>
+            Right-click the map in two locations to make two purchases (form will populate) and click Submit Purchases
+          </div>
+          <MapWrapper>
+            <MapContainer
+              center={[39.7392, -104.9903]}
+              zoom={5}
+              scrollWheelZoom={false}
+              style={{ height: '100%', width: '100%' }}
+              whenCreated={mapInstance => { mapRef.current = mapInstance; }}
+            >
+              <TileLayer
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              />
+              {locationMarkers.first && (
+                <Marker position={[locationMarkers.first.lat, locationMarkers.first.lng]}>
+                  <Popup>First Location</Popup>
+                </Marker>
+              )}
+              {locationMarkers.second && (
+                <Marker position={[locationMarkers.second.lat, locationMarkers.second.lng]}>
+                  <Popup>Second Location</Popup>
+                </Marker>
+              )}
+              {coordinates.map((coord, index) => (
+                <Marker key={index + 1000} position={[coord.lat, coord.lng]}>
+                  <Popup>{coord.description}</Popup>
+                </Marker>
+              ))}
+              <MapRightClickHandler onRightClick={handleMapRightClick} />
+            </MapContainer>
+          </MapWrapper>
+        </LeftColumn>
+        <RightColumn>
+          <CodeTitle>Globally Distributed Database Connection Example</CodeTitle>
+          <code>
+{`// Shards can be automatically managed or programmatically with simple configuration
 
-      <div style={{ margin: '16px 0', fontWeight: 'bold', color: bankerAccent }}>
-        Right-click the map in two locations to make two purchases (form will populate) and click Submit Purchases
-      </div>
-
-      <MapWrapper>
-        <MapContainer
-          center={[39.7392, -104.9903]}
-          zoom={5}
-          scrollWheelZoom={false}
-          style={{ height: '100%', width: '100%' }}
-          whenCreated={mapInstance => { mapRef.current = mapInstance; }}
-        >
-          <TileLayer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          />
-          {locationMarkers.first && (
-            <Marker position={[locationMarkers.first.lat, locationMarkers.first.lng]}>
-              <Popup>First Location</Popup>
-            </Marker>
-          )}
-          {locationMarkers.second && (
-            <Marker position={[locationMarkers.second.lat, locationMarkers.second.lng]}>
-              <Popup>Second Location</Popup>
-            </Marker>
-          )}
-          {coordinates.map((coord, index) => (
-            <Marker key={index + 1000} position={[coord.lat, coord.lng]}>
-              <Popup>{coord.description}</Popup>
-            </Marker>
-          ))}
-          <MapRightClickHandler onRightClick={handleMapRightClick} />
-        </MapContainer>
-      </MapWrapper>
+if (isAutomaticSharding) {
+    dataSource.setConnectionProperty("oracle.jdbc.useShardingDriverConnection", "true");
+    dataSource.setConnectionProperty("oracle.jdbc.allowSingleShardTransactionSupport", "true");
+    connection = (OracleConnection) dataSource.getConnection();
+} else {
+    shardKey = dataSource.createShardingKeyBuilder()
+            .subkey(accountId, OracleType.NUMBER)
+            .build();
+    connection = (OracleConnection) dataSource.createConnectionBuilder()
+            .shardingKey(shardKey)
+            .build();
+}
+`}
+          </code>
+        </RightColumn>
+      </TwoColumnContainer>
     </PageContainer>
   );
 };

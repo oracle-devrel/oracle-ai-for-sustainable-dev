@@ -127,6 +127,52 @@ const SidePanel = styled.div`
   margin-top: 20px;
 `;
 
+const TwoColumnContainer = styled.div`
+  display: flex;
+  gap: 32px;
+  width: 100%;
+  @media (max-width: 900px) {
+    flex-direction: column;
+    gap: 0;
+  }
+`;
+
+const LeftColumn = styled.div`
+  flex: 1;
+  min-width: 320px;
+`;
+
+const RightColumn = styled.div`
+  flex: 1;
+  min-width: 320px;
+  background: ${bankerPanel};
+  border: 1px solid ${bankerAccent};
+  border-radius: 8px;
+  padding: 20px;
+  color: ${bankerText};
+  font-family: 'Fira Mono', 'Consolas', 'Menlo', monospace;
+  font-size: 0.98rem;
+  white-space: pre-wrap;
+  overflow-x: auto;
+`;
+
+const CodeTitle = styled.div`
+  font-weight: bold;
+  color: ${bankerAccent};
+  margin-bottom: 12px;
+`;
+
+const PanelSection = styled.div`
+  margin-bottom: 32px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid ${bankerAccent};
+  &:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+`;
+
 const REACT_APP_MERN_MONGODB_SERVICE_URL = process.env.REACT_APP_MERN_MONGODB_SERVICE_URL || 'http://localhost:8080';
 const REACT_APP_MERN_MONGODB_JSONDUALITY_ORACLE_SERVICE_URL =
   process.env.REACT_APP_MERN_MONGODB_JSONDUALITY_ORACLE_SERVICE_URL || 'http://localhost:5000';
@@ -303,193 +349,183 @@ const Accounts = () => {
         )}
       </SidePanel>
 
-      {/* Create Account Form */}
-      <Form onSubmit={handleSubmit}>
-        <h3>Create Account</h3>
-        <Label htmlFor="_id">Account ID</Label>
-        <Input
-          type="text"
-          id="_id"
-          name="_id"
-          value={formData._id}
-          onChange={handleChange}
-          placeholder="Enter account ID"
-          required
-        />
-
-        <Label htmlFor="accountName">Account Name</Label>
-        <Input
-          type="text"
-          id="accountName"
-          name="accountName"
-          value={formData.accountName}
-          onChange={handleChange}
-          placeholder="Enter account name"
-          required
-        />
-
-        <Label htmlFor="accountType">Account Type</Label>
-        <Select
-          id="accountType"
-          name="accountType"
-          value={formData.accountType}
-          onChange={handleChange}
-          required
-        >
-          <option value="" disabled>Select account type</option>
-          <option value="checking">checking</option>
-          <option value="savings">savings</option>
-          <option value="brokerage">brokerage</option>
-        </Select>
-
-        <Label htmlFor="customerId">Customer ID</Label>
-        <Input
-          type="text"
-          id="customerId"
-          name="customerId"
-          value={formData.customerId}
-          onChange={handleChange}
-          placeholder="Enter customer ID"
-          required
-        />
-
-        <Label htmlFor="accountOpenedDate">Opened Date</Label>
-        <Input
-          type="date"
-          id="accountOpenedDate"
-          name="accountOpenedDate"
-          value={formData.accountOpenedDate}
-          onChange={handleChange}
-          required
-        />
-
-        <Label htmlFor="accountOtherDetails">Other Details</Label>
-        <Input
-          type="text"
-          id="accountOtherDetails"
-          name="accountOtherDetails"
-          value={formData.accountOtherDetails}
-          onChange={handleChange}
-          placeholder="Enter other details"
-        />
-
-        <Label htmlFor="accountBalance">Balance</Label>
-        <Input
-          type="number"
-          id="accountBalance"
-          name="accountBalance"
-          value={formData.accountBalance}
-          onChange={handleChange}
-          placeholder="Enter balance"
-          required
-        />
-
-        {/* Write Data Using */}
-        <h4>Write data using...</h4>
-        <div>
-          <label>
-            <input
-              type="radio"
-              name="writeOption"
-              value="MongoDB API"
-              checked={formData.writeOption === 'MongoDB API'}
+      <TwoColumnContainer>
+        <LeftColumn>
+          {/* Create Account Form */}
+          <Form onSubmit={handleSubmit}>
+            <h3>Create Account</h3>
+            <Label htmlFor="_id">Account ID</Label>
+            <Input
+              type="text"
+              id="_id"
+              name="_id"
+              value={formData._id}
               onChange={handleChange}
+              placeholder="Enter account ID"
+              required
             />
-            MongoDB API
-          </label>
-          <label style={{ marginLeft: '20px' }}>
-            <input
-              type="radio"
-              name="writeOption"
-              value="SQL"
-              checked={formData.writeOption === 'SQL'}
-              onChange={handleChange}
-            />
-            SQL
-          </label>
-          <label style={{ marginLeft: '20px' }}>
-            <input
-              type="radio"
-              name="writeOption"
-              value="MongoDB API accessing Oracle Database"
-              checked={formData.writeOption === 'MongoDB API accessing Oracle Database'}
-              onChange={handleChange}
-            />
-            MongoDB API accessing Oracle Database
-          </label>
-        </div>
 
-        <div style={{ height: '20px' }}></div> {/* Add space before the button */}
-
-        <Button type="submit">Create Account</Button>
-
-        {/* Read Data Using */}
-        <h4 style={{ marginTop: '32px' }}>Read data using...</h4>
-        <div>
-          <label>
-            <input
-              type="radio"
-              name="readOption"
-              value="MongoDB API"
-              checked={formData.readOption === 'MongoDB API'}
+            <Label htmlFor="accountName">Account Name</Label>
+            <Input
+              type="text"
+              id="accountName"
+              name="accountName"
+              value={formData.accountName}
               onChange={handleChange}
+              placeholder="Enter account name"
+              required
             />
-            MongoDB API
-          </label>
-          <label style={{ marginLeft: '20px' }}>
-            <input
-              type="radio"
-              name="readOption"
-              value="SQL"
-              checked={formData.readOption === 'SQL'}
-              onChange={handleChange}
-            />
-            SQL
-          </label>
-          <label style={{ marginLeft: '20px' }}>
-            <input
-              type="radio"
-              name="readOption"
-              value="MongoDB API accessing Oracle Database"
-              checked={formData.readOption === 'MongoDB API accessing Oracle Database'}
-              onChange={handleChange}
-            />
-            MongoDB API accessing Oracle Database
-          </label>
-        </div>
-      </Form>
 
-      {/* Table to display all accounts */}
-      {loading ? (
-        <p>Loading accounts...</p>
-      ) : (
-        <Table>
-          <thead>
-            <tr>
-              <TableHeader>Account ID</TableHeader>
-              <TableHeader>Account Name</TableHeader>
-              <TableHeader>Account Type</TableHeader>
-              <TableHeader>Customer ID</TableHeader>
-              <TableHeader>Opened Date</TableHeader>
-              <TableHeader>Other Details</TableHeader>
-              <TableHeader>Balance</TableHeader>
-            </tr>
-          </thead>
-          <tbody>
-            {accounts.map((account) => (
-              <tr key={account.accountId || account._id}>
-                <TableCell>{account.accountId || account._id || 'N/A'}</TableCell>
-                <TableCell>{account.accountName || 'N/A'}</TableCell>
-                <TableCell>{account.accountType || 'N/A'}</TableCell>
-                <TableCell>{account.accountCustomerId || account.customerId || 'N/A'}</TableCell>
-                <TableCell>{account.accountOpenedDate || 'N/A'}</TableCell>
-                <TableCell>{account.accountOtherDetails || 'N/A'}</TableCell>
-                <TableCell>{account.accountBalance}</TableCell>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-      )}
+            <Label htmlFor="accountType">Account Type</Label>
+            <Select
+              id="accountType"
+              name="accountType"
+              value={formData.accountType}
+              onChange={handleChange}
+              required
+            >
+              <option value="" disabled>Select account type</option>
+              <option value="checking">checking</option>
+              <option value="savings">savings</option>
+              <option value="brokerage">brokerage</option>
+            </Select>
+
+            <Label htmlFor="customerId">Customer ID</Label>
+            <Input
+              type="text"
+              id="customerId"
+              name="customerId"
+              value={formData.customerId}
+              onChange={handleChange}
+              placeholder="Enter customer ID"
+              required
+            />
+
+            <Label htmlFor="accountOpenedDate">Opened Date</Label>
+            <Input
+              type="date"
+              id="accountOpenedDate"
+              name="accountOpenedDate"
+              value={formData.accountOpenedDate}
+              onChange={handleChange}
+              required
+            />
+
+            <Label htmlFor="accountOtherDetails">Other Details</Label>
+            <Input
+              type="text"
+              id="accountOtherDetails"
+              name="accountOtherDetails"
+              value={formData.accountOtherDetails}
+              onChange={handleChange}
+              placeholder="Enter other details"
+            />
+
+            <Label htmlFor="accountBalance">Balance</Label>
+            <Input
+              type="number"
+              id="accountBalance"
+              name="accountBalance"
+              value={formData.accountBalance}
+              onChange={handleChange}
+              placeholder="Enter balance"
+              required
+            />
+
+            {/* Write Data Using */}
+            <h4>Write data using...</h4>
+            <div>
+              <label style={{ marginLeft: '0px' }}>
+                <input
+                  type="radio"
+                  name="writeOption"
+                  value="SQL"
+                  checked={formData.writeOption === 'SQL'}
+                  onChange={handleChange}
+                />
+                SQL
+              </label>
+              <label style={{ marginLeft: '20px' }}>
+                <input
+                  type="radio"
+                  name="writeOption"
+                  value="MongoDB API accessing Oracle Database"
+                  checked={formData.writeOption === 'MongoDB API accessing Oracle Database'}
+                  onChange={handleChange}
+                />
+                MongoDB API accessing Oracle Database
+              </label>
+            </div>
+
+            <div style={{ height: '20px' }}></div> {/* Add space before the button */}
+
+            <Button type="submit">Create Account</Button>
+
+            {/* Read Data Using */}
+            <h4 style={{ marginTop: '32px' }}>Read data using...</h4>
+            <div>
+              <label style={{ marginLeft: '0px' }}>
+                <input
+                  type="radio"
+                  name="readOption"
+                  value="SQL"
+                  checked={formData.readOption === 'SQL'}
+                  onChange={handleChange}
+                />
+                SQL
+              </label>
+              <label style={{ marginLeft: '20px' }}>
+                <input
+                  type="radio"
+                  name="readOption"
+                  value="MongoDB API accessing Oracle Database"
+                  checked={formData.readOption === 'MongoDB API accessing Oracle Database'}
+                  onChange={handleChange}
+                />
+                MongoDB API accessing Oracle Database
+              </label>
+            </div>
+          </Form>
+        </LeftColumn>
+        <RightColumn>
+          <PanelSection>
+            <CodeTitle>Write data using...</CodeTitle>
+            <code>
+              {formData.writeOption === 'SQL' ? (
+`// SQL (Oracle)
+INSERT INTO accounts (account_id, account_name, account_type, customer_id, opened_date, other_details, balance)
+VALUES (:accountId, :accountName, :accountType, :customerId, :openedDate, :otherDetails, :balance);`
+              ) : (
+`// MongoDB API accessing Oracle Database (Node.js/Mongoose)
+await AccountModel.create({
+  _id: accountId,
+  accountName,
+  accountType,
+  customerId,
+  openedDate,
+  otherDetails,
+  balance
+});`
+              )}
+            </code>
+          </PanelSection>
+          <PanelSection>
+            <CodeTitle>Read data using...</CodeTitle>
+            <code>
+              {formData.readOption === 'SQL' ? (
+`// SQL (Oracle)
+SELECT * FROM accounts WHERE account_id = :accountId;`
+              ) : (
+`// MongoDB API accessing Oracle Database (Node.js/Mongoose)
+const account = await AccountModel.findById(accountId);
+
+// Or use JSON Duality View (Oracle)
+SELECT * FROM json_duality_view_accounts WHERE account_id = :accountId;`
+              )}
+            </code>
+          </PanelSection>
+        </RightColumn>
+      </TwoColumnContainer>
     </PageContainer>
   );
 };
