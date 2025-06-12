@@ -282,6 +282,14 @@ const Accounts = () => {
     // eslint-disable-next-line
   }, [formData.readOption]);
 
+  // Filtered accounts based on Account ID search
+  const filteredAccounts = formData._id
+    ? accounts.filter(
+        (account) =>
+          (account.accountId || account._id || '').toString() === formData._id.toString()
+      )
+    : accounts;
+
   return (
     <PageContainer>
       <h2>Process: Create and view accounts</h2>
@@ -486,6 +494,42 @@ const Accounts = () => {
               </label>
             </div>
           </Form>
+
+          <Form onSubmit={handleSubmit}>
+            {/* ...form fields and radio buttons as before... */}
+          </Form>
+
+          {/* Table to display all accounts */}
+          {loading ? (
+            <p>Loading accounts...</p>
+          ) : (
+            <Table>
+              <thead>
+                <tr>
+                  <TableHeader>Account ID</TableHeader>
+                  <TableHeader>Account Name</TableHeader>
+                  <TableHeader>Account Type</TableHeader>
+                  <TableHeader>Customer ID</TableHeader>
+                  <TableHeader>Opened Date</TableHeader>
+                  <TableHeader>Other Details</TableHeader>
+                  <TableHeader>Balance</TableHeader>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredAccounts.map((account) => (
+                  <tr key={account.accountId || account._id}>
+                    <TableCell>{account.accountId || account._id || 'N/A'}</TableCell>
+                    <TableCell>{account.accountName || 'N/A'}</TableCell>
+                    <TableCell>{account.accountType || 'N/A'}</TableCell>
+                    <TableCell>{account.accountCustomerId || account.customerId || 'N/A'}</TableCell>
+                    <TableCell>{account.accountOpenedDate || 'N/A'}</TableCell>
+                    <TableCell>{account.accountOtherDetails || 'N/A'}</TableCell>
+                    <TableCell>{account.accountBalance}</TableCell>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          )}
         </LeftColumn>
         <RightColumn>
           <PanelSection>

@@ -60,6 +60,26 @@ const ToggleButton = styled.button`
   }
 `;
 
+const CodePanel = styled.div`
+  background: ${bankerPanel};
+  border: 1px solid ${bankerAccent};
+  border-radius: 8px;
+  padding: 20px;
+  color: ${bankerText};
+  font-family: 'Fira Mono', 'Consolas', 'Menlo', monospace;
+  font-size: 0.98rem;
+  white-space: pre-wrap;
+  margin-top: 32px;
+  margin-bottom: 32px;
+  overflow-x: auto;
+`;
+
+const CodeTitle = styled.div`
+  font-weight: bold;
+  color: ${bankerAccent};
+  margin-bottom: 12px;
+`;
+
 const APIs = () => {
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [accountData, setAccountData] = useState([]);
@@ -167,6 +187,32 @@ const APIs = () => {
           </div>
         )}
       </SidePanel>
+
+      {/* Code Panel for API Examples */}
+      <CodePanel>
+        <CodeTitle>ORDS REST API Example</CodeTitle>
+        <code>
+{`// Get all accounts (GET)
+GET https://ij1tyzir3wpwlpe-financialdb.adb.eu-frankfurt-1.oraclecloudapps.com/ords/financial/accounts/
+
+// Get a single account (GET)
+GET https://ij1tyzir3wpwlpe-financialdb.adb.eu-frankfurt-1.oraclecloudapps.com/ords/financial/accounts/{account_id}
+
+// Create an account (POST)
+POST https://ij1tyzir3wpwlpe-financialdb.adb.eu-frankfurt-1.oraclecloudapps.com/ords/financial/accounts/
+Content-Type: application/json
+{
+  "account_id": "A123",
+  "account_name": "My Account",
+  "account_type": "checking",
+  "customer_id": "C456",
+  "account_opened_date": "2024-06-11",
+  "account_other_details": "details",
+  "account_balance": 1000
+}
+`}
+        </code>
+      </CodePanel>
 
       {/* Account Data Table */}
       <h3>Account Data</h3>

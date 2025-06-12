@@ -125,6 +125,41 @@ const TableCell = styled.td`
   border: 1px solid ${bankerAccent};
 `;
 
+const TwoColumnContainer = styled.div`
+  display: flex;
+  gap: 32px;
+  width: 100%;
+  @media (max-width: 900px) {
+    flex-direction: column;
+    gap: 0;
+  }
+`;
+
+const LeftColumn = styled.div`
+  flex: 1;
+  min-width: 320px;
+`;
+
+const RightColumn = styled.div`
+  flex: 1;
+  min-width: 320px;
+  background: ${bankerPanel};
+  border: 1px solid ${bankerAccent};
+  border-radius: 8px;
+  padding: 20px;
+  color: ${bankerText};
+  font-family: 'Fira Mono', 'Consolas', 'Menlo', monospace;
+  font-size: 0.98rem;
+  white-space: pre-wrap;
+  overflow-x: auto;
+`;
+
+const CodeTitle = styled.div`
+  font-weight: bold;
+  color: ${bankerAccent};
+  margin-bottom: 12px;
+`;
+
 const ATM = () => {
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [formData, setFormData] = useState({
@@ -204,6 +239,47 @@ const ATM = () => {
     }
   };
 
+  const codeSnippets = {
+    "Java - Spring Boot (using Spring Data JPA for ORM)": `// Java (Spring Boot, Spring Data JPA)
+@Transactional
+public void updateBalance(Long accountId, BigDecimal amount) {
+    Account account = accountRepository.findById(accountId).orElseThrow();
+    account.setBalance(account.getBalance().add(amount));
+    accountRepository.save(account);
+}`,
+    "JavaScript (Node.js)": `// JavaScript (Node.js, Express, Mongoose)
+await AccountModel.findByIdAndUpdate(
+  accountId,
+  { $inc: { accountBalance: amount } }
+);`,
+    "Python (using SQLAlchemy for ORM)": `# Python (SQLAlchemy)
+with Session() as session:
+    account = session.query(Account).get(account_id)
+    account.balance += amount
+    session.commit()`,
+    ".NET": `// .NET (C#, Entity Framework)
+using (var context = new AccountContext()) {
+    var account = context.Accounts.Find(accountId);
+    account.Balance += amount;
+    context.SaveChanges();
+}`,
+    "Go (using BunDB for ORM)": `// Go (BunDB)
+account := new(Account)
+err := db.NewSelect().Model(account).Where("id = ?", accountId).Scan(ctx)
+account.Balance += amount
+_, err = db.NewUpdate().Model(account).WherePK().Exec(ctx)`,
+    "Rust": `// Rust (SQLx)
+let mut tx = pool.begin().await?;
+sqlx::query!("UPDATE accounts SET balance = balance + $1 WHERE id = $2", amount, account_id)
+    .execute(&mut tx)
+    .await?;
+tx.commit().await?;`
+  };
+
+  // Set Java as default if nothing is selected
+  const selectedLanguage =
+    formData.language || "Java - Spring Boot (using Spring Data JPA for ORM)";
+
   return (
     <PageContainer>
       <h2>Process: Deposit/withdraw money (ATM)</h2>
@@ -269,128 +345,138 @@ const ATM = () => {
         )}
       </SidePanel>
 
-      <Form onSubmit={handleSubmit}>
-        <Label htmlFor="accountId">Account ID</Label>
-        <Select
-          id="accountId"
-          name="accountId"
-          value={formData.accountId}
-          onChange={handleChange}
-          required
-        >
-          <option value="" disabled>Select an account</option>
-          {accountIds.map((account) => (
-            <option key={account.accountId || account._id || account.id} value={account.accountId || account._id || account.id}>
-              {account.accountId || account._id || account.id}
-            </option>
-          ))}
-        </Select>
+      <TwoColumnContainer>
+        <LeftColumn>
+          <Form onSubmit={handleSubmit}>
+            <Label htmlFor="accountId">Account ID</Label>
+            <Select
+              id="accountId"
+              name="accountId"
+              value={formData.accountId}
+              onChange={handleChange}
+              required
+            >
+              <option value="" disabled>Select an account</option>
+              {accountIds.map((account) => (
+                <option key={account.accountId || account._id || account.id} value={account.accountId || account._id || account.id}>
+                  {account.accountId || account._id || account.id}
+                </option>
+              ))}
+            </Select>
 
-        <Label htmlFor="amount">Amount to deposit/withdraw</Label>
-        <Input
-          type="number"
-          id="amount"
-          name="amount"
-          value={formData.amount}
-          onChange={handleChange}
-          placeholder="Enter amount"
-          required
-        />
+            <Label htmlFor="amount">Amount to deposit/withdraw</Label>
+            <Input
+              type="number"
+              id="amount"
+              name="amount"
+              value={formData.amount}
+              onChange={handleChange}
+              placeholder="Enter amount"
+              required
+            />
 
-        <h4>Select a language for the transaction:</h4>
-        <RadioLabel>
-          <input
-            type="radio"
-            name="language"
-            value="Java - Spring Boot (using Spring Data JPA for ORM)"
-            checked={formData.language === 'Java - Spring Boot (using Spring Data JPA for ORM)'}
-            onChange={handleChange}
-          />
-          Java (Spring Boot)
-        </RadioLabel>
-        <RadioLabel>
-          <input
-            type="radio"
-            name="language"
-            value="JavaScript (Node.js)"
-            checked={formData.language === 'JavaScript (Node.js)'}
-            onChange={handleChange}
-          />
-          JS
-        </RadioLabel>
-        <RadioLabel>
-          <input
-            type="radio"
-            name="language"
-            value="Python (using SQLAlchemy for ORM)" 
-            checked={formData.language === 'Python (using SQLAlchemy for ORM)'}
-            onChange={handleChange}
-          />
-          Python
-        </RadioLabel>
-        <RadioLabel>
-          <input
-            type="radio"
-            name="language"
-            value=".NET"
-            checked={formData.language === '.NET'}
-            onChange={handleChange}
-          />
-          .NET
-        </RadioLabel>
-        <RadioLabel>
-          <input
-            type="radio"
-            name="language"
-            value="Go (using BunDB for ORM)"
-            checked={formData.language === 'Go (using BunDB for ORM)'}
-            onChange={handleChange}
-          />
-          Go
-        </RadioLabel>
-        <RadioLabel>
-          <input
-            type="radio"
-            name="language"
-            value="Rust"
-            checked={formData.language === 'Rust'}
-            onChange={handleChange}
-          />
-          Rust
-        </RadioLabel>
+            <h4>Select a language for the transaction:</h4>
+            <RadioLabel>
+              <input
+                type="radio"
+                name="language"
+                value="Java - Spring Boot (using Spring Data JPA for ORM)"
+                checked={selectedLanguage === 'Java - Spring Boot (using Spring Data JPA for ORM)'}
+                onChange={handleChange}
+              />
+              Java (Spring Boot)
+            </RadioLabel>
+            <RadioLabel>
+              <input
+                type="radio"
+                name="language"
+                value="JavaScript (Node.js)"
+                checked={selectedLanguage === 'JavaScript (Node.js)'}
+                onChange={handleChange}
+              />
+              JS
+            </RadioLabel>
+            <RadioLabel>
+              <input
+                type="radio"
+                name="language"
+                value="Python (using SQLAlchemy for ORM)" 
+                checked={selectedLanguage === 'Python (using SQLAlchemy for ORM)'}
+                onChange={handleChange}
+              />
+              Python
+            </RadioLabel>
+            <RadioLabel>
+              <input
+                type="radio"
+                name="language"
+                value=".NET"
+                checked={selectedLanguage === '.NET'}
+                onChange={handleChange}
+              />
+              .NET
+            </RadioLabel>
+            <RadioLabel>
+              <input
+                type="radio"
+                name="language"
+                value="Go (using BunDB for ORM)"
+                checked={selectedLanguage === 'Go (using BunDB for ORM)'}
+                onChange={handleChange}
+              />
+              Go
+            </RadioLabel>
+            <RadioLabel>
+              <input
+                type="radio"
+                name="language"
+                value="Rust"
+                checked={selectedLanguage === 'Rust'}
+                onChange={handleChange}
+              />
+              Rust
+            </RadioLabel>
 
-        <Button type="submit">Submit</Button>
-      </Form>
+            <Button type="submit">Submit</Button>
+          </Form>
 
-      {/* Table to display account details */}
-      {accountDetails && (
-        <Table>
-          <thead>
-            <tr>
-              <TableHeader>Account ID</TableHeader>
-              <TableHeader>Account Name</TableHeader>
-              <TableHeader>Account Type</TableHeader>
-              <TableHeader>Customer ID</TableHeader>
-              <TableHeader>Opened Date</TableHeader>
-              <TableHeader>Other Details</TableHeader>
-              <TableHeader>Balance</TableHeader>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <TableCell>
-                {accountDetails.accountId || accountDetails._id || accountDetails.id || 'N/A'}
-              </TableCell>
-              <TableCell>{accountDetails.accountName || 'N/A'}</TableCell>
-              <TableCell>{accountDetails.accountType || 'N/A'}</TableCell>
-              <TableCell>{accountDetails.accountCustomerId || 'N/A'}</TableCell>
-              <TableCell>{accountDetails.accountOpenedDate || 'N/A'}</TableCell>
-              <TableCell>{accountDetails.accountOtherDetails || 'N/A'}</TableCell>
-              <TableCell>{accountDetails.accountBalance}</TableCell>
-            </tr>
-          </tbody>
-        </Table>
-      )}
+          {/* Table to display account details */}
+          {accountDetails && (
+            <Table>
+              <thead>
+                <tr>
+                  <TableHeader>Account ID</TableHeader>
+                  <TableHeader>Account Name</TableHeader>
+                  <TableHeader>Account Type</TableHeader>
+                  <TableHeader>Customer ID</TableHeader>
+                  <TableHeader>Opened Date</TableHeader>
+                  <TableHeader>Other Details</TableHeader>
+                  <TableHeader>Balance</TableHeader>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <TableCell>
+                    {accountDetails.accountId || accountDetails._id || accountDetails.id || 'N/A'}
+                  </TableCell>
+                  <TableCell>{accountDetails.accountName || 'N/A'}</TableCell>
+                  <TableCell>{accountDetails.accountType || 'N/A'}</TableCell>
+                  <TableCell>{accountDetails.accountCustomerId || 'N/A'}</TableCell>
+                  <TableCell>{accountDetails.accountOpenedDate || 'N/A'}</TableCell>
+                  <TableCell>{accountDetails.accountOtherDetails || 'N/A'}</TableCell>
+                  <TableCell>{accountDetails.accountBalance}</TableCell>
+                </tr>
+              </tbody>
+            </Table>
+          )}
+        </LeftColumn>
+        <RightColumn>
+          <CodeTitle>Sample Code for Transaction</CodeTitle>
+          <code>
+            {codeSnippets[selectedLanguage]}
+          </code>
+        </RightColumn>
+      </TwoColumnContainer>
     </PageContainer>
   );
 };

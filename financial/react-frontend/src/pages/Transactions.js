@@ -150,6 +150,41 @@ const TableCell = styled.td`
   padding: 8px;
 `;
 
+const TwoColumnContainer = styled.div`
+  display: flex;
+  gap: 32px;
+  width: 100%;
+  @media (max-width: 900px) {
+    flex-direction: column;
+    gap: 0;
+  }
+`;
+
+const LeftColumn = styled.div`
+  flex: 1;
+  min-width: 320px;
+`;
+
+const RightColumn = styled.div`
+  flex: 1;
+  min-width: 320px;
+  background: ${bankerPanel};
+  border: 1px solid ${bankerAccent};
+  border-radius: 8px;
+  padding: 20px;
+  color: ${bankerText};
+  font-family: 'Fira Mono', 'Consolas', 'Menlo', monospace;
+  font-size: 0.98rem;
+  white-space: pre-wrap;
+  overflow-x: auto;
+`;
+
+const CodeTitle = styled.div`
+  font-weight: bold;
+  color: ${bankerAccent};
+  margin-bottom: 12px;
+`;
+
 const Transactions = () => {
   const [isCollapsed, setIsCollapsed] = useState(true);
 
@@ -226,6 +261,31 @@ const Transactions = () => {
       });
   };
 
+  const codeSnippets = {
+    lockFree: `// Lock-free Reservations (Oracle MicroTx)
+// No locks held, high concurrency, safe for hotspots
+POST /transfer
+{
+  "fromAccount": "A123",
+  "toAccount": "B456",
+  "amount": 100,
+  "useLockFreeReservations": true
+}
+// The database ensures atomicity and consistency using lock-free algorithms.`,
+    standard: `// Standard Saga Transaction (Oracle MicroTx)
+// Traditional locking, safe for most workloads
+POST /transfer
+{
+  "fromAccount": "A123",
+  "toAccount": "B456",
+  "amount": 100,
+  "useLockFreeReservations": false
+}
+// The database uses standard locking for consistency.`
+  };
+
+  const selectedSnippet = formData.useLockFreeReservations ? codeSnippets.lockFree : codeSnippets.standard;
+
   return (
     <PageContainer>
       <h2>Process: Transfer to external bank</h2>
@@ -290,157 +350,170 @@ const Transactions = () => {
             </CollapsibleContent>
           )}
         </SidePanel>
-        <Form onSubmit={handleSubmit}>
-          <Label htmlFor="amount">Amount</Label>
-          <Input
-            type="number"
-            id="amount"
-            name="amount"
-            value={formData.amount}
-            onChange={handleChange}
-            placeholder="Enter amount"
-            required
-          />
+        <TwoColumnContainer>
+          <LeftColumn>
+            <Form onSubmit={handleSubmit}>
+              <Label htmlFor="amount">Amount</Label>
+              <Input
+                type="number"
+                id="amount"
+                name="amount"
+                value={formData.amount}
+                onChange={handleChange}
+                placeholder="Enter amount"
+                required
+              />
 
-          <Label htmlFor="fromAccount">From Account</Label>
-          <Select
-            id="fromAccount"
-            name="fromAccount"
-            value={formData.fromAccount}
-            onChange={handleChange}
-            required
-          >
-            <option value="" disabled>
-              Select an account
-            </option>
-            {fromAccounts.map((account) => (
-              <option key={account._id} value={account._id}>
-                {account._id}
-              </option>
-            ))}
-          </Select>
+              <Label htmlFor="fromAccount">From Account</Label>
+              <Select
+                id="fromAccount"
+                name="fromAccount"
+                value={formData.fromAccount}
+                onChange={handleChange}
+                required
+              >
+                <option value="" disabled>
+                  Select an account
+                </option>
+                {fromAccounts.map((account) => (
+                  <option key={account._id} value={account._id}>
+                    {account._id}
+                  </option>
+                ))}
+              </Select>
 
-          <Label htmlFor="toAccount">To Account</Label>
-          <Select
-            id="toAccount"
-            name="toAccount"
-            value={formData.toAccount}
-            onChange={handleChange}
-            required
-          >
-            <option value="" disabled>
-              Select an account
-            </option>
-            {toAccounts.map((account) => (
-              <option key={account._id} value={account._id}>
-                {account._id}
-              </option>
-            ))}
-          </Select>
+              <Label htmlFor="toAccount">To Account</Label>
+              <Select
+                id="toAccount"
+                name="toAccount"
+                value={formData.toAccount}
+                onChange={handleChange}
+                required
+              >
+                <option value="" disabled>
+                  Select an account
+                </option>
+                {toAccounts.map((account) => (
+                  <option key={account._id} value={account._id}>
+                    {account._id}
+                  </option>
+                ))}
+              </Select>
 
-          <h4>Saga Action</h4>
-          <RadioLabel>
-            <input
-              type="radio"
-              name="sagaAction"
-              value="complete"
-              checked={formData.sagaAction === 'complete'}
-              onChange={handleChange}
-            />
-            Complete/Commit
-          </RadioLabel>
-          <RadioLabel>
-            <input
-              type="radio"
-              name="sagaAction"
-              value="rollback"
-              checked={formData.sagaAction === 'rollback'}
-              onChange={handleChange}
-            />
-            Compensate/Rollback
-          </RadioLabel>
+              <h4>Saga Action</h4>
+              <RadioLabel>
+                <input
+                  type="radio"
+                  name="sagaAction"
+                  value="complete"
+                  checked={formData.sagaAction === 'complete'}
+                  onChange={handleChange}
+                />
+                Complete/Commit
+              </RadioLabel>
+              <RadioLabel>
+                <input
+                  type="radio"
+                  name="sagaAction"
+                  value="rollback"
+                  checked={formData.sagaAction === 'rollback'}
+                  onChange={handleChange}
+                />
+                Compensate/Rollback
+              </RadioLabel>
 
-          <CheckboxLabel>
-            <input
-              type="checkbox"
-              name="useLockFreeReservations"
-              checked={formData.useLockFreeReservations}
-              onChange={handleChange}
-            />
-            Use Lock-free Reservations
-          </CheckboxLabel>
+              <CheckboxLabel>
+                <input
+                  type="checkbox"
+                  name="useLockFreeReservations"
+                  checked={formData.useLockFreeReservations}
+                  onChange={handleChange}
+                />
+                Use Lock-free Reservations
+              </CheckboxLabel>
 
-          <h4>Crash Simulation</h4>
-          <RadioLabel>
-            <input
-              type="radio"
-              name="crashSimulation"
-              value="noCrash"
-              checked={formData.crashSimulation === 'noCrash'}
-              onChange={handleChange}
-            />
-            No Crash
-          </RadioLabel>
-          <RadioLabel>
-            <input
-              type="radio"
-              name="crashSimulation"
-              value="crashBeforeFirstBankCommit"
-              checked={formData.crashSimulation === 'crashBeforeFirstBankCommit'}
-              onChange={handleChange}
-            />
-            Crash Before First Bank Commit
-          </RadioLabel>
-          <RadioLabel>
-            <input
-              type="radio"
-              name="crashSimulation"
-              value="crashAfterFirstBankCommit"
-              checked={formData.crashSimulation === 'crashAfterFirstBankCommit'}
-              onChange={handleChange}
-            />
-            Crash After First Bank Commit
-          </RadioLabel>
-          <RadioLabel>
-            <input
-              type="radio"
-              name="crashSimulation"
-              value="crashAfterSecondBankCommit"
-              checked={formData.crashSimulation === 'crashAfterSecondBankCommit'}
-              onChange={handleChange}
-            />
-            Crash After Second Bank Commit
-          </RadioLabel>
+              <h4>Crash Simulation</h4>
+              <RadioLabel>
+                <input
+                  type="radio"
+                  name="crashSimulation"
+                  value="noCrash"
+                  checked={formData.crashSimulation === 'noCrash'}
+                  onChange={handleChange}
+                />
+                No Crash
+              </RadioLabel>
+              <RadioLabel>
+                <input
+                  type="radio"
+                  name="crashSimulation"
+                  value="crashBeforeFirstBankCommit"
+                  checked={formData.crashSimulation === 'crashBeforeFirstBankCommit'}
+                  onChange={handleChange}
+                />
+                Crash Before First Bank Commit
+              </RadioLabel>
+              <RadioLabel>
+                <input
+                  type="radio"
+                  name="crashSimulation"
+                  value="crashAfterFirstBankCommit"
+                  checked={formData.crashSimulation === 'crashAfterFirstBankCommit'}
+                  onChange={handleChange}
+                />
+                Crash After First Bank Commit
+              </RadioLabel>
+              <RadioLabel>
+                <input
+                  type="radio"
+                  name="crashSimulation"
+                  value="crashAfterSecondBankCommit"
+                  checked={formData.crashSimulation === 'crashAfterSecondBankCommit'}
+                  onChange={handleChange}
+                />
+                Crash After Second Bank Commit
+              </RadioLabel>
 
-          <Button type="submit">Submit</Button>
-        </Form>
-
-        <Table>
-          <thead>
-            <tr>
-              <TableHeader>Account ID</TableHeader>
-              <TableHeader>Account Name</TableHeader>
-              <TableHeader>Account Type</TableHeader>
-              <TableHeader>Customer ID</TableHeader>
-              <TableHeader>Opened Date</TableHeader>
-              <TableHeader>Other Details</TableHeader>
-              <TableHeader>Balance</TableHeader>
-            </tr>
-          </thead>
-          <tbody>
-            {allAccounts.map((account) => (
-              <tr key={account._id}>
-                <TableCell>{account._id}</TableCell>
-                <TableCell>{account.accountName || 'N/A'}</TableCell>
-                <TableCell>{account.accountType || 'N/A'}</TableCell>
-                <TableCell>{account.accountCustomerId || 'N/A'}</TableCell>
-                <TableCell>{account.accountOpenedDate || 'N/A'}</TableCell>
-                <TableCell>{account.accountOtherDetails || 'N/A'}</TableCell>
-                <TableCell>{account.accountBalance}</TableCell>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
+              <Button type="submit">Submit</Button>
+            </Form>
+            <Table>
+              <thead>
+                <tr>
+                  <TableHeader>Account ID</TableHeader>
+                  <TableHeader>Account Name</TableHeader>
+                  <TableHeader>Account Type</TableHeader>
+                  <TableHeader>Customer ID</TableHeader>
+                  <TableHeader>Opened Date</TableHeader>
+                  <TableHeader>Other Details</TableHeader>
+                  <TableHeader>Balance</TableHeader>
+                </tr>
+              </thead>
+              <tbody>
+                {allAccounts.map((account) => (
+                  <tr key={account._id}>
+                    <TableCell>{account._id}</TableCell>
+                    <TableCell>{account.accountName || 'N/A'}</TableCell>
+                    <TableCell>{account.accountType || 'N/A'}</TableCell>
+                    <TableCell>{account.accountCustomerId || 'N/A'}</TableCell>
+                    <TableCell>{account.accountOpenedDate || 'N/A'}</TableCell>
+                    <TableCell>{account.accountOtherDetails || 'N/A'}</TableCell>
+                    <TableCell>{account.accountBalance}</TableCell>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </LeftColumn>
+          <RightColumn>
+            <CodeTitle>
+              {formData.useLockFreeReservations
+                ? "Lock-free Reservations Example"
+                : "Standard Saga Transaction Example"}
+            </CodeTitle>
+            <code>
+              {selectedSnippet}
+            </code>
+          </RightColumn>
+        </TwoColumnContainer>
       </ContentContainer>
     </PageContainer>
   );
