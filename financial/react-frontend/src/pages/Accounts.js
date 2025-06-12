@@ -183,7 +183,7 @@ const Accounts = () => {
   const [formData, setFormData] = useState({
     _id: '',
     accountName: '',
-    accountType: '',
+    accountType: 'checking', // Default to "checking"
     customerId: '',
     accountOpenedDate: new Date().toISOString().split('T')[0],
     accountOtherDetails: '',
@@ -215,7 +215,11 @@ const Accounts = () => {
     const payload = {
       ...formData,
       accountId: formData._id,
+      accountName: '1000', // Always send "1000" as the value
       accountCustomerId: formData.customerId,
+      accountOpenedDate: new Date().toISOString().split('T')[0], // Always use current date
+      accountOtherDetails: '', // Always send empty string
+      accountBalance: 1000,    // Always send 1000
     };
 
     try {
@@ -232,9 +236,8 @@ const Accounts = () => {
         setFormData({
           _id: '',
           accountName: '',
-          accountType: '',
+          accountType: 'checking', // Default to "checking"
           customerId: '',
-          accountOpenedDate: new Date().toISOString().split('T')[0],
           accountOtherDetails: '',
           accountBalance: '',
           writeOption: 'MongoDB API accessing Oracle Database',
@@ -373,17 +376,6 @@ const Accounts = () => {
               required
             />
 
-            <Label htmlFor="accountName">Account Name</Label>
-            <Input
-              type="text"
-              id="accountName"
-              name="accountName"
-              value={formData.accountName}
-              onChange={handleChange}
-              placeholder="Enter account name"
-              required
-            />
-
             <Label htmlFor="accountType">Account Type</Label>
             <Select
               id="accountType"
@@ -398,24 +390,27 @@ const Accounts = () => {
               <option value="brokerage">brokerage</option>
             </Select>
 
-            <Label htmlFor="customerId">Customer ID</Label>
+            <Label htmlFor="customerId">Customer Name / ID</Label>
             <Input
               type="text"
               id="customerId"
               name="customerId"
               value={formData.customerId}
               onChange={handleChange}
-              placeholder="Enter customer ID"
+              placeholder="Enter customer Name / ID"
               required
             />
 
-            <Label htmlFor="accountOpenedDate">Opened Date</Label>
+            {/* Remove these lines from the form */}
+            {/*
+            <Label htmlFor="accountName">Account Name</Label>
             <Input
-              type="date"
-              id="accountOpenedDate"
-              name="accountOpenedDate"
-              value={formData.accountOpenedDate}
+              type="text"
+              id="accountName"
+              name="accountName"
+              value={formData.accountName}
               onChange={handleChange}
+              placeholder="Enter account name"
               required
             />
 
@@ -428,17 +423,7 @@ const Accounts = () => {
               onChange={handleChange}
               placeholder="Enter other details"
             />
-
-            <Label htmlFor="accountBalance">Balance</Label>
-            <Input
-              type="number"
-              id="accountBalance"
-              name="accountBalance"
-              value={formData.accountBalance}
-              onChange={handleChange}
-              placeholder="Enter balance"
-              required
-            />
+            */}
 
             {/* Write Data Using */}
             <h4>Write data using...</h4>
@@ -493,10 +478,6 @@ const Accounts = () => {
                 MongoDB API accessing Oracle Database
               </label>
             </div>
-          </Form>
-
-          <Form onSubmit={handleSubmit}>
-            {/* ...form fields and radio buttons as before... */}
           </Form>
 
           {/* Table to display all accounts */}

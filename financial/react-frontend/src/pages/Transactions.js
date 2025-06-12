@@ -22,8 +22,10 @@ const ContentContainer = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
+  /* Remove max-width and margin to allow full width usage */
+  /* max-width: 1200px;
+  margin: 0 auto; */
+  flex: 1;
 `;
 
 const Form = styled.form`
@@ -154,6 +156,8 @@ const TwoColumnContainer = styled.div`
   display: flex;
   gap: 32px;
   width: 100%;
+  flex: 1;
+  align-items: stretch;
   @media (max-width: 900px) {
     flex-direction: column;
     gap: 0;
@@ -161,12 +165,14 @@ const TwoColumnContainer = styled.div`
 `;
 
 const LeftColumn = styled.div`
-  flex: 1;
+  flex: 1 1 0;
   min-width: 320px;
+  display: flex;
+  flex-direction: column;
 `;
 
 const RightColumn = styled.div`
-  flex: 1;
+  flex: 1 1 0;
   min-width: 320px;
   background: ${bankerPanel};
   border: 1px solid ${bankerAccent};
@@ -177,6 +183,9 @@ const RightColumn = styled.div`
   font-size: 0.98rem;
   white-space: pre-wrap;
   overflow-x: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 `;
 
 const CodeTitle = styled.div`

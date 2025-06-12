@@ -238,7 +238,7 @@ const Sidebar = () => {
               <img src="/images/Side Menu Icons/Transfer to External Bank.svg" alt="Transfer to brokerage accounts" />
             </IconWrapper>
             <TextContainer>
-              <HighlightedText>Transfer to brokerage accounts</HighlightedText>
+              <HighlightedText>Assets/Inventory Management</HighlightedText>
               {showDetails && <div>
                 Kafka and TxEventQ <br />
                 FSGBU

@@ -110,6 +110,41 @@ const DevPanel = styled.div`
   color: ${bankerText};
 `;
 
+const TwoColumnContainer = styled.div`
+  display: flex;
+  gap: 32px;
+  width: 100%;
+  @media (max-width: 900px) {
+    flex-direction: column;
+    gap: 0;
+  }
+`;
+
+const LeftColumn = styled.div`
+  flex: 2;
+  min-width: 320px;
+`;
+
+const RightColumn = styled.div`
+  flex: 1;
+  min-width: 320px;
+  background: ${bankerPanel};
+  border: 1px solid ${bankerAccent};
+  border-radius: 8px;
+  padding: 20px;
+  color: ${bankerText};
+  font-family: 'Fira Mono', 'Consolas', 'Menlo', monospace;
+  font-size: 0.98rem;
+  white-space: pre-wrap;
+  overflow-x: auto;
+`;
+
+const CodeTitle = styled.div`
+  font-weight: bold;
+  color: ${bankerAccent};
+  margin-bottom: 12px;
+`;
+
 const Messaging = () => {
   const BASE_URL = 'https://oracleai-financial.org/financial/kafka';
   const ACCOUNT_FETCH_URL = process.env.REACT_APP_MICROTX_ACCOUNT_SERVICE_URL || 'http://localhost:8080';
@@ -241,9 +276,34 @@ const Messaging = () => {
     }
   };
 
+  const codeSnippets = {
+    "Kafka with MongoDB and Postgres": `// Kafka with MongoDB/Postgres 
+@KafkaListener(topics = "orders", groupId = "inventory-service")
+public void listen(OrderEvent event) {
+
+    // Handle duplicate events and idempotency as well as transactions between MongoDB/Postgres
+
+    inventoryRepository.save(event);
+    kafkaTemplate.send("inventory", event);
+}
+`,
+    "Kafka (backed by TxEventQ) with Oracle Database": `// Kafka API backed by Oracle TxEventQ 
+
+    @KafkaListener(topics = "orders", groupId = "inventory-service")
+public void listen(OrderEvent event) {
+
+    // Messaing and data changes are transactional and consistent, no need for complicated idempotency handling
+
+    inventoryRepository.save(event);
+    kafkaTemplate.send("inventory", event);
+}
+
+`
+};
+
   return (
     <PageContainer>
-      <h2>Process: Purchase Assets/NFTs</h2>
+      <h2>Process: Assets/Inventory Management</h2>
       <h2>Tech: Kafka and TxEventQ</h2>
       <h2>Reference: FSGBU</h2>
 
@@ -339,171 +399,181 @@ const Messaging = () => {
         )}
       </DevPanel>
 
-      <ContentContainer>
-        <Form>
-          {/* Order Id field */}
-          <Label htmlFor="orderId">Order Id</Label>
-          <Input
-            type="text"
-            id="orderId"
-            name="orderId"
-            value={formData.orderId || ""}
-            onChange={handleChange}
-            placeholder="Enter order id"
-          />
+      <TwoColumnContainer>
+        <LeftColumn>
+          <ContentContainer>
+            <Form>
+              {/* Order Id field */}
+              <Label htmlFor="orderId">Order Id</Label>
+              <Input
+                type="text"
+                id="orderId"
+                name="orderId"
+                value={formData.orderId || ""}
+                onChange={handleChange}
+                placeholder="Enter order id"
+              />
 
-          {/* From Account dropdown */}
-          <Label htmlFor="fromAccount">From Account</Label>
-          <Select
-            id="fromAccount"
-            name="fromAccount"
-            value={formData.fromAccount}
-            onChange={handleChange}
-            required
-          >
-            <option value="" disabled>
-              Select an account
-            </option>
-            {fromAccounts && fromAccounts.length > 0 && fromAccounts.map((account) => (
-              account && account._id ? (
-                <option key={account._id} value={account._id}>
-                  {account._id}
+              {/* From Account dropdown */}
+              <Label htmlFor="fromAccount">From Account</Label>
+              <Select
+                id="fromAccount"
+                name="fromAccount"
+                value={formData.fromAccount}
+                onChange={handleChange}
+                required
+              >
+                <option value="" disabled>
+                  Select an account
                 </option>
-              ) : null
-            ))}
-          </Select>
+                {fromAccounts && fromAccounts.length > 0 && fromAccounts.map((account) => (
+                  account && account._id ? (
+                    <option key={account._id} value={account._id}>
+                      {account._id}
+                    </option>
+                  ) : null
+                ))}
+              </Select>
 
-          {/* NFT to purchase */}
-          <Label htmlFor="nftDrop">NFT to purchase</Label>
-          <Select
-            id="nftDrop"
-            name="nftDrop"
-            value={formData.nftDrop || ""}
-            onChange={handleChange}
-            required
-          >
-            <option value="" disabled>
-              Select an NFT
-            </option>
-            <option value="real estate X">real estate X</option>
-            <option value="digital art Y">digital art Y</option>
-            <option value="music rights Z">music rights Z</option>
-          </Select>
-
-          {/* Amount field under NFT Drop */}
-          <Label htmlFor="amount">Amount</Label>
-          <Input
-            type="number"
-            id="amount"
-            name="amount"
-            value={formData.amount}
-            onChange={handleChange}
-            placeholder="Enter amount"
-            required
-          />
-
-          <Section>
-            <h4>Messaging Option</h4>
-            <RadioLabel>
-              <input
-                type="radio"
-                name="messagingOption"
-                value="Kafka with MongoDB and Postgres"
-                checked={formData.messagingOption === "Kafka with MongoDB and Postgres"}
+              {/* Asset to order */}
+              <Label htmlFor="nftDrop">Asset to order</Label>
+              <Select
+                id="nftDrop"
+                name="nftDrop"
+                value={formData.nftDrop || ""}
                 onChange={handleChange}
-              />
-              Use Kafka with MongoDB and Postgres
-            </RadioLabel>
-            <RadioLabel>
-              <input
-                type="radio"
-                name="messagingOption"
-                value="Kafka (backed by TxEventQ) with Oracle Database"
-                checked={formData.messagingOption === "Kafka (backed by TxEventQ) with Oracle Database"}
+                required
+              >
+                <option value="" disabled>
+                  Select an asset
+                </option>
+                <option value="real estate X">real estate X</option>
+                <option value="digital art Y">digital art Y</option>
+                <option value="music rights Z">music rights Z</option>
+              </Select>
+
+              {/* Amount field under NFT Drop */}
+              <Label htmlFor="amount">Amount</Label>
+              <Input
+                type="number"
+                id="amount"
+                name="amount"
+                value={formData.amount}
                 onChange={handleChange}
+                placeholder="Enter amount"
+                required
               />
-              Use Kafka (backed by TxEventQ) with Oracle Database
-            </RadioLabel>
-          </Section>
 
-          {/* Radio buttons under NFT Drop and Amount */}
-          <Section>
-            <h4>Transactional Exactly-Once Message Delivery Tests...</h4>
-            <RadioLabel>
-              <input
-                type="radio"
-                name="txnCrashOption"
-                value="noCrash"
-                checked={txnCrashOption === 'noCrash'}
-                onChange={e => setTxnCrashOption(e.target.value)}
-              />
-              No Crash
-            </RadioLabel>
-            <RadioLabel>
-              <input
-                type="radio"
-                name="txnCrashOption"
-                value="crashOrderAfterInsert"
-                checked={txnCrashOption === 'crashOrderAfterInsert'}
-                onChange={e => setTxnCrashOption(e.target.value)}
-              />
-              Crash Order service after Order is inserted (before Order message is sent to Inventory service)
-            </RadioLabel>
-            <RadioLabel>
-              <input
-                type="radio"
-                name="txnCrashOption"
-                value="crashInventoryAfterOrderMsg"
-                checked={txnCrashOption === 'crashInventoryAfterOrderMsg'}
-                onChange={e => setTxnCrashOption(e.target.value)}
-              />
-              Crash Inventory service after Order message is received (before inventory for order is checked)
-            </RadioLabel>
-            <RadioLabel>
-              <input
-                type="radio"
-                name="txnCrashOption"
-                value="crashInventoryAfterChecked"
-                checked={txnCrashOption === 'crashInventoryAfterChecked'}
-                onChange={e => setTxnCrashOption(e.target.value)}
-              />
-              Crash Inventory service after inventory for order is checked (before Inventory status message is sent)
-            </RadioLabel>
-            <RadioLabel>
-              <input
-                type="radio"
-                name="txnCrashOption"
-                value="crashOrderAfterInventoryMsg"
-                checked={txnCrashOption === 'crashOrderAfterInventoryMsg'}
-                onChange={e => setTxnCrashOption(e.target.value)}
-              />
-              Crash Order service after Inventory message is received (before Order status is updated)
-            </RadioLabel>
-          </Section>
+              <Section>
+                <h4>Messaging Option</h4>
+                <RadioLabel>
+                  <input
+                    type="radio"
+                    name="messagingOption"
+                    value="Kafka with MongoDB and Postgres"
+                    checked={formData.messagingOption === "Kafka with MongoDB and Postgres"}
+                    onChange={handleChange}
+                  />
+                  Use Kafka with MongoDB and Postgres
+                </RadioLabel>
+                <RadioLabel>
+                  <input
+                    type="radio"
+                    name="messagingOption"
+                    value="Kafka (backed by TxEventQ) with Oracle Database"
+                    checked={formData.messagingOption === "Kafka (backed by TxEventQ) with Oracle Database"}
+                    onChange={handleChange}
+                  />
+                  Use Kafka (backed by TxEventQ) with Oracle Database
+                </RadioLabel>
+              </Section>
 
-          {/* Order Actions buttons */}
-          <Section>
-            <h4>Order Actions</h4>
-            <Button onClick={() => handleOrderAction('delete')} disabled={loading} type="button">Delete All Orders</Button>
-            <Button onClick={() => handleOrderAction('place')} disabled={loading} type="button">Place Order</Button>
-            <Button onClick={() => handleOrderAction('show')} disabled={loading} type="button">Show Order</Button>
-            {orderResult && (
-              <div style={{
-                background: bankerPanel,
-                color: bankerText,
-                border: `1px solid ${bankerAccent}`,
-                borderRadius: "8px",
-                padding: "16px",
-                marginTop: "12px",
-                whiteSpace: "pre-wrap"
-              }}>
-                <strong>Order Result:</strong>
-                <div>{orderResult}</div>
-              </div>
-            )}
-          </Section>
-        </Form>
-      </ContentContainer>
+              {/* Radio buttons under NFT Drop and Amount */}
+              <Section>
+                <h4>Transactional Exactly-Once Message Delivery Tests...</h4>
+                <RadioLabel>
+                  <input
+                    type="radio"
+                    name="txnCrashOption"
+                    value="noCrash"
+                    checked={txnCrashOption === 'noCrash'}
+                    onChange={e => setTxnCrashOption(e.target.value)}
+                  />
+                  No Crash
+                </RadioLabel>
+                <RadioLabel>
+                  <input
+                    type="radio"
+                    name="txnCrashOption"
+                    value="crashOrderAfterInsert"
+                    checked={txnCrashOption === 'crashOrderAfterInsert'}
+                    onChange={e => setTxnCrashOption(e.target.value)}
+                  />
+                  Crash Order service after Order is inserted (before Order message is sent to Inventory service)
+                </RadioLabel>
+                <RadioLabel>
+                  <input
+                    type="radio"
+                    name="txnCrashOption"
+                    value="crashInventoryAfterOrderMsg"
+                    checked={txnCrashOption === 'crashInventoryAfterOrderMsg'}
+                    onChange={e => setTxnCrashOption(e.target.value)}
+                  />
+                  Crash Inventory service after Order message is received (before inventory for order is checked)
+                </RadioLabel>
+                <RadioLabel>
+                  <input
+                    type="radio"
+                    name="txnCrashOption"
+                    value="crashInventoryAfterChecked"
+                    checked={txnCrashOption === 'crashInventoryAfterChecked'}
+                    onChange={e => setTxnCrashOption(e.target.value)}
+                  />
+                  Crash Inventory service after inventory for order is checked (before Inventory status message is sent)
+                </RadioLabel>
+                <RadioLabel>
+                  <input
+                    type="radio"
+                    name="txnCrashOption"
+                    value="crashOrderAfterInventoryMsg"
+                    checked={txnCrashOption === 'crashOrderAfterInventoryMsg'}
+                    onChange={e => setTxnCrashOption(e.target.value)}
+                  />
+                  Crash Order service after Inventory message is received (before Order status is updated)
+                </RadioLabel>
+              </Section>
+
+              {/* Order Actions buttons */}
+              <Section>
+                <h4>Order Actions</h4>
+                <Button onClick={() => handleOrderAction('delete')} disabled={loading} type="button">Delete All Orders</Button>
+                <Button onClick={() => handleOrderAction('place')} disabled={loading} type="button">Place Order</Button>
+                <Button onClick={() => handleOrderAction('show')} disabled={loading} type="button">Show Order</Button>
+                {orderResult && (
+                  <div style={{
+                    background: bankerPanel,
+                    color: bankerText,
+                    border: `1px solid ${bankerAccent}`,
+                    borderRadius: "8px",
+                    padding: "16px",
+                    marginTop: "12px",
+                    whiteSpace: "pre-wrap"
+                  }}>
+                    <strong>Order Result:</strong>
+                    <div>{orderResult}</div>
+                  </div>
+                )}
+              </Section>
+            </Form>
+          </ContentContainer>
+        </LeftColumn>
+        <RightColumn>
+          <CodeTitle>Sample Messaging Source Code</CodeTitle>
+          <code>
+            {codeSnippets[formData.messagingOption]}
+          </code>
+        </RightColumn>
+      </TwoColumnContainer>
 
       {/* Inventory Actions as separate form with its own NFT and amount */}
       <Section>
@@ -527,7 +597,7 @@ const Messaging = () => {
             style={{ width: 220 }}
           >
             <option value="" disabled>
-              Select an NFT
+              Select an asset
             </option>
             <option value="real estate X">real estate X</option>
             <option value="digital art Y">digital art Y</option>

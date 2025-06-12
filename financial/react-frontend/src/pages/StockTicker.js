@@ -137,6 +137,41 @@ const VideoWrapper = styled.div`
   width: 40%;
 `;
 
+const TwoColumnContainer = styled.div`
+  display: flex;
+  gap: 32px;
+  width: 100%;
+  @media (max-width: 900px) {
+    flex-direction: column;
+    gap: 0;
+  }
+`;
+
+const LeftColumn = styled.div`
+  flex: 1;
+  min-width: 320px;
+`;
+
+const RightColumn = styled.div`
+  flex: 1;
+  min-width: 320px;
+  background: ${bankerPanel};
+  border: 1px solid ${bankerAccent};
+  border-radius: 8px;
+  padding: 20px;
+  color: ${bankerText};
+  font-family: 'Fira Mono', 'Consolas', 'Menlo', monospace;
+  font-size: 0.98rem;
+  white-space: pre-wrap;
+  overflow-x: auto;
+`;
+
+const CodeTitle = styled.div`
+  font-weight: bold;
+  color: ${bankerAccent};
+  margin-bottom: 12px;
+`;
+
 const StockTicker = () => {
   const [formData, setFormData] = useState({
     stock: '',
@@ -205,6 +240,29 @@ const StockTicker = () => {
         console.error('Error:', error);
         alert('An error occurred. Please try again.');
       });
+  };
+
+  const codeSnippets = {
+    "Redis": `// Redis (Node.js example)
+const redis = require("redis");
+const client = redis.createClient();
+
+client.set("AAPL", 189.50);
+client.get("AAPL", (err, price) => {
+  console.log("AAPL price:", price);
+});
+`,
+    "True Cache": `-- True Cache (Oracle Database, SQL)
+MERGE INTO stock_cache s
+USING (SELECT :ticker AS ticker, :price AS price FROM dual) d
+ON (s.ticker = d.ticker)
+WHEN MATCHED THEN
+  UPDATE SET s.price = d.price
+WHEN NOT MATCHED THEN
+  INSERT (ticker, price) VALUES (d.ticker, d.price);
+
+SELECT price FROM stock_cache WHERE ticker = :ticker;
+`
   };
 
   return (
@@ -302,92 +360,102 @@ const StockTicker = () => {
         </TickerText>
       </TickerContainer>
 
-      <Form>
-        <Label htmlFor="customerId">Customer</Label>
-        <Select
-          id="customerId"
-          name="customerId"
-          value={formData.customerId}
-          onChange={handleChange}
-          required
-        >
-          <option value="" disabled>
-            Select a customer
-          </option>
-          {customerIds.map(id => (
-            <option key={id} value={id}>
-              {id}
-            </option>
-          ))}
-        </Select>
-
-        <Label htmlFor="stock">Stock</Label>
-        <Select
-          id="stock"
-          name="stock"
-          value={formData.stock}
-          onChange={handleChange}
-          required
-        >
-          <option value="" disabled>
-            Select a stock
-          </option>
-          {stockList.map(stock => (
-            <option key={stock.TICKER} value={stock.TICKER}>
-              {stock.TICKER}
-            </option>
-          ))}
-        </Select>
-
-        <Label htmlFor="shares">Number Of Shares</Label>
-        <Input
-          type="number"
-          id="shares"
-          name="shares"
-          value={formData.shares}
-          onChange={handleChange}
-          placeholder="Enter number of shares"
-          required
-        />
-
-        {/* Cache Option Radio Buttons */}
-        <h4>Cache Option</h4>
-        <div>
-          <label>
-            <input
-              type="radio"
-              name="cacheOption"
-              value="Redis"
-              checked={formData.cacheOption === 'Redis'}
+      <TwoColumnContainer>
+        <LeftColumn>
+          <Form>
+            <Label htmlFor="customerId">Customer</Label>
+            <Select
+              id="customerId"
+              name="customerId"
+              value={formData.customerId}
               onChange={handleChange}
-            />
-            Use Redis
-          </label>
-          <label style={{ marginLeft: '20px' }}>
-            <input
-              type="radio"
-              name="cacheOption"
-              value="True Cache"
-              checked={formData.cacheOption === 'True Cache'}
+              required
+            >
+              <option value="" disabled>
+                Select a customer
+              </option>
+              {customerIds.map(id => (
+                <option key={id} value={id}>
+                  {id}
+                </option>
+              ))}
+            </Select>
+
+            <Label htmlFor="stock">Stock</Label>
+            <Select
+              id="stock"
+              name="stock"
+              value={formData.stock}
               onChange={handleChange}
+              required
+            >
+              <option value="" disabled>
+                Select a stock
+              </option>
+              {stockList.map(stock => (
+                <option key={stock.TICKER} value={stock.TICKER}>
+                  {stock.TICKER}
+                </option>
+              ))}
+            </Select>
+
+            <Label htmlFor="shares">Number Of Shares</Label>
+            <Input
+              type="number"
+              id="shares"
+              name="shares"
+              value={formData.shares}
+              onChange={handleChange}
+              placeholder="Enter number of shares"
+              required
             />
-            Use True Cache
-          </label>
-        </div>
 
-        <div style={{ margin: '24px 0 24px 0', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <Button type="button" onClick={(e) => handleStockSubmit(e, 'buy')}>
-            Buy
-          </Button>
-          <Button type="button" onClick={(e) => handleStockSubmit(e, 'sell')}>
-            Sell
-          </Button>
-        </div>
+            {/* Cache Option Radio Buttons */}
+            <h4>Cache Option</h4>
+            <div>
+              <label>
+                <input
+                  type="radio"
+                  name="cacheOption"
+                  value="Redis"
+                  checked={formData.cacheOption === 'Redis'}
+                  onChange={handleChange}
+                />
+                Use Redis
+              </label>
+              <label style={{ marginLeft: '20px' }}>
+                <input
+                  type="radio"
+                  name="cacheOption"
+                  value="True Cache"
+                  checked={formData.cacheOption === 'True Cache'}
+                  onChange={handleChange}
+                />
+                Use True Cache
+              </label>
+            </div>
 
-        <p style={{ marginTop: '10px', color: bankerAccent, fontSize: '14px' }}>
-          Buy/sell affects stock value
-        </p>
-      </Form>
+            <div style={{ margin: '24px 0 24px 0', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <Button type="button" onClick={(e) => handleStockSubmit(e, 'buy')}>
+                Buy
+              </Button>
+              <Button type="button" onClick={(e) => handleStockSubmit(e, 'sell')}>
+                Sell
+              </Button>
+            </div>
+
+            <p style={{ marginTop: '10px', color: bankerAccent, fontSize: '14px' }}>
+              Buy/sell affects stock value
+            </p>
+          </Form>
+        </LeftColumn>
+        <RightColumn>
+          <CodeTitle>Sample Cache Source Code</CodeTitle>
+          <code>
+            {codeSnippets[formData.cacheOption]}
+          </code>
+        </RightColumn>
+      </TwoColumnContainer>
     </PageContainer>
   );
 };

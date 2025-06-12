@@ -88,8 +88,60 @@ const Notice = styled.div`
   text-align: center;
 `;
 
+const TwoColumnContainer = styled.div`
+  display: flex;
+  gap: 32px;
+  width: 100%;
+  @media (max-width: 900px) {
+    flex-direction: column;
+    gap: 0;
+  }
+`;
+
+const LeftColumn = styled.div`
+  flex: 2;
+  min-width: 320px;
+`;
+
+const RightColumn = styled.div`
+  flex: 1;
+  min-width: 320px;
+  background: ${bankerPanel};
+  border: 1px solid ${bankerAccent};
+  border-radius: 8px;
+  padding: 20px;
+  color: ${bankerText};
+  font-family: 'Fira Mono', 'Consolas', 'Menlo', monospace;
+  font-size: 0.98rem;
+  white-space: pre-wrap;
+  overflow-x: auto;
+`;
+
+const CodeTitle = styled.div`
+  font-weight: bold;
+  color: ${bankerAccent};
+  margin-bottom: 12px;
+`;
+
 const SpeakWithData = () => {
   const [isCollapsed, setIsCollapsed] = useState(true);
+
+  const codeSnippet = `// NL2SQL Example (Oracle AI)
+Input: "Show me all accounts with a balance over $1000"
+Output SQL: 
+SELECT * FROM accounts WHERE balance > 1000;
+
+// Vector Search Example (Oracle Database)
+SELECT * FROM financial_docs
+WHERE VECTOR_SEARCH('summary', :query)
+ORDER BY score DESC
+FETCH FIRST 5 ROWS ONLY;
+
+// Speech AI Example (pseudo-code)
+const transcript = await speechToText(audioInput);
+const sql = await nl2sql(transcript);
+const result = await db.query(sql);
+`;
 
   return (
     <PageContainer>
@@ -159,59 +211,69 @@ const SpeakWithData = () => {
         )}
       </SidePanel>
 
-      <h2>Speak with Your Financial Data</h2>
-      <p>
-        Use natural language and speech to interact with your financial data.<br />
-        Powered by Oracle's NL2SQL, Vector Search, and Speech AI technologies.
-      </p>
+      <TwoColumnContainer>
+        <LeftColumn>
+          <h2>Speak with Your Financial Data</h2>
+          <p>
+            Use natural language and speech to interact with your financial data.<br />
+            Powered by Oracle's NL2SQL, Vector Search, and Speech AI technologies.
+          </p>
 
-      <IframesContainer>
-        {/* Image */}
-        <div style={{ width: '100%', height: 'auto' }}>
-          <Image
-            src="/images/aiholotwitchsnippet.png"
-            alt="AI Holo Twitch Snippet"
-          />
-        </div>
+          <IframesContainer>
+            {/* Image */}
+            <div style={{ width: '100%', height: 'auto' }}>
+              <Image
+                src="/images/aiholotwitchsnippet.png"
+                alt="AI Holo Twitch Snippet"
+              />
+            </div>
 
-        {/* Notice above the video player */}
-        <Notice>
-          THIS FUNCTIONALITY IS CURRENTLY BEING USED AT THE BIGDATA AND AI EVENT - WILL RETURN BY END OF WEEK
-        </Notice>
+            {/* Notice above the video player */}
+            <Notice>
+              THIS FUNCTIONALITY IS CURRENTLY BEING USED AT THE BIGDATA AND AI EVENT - WILL RETURN BY END OF WEEK
+            </Notice>
 
-        {/* Video Snippet */}
-        <div style={{ width: '100%', height: 'auto' }}>
-          <video
-            src="/images/aiholotwitchsnippet.mp4"
-            autoPlay
-            loop
-            muted
-            style={{
-              width: '100%',
-              borderRadius: '8px',
-              border: `1px solid ${bankerAccent}`,
-              background: bankerPanel,
-            }}
-            onError={e => {
-              e.target.poster = '';
-              e.target.style.display = 'none';
-            }}
-          >
-            Your browser does not support the video tag.
-          </video>
-        </div>
+            {/* Video Snippet */}
+            <div style={{ width: '100%', height: 'auto' }}>
+              <video
+                src="/images/aiholotwitchsnippet.mp4"
+                autoPlay
+                loop
+                muted
+                style={{
+                  width: '100%',
+                  borderRadius: '8px',
+                  border: `1px solid ${bankerAccent}`,
+                  background: bankerPanel,
+                }}
+                onError={e => {
+                  e.target.poster = '';
+                  e.target.style.display = 'none';
+                }}
+              >
+                Your browser does not support the video tag.
+              </video>
+            </div>
 
-        {/* Twitch Embed */}
-        <TwitchEmbed>
-          <iframe
-            src="https://player.twitch.tv/?channel=aiholo&parent=localhost"
-            style={{ height: '100%', width: '100%' }}
-            frameBorder="0"
-            allowFullScreen={true}
-            title="Twitch Stream"
-          ></iframe>
-        </TwitchEmbed>
-      </IframesContainer>
+            {/* Twitch Embed */}
+            <TwitchEmbed>
+              <iframe
+                src="https://player.twitch.tv/?channel=aiholo&parent=localhost"
+                style={{ height: '100%', width: '100%' }}
+                frameBorder="0"
+                allowFullScreen={true}
+                title="Twitch Stream"
+              ></iframe>
+            </TwitchEmbed>
+          </IframesContainer>
+        </LeftColumn>
+        <RightColumn>
+          <CodeTitle>Sample NL2SQL, Vector Search & Speech AI Source Code</CodeTitle>
+          <code>
+            {codeSnippet}
+          </code>
+        </RightColumn>
+      </TwoColumnContainer>
     </PageContainer>
   );
 };

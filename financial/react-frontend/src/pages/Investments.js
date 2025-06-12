@@ -102,6 +102,41 @@ const ResultBox = styled.div`
   white-space: pre-wrap;
 `;
 
+const TwoColumnContainer = styled.div`
+  display: flex;
+  gap: 32px;
+  width: 100%;
+  @media (max-width: 900px) {
+    flex-direction: column;
+    gap: 0;
+  }
+`;
+
+const LeftColumn = styled.div`
+  flex: 2;
+  min-width: 320px;
+`;
+
+const RightColumn = styled.div`
+  flex: 1;
+  min-width: 320px;
+  background: ${bankerPanel};
+  border: 1px solid ${bankerAccent};
+  border-radius: 8px;
+  padding: 20px;
+  color: ${bankerText};
+  font-family: 'Fira Mono', 'Consolas', 'Menlo', monospace;
+  font-size: 0.98rem;
+  white-space: pre-wrap;
+  overflow-x: auto;
+`;
+
+const CodeTitle = styled.div`
+  font-weight: bold;
+  color: ${bankerAccent};
+  margin-bottom: 12px;
+`;
+
 const Investments = () => {
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [searchText, setSearchText] = useState("advise as to my financial situation");
@@ -149,6 +184,22 @@ const Investments = () => {
       setLoading(false);
     }
   };
+
+  const codeSnippet = `// Oracle Database Vector Search (PL/SQL)
+SELECT *
+FROM financial_docs
+WHERE VECTOR_SEARCH('compliance', :query)
+ORDER BY score DESC
+FETCH FIRST 5 ROWS ONLY;
+
+// Call MCP from PL/SQL
+DECLARE
+  result VARCHAR2(4000);
+BEGIN
+  result := MCP.GET_MARKET_DATA('AAPL');
+  DBMS_OUTPUT.PUT_LINE(result);
+END;
+`;
 
   return (
     <PageContainer>
@@ -227,26 +278,36 @@ const Investments = () => {
         )}
       </SidePanel>
 
-      {/* Search Form */}
-      <SearchForm onSubmit={handleSearch}>
-        <SearchLabel htmlFor="searchText">Search:</SearchLabel>
-        <SearchInput
-          type="text"
-          id="searchText"
-          name="searchText"
-          value={searchText}
-          onChange={e => setSearchText(e.target.value)}
-        />
-        <SearchButton type="submit" disabled={loading}>
-          {loading ? "Searching..." : "Search"}
-        </SearchButton>
-      </SearchForm>
-      {searchResult && (
-        <ResultBox>
-          <strong>Result:</strong>
-          <div>{searchResult}</div>
-        </ResultBox>
-      )}
+      {/* Search and Code Snippet Section */}
+      <TwoColumnContainer>
+        <LeftColumn>
+          <SearchForm onSubmit={handleSearch}>
+            <SearchLabel htmlFor="searchText">Search:</SearchLabel>
+            <SearchInput
+              type="text"
+              id="searchText"
+              name="searchText"
+              value={searchText}
+              onChange={e => setSearchText(e.target.value)}
+            />
+            <SearchButton type="submit" disabled={loading}>
+              {loading ? "Searching..." : "Search"}
+            </SearchButton>
+          </SearchForm>
+          {searchResult && (
+            <ResultBox>
+              <strong>Result:</strong>
+              <div>{searchResult}</div>
+            </ResultBox>
+          )}
+        </LeftColumn>
+        <RightColumn>
+          <CodeTitle>Sample Vector Search & MCP Source Code</CodeTitle>
+          <code>
+            {codeSnippet}
+          </code>
+        </RightColumn>
+      </TwoColumnContainer>
     </PageContainer>
   );
 };
