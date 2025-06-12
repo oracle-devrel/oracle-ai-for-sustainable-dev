@@ -90,6 +90,53 @@ const ToggleButton = styled.button`
   }
 `;
 
+const TwoColumnContainer = styled.div`
+  display: flex;
+  gap: 32px;
+  width: 100%;
+  @media (max-width: 900px) {
+    flex-direction: column;
+    gap: 0;
+  }
+`;
+
+const LeftColumn = styled.div`
+  flex: 2;
+  min-width: 320px;
+`;
+
+const RightColumn = styled.div`
+  flex: 1;
+  min-width: 320px;
+  background: ${bankerPanel};
+  border: 1px solid ${bankerAccent};
+  border-radius: 8px;
+  padding: 20px;
+  color: ${bankerText};
+  font-family: 'Fira Mono', 'Consolas', 'Menlo', monospace;
+  font-size: 0.98rem;
+  white-space: pre-wrap;
+  overflow-x: auto;
+  margin-left: 16px;
+`;
+
+const CodeTitle = styled.div`
+  font-weight: bold;
+  color: ${bankerAccent};
+  margin-bottom: 12px;
+`;
+
+const PanelSection = styled.div`
+  margin-bottom: 32px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid ${bankerAccent};
+  &:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+`;
+
 const Graph = () => {
   const [cy, setCy] = useState(null);
   const [isCollapsed, setIsCollapsed] = useState(true);
@@ -194,6 +241,61 @@ const Graph = () => {
     }
   }
 
+  const staticCreateSnippet = `
+CREATE PROPERTY GRAPH "bank_graph"
+  VERTEX TABLES (
+    "FINANCIAL"."ACCOUNTS"
+      KEY ( "ACCOUNT_ID" )
+      PROPERTIES ( "ACCOUNT_BALANCE", "ACCOUNT_ID", "ACCOUNT_NAME", "ACCOUNT_OPENED_DATE", "ACCOUNT_OTHER_DETAILS", "ACCOUNT_TYPE", "CUSTOMER_ID" )
+  )
+  EDGE TABLES (
+    "FINANCIAL"."TRANSFERS" KEY ( "TXN_ID" )
+      SOURCE KEY ( "SRC_ACCT_ID" ) REFERENCES "ACCOUNTS"( "ACCOUNT_ID" )
+      DESTINATION KEY ( "DST_ACCT_ID" ) REFERENCES "ACCOUNTS"( "ACCOUNT_ID" )
+      PROPERTIES ( "AMOUNT", "DESCRIPTION", "DST_ACCT_ID", "SRC_ACCT_ID", "TXN_ID" )
+  )
+`;
+
+  const staticCytoscapeSnippet = `
+  function plotTransferEdge(cy, tx, index) {
+    cy.add({
+      data: {
+        id: \`txn$\{tx.TXN_ID || \`$\{tx.src}_\${tx.dst}_\${index}\`}\`,
+        source: String(tx.SRC_ACCT_ID || tx.src),
+        target: String(tx.DST_ACCT_ID || tx.dst),
+        label: tx.DESCRIPTION || tx.description || ''
+      }
+    });
+  }
+`;
+
+  const staticPGXPythonSQLEtcSnippet  = `
+%custom-algorithm-pgx
+// Write your GraphAlgorithm code here
+
+%pgql-pgx
+/* Query and visualize 100 elements (nodes and edges) of BANK_GRAPH */
+SELECT * FROM match (s)-[t]->(d) on bank_graphLIMIT 100
+
+%java-pgx
+PgxGraph graph = session.readGraphWithProperties(dataSourceName, 'graphName')
+
+%sparql-rdf
+SELECT ?s ?p ?o WHERE { ?s ?p ?o } LIMIT 15
+
+%pgql-rdbms
+SELECT n,e,m FROM MATCH (n) -[e]-> (m) ON GRAPH_NAME
+
+%sql
+SELECT * FROM TABLE_NAME
+
+%python-pgx
+GRAPH_NAME="BANK_GRAPH"
+graph = session.get_graph(GRAPH_NAME)
+
+%conda
+`;
+
   return (
     <PageContainer>
       <h2>Process: Detect Money Laundering</h2>
@@ -272,16 +374,40 @@ const Graph = () => {
         )}
       </SidePanel>
 
-      {/* Cytoscape Graph */}
-      <GraphContainer id="cy"></GraphContainer>
+      <TwoColumnContainer>
+        <LeftColumn>
+          {/* Cytoscape Graph */}
+          <GraphContainer id="cy"></GraphContainer>
 
-      {/* Generate Transactions Button */}
-      <GenerateButton onClick={() => generateCircularTransfersAndGraph(cy)}>
-        Generate transactions to see corresponding graph
-      </GenerateButton>
-      <DangerButton onClick={clearAllTransfers}>
-        Clear all transfer history
-      </DangerButton>
+          {/* Generate/Clear Buttons */}
+          <GenerateButton onClick={() => generateCircularTransfersAndGraph(cy)}>
+            Generate transactions to see corresponding graph
+          </GenerateButton>
+          <DangerButton onClick={clearAllTransfers}>
+            Clear all transfer history
+          </DangerButton>
+        </LeftColumn>
+        <RightColumn>
+          <PanelSection>
+            <CodeTitle>Create the graph...</CodeTitle>
+            <code>
+              {staticCreateSnippet}
+            </code>
+          </PanelSection>
+          <PanelSection>
+            <CodeTitle>Use Cytoscape to visualize and analyze the graph...</CodeTitle>
+            <code>
+              {staticCytoscapeSnippet}
+            </code>
+          </PanelSection>
+          <PanelSection>
+            <CodeTitle>Use PGX, Python, SQL, etc. to conduct graph operations, visualize, etc...</CodeTitle>
+            <code>
+              {staticPGXPythonSQLEtcSnippet}
+            </code>
+          </PanelSection>
+        </RightColumn>
+      </TwoColumnContainer>
     </PageContainer>
   );
 };

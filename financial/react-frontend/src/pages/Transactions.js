@@ -262,26 +262,43 @@ const Transactions = () => {
   };
 
   const codeSnippets = {
-    lockFree: `// Lock-free Reservations (Oracle MicroTx)
-// No locks held, high concurrency, safe for hotspots
-POST /transfer
-{
-  "fromAccount": "A123",
-  "toAccount": "B456",
-  "amount": 100,
-  "useLockFreeReservations": true
-}
-// The database ensures atomicity and consistency using lock-free algorithms.`,
-    standard: `// Standard Saga Transaction (Oracle MicroTx)
-// Traditional locking, safe for most workloads
-POST /transfer
-{
-  "fromAccount": "A123",
-  "toAccount": "B456",
-  "amount": 100,
-  "useLockFreeReservations": false
-}
-// The database uses standard locking for consistency.`
+    lockFree: `// Auto-compensating distributed transactions reduces code by 80% and insures transactional integrity
+
+public ResponseEntity<?> deposit //...
+        microTxLockFreeReservation.join(connection);
+
+//...
+
+public ResponseEntity<?> compensate //...
+        microTxLockFreeReservation.rollback(connection);
+ `,
+    standard: `
+// Traditional compensation logic, complicated and error-prone, requires book-keeping and extensive error handling
+
+public ResponseEntity<?> deposit //...
+        Account account = AccountTransferDAO.instance().getAccountForAccountId(accountId);
+        AccountTransferDAO.instance().saveJournal(new Journal(DEPOSIT, accountId, 0, lraId,
+                    AccountTransferDAO.getStatusString(ParticipantStatus.Active)));
+        AccountTransferDAO.instance().saveJournal(new Journal(DEPOSIT, accountId, depositAmount, lraId,
+                AccountTransferDAO.getStatusString(ParticipantStatus.Active)));
+
+//...
+
+public ResponseEntity<?> compensate //...
+        Journal journal = AccountTransferDAO.instance().getJournalForLRAid(lraId, WITHDRAW);
+        String lraState = journal.getLraState();
+        journal.setLraState(AccountTransferDAO.getStatusString(ParticipantStatus.Compensating));
+        AccountTransferDAO.instance().saveJournal(journal);
+        Account account = AccountTransferDAO.instance().getAccountForAccountId(journal.getAccountId());
+        if (account != null) {
+            account.setAccountBalance(account.getAccountBalance() + journal.getJournalAmount());
+            AccountTransferDAO.instance().saveAccount(account);
+        } else {
+            journal.setLraState(AccountTransferDAO.getStatusString(ParticipantStatus.FailedToCompensate));
+        }
+        journal.setLraState(AccountTransferDAO.getStatusString(ParticipantStatus.Compensated));
+        AccountTransferDAO.instance().saveJournal(journal);
+`
   };
 
   const selectedSnippet = formData.useLockFreeReservations ? codeSnippets.lockFree : codeSnippets.standard;

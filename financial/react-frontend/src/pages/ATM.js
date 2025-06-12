@@ -273,7 +273,11 @@ let mut tx = pool.begin().await?;
 sqlx::query!("UPDATE accounts SET balance = balance + $1 WHERE id = $2", amount, account_id)
     .execute(&mut tx)
     .await?;
-tx.commit().await?;`
+tx.commit().await?;`,
+    "Ruby on Rails": `# Ruby on Rails (ActiveRecord)
+account = Account.find(account_id)
+account.balance += amount
+account.save!`
   };
 
   // Set Java as default if nothing is selected
@@ -435,6 +439,16 @@ tx.commit().await?;`
                 onChange={handleChange}
               />
               Rust
+            </RadioLabel>
+            <RadioLabel>
+              <input
+                type="radio"
+                name="language"
+                value="Ruby on Rails"
+                checked={selectedLanguage === 'Ruby on Rails'}
+                onChange={handleChange}
+              />
+              Ruby on Rails
             </RadioLabel>
 
             <Button type="submit">Submit</Button>
