@@ -83,10 +83,19 @@ const FinancialStoryBoard = () => {
         style={{
           color: bankerText,
           fontSize: '1rem',
-          marginBottom: 24,
+          marginBottom: 8,
         }}
       >
-        Each page has a 'Developer Details' button that when clicked expands to show a walkthrough video, code and workshop links, etc.
+        Each page has:
+        <ul style={{ marginTop: 8, marginBottom: 24, paddingLeft: 24 }}>
+          <li>a <b>Developer Details</b> button</li>
+          <li>when clicked, expands to show:</li>
+          <ul>
+            <li>a walkthrough video</li>
+            <li>code and workshop links</li>
+            <li>etc.</li>
+          </ul>
+        </ul>
       </div>
       <Table>
         <thead>

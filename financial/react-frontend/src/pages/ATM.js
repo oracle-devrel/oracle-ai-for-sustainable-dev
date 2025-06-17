@@ -309,7 +309,7 @@ account.save!`
               </div>
               <div>
                 <a
-                  href="https://github.com/paulparkinson/oracle-ai-for-sustainable-dev/tree/main/financial/atm-polyglot"
+                  href="https://github.com/paulparkinson/oracle-ai-for-sustainable-dev/tree/main/financial/polyglot-atm"
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{ color: bankerAccent, textDecoration: 'none' }}
@@ -449,6 +449,16 @@ account.save!`
                 onChange={handleChange}
               />
               Ruby on Rails
+            </RadioLabel>
+            <RadioLabel>
+              <input
+                type="radio"
+                name="language"
+                value="WASMEdge"
+                checked={selectedLanguage === 'WASMEdge'}
+                onChange={handleChange}
+              />
+              WASMEdge
             </RadioLabel>
 
             <Button type="submit">Submit</Button>

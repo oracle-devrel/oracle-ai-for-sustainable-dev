@@ -278,24 +278,25 @@ const Messaging = () => {
 
   const codeSnippets = {
     "Kafka with MongoDB and Postgres": `// Kafka with MongoDB/Postgres 
-@KafkaListener(topics = "orders", groupId = "inventory-service")
-public void listen(OrderEvent event) {
-
-    // Handle duplicate events and idempotency as well as transactions between MongoDB/Postgres
-
-    inventoryRepository.save(event);
-    kafkaTemplate.send("inventory", event);
+    public void consumeMessages() {
+        consumer.subscribe(topics);
+        ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
+        //process records
+        Connection connection = datasource.getDBConnection();
+        // Handle duplicate events and idempotency as well as transactions between MongoDB/Postgres
+    }
 }
 `,
     "Kafka (backed by TxEventQ) with Oracle Database": `// Kafka API backed by Oracle TxEventQ 
 
-    @KafkaListener(topics = "orders", groupId = "inventory-service")
-public void listen(OrderEvent event) {
-
-    // Messaing and data changes are transactional and consistent, no need for complicated idempotency handling
-
-    inventoryRepository.save(event);
-    kafkaTemplate.send("inventory", event);
+    public void consumeMessages() {
+        consumer.subscribe(topics);
+        ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
+        //process records
+        Connection connection = consumer.getDBConnection();
+        if(somethingWentWrong) connection.rollback();
+        else consumer.commitSync();
+    }
 }
 
 `
