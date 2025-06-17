@@ -56,15 +56,6 @@ public class OrderConsumerService implements AutoCloseable {
         }
     }
 
-    public void consumeMessages() {
-        consumer.subscribe(topics);
-        ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
-        //process records
-        Connection connection = consumer.getDBConnection();
-        if(somethingWentWrong) connection.rollback();
-        else consumer.commitSync();
-    }
-
     @Override
     public void close() {
         if (this.consumer != null) {
