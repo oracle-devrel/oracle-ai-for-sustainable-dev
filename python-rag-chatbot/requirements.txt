@@ -159,7 +159,7 @@ platformdirs==                             3.11.0
 posthog==                                  3.0.2
 prometheus-client==                        0.17.1
 prompt-toolkit==                           3.0.39
-protobuf==                                 4.24.4
+protobuf== 4.25.8
 psutil==                                   5.9.6
 ptyprocess==                               0.7.0
 pulsar-client==                            3.5.0
