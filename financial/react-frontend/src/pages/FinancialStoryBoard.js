@@ -82,19 +82,34 @@ const FinancialStoryBoard = () => {
       <div
         style={{
           color: bankerText,
-          fontSize: '1rem',
-          marginBottom: 8,
+          fontSize: '1.22rem',
+          marginBottom: 32,
+          marginTop: 24,
+          lineHeight: 1.7,
+          letterSpacing: '0.01em',
+          background: bankerPanel,
+          borderRadius: 12,
+          padding: '32px 32px 24px 32px',
+          boxShadow: `0 2px 12px 0 rgba(0,0,0,0.10)`,
         }}
       >
-        Each page has:
-        <ul style={{ marginTop: 8, marginBottom: 24, paddingLeft: 24 }}>
-          <li>a <b>Developer Details</b> button</li>
-          <li>when clicked, expands to show:</li>
-          <ul>
-            <li>a walkthrough video</li>
-            <li>code and workshop links</li>
-            <li>etc.</li>
-          </ul>
+        <div style={{ fontWeight: 'bold', color: bankerAccent, fontSize: '1.35rem', marginBottom: 16 }}>
+          This workshop is aimed at developers and those wanting to know more about dev aspects of Oracle Database tech.<br />
+          Each page contains the app itself and...
+        </div>
+        <ul style={{ marginTop: 12, marginBottom: 24, paddingLeft: 32 }}>
+          <li style={{ marginBottom: 10 }}>Can be run by itself or in conjunction with other pages (ie entire app is modular and microservices architecture)</li>
+          <li style={{ marginBottom: 10 }}>Can be run in Kubernetes or standalone</li>
+          <li style={{ marginBottom: 10 }}>
+            Contains a <b>Developer Details</b> button which when clicked, expands to show:
+            <ul style={{ marginTop: 8, marginBottom: 8, paddingLeft: 28 }}>
+              <li style={{ marginBottom: 6 }}>a walkthrough video</li>
+              <li style={{ marginBottom: 6 }}>code and workshop links</li>
+              <li style={{ marginBottom: 6 }}>developer notes and differentiators</li>
+              <li style={{ marginBottom: 6 }}>links to corresponding backend dev tools/env (such as Grafana, Jupyter/OML4Py, Graph Studio, AI Agents Vector search backend)</li>
+            </ul>
+          </li>
+          <li style={{ marginBottom: 10 }}>Contains relevant code snippets on the right hand side that change depending on form options, etc. selected</li>
         </ul>
       </div>
       <Table>

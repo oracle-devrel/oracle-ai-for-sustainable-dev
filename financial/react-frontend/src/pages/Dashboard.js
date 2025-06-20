@@ -56,15 +56,23 @@ const CollapsibleSection = styled.div`
   padding: 12px;
 `;
 
-const CollapsibleHeader = styled.div`
-  cursor: pointer;
-  font-weight: bold;
-  color: ${bankerAccent};
-  margin-bottom: 8px;
-`;
-
 const CollapsibleContent = styled.div`
   margin-top: 8px;
+`;
+
+const ToggleButton = styled.button`
+  background-color: ${bankerAccent};
+  color: ${bankerText};
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 10px;
+  font-weight: bold;
+
+  &:hover {
+    background-color: ${bankerBg};
+  }
 `;
 
 const DashBoard = () => {
@@ -82,9 +90,12 @@ const DashBoard = () => {
 
       {/* Collapsible Section */}
       <CollapsibleSection>
-        <CollapsibleHeader onClick={() => setShowCollapsible(!showCollapsible)}>
-          {showCollapsible ? '▼' : '►'} Show/Hide Developer Details
-        </CollapsibleHeader>
+        <ToggleButton
+          type="button"
+          onClick={() => setShowCollapsible(!showCollapsible)}
+        >
+          {showCollapsible ? 'Hide Developer Details' : 'Show Developer Details'}
+        </ToggleButton>
         {showCollapsible && (
           <CollapsibleContent>
             <a
@@ -144,6 +155,22 @@ const DashBoard = () => {
         <h2>Entity Diagram</h2>
         <img
           src={`${process.env.PUBLIC_URL}/images/er_diagram.png`}
+          alt="Technical Architecture"
+        />
+      </ImageContainer>
+      {/* tracing diagram Image */}
+      <ImageContainer>
+        <h2>End-to-end Tracing INTO Database</h2>
+        <img
+          src={`${process.env.PUBLIC_URL}/images/tracing.png`}
+          alt="Technical Architecture"
+        />
+      </ImageContainer>
+      {/* three pillars diagram Image */}
+      <ImageContainer>
+        <h2>"Single Pane" view across metrics, logs, and tracing</h2>
+        <img
+          src={`${process.env.PUBLIC_URL}/images/3pillars.png`}
           alt="Technical Architecture"
         />
       </ImageContainer>

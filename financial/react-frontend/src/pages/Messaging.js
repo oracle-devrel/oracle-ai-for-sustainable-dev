@@ -278,6 +278,7 @@ const Messaging = () => {
 
   const codeSnippets = {
     "Kafka with MongoDB and Postgres": `// Kafka with MongoDB/Postgres 
+
     public void consumeMessages() {
         consumer.subscribe(topics);
         ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
@@ -287,7 +288,7 @@ const Messaging = () => {
     }
 }
 `,
-    "Kafka (backed by TxEventQ) with Oracle Database": `// Kafka API backed by Oracle TxEventQ 
+    "Kafka (backed by TxEventQ) with Oracle Database": `// Kafka with Oracle Database 
 
     public void consumeMessages() {
         consumer.subscribe(topics);
@@ -299,6 +300,41 @@ const Messaging = () => {
     }
 }
 
+`
+};
+
+const mongodbpostgrescrashSnippet = {
+  noCrash: `Happy Path: No Crash`,
+  crashOrderAfterInsert: `Crash Order service after Order is inserted (before Order message is sent to Inventory service):
+🔴 Order will remain in “pending” status as inventory is never checked.
+🔴 Additional coding: Developer must explicitly handle pending orders and related DB logic.
+`,
+  crashInventoryAfterOrderMsg: `Crash Inventory service after Order message is received (before inventory for order is checked):
+🔴 Duplicate messages. Leads to duplicate log entries.
+🔴 Additional coding: Requires implementation of Idempotent Consumer Pattern.
+`,
+  crashInventoryAfterChecked: `Crash Inventory service after inventory for order is checked (before Inventory status message is sent):
+🔴 Duplicate messages.Leads to incorrect inventory count.
+🔴 Additional coding: Must handle locked inventory and ensure consistency.
+`,
+  crashOrderAfterInventoryMsg: `Crash Order service after Inventory message is received (before Order status is updated)
+🔴 Duplicate messages. Leads to duplicate log entries.
+🔴 Additional coding: Requires implementation of Idempotent Consumer Pattern.
+`
+};
+
+const oraclescrashSnippet = {
+  noCrash: `Happy Path: No Crash`,
+  crashOrderAfterInsert: `Crash Order service after Order is inserted (before Order message is sent to Inventory service):
+🟢 Order insert will automatically rollback.`,
+  crashInventoryAfterOrderMsg: `Crash Inventory service after Order message is received (before inventory for order is checked):
+  🟢 Message dequeue will rollback and be re-delivered. No message loss. Idempotency handled implicitly—no retry logic required.
+`,
+  crashInventoryAfterChecked: `Crash Inventory service after inventory for order is checked (before Inventory status message is sent):
+  🟢 Inventory modification rolls back. Same behavior as message receive crash scenario.
+`,
+  crashOrderAfterInventoryMsg: `Crash Order service after Inventory message is received (before Order status is updated):
+  🟢 Message dequeue will rollback and be re-delivered. No message loss. Idempotency handled implicitly—no retry logic required.
 `
 };
 
@@ -349,6 +385,15 @@ const Messaging = () => {
                 <li>Only Oracle Database has a built-in messaging engine (TxEventQ) which allows database and messaging operations in the same local transaction</li>
                 <li>TxEventQ can be used via Kafka API, JMS, PL/SQL and via any language</li>
               </ul>
+              <h4 style={{
+                marginTop: '32px',
+                marginBottom: '12px',
+                color: bankerAccent,
+                borderBottom: `1px solid ${bankerAccent}`,
+                paddingBottom: '4px'
+              }}>
+                Admin Operations...
+              </h4>
               <Section>
                 <h4>Create Kafka Topic (one time call to setup, ie not needed if app is already running)</h4>
                 <form
@@ -390,11 +435,17 @@ const Messaging = () => {
               </Section>
             </div>
             <div style={{ flex: 1, marginLeft: '20px', textAlign: 'center' }}>
-              <img
-                src="/images/mongopostgreskafka_vs_OracleAQ.png"
-                alt="Mongo/Postgres/Kafka vs Oracle AQ"
-                style={{ width: '100%', borderRadius: '8px', border: `1px solid ${bankerAccent}` }}
-              />
+              <h4>Video Walkthrough:</h4>
+              <iframe
+                width="100%"
+                height="315"
+                src="https://www.youtube.com/embed/42qA-uAnBZ8"
+                title="YouTube video player"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                style={{ borderRadius: '8px', border: `1px solid ${bankerAccent}` }}
+              ></iframe>
             </div>
           </div>
         )}
@@ -569,10 +620,22 @@ const Messaging = () => {
           </ContentContainer>
         </LeftColumn>
         <RightColumn>
-          <CodeTitle>Sample Messaging Source Code</CodeTitle>
+          <CodeTitle>Messaging Source Code</CodeTitle>
           <code>
             {codeSnippets[formData.messagingOption]}
           </code>
+          <div style={{ marginTop: 32 }}>
+            <CodeTitle>Behavior when using Kafka with Postgres and MongoDB</CodeTitle>
+            <code>
+              {mongodbpostgrescrashSnippet[txnCrashOption]}
+            </code>
+          </div>
+          <div style={{ marginTop: 32 }}>
+            <CodeTitle>Behavior when using Kafka with Oracle Database</CodeTitle>
+            <code>
+              {oraclescrashSnippet[txnCrashOption]}
+            </code>
+          </div>
         </RightColumn>
       </TwoColumnContainer>
 
