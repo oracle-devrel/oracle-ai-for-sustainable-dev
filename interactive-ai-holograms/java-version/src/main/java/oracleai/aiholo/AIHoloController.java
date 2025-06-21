@@ -42,9 +42,15 @@ import javax.sql.*;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.charset.StandardCharsets;
+
 @Controller
 @RequestMapping("/aiholo")
 // @CrossOrigin(origins = "*")
@@ -54,7 +60,24 @@ public class AIHoloController {
     private static final String SANDBOX_API_URL = System.getenv("SANDBOX_API_URL");
     private static final String AI_OPTIMZER = System.getenv("AI_OPTIMZER");
     static final String AUDIO_DIR_PATH = System.getenv("AUDIO_DIR_PATH");
-    static int currentAnswerIntro = 0;
+    private static int currentAnswerIntro = 0;
+    private static String aiholo_prompt_additions = "";
+
+    static {
+        // Check for aiholo_prompt_additions.txt in AUDIO_DIR_PATH at startup
+        if (AUDIO_DIR_PATH != null) {
+            try {
+                java.nio.file.Path additionsPath = Paths.get(AUDIO_DIR_PATH, "aiholo_prompt_additions.txt");
+                if (Files.exists(additionsPath)) {
+                    aiholo_prompt_additions = new String(Files.readAllBytes(additionsPath), StandardCharsets.UTF_8).trim();
+                    System.out.println("Loaded aiholo_prompt_additions: " + aiholo_prompt_additions);
+                }
+            } catch (Exception e) {
+                System.err.println("Could not load aiholo_prompt_additions.txt: " + e.getMessage());
+            }
+        }
+    }
+
     private static final String DEFAULT_LANGUAGE_CODE = "es-ES";
     private static final String DEFAULT_VOICE_NAME = "es-ES-Wavenet-D";
     private final static String sql = """
@@ -94,38 +117,38 @@ public class AIHoloController {
 
     @GetMapping("")
     public String home(@RequestParam(value = "languageCode", defaultValue = "en-US") String languageCode, Model model) {
-        System.out.println("AIHolo root languageCode = " + languageCode );
+        System.out.println("AIHolo root languageCode = " + languageCode);
         this.languageCode = languageCode;
         model.addAttribute("languageCode", languageCode);
         if (languageCode.equals("pt-BR"))
             model.addAttribute("voiceName", "pt-BR-Wavenet-D");
         else if (languageCode.equals("es-ES"))
             model.addAttribute("voiceName", "es-ES-Wavenet-D");
-        else if (languageCode.equals("zh-SG") )
+        else if (languageCode.equals("zh-SG"))
             model.addAttribute("voiceName", "cmn-CN-Wavenet-A");
-        else if (languageCode.equals("de-DE") )
+        else if (languageCode.equals("de-DE"))
             model.addAttribute("voiceName", "de-DE-Wavenet-A");
-        else if (languageCode.equals("es-MX") )
+        else if (languageCode.equals("es-MX"))
             model.addAttribute("voiceName", "es-US-Wavenet-A");
-        else if (languageCode.equals("it-IT") )
+        else if (languageCode.equals("it-IT"))
             model.addAttribute("voiceName", "it-IT-Wavenet-A");
-        else if (languageCode.equals("fr-FR") )
+        else if (languageCode.equals("fr-FR"))
             model.addAttribute("voiceName", "fr-FR-Wavenet-A");
-        else if (languageCode.equals("ro-RO") )
+        else if (languageCode.equals("ro-RO"))
             model.addAttribute("voiceName", "ro-RO-Wavenet-A");
-        else if (languageCode.equals("en-AU") )
+        else if (languageCode.equals("en-AU"))
             model.addAttribute("voiceName", "en-AU-Wavenet-A");
-        else if (languageCode.equals("ga-GA") )
+        else if (languageCode.equals("ga-GA"))
             model.addAttribute("voiceName", "ga-GA-Wavenet-A");
-        else if (languageCode.equals("ar-AE") )
+        else if (languageCode.equals("ar-AE"))
             model.addAttribute("voiceName", "ar-AE-Wavenet-A");
-        else if (languageCode.equals("ja-JP") )
+        else if (languageCode.equals("ja-JP"))
             model.addAttribute("voiceName", "ja-JP-Wavenet-A");
-        else if (languageCode.equals("hi-IN") )
+        else if (languageCode.equals("hi-IN"))
             model.addAttribute("voiceName", "hi-IN-Wavenet-A");
-        else if (languageCode.equals("he-IL") )
+        else if (languageCode.equals("he-IL"))
             model.addAttribute("voiceName", "he-IL-Wavenet-A");
-        else if (languageCode.equals("en-US") )
+        else if (languageCode.equals("en-US"))
             model.addAttribute("voiceName", "Aoede");
 //            model.addAttribute("voiceName", "en-US-Chirp3-HD-Aoede");
         else if (languageCode.equals("en-GB"))
@@ -133,7 +156,6 @@ public class AIHoloController {
         else model.addAttribute("voiceName", "en-US-Wavenet-A");
         return "aiholo";
     }
-
 
 
     @GetMapping("/explainer")
@@ -144,7 +166,7 @@ public class AIHoloController {
         String filePath = "C:/Users/opc/aiholo_output.txt";
         try (FileWriter writer = new FileWriter(filePath)) {
             JSONObject json = new JSONObject();
-            json.put("data", theValue); // Store the response inside JSON
+            json.put("data", theValue);
             writer.write(json.toString());
             writer.flush();
         } catch (IOException e) {
@@ -154,13 +176,31 @@ public class AIHoloController {
         return "Explained";
     }
 
+    @GetMapping("/leia")
+    @ResponseBody
+    public String leia() throws Exception {
+        System.out.println("AIHoloController.leia");
+        theValue = "leia";
+        String filePath = "C:/Users/opc/aiholo_output.txt";
+        try (FileWriter writer = new FileWriter(filePath)) {
+            JSONObject json = new JSONObject();
+            json.put("data", theValue);
+            writer.write(json.toString());
+            writer.flush();
+        } catch (IOException e) {
+            return "Error writing to file: " + e.getMessage();
+        }
+        //     TTSAndAudio2Face.sendToAudio2Face("explainer-leia.wav");
+        return "leia hologram";
+    }
+
 
     @GetMapping("/play")
     @ResponseBody
     public String play(@RequestParam("question") String question,
-                   @RequestParam("selectedMode") String selectedMode,
-                   @RequestParam("languageCode") String languageCode,
-                   @RequestParam("voiceName") String voicename) throws Exception {
+                       @RequestParam("selectedMode") String selectedMode,
+                       @RequestParam("languageCode") String languageCode,
+                       @RequestParam("voiceName") String voicename) throws Exception {
         System.out.println(
                 "play question: " + question + " selectedMode: " + selectedMode +
                         " languageCode:" + languageCode + " voicename:" + voicename);
@@ -211,7 +251,8 @@ public class AIHoloController {
         String action = "chat";
         String answer;
         if (languageCode.equals("pt-BR")) answer = "Desculpe. Não consegui encontrar uma resposta no banco de dados";
-        else if (languageCode.equals("es-ES")) answer = "Lo siento, no pude encontrar una respuesta en la base de datos.";
+        else if (languageCode.equals("es-ES"))
+            answer = "Lo siento, no pude encontrar una respuesta en la base de datos.";
         else if (languageCode.equals("en-GB")) answer = "Sorry, I couldn't find an answer in the database.";
         else if (languageCode.equals("zh-SG")) answer = "抱歉，我在数据库中找不到答案";
         else answer = "I'm sorry. I couldn't find an answer in the database";
@@ -226,8 +267,7 @@ public class AIHoloController {
             } else {
                 question = question.replace("use chat", "").trim();
             }
-            question += ". If the question is something like \"Where can I find free resources to learn about new\n" +
-                    "technology trends?\" Then incorporate Oracle Academy information in the answer but balance the answer with other non-Oracle information. Respond in 20 words or less";
+            question += ". Respond in 20 words or less. " + aiholo_prompt_additions;
             try (Connection connection = dataSource.getConnection();
                  PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
                 System.out.println("Database Connection : " + connection);
@@ -247,31 +287,35 @@ public class AIHoloController {
         }
         String fileName = "output.wav";
 
-// Strip out any "A:", "A2:", "A3:", etc. at the beginning of the answer string
-if (answer != null) {
-    answer = answer.replaceFirst("^A\\d*:\\s*", "");
-}
+        // Strip out any "A:", "A2:", "A3:", etc. at the beginning of the answer string
+        if (answer != null) {
+            answer = answer.replaceFirst("^A\\d*:\\s*", "");
+        }
 
         System.out.println("about to TTS and sendAudioToAudio2Face for answer: " + answer);
         TTSAndAudio2Face.processMetahuman(fileName, answer, languageCode, voicename);
+        if(answer.toLowerCase().contains("leia") || answer.toLowerCase().contains("star wars")) {
+            Thread.sleep(5);
+            leia();
+        }
         return answer;
     }
 
 
     /**
-     curl -X 'POST' \
-     'http://host/v1/chat/completions?client=server' \
-     -H 'accept: application/json' \
-     -H 'Authorization: Bearer bearer' \
-     -H 'Content-Type: application/json' \
-     -d '{
-     "messages": [
-     {
-     "role": "user",
-     "content": "What are Alternative Dispute Resolution"
-     }
-     ]
-     }'
+     * curl -X 'POST' \
+     * 'http://host/v1/chat/completions?client=server' \
+     * -H 'accept: application/json' \
+     * -H 'Authorization: Bearer bearer' \
+     * -H 'Content-Type: application/json' \
+     * -d '{
+     * "messages": [
+     * {
+     * "role": "user",
+     * "content": "What are Alternative Dispute Resolution"
+     * }
+     * ]
+     * }'
      */
 
     public String executeSandbox(String cummulativeResult) {
@@ -280,7 +324,7 @@ if (answer != null) {
         Map<String, String> message = new HashMap<>();
         message.put("role", "user");
         message.put("content", cummulativeResult);
-        payload.put("messages", new Object[] { message });
+        payload.put("messages", new Object[]{message});
         JSONObject jsonPayload = new JSONObject(payload);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -309,15 +353,14 @@ if (answer != null) {
      */
 
 
-
     // `https://host:port/aiholo/tts?textToConvert=${encodeURIComponent(textToConvert)}
     // &languageCode=${encodeURIComponent(languageCode)}&ssmlGender=${encodeURIComponent(ssmlGender)}
     // &voiceName=${encodeURIComponent(voiceName)}`;
     @GetMapping("/tts")
-    public ResponseEntity<byte[]>  ttsAndReturnAudioFile(@RequestParam("textToConvert") String textToConvert,
-                                                         @RequestParam("languageCode") String languageCode,
-                                                         @RequestParam("ssmlGender") String ssmlGender,
-                                                         @RequestParam("voiceName") String voiceName) throws Exception {
+    public ResponseEntity<byte[]> ttsAndReturnAudioFile(@RequestParam("textToConvert") String textToConvert,
+                                                        @RequestParam("languageCode") String languageCode,
+                                                        @RequestParam("ssmlGender") String ssmlGender,
+                                                        @RequestParam("voiceName") String voiceName) throws Exception {
         System.out.println("TTS GCP  textToConvert = " + textToConvert + ", languageCode = " + languageCode +
                 ", ssmlGender = " + ssmlGender + ", voiceName = " + voiceName);
         try (TextToSpeechClient textToSpeechClient = TextToSpeechClient.create()) {
@@ -341,12 +384,11 @@ if (answer != null) {
             HttpHeaders headers = new HttpHeaders();
             headers.set(HttpHeaders.CONTENT_TYPE, "audio/mpeg");
             headers.set(HttpHeaders.CONTENT_DISPOSITION,
-                    "attachment; filename=\"tts-" + languageCode + "" + ssmlGender+ "" + voiceName + "_" +
+                    "attachment; filename=\"tts-" + languageCode + "" + ssmlGender + "" + voiceName + "_" +
                             getFirst10Chars(textToConvert) + ".mp3\"");
             return new ResponseEntity<>(audioData, headers, HttpStatus.OK);
         }
     }
-
 
 
     // Vector embedding, store, langchain, etc. stuff...
@@ -384,7 +426,7 @@ if (answer != null) {
                             @RequestParam("selectedMode") String selectedMode,
                             @RequestParam("languageCode") String languageCode,
                             @RequestParam("voiceName") String voicename) throws Exception {
-        EmbeddingSearchRequest embeddingSearchRequest =  null;
+        EmbeddingSearchRequest embeddingSearchRequest = null;
         OracleEmbeddingStore embeddingStore =
                 OracleEmbeddingStore.builder()
                         .dataSource(dataSource)
@@ -404,10 +446,7 @@ if (answer != null) {
     }
 
 
-
     //set/get etc utilites to end....
-
-
 
 
     public static String getFirst10Chars(String textToConvert) {
@@ -472,29 +511,28 @@ if (answer != null) {
 }
 
 /**
- en-US (American English):
- •	en-US-Neural2-F ￼
- •	en-US-Neural2-G ￼
- •	en-US-Neural2-H
- •	en-US-Neural2-I ￼
- •	en-US-Neural2-J ￼
- •	en-US-Standard-C ￼
- •	en-US-Standard-E
- •	en-US-Standard-G ￼
- •	en-US-Standard-I
- •	en-US-Wavenet-C ￼
- •	en-US-Wavenet-E ￼
- •	en-US-Wavenet-G
- •	en-US-Wavenet-I
-
- en-GB (British English):
- •	en-GB-Neural2-C ￼
- •	en-GB-Neural2-E ￼
- •	en-GB-Standard-A ￼
- •	en-GB-Standard-C ￼
- •	en-GB-Standard-E
- •	en-GB-Wavenet-A ￼
- •	en-GB-Wavenet-C ￼
- •	en-GB-Wavenet-E
-
+ * en-US (American English):
+ * •	en-US-Neural2-F ￼
+ * •	en-US-Neural2-G ￼
+ * •	en-US-Neural2-H
+ * •	en-US-Neural2-I ￼
+ * •	en-US-Neural2-J ￼
+ * •	en-US-Standard-C ￼
+ * •	en-US-Standard-E
+ * •	en-US-Standard-G ￼
+ * •	en-US-Standard-I
+ * •	en-US-Wavenet-C ￼
+ * •	en-US-Wavenet-E ￼
+ * •	en-US-Wavenet-G
+ * •	en-US-Wavenet-I
+ * <p>
+ * en-GB (British English):
+ * •	en-GB-Neural2-C ￼
+ * •	en-GB-Neural2-E ￼
+ * •	en-GB-Standard-A ￼
+ * •	en-GB-Standard-C ￼
+ * •	en-GB-Standard-E
+ * •	en-GB-Wavenet-A ￼
+ * •	en-GB-Wavenet-C ￼
+ * •	en-GB-Wavenet-E
  */
