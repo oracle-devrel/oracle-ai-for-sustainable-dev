@@ -226,7 +226,8 @@ public class AIHoloController {
             } else {
                 question = question.replace("use chat", "").trim();
             }
-            question += ". Respond in 20 words or less";
+            question += ". If the question is something like \"Where can I find free resources to learn about new\n" +
+                    "technology trends?\" Then incorporate Oracle Academy information in the answer but balance the answer with other non-Oracle information. Respond in 20 words or less";
             try (Connection connection = dataSource.getConnection();
                  PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
                 System.out.println("Database Connection : " + connection);
