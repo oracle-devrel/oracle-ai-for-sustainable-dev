@@ -258,7 +258,7 @@ public class AIHoloController {
         else answer = "I'm sorry. I couldn't find an answer in the database";
         if (selectedMode.contains("use vector")) {
             question = question.replace("use vectorrag", "").trim();
-            question += ". Respond in 20 words or less";
+            question += ". Respond in 25 words or less. " + aiholo_prompt_additions;
             answer = executeSandbox(question);
         } else {
             if (selectedMode.contains("use narrate")) {
@@ -267,7 +267,7 @@ public class AIHoloController {
             } else {
                 question = question.replace("use chat", "").trim();
             }
-            question += ". Respond in 20 words or less. " + aiholo_prompt_additions;
+            question += ". Respond in 25 words or less. " + aiholo_prompt_additions;
             try (Connection connection = dataSource.getConnection();
                  PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
                 System.out.println("Database Connection : " + connection);
