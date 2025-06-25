@@ -3,11 +3,12 @@ module github.com/lake-of-dreams/bundb-oracle
 go 1.24.3
 
 require (
-	github.com/containers/common v0.63.0
+	github.com/containers/common v0.63.1
 	github.com/docker/docker v28.1.1+incompatible // indirect
 	github.com/opencontainers/runtime-spec v1.2.1
-	github.com/sijms/go-ora v1.3.2
 )
+
+require github.com/sijms/go-ora/v2 v2.8.24
 
 require (
 	dario.cat/mergo v1.0.1 // indirect
@@ -26,7 +27,7 @@ require (
 	github.com/containerd/platforms v1.0.0-rc.1 // indirect
 	github.com/containerd/stargz-snapshotter/estargz v0.16.3 // indirect
 	github.com/containerd/typeurl/v2 v2.2.3 // indirect
-	github.com/containers/buildah v1.40.0 // indirect
+	github.com/containers/buildah v1.40.1 // indirect
 	github.com/containers/image/v5 v5.35.0 // indirect
 	github.com/containers/libtrust v0.0.0-20230121012942-c1716e8a8d01 // indirect
 	github.com/containers/ocicrypt v1.2.1 // indirect
@@ -100,7 +101,6 @@ require (
 	github.com/sigstore/protobuf-specs v0.4.1 // indirect
 	github.com/sigstore/rekor v1.3.10 // indirect
 	github.com/sigstore/sigstore v1.9.3 // indirect
-	github.com/sijms/go-ora/v2 v2.8.24 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/skeema/knownhosts v1.3.1 // indirect
 	github.com/smallstep/pkcs7 v0.1.1 // indirect
@@ -136,7 +136,7 @@ require (
 
 require (
 	github.com/Microsoft/go-winio v0.6.2 // indirect
-	github.com/containers/podman/v5 v5.5.0
+	github.com/containers/podman/v5 v5.5.2
 	github.com/distribution/reference v0.6.0 // indirect
 	github.com/docker/go-connections v0.5.0 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
