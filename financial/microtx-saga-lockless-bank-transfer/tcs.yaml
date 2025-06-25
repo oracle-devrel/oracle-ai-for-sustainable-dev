@@ -1,0 +1,100 @@
+#Oracle Transaction Manager for Microservices
+#
+#Copyright © 2022, Oracle and/or its affiliates. All rights reserved.
+#
+#This software and related documentation are provided under a license agreement containing restrictions on use and disclosure and are protected by intellectual property laws. Except as expressly permitted in your license agreement or allowed by law, you may not use, copy, reproduce, translate, broadcast, modify, license, transmit, distribute, exhibit, perform, publish, or display any part, in any form, or by any means. Reverse engineering, disassembly, or decompilation of this software, unless required by law for interoperability, is prohibited.
+#
+#The information contained herein is subject to change without notice and is not warranted to be error-free. If you find any errors, please report them to us in writing.
+#
+#If this is software or related documentation that is delivered to the U.S. Government or anyone licensing it on behalf of the U.S. Government, then the following notice is applicable:
+#
+#U.S. GOVERNMENT END USERS: Oracle programs, including any operating system, integrated software, any programs installed on the hardware, and/or documentation, delivered to U.S. Government end users are "commercial computer software" pursuant to the applicable Federal Acquisition Regulation and agency-specific supplemental regulations. As such, use, duplication, disclosure, modification, and adaptation of the programs, including any operating system, integrated software, any programs installed on the hardware, and/or documentation, shall be subject to license terms and license restrictions applicable to the programs. No other rights are granted to the U.S. Government.
+#
+#This software or hardware is developed for general use in a variety of information management applications. It is not developed or intended for use in any inherently dangerous applications, including applications that may create a risk of personal injury. If you use this software or hardware in dangerous applications, then you shall be responsible to take all appropriate fail-safe, backup, redundancy, and other measures to ensure its safe use. Oracle Corporation and its affiliates disclaim any liability for any damages caused by use of this software or hardware in dangerous applications.
+#Oracle and Java are registered trademarks of Oracle and/or its affiliates. Other names may be trademarks of their respective owners.
+#Intel and Intel Xeon are trademarks or registered trademarks of Intel Corporation. All SPARC trademarks are used under license and are trademarks or registered trademarks of SPARC International, Inc. AMD, Opteron, the AMD logo, and the AMD Opteron logo are trademarks or registered trademarks of Advanced Micro Devices. UNIX is a registered trademark of The Open Group.
+#
+#This software or hardware and documentation may provide access to or information about content, products, and services from third parties. Oracle Corporation and its affiliates are not responsible for and expressly disclaim all warranties of any kind with respect to third-party content, products, and services unless otherwise set forth in an applicable agreement between you and Oracle. Oracle Corporation and its affiliates will not be responsible for any loss, costs, or damages incurred due to your access to or use of third-party content, products, or services, except as set forth in an applicable agreement between you and Oracle.
+
+  #Transaction Coordinator configuration file for running inside a Docker Container
+tmmAppName: tcs
+tmmConfiguration:
+  listenAddr: 0.0.0.0:9000
+  internalAddr: http://localhost:9000
+  externalUrl: http://localhost:9000
+#  internalAddr: https://localhost:9000
+#  externalUrl: https://localhost:9000
+  serveTLS:
+    enabled: false # default
+    #cert file ex:localhost.crt
+    certFile:
+    #key file ex: localhost.key
+    keyFile:
+  skipVerifyInsecureTLS: true
+#  skipVerifyInsecureTLS: false
+  xaCoordinator:
+    enabled: true
+    txMaxTimeout: 600000
+  lraCoordinator:
+    enabled: true
+  tccCoordinator:
+    enabled: true
+  maxRetryCount: 10
+  minRetryInterval: 1000
+  maxRetryInterval: 10000
+  logging:
+    httpTraceEnabled: true
+    level: debug
+    devMode: true
+  storage:
+    type: memory
+    #Allowed types - etcd/db/memory
+    db:
+      connectionString: 127.0.0.1:1521/orcl
+      #Sample connection string for for connecting to Oracle OTP instance. Replace wallet_location and service with your own service details.
+      # connectionString: tcps://adb.test.oraclecloud.com:1522/test.adb.oraclecloud.com?retry_count=20&retry_delay=3&wallet_location=/home/Wallet_1
+      #Provide the DB credentials as env variable STORAGE_DB_CREDENTIAL value
+      #export STORAGE_DB_CREDENTIAL='{"password":"oracle", "username":"user1"}'
+      netServiceName: "" #alias1
+      #alias1 is the alias name created in wallet. Follow below instruction to create wallet
+      #mkstore -wrl "/home/oracle/wallet_dir" -create
+      #mkstore -wrl "/home/oracle/wallet_dir" -createCredential alias1 user1 oracle
+      #export TNS_ADMIN=$ORACLE_HOME/network/admin
+    etcd:
+      endpoints: http://localhost:2379
+      credentialsFilePath: ""
+      cacertFilePath: ""
+      skipHostNameVerification: false  
+  authorization:
+    enabled: false
+    IdentityProviderName: 
+    IdentityProviderUrl: 
+    #Sample provided is for Keycloak
+    IdentityProviderClientId: 
+    # example : istio
+  narayanaLraCompatibilityMode:
+    enabled: false
+authentication:
+  enabled: false
+  jwt:
+    issuer: 
+    jwksUri: 
+encryption:
+  secretKeys: 
+  #sample : '{"secretKeys":[{"secretKeyName":"TMMSECRETKEY", "version":"1"}]}'
+  #TMMSECRETKEY is the env variable for secret value.  
+  #export TMMSECRETKEY=fce29fc24ae411ec81d30242ac130003  
+  EncryptionSecretKeyVersion: 
+  # example version : 1
+transactionToken:
+  transactionTokenEnabled: false
+  keyPairs: 
+  # example val: '{"keyPairs":[{"privateKeyName":"TMMPRIKEY", "publicKeyName":"TMMPUBKEY", "version":"1", "privateKeyPasswordName":"TMMPRIKEYPASSWD"}]}'
+  #TMMPRIKEY is the env variable for base64 encoded private key value
+  #TMMPUBKEY is the env variable for base64 encoded public key value
+  #TMMPRIKEYPASSWD is the env variable for private key password value
+  #export TMMPRIKEY=LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlHNUFJQkFBS0NBWUVBejkycGZyVTJTTG1FWWhiRVQzRzFkbkRhTlpmeCtkSTIzajZCcXZ1WE1oTld3R1F6Ck9IYUFyamFBQ01qdVY3VVgwZFpIVVVWSGJxeG5rZzVHMnAvakxGT3RYN2RTd1dHNEFGT2lKM2hSNkkxTXpTenUKNHNsVXFzZTFlWkVKeTdpNlBXbGJBQXM1ZURzUmY1Ti9XNWMwYjhHQjFWanIxa3JwRyt2bWxvMjdoVjNzMHVKdwowK01RaFR5Y1BYeCtGZllSSEpKR25rNXVKbitUNWNtZ3lvRHB4SXJyY3dGNWgyNWxhaUxmZUova2cyR2hxZWJwClBybDJoVHR2MkEraG1nMHdXaE5KR01YZVNFdmZGMDhqTnc3SHNmdU4zM0N1Z2ZzSFlTT1Zvbzd3U2NodUdqS2MKSG15aWpJTmZkSUk0RVBqbkFLbnNCTG1USlF3cWE3SHByM1BxeVN6QWpNN3h1WnMrWVQ2WDh0Z0R1cEI3c0JGUgozY3plejF6VnZCbVhlWEVRaC9jM1RJSENrMTFxUitFK202TzdEMWExcFZRb1VBRUIxaVFvT1RIbVN4dm0zdDF4CjBwWE55QmNLbXFPUk0vaDViTjNBcFBMakgwM1BSN0J4akRYQWRvSTVEWExDZ0NKRGgvWTZwaitVWDliV21tRTcKSVR2cjhHdXpGUEJucHg4TEFnTUJBQUVDZ2dHQVVKUHZ5WE43dUpOWjB5QmFOeVd3SDFxOTYvcWJ6YWtFcGdCNwpDWW4vNFdTSHc0clVKRFlqeWVUTW14c3c4WVQ4MTlZRnpXWmF1M2RQcXRtbjg4WDVMVXkrcjVVRUduekQ5RFIzCmJtK0E2UElsYkgvWGxzaE83dWo5MjBNekZlcmxIenRCRUhKSmMrY0o4SGQvN2tSZUNsaHIrUVZBWHRDcExxNnkKczNmNzBrWkhzTFFnNHJKcHpBeGowSjM2em82VnNZcXVuMTF0NjdTVzQ0UFd0Y2xsVlZBNDExc2gvakw0VXoxegpmWElXQml3Sm5EQXNDS21pWFNGZVNOWStZZFpzVGcycEVzVFVvMlRVRG1wQU9tWjhiVm9DN1lSQ1lCMld0Z3V6CkFUZFV6TnVKZTNseVEvL25PWXFESndKTEs3cDhUM3kvMTNMMy9ZZTNzSGpoVlhkZERIbkpOK24xZUltYUdXNFUKWXZHcEJudVA2Rk5ZeUZpWW81cDNFTlI0ZWM5L1Z3UksyeHlwSnpDbUU4KzJpUlBrVzFVVUJJcTBwbjRVaEU3aQpaeDltbmhJOURQU0ZuZURrUTkxVlNvT3F5RFlZSWwzUTdyZ25VVUlPT1JoRE1taVI2RjdXRHFEekYyeU42cGR5CmFlUzJyUktxUGpMZVk1MkFZMUVPY0JqeThnZ1JBb0hCQU9KYWN5YWpyR3Q1TjhVbFJBWU5pbk9oeFp1MTBlRncKR3pBcklTV29jaVJxa0wxRzNaYWtKZElMbU1mR0czM2dDaXBVNEFVMStUaVR2Z3lzRk5kMFVjbGJJblRieWtTbApKZHRjRy9FbGFXUkVFRzFIVWNoVUlYSWczUHZ0MVIxRWlxdTdTSkF5bzhXVHNkVGNuNXlVenh3K21RM293WG5yCkh1VDI2Wk9oVEZYZHZDUXB1blpFUFdDcFE5cFp3WnJUQzZqaS9oWmJtckIvZFVtV1p2Y29uSjB4OXF6WUJDcncKZVR3MWNyZmRaZEc2Syt4bVpWTnF1dUQ0dUZnTWZVSGdhUUtCd1FEckYxV1MzbTgvZURoaUxDU0llVlgwRWcyWQo3K1dhQ3lRWnoxeUwzdnhEeG1DYzFCRUdPWDdycjNhY0VzeldSYkdaSUJtcmxqQStaYnFPQ1FIdkNYVWwxdy9rCnRTMmViU3Fac1owdDErMXdUUHEyK0xSN0p3SGRMWVBPazBaUDlnNTNOK1NmNEppRnd1VldLNS9zN1FkM2llZXMKRkdXbExQWlExMmRiVk5RbGdIc1c2SjBMMGdMVCtzeUwrdlVUTFU0cEFuU2pXN2dIWFVrVkQ4OThRVGsrRUVIcgpVaTcvU3pDMjc1UFBqclNPMkJudHFlN2NLRkMwQkt2eU5teDAxVk1DZ2NBbXkvd0t0bWthTHJlNWFjN0QvdFFwClI2UVlNVXpkQ0JzUTRZT1g4Y3hHbzZGVlgrMGhJZGQ5cmhFc3hLNzNuMHYrdjNkNlRTci9ZSXRsbnFVZjNNY2IKN1N2MXZhcG9vNm5lZEdZeHFnanJiNk1sSitGRHBlL3BvT3Bmbi84ME9naE9zUllaNlNRYS9GcXhzbk1GSXBoeApMZVdMOWNZYndJb1dFcUFzZHF3ZjE1YWsyQ1ltbVVHdjdMTTluTDdMYTdzRzRvbE1pYnowM1pQYjNoU2Q3bThSCm5udTZXbmcwWisxUHZaV0JJRWlRYndtU1JtYTlxb0NIaVBvSDFYUXVzMmtDZ2NFQXYzZkJ1bHh2UHNJcktjbkoKOTF6YkpHMlBwWCs5QURrU3JmSzA3VFl2UHdQU3ErZ0w5WVhlV1JZUEJBNUx4amY4N1RtM3JvZ2p3cTRYd3BhVApmSnUzVFpwYTEycTRQTStzWW9ER0F4QlowWnpnbFNUNTJWTnJzVGZnb2Q1UTVjOEErUmdNbkNuUUR5RXNwNEhnClBwYk4vZzNUSWRONjlZd3BFSzVlLzRPWFJQUGZURWtubnZqc1ZMbHUzcE1HQnhoZkVBZHY5NXc3eGNPMFFmTWUKaVpTVmluYXpPWFUxMGJicmRoS3B6K0hxTEd6VXNUdzF6aGtIb1pZc2RKamV2RWtCQW9IQkFMRUdENjMwMVZMcAp5QXk0RFA1OVM4NWFvaUl5QjQzODZoUDVzNEtMbDgwTk95SXhpYWV1VVdpaloyOHhIT01mTFQ3UnR2Q29NaHZICkU3eWY4TytsQmpQK0RxNnpkTUVkMUR0NnpIWkdqa09sRDJ5c3F1WWZwRklRRlEzZmFqUHplYU83d3g3dFRSaWIKUkdWVGJYcndweEV1SG1vOU1RWkltdUpMUDJpTzA5dVFacXVBbUVRR2tFc2NiT1d0ZmYxb0dHUmZtOTlqTExmZgpiMVRZdEF0bEYzMVFldVRwdnEyWXFKeTMyWWdHSlBMcStIWnRURzhNdldqcGNaS1dHb2dGN3c9PQotLS0tLUVORCBSU0EgUFJJVkFURSBLRVktLS0tLQo=
+  #export TMMPUBKEY=LS0tLS1CRUdJTiBSU0EgUFVCTElDIEtFWS0tLS0tCk1JSUJpZ0tDQVlFQXo5MnBmclUyU0xtRVloYkVUM0cxZG5EYU5aZngrZEkyM2o2QnF2dVhNaE5Xd0dRek9IYUEKcmphQUNNanVWN1VYMGRaSFVVVkhicXhua2c1RzJwL2pMRk90WDdkU3dXRzRBRk9pSjNoUjZJMU16U3p1NHNsVQpxc2UxZVpFSnk3aTZQV2xiQUFzNWVEc1JmNU4vVzVjMGI4R0IxVmpyMWtycEcrdm1sbzI3aFYzczB1SncwK01RCmhUeWNQWHgrRmZZUkhKSkduazV1Sm4rVDVjbWd5b0RweElycmN3RjVoMjVsYWlMZmVKL2tnMkdocWVicFBybDIKaFR0djJBK2htZzB3V2hOSkdNWGVTRXZmRjA4ak53N0hzZnVOMzNDdWdmc0hZU09Wb283d1NjaHVHaktjSG15aQpqSU5mZElJNEVQam5BS25zQkxtVEpRd3FhN0hwcjNQcXlTekFqTTd4dVpzK1lUNlg4dGdEdXBCN3NCRlIzY3plCnoxelZ2Qm1YZVhFUWgvYzNUSUhDazExcVIrRSttNk83RDFhMXBWUW9VQUVCMWlRb09USG1TeHZtM3QxeDBwWE4KeUJjS21xT1JNL2g1Yk4zQXBQTGpIMDNQUjdCeGpEWEFkb0k1RFhMQ2dDSkRoL1k2cGorVVg5YldtbUU3SVR2cgo4R3V6RlBCbnB4OExBZ01CQUFFPQotLS0tLUVORCBSU0EgUFVCTElDIEtFWS0tLS0tCg==
+  #export TMMPRIKEYPASSWD=""
+  transactionTokenKeyPairVersion: 
+  # example version : 1

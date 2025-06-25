@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: react-frontend
+  namespace: financial
+spec:
+  selector:
+    app: frontend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+
+

@@ -25,9 +25,13 @@ public class TTSAndAudio2Face {
                 sendToAudio2Face(fileName);
             } catch (Exception e) {
                 System.out.println("processMetahuman exception during TTS:" + e);
+                //com.google.api.gax.rpc.UnavailableException: io.grpc.StatusRuntimeException:
+                // UNAVAILABLE: Credentials failed to obtain metadata
+                // will occur if token expired
                 //TODO might be funny and helpful to do this, ie have the system gives its status and ask for help ...
                 // sendToAudio2Face("uhoh-lookslikeIneedanewTTStoken.wav");
-                sendToAudio2Face("hello-brazil.wav");
+                sendToAudio2Face("../audio-aiholo/explainer.wav");
+//                sendToAudio2Face("hello-brazil.wav");
             }
 
         });
@@ -55,7 +59,7 @@ public class TTSAndAudio2Face {
             ByteString audioContents = response.getAudioContent();
             try (OutputStream out = new FileOutputStream(fileName)) {
                 out.write(audioContents.toByteArray());
-                System.out.println("Audio content written to file:" + fileName);
+//                System.out.println("Audio content written to file:" + fileName);
             }
         }
     }
@@ -64,14 +68,15 @@ public class TTSAndAudio2Face {
 
 
 
-    private static void sendToAudio2Face(String fileName) {
+    public static void sendToAudio2Face(String fileName) {
+        System.out.print("sendToAudio2Face for fileName:" + fileName + " ...");
         RestTemplate restTemplate = new RestTemplate();
         String baseUrl = "http://localhost:8011/A2F/Player/";
 
         String setRootPathUrl = baseUrl + "SetRootPath";
         Map<String, Object> rootPathPayload = new HashMap<>();
         rootPathPayload.put("a2f_player", "/World/audio2face/Player");
-        rootPathPayload.put("dir_path", "C:/Users/opc/src/github.com/paulparkinson/oracle-ai-for-sustainable-dev/java-ai");
+        rootPathPayload.put("dir_path", AIHoloController.AUDIO_DIR_PATH);
         sendPostRequest(restTemplate, setRootPathUrl, rootPathPayload);
 
         String setTrackUrl = baseUrl + "SetTrack";
@@ -85,6 +90,7 @@ public class TTSAndAudio2Face {
         Map<String, Object> playPayload = new HashMap<>();
         playPayload.put("a2f_player", "/World/audio2face/Player");
         sendPostRequest(restTemplate, playTrackUrl, playPayload);
+        System.out.println(" ...sendToAudio2Face complete");
     }
 
     private static void sendPostRequest(RestTemplate restTemplate, String url, Map<String, Object> payload) {
@@ -94,7 +100,7 @@ public class TTSAndAudio2Face {
 
         ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
         if (response.getStatusCode().is2xxSuccessful()) {
-            System.out.println("Successfully sent request to: " + url);
+//            System.out.println("Successfully sent request to: " + url);
         } else {
             System.err.println("Failed to send request to " + url + ". Response: " + response.getBody());
         }

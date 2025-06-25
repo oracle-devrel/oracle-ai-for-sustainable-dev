@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: account
+  labels:
+    app: account
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: account
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: account
+        version: v1
+    spec:
+      volumes:
+        - name: tns-admin
+          secret:
+            secretName: "tns-admin"
+      containers:
+        - name: account
+          image: account:0.1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: spring.jersey.type
+              value: filter
+            - name: LRA_COORDINATOR_URL
+              value: http://otmm-tcs.otmm.svc.cluster.local:9000/api/v1/lra-coordinator
+            - name: MP_LRA_PARTICIPANT_URL
+              value: http://account.cloudbank.svc.cluster.local:8080
+            - name: spring.datasource.username
+              valueFrom:
+                secretKeyRef:
+                  name: account-db-secrets
+                  key: db.username
+            - name: spring.datasource.password
+              valueFrom:
+                secretKeyRef:
+                  name: account-db-secrets
+                  key: db.password
+            - name: DB_SERVICE
+              valueFrom:
+                secretKeyRef:
+                  name: account-db-secrets
+                  key: db.service
+            - name: spring.datasource.url
+              value: jdbc:oracle:thin:@$(DB_SERVICE)?TNS_ADMIN=/oracle/tnsadmin
+            - name: CONNECT_STRING
+              value: jdbc:oracle:thin:@$(DB_SERVICE)?TNS_ADMIN=/oracle/tnsadminobaasdevdb_tp
+          volumeMounts:
+            - name: tns-admin
+              mountPath: /oracle/tnsadmin
+      imagePullSecrets:
+        - name: registry-auth
+

@@ -1,0 +1,18 @@
+## Copyright (c) 2025Oracle and/or its affiliates.
+## Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl/
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  labels:
+    app: frontend
+spec:
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+      # nodePort: 32462
+  selector:
+    app: frontend
+  type: LoadBalancer
+

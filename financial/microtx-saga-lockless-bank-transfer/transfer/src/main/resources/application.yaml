@@ -1,0 +1,24 @@
+server:
+  port: 8081
+spring:
+  microtx:
+    lra:
+      coordinator-url: http://otmm-tcs.otmm:9000/api/v1/lra-coordinator
+      #      coordinator-url: http://tmm-app:9000/api/v1/lra-coordinator
+      propagation-active: true
+      participant-url: http://transfer.financial:8081
+      headers-propagation-prefix: {x-b3-, oracle-tmm-, authorization, refresh-}
+account:
+  deposit:
+      url:  http://account.financial:8080/deposit/deposit
+  withdraw:
+      url: http://account.financial:8080/withdraw/withdraw
+transfer:
+  cancel:
+      url: http://transfer.financial:8081/cancel
+      process:
+        url: http://transfer.financial:8081/processcancel
+  confirm:
+      url: http://transfer.financial:8081/close
+      process:
+         url: http://transfer.financial:8081/processclose
