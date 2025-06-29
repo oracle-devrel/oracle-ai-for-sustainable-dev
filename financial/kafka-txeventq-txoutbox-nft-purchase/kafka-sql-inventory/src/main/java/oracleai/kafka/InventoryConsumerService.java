@@ -60,7 +60,7 @@ public class InventoryConsumerService implements AutoCloseable {
                 }
 //                if ("inventory".equals(type)) {
                     // process message
-                System.out.println("OrderConsumerService.runConsumer conn:" + conn + " record.value():" + record.value());
+                System.out.println("InventoryConsumerService.runConsumer conn:" + conn + " record.value():" + record.value());
 //                }
                 Properties properties  = new Properties();
                 properties.put("security.protocol", "SSL");
