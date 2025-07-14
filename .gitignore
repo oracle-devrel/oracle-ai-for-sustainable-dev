@@ -669,3 +669,6 @@ cython_debug/
 *pubspec*
 package*
 .dart*
+*.key
+*.cert
+*.p12
