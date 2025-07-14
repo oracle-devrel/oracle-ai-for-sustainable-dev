@@ -104,7 +104,7 @@ const DashBoard = () => {
               rel="noopener noreferrer"
               style={{ color: bankerAccent, textDecoration: 'underline' }}
             >
-              Open Grafana Dashboard (admin/Welcome12345*)
+              Open Grafana Dashboard
             </a>
             <div style={{ marginTop: 24 }}>
               <iframe

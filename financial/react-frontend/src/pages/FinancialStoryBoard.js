@@ -139,6 +139,34 @@ const FinancialStoryBoard = () => {
           allowFullScreen
         ></iframe>
       </VideoWrapper> */}
+
+      {/* GitHub Source Code Repos Section */}
+      <div style={{ 
+        marginTop: '40px', 
+        textAlign: 'center',
+        padding: '20px',
+        background: bankerPanel,
+        borderRadius: '8px',
+        border: `1px solid ${bankerAccent}`
+      }}>
+        <h3 style={{ 
+          color: bankerAccent, 
+          marginBottom: '20px',
+          fontSize: '1.4rem'
+        }}>
+          GitHub Source Code Repos for This App
+        </h3>
+        <img
+          src={`${process.env.PUBLIC_URL}/images/bit.ly_oraclefinancialgithub.png`}
+          alt="GitHub Source Code Repos"
+          style={{
+            maxWidth: '100%',
+            height: 'auto',
+            borderRadius: '8px',
+            border: `1px solid ${bankerAccent}`
+          }}
+        />
+      </div>
     </PageContainer>
   );
 };

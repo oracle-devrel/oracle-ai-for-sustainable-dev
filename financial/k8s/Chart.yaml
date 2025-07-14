@@ -1,0 +1,68 @@
+global:
+  api:
+    secretName: "api-key"
+
+server:
+  enabled: true
+  image:
+    repository: eu-frankfurt-1.ocir.io/oradbclouducm/financial/ai-optimizer-server
+    tag: "latest"
+  imagePullPolicy: Always
+
+  ingress:
+    enabled: false  # Disable automatic ingress/LB creation
+
+  service:
+    http:
+      type: ClusterIP  # Use ClusterIP so you can point your own Ingress at it
+
+  oci:
+    tenancy: "ocid1.tenancy.oc1..aaaaaaaaj4ccqe763dizkrcdbs5x7ufvmmojd24mb6utvkymyo4xwxyv3gfa"
+    region: "eu-frankfurt-1"
+
+  adb:
+    enabled: true
+    ocid: "ocid1.autonomousdatabase.oc1.eu-frankfurt-1.antheljtknuwtjiapq6luydxfuzlcxt2e2w3l2toh32ww3qdti4qdf72lsiq"
+    mtls:
+      enabled: true
+    authN:
+      secretName: "db-authn"
+      usernameKey: "username"
+      passwordKey: "password"
+      serviceKey: "service"
+
+  models:
+    ollama:
+      enabled: false
+
+client:
+  enabled: true
+  image:
+    repository: eu-frankfurt-1.ocir.io/oradbclouducm/financial/ai-optimizer-client
+    tag: "latest"
+  imagePullPolicy: Always
+
+  ingress:
+    enabled: false  # Disable automatic ingress/LB creation
+
+  service:
+    http:
+      type: ClusterIP  # Use ClusterIP to expose via your existing Ingress
+
+  features:
+    disableTestbed: "false"
+    disableApi: "false"
+    disableTools: "false"
+    disableDbCfg: "false"
+    disableModelCfg: "false"
+    disableOciCfg: "false"
+    disableSettings: "false"
+
+ollama:
+  enabled: true
+  models:
+    - llama3.1
+    - mxbai-embed-large
+  resources:
+    limits:
+      nvidia.com/gpu: 1
