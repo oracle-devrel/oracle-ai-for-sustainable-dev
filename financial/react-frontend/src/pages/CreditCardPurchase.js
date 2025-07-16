@@ -170,6 +170,58 @@ const CodeTitle = styled.div`
   margin-bottom: 12px;
 `;
 
+const Table = styled.table`
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background-color: ${bankerPanel};
+  border: 1px solid ${bankerAccent};
+  border-radius: 8px;
+  overflow: hidden;
+`;
+
+const TableHeader = styled.th`
+  background-color: ${bankerAccent};
+  color: ${bankerText};
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid ${bankerAccent};
+  font-weight: bold;
+`;
+
+const TableCell = styled.td`
+  padding: 12px;
+  border-bottom: 1px solid rgba(88, 132, 167, 0.3);
+  color: ${bankerText};
+  vertical-align: top;
+`;
+
+const TableVideoContainer = styled.div`
+  display: flex;
+  gap: 32px;
+  margin-top: 40px;
+  width: 100%;
+  
+  @media (max-width: 1200px) {
+    flex-direction: column;
+    gap: 20px;
+  }
+`;
+
+const TableContainer = styled.div`
+  flex: 1;
+  min-width: 0;
+`;
+
+const VideoContainer = styled.div`
+  flex: 2;
+  min-width: 500px;
+  
+  @media (max-width: 1200px) {
+    min-width: 100%;
+  }
+`;
+
 const CreditCardPurchase = () => {
   const [formData, setFormData] = useState({
     cardNumber: '',
@@ -380,6 +432,24 @@ const CreditCardPurchase = () => {
                 <li>Use OML4Py and notebooks locally or in execution environment as part of database</li>
                 <li>Spatial queries, JSON, graph, and AI with no plugins required nor scale trade-offs</li>
               </ul>
+              <div style={{ marginTop: '16px' }}>
+                <a
+                  href="http://localhost:8888/notebooks/prebuilt-notebook.ipynb"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: bankerAccent, textDecoration: 'none', display: 'block', marginBottom: '8px' }}
+                >
+                  Open Jupyter Notebook
+                </a>
+                <a
+                  href="https://ij1tyzir3wpwlpe-financialdb.adb.eu-frankfurt-1.oraclecloudapps.com/oml/index.html"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: bankerAccent, textDecoration: 'none', display: 'block' }}
+                >
+                  Open OML/OML4Py Notebook
+                </a>
+              </div>
             </TextContent>
             <VideoWrapper>
               <h4>Walkthrough Video:</h4>
@@ -515,8 +585,77 @@ if (isAutomaticSharding) {
 }
 `}
           </code>
+          
+          <div style={{ marginTop: '32px' }}>
+            <h3 style={{ color: bankerAccent, marginBottom: '20px' }}>
+              Raft vs Data Guard Replication Comparison
+            </h3>
+            <Table>
+              <thead>
+                <tr>
+                  <TableHeader>Feature</TableHeader>
+                  <TableHeader>Raft Replication</TableHeader>
+                  <TableHeader>Data Guard Replication</TableHeader>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <TableCell><strong>Configuration Model</strong></TableCell>
+                  <TableCell>Active-Active Symmetric</TableCell>
+                  <TableCell>Active-Passive (Primary/Standby)</TableCell>
+                </tr>
+                <tr>
+                  <TableCell><strong>Management</strong></TableCell>
+                  <TableCell>Automated & Integrated</TableCell>
+                  <TableCell>Manual or Semi-Automated Configuration</TableCell>
+                </tr>
+                <tr>
+                  <TableCell><strong>Failover</strong></TableCell>
+                  <TableCell>Fast & Automatic with Zero Data Loss</TableCell>
+                  <TableCell>Fast, but often requires manual or scripted failover.</TableCell>
+                </tr>
+                <tr>
+                  <TableCell><strong>Complexity</strong></TableCell>
+                  <TableCell>Simplified for Developers</TableCell>
+                  <TableCell>Traditional & Powerful, but More Complex</TableCell>
+                </tr>
+                <tr>
+                  <TableCell><strong>Use Case</strong></TableCell>
+                  <TableCell>Ideal for cloud-native, distributed applications requiring extreme availability, automated operations, and horizontal scalability.</TableCell>
+                  <TableCell>The standard for enterprise-grade disaster recovery, backups, and protecting against site-wide outages.</TableCell>
+                </tr>
+                <tr>
+                  <TableCell><strong>Scalability</strong></TableCell>
+                  <TableCell>Automatically rebalances and reconfigures replication as the database scales horizontally (shards are added/removed).</TableCell>
+                  <TableCell>Scaling involves more traditional database administration tasks to add or manage standby sites.</TableCell>
+                </tr>
+              </tbody>
+            </Table>
+          </div>
         </RightColumn>
       </TwoColumnContainer>
+
+      {/* Full Width Video Section */}
+      <div style={{ 
+        marginTop: '40px', 
+        textAlign: 'center',
+        padding: '20px',
+        background: bankerPanel,
+        borderRadius: '8px',
+        border: `1px solid ${bankerAccent}`
+      }}>
+        <h4 style={{ color: bankerAccent, marginBottom: '16px' }}>Demo Video:</h4>
+        <iframe
+          width="100%"
+          height="1000"
+          src="https://www.youtube.com/embed/T1k31sWklXE"
+          title="Raft vs Data Guard Demo"
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+          style={{ borderRadius: '8px', border: `1px solid ${bankerAccent}` }}
+        ></iframe>
+      </div>
     </PageContainer>
   );
 };

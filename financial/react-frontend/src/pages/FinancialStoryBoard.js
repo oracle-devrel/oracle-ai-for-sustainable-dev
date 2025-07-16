@@ -160,7 +160,7 @@ const FinancialStoryBoard = () => {
           src={`${process.env.PUBLIC_URL}/images/bit.ly_oraclefinancialgithub.png`}
           alt="GitHub Source Code Repos"
           style={{
-            maxWidth: '100%',
+            maxWidth: '50%',
             height: 'auto',
             borderRadius: '8px',
             border: `1px solid ${bankerAccent}`

@@ -160,6 +160,30 @@ const CodeTitle = styled.div`
   margin-bottom: 12px;
 `;
 
+const LogoContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin-top: 40px;
+  padding: 20px;
+  background: ${bankerPanel};
+  border: 1px solid ${bankerAccent};
+  border-radius: 8px;
+`;
+
+const TechLogo = styled.img`
+  height: 40px;
+  width: auto;
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+  
+  &:hover {
+    opacity: 1;
+  }
+`;
+
 const ATM = () => {
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [formData, setFormData] = useState({
@@ -209,6 +233,11 @@ const ATM = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+    
+    // Fetch account details when account ID is selected
+    if (name === 'accountId' && value) {
+      fetchAccountDetails(value);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -501,6 +530,24 @@ account.save!`
           </code>
         </RightColumn>
       </TwoColumnContainer>
+
+      <LogoContainer>
+        <TechLogo src={`${process.env.PUBLIC_URL}/images/Tech Logos/PNG/Java.png`} alt="Java" />
+        <TechLogo src={`${process.env.PUBLIC_URL}/images/Tech Logos/PNG/JS.png`} alt="JavaScript" />
+        <TechLogo src={`${process.env.PUBLIC_URL}/images/Tech Logos/PNG/python.png`} alt="Python" />
+        <TechLogo src={`${process.env.PUBLIC_URL}/images/Tech Logos/PNG/NET.png`} alt=".NET" />
+        <TechLogo src={`${process.env.PUBLIC_URL}/images/Tech Logos/PNG/Go.png`} alt="Go" />
+        <TechLogo src={`${process.env.PUBLIC_URL}/images/Tech Logos/PNG/Rust.png`} alt="Rust" />
+        <TechLogo src={`${process.env.PUBLIC_URL}/images/Tech Logos/PNG/Spring Boot.png`} alt="Spring Boot" />
+        <TechLogo src={`${process.env.PUBLIC_URL}/images/Tech Logos/PNG/React.png`} alt="React" />
+        {/* <TechLogo src={`${process.env.PUBLIC_URL}/images/Tech Logos/PNG/Kubernetes.png`} alt="Kubernetes" /> */}
+        <TechLogo src={`${process.env.PUBLIC_URL}/images/Tech Logos/PNG/Oracle_rgb_rev.png`} alt="Oracle" />
+        {/* <TechLogo src={`${process.env.PUBLIC_URL}/images/Tech Logos/PNG/Grafana.png`} alt="Grafana" /> */}
+        {/* <TechLogo src={`${process.env.PUBLIC_URL}/images/Tech Logos/PNG/Kafka.png`} alt="Kafka" /> */}
+        {/* <TechLogo src={`${process.env.PUBLIC_URL}/images/Tech Logos/PNG/OpenTelemetry.png`} alt="OpenTelemetry" /> */}
+        <TechLogo src={`${process.env.PUBLIC_URL}/images/Tech Logos/PNG/MERN.png`} alt="MERN" />
+        {/* <TechLogo src={`${process.env.PUBLIC_URL}/images/Tech Logos/PNG/OpenAPI_Logo.png`} alt="OpenAPI" /> */}
+      </LogoContainer>
     </PageContainer>
   );
 };

@@ -220,19 +220,6 @@ const result = await db.query(sql);
           </p>
 
           <IframesContainer>
-            {/* Image */}
-            <div style={{ width: '100%', height: 'auto' }}>
-              <Image
-                src="/images/aiholotwitchsnippet.png"
-                alt="AI Holo Twitch Snippet"
-              />
-            </div>
-
-            {/* Notice above the video player */}
-            <Notice>
-              THIS FUNCTIONALITY IS CURRENTLY BEING USED AT THE BIGDATA AND AI EVENT - WILL RETURN BY END OF WEEK
-            </Notice>
-
             {/* Video Snippet */}
             <div style={{ width: '100%', height: 'auto' }}>
               <video
@@ -256,7 +243,7 @@ const result = await db.query(sql);
             </div>
 
             {/* Twitch Embed */}
-            <TwitchEmbed>
+            {/* <TwitchEmbed>
               <iframe
                 src="https://player.twitch.tv/?channel=aiholo&parent=localhost"
                 style={{ height: '100%', width: '100%' }}
@@ -264,7 +251,7 @@ const result = await db.query(sql);
                 allowFullScreen={true}
                 title="Twitch Stream"
               ></iframe>
-            </TwitchEmbed>
+            </TwitchEmbed> */}
           </IframesContainer>
         </LeftColumn>
         <RightColumn>

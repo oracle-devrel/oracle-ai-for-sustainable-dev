@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: frontend-react
-          image: eu-frankfurt-1.ocir.io/oradbclouducm/financial/react-frontend:0.1.1750383256
+          image: ghcr.io/paulparkinson/react-frontend:0.1.1752589763
           imagePullPolicy: Always
           ports:
             - containerPort: 8080

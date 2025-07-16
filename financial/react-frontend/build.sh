@@ -1,7 +1,7 @@
 #!/bin/bash
 
 export IMAGE_VERSION=$TAG
-export DOCKER_REGISTRY=eu-frankfurt-1.ocir.io/oradbclouducm/financial
+# export DOCKER_REGISTRY=eu-frankfurt-1.ocir.io/oradbclouducm/financial
 #eg us-ashburn-1.ocir.io/oradbclouducm/financial/frontend:0.
 
 if [ -z "$DOCKER_REGISTRY" ]; then

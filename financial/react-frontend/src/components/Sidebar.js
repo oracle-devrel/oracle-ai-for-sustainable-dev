@@ -138,7 +138,6 @@ const Sidebar = () => {
             </IconWrapper>
             <TextContainer>
               <HighlightedText>About this app</HighlightedText>
-              {showDetails && <div>Info and status</div>}
             </TextContainer>
           </StyledNavLink>
         </SidebarItem>

@@ -192,7 +192,22 @@ const APIs = () => {
       <CodePanel>
         <CodeTitle>ORDS REST API Example</CodeTitle>
         <code>
-{`// Get all accounts (GET)
+{`-- Enable ORDS for table
+BEGIN
+    ORDS.ENABLE_OBJECT(
+        P_ENABLED      => TRUE,
+        P_SCHEMA      => 'FINANCIAL',
+        P_OBJECT      =>  'account_detail',
+        P_OBJECT_TYPE      => 'TABLE',
+        P_OBJECT_ALIAS      => 'accounts',
+        P_AUTO_REST_AUTH      => FALSE
+    );
+    COMMIT;
+END;
+
+-- Use the generated REST endpoints
+
+// Get all accounts (GET)
 GET https://ij1tyzir3wpwlpe-financialdb.adb.eu-frankfurt-1.oraclecloudapps.com/ords/financial/accounts/
 
 // Get a single account (GET)

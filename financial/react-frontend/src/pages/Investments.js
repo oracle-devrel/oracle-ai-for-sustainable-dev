@@ -185,21 +185,45 @@ const Investments = () => {
     }
   };
 
-  const codeSnippet = `// Oracle Database Vector Search (PL/SQL)
-SELECT *
-FROM financial_docs
-WHERE VECTOR_SEARCH('compliance', :query)
-ORDER BY score DESC
-FETCH FIRST 5 ROWS ONLY;
+  const codeSnippet = `import ...
+  from langchain_community.vectorstores import OracleVS
+  
+  def create_vector_store(store_type, document_splits, embedder):
+    global vectorstore
+    print(f"Indexing: using {store_type} as Vector Store...")
 
-// Call MCP from PL/SQL
-DECLARE
-  result VARCHAR2(4000);
-BEGIN
-  result := MCP.GET_MARKET_DATA('AAPL');
-  DBMS_OUTPUT.PUT_LINE(result);
-END;
-`;
+    if store_type == "ORACLEDB":
+        connection = oracledb.connect(
+            user="ragchat",
+            password="ragchat",
+            dsn="localhost/freepdb1")
+        vectorstore = OracleVS.from_documents(
+            documents=document_splits,
+            embedding=embedder,
+            client=connection,
+            table_name="oravs",
+            distance_strategy=DistanceStrategy.DOT_PRODUCT
+        )
+        print(f"Vector Store Table: {vectorstore.table_name}")
+    elif store_type == "FAISS":
+        # modified to cache
+        vectorstore = FAISS.from_documents(
+            documents=document_splits, embedding=embedder
+        )
+    elif store_type == "CHROME":
+        # modified to cache
+        vectorstore = Chroma.from_documents(
+            documents=document_splits, embedding=embedder
+        )
+
+        //Or direct SQL...
+
+sql = """CREATE TABLE IF NOT EXISTS PDFCollection (
+                   id VARCHAR2(4000 BYTE) PRIMARY KEY,
+                   text VARCHAR2(4000 BYTE),
+                   metadata VARCHAR2(4000 BYTE),
+                   embedding VECTOR
+               )"""`;
 
   return (
     <PageContainer>
