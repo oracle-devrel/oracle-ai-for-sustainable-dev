@@ -1,65 +1,61 @@
 {
-  "workshoptitle": "Develop with Oracle AI and Database Services: Gen, Vision, Speech, Language, and OML",
-  "help": "livelabs-help-devdb-us@oracle.com",
+  "workshoptitle": "Simplify Microservices with Converged Oracle Database",
+  "help": "livelabs-help-db_us@oracle.com",
 	"tutorials": [
       {
         "title": "Introduction",
-        "filename": "../../intro/intro.md"
+        "filename": "../../financials-intro/financials-intro.md"
       },
       {
         "title": "Get Started",
-        "filename":"https://oracle-livelabs.github.io/common/labs/cloud-login/event-register-free-tier-account.md"
+        "filename": "https://oracle-livelabs.github.io/common/labs/cloud-login/pre-register-free-tier-account.md"
       },
       {
-        "title": "Lab 1: Setup",
-        "filename": "../../setup-oci/setup-oci.md"
+        "title": "Lab 1: Setup (Database, Kubernetes, Observability)",
+        "filename": "../../financial-setup/financial-setup.md"
       },
       {
-        "title": "Lab 2: Run AI App and Overview of DBMS_CLOUD, JavaScript, and Java calls from the Oracle Database",
-        "filename": "../../buildapp/buildapp.md"
+        "title": "Lab 2: Publish financial APIS (ORDS, OpenAPI)",
+        "filename": "../../financial-api/financial-api.md"
       },
       {
-        "title": "Lab 3: Text Detection And Summarization For Health Report Results",
-        "filename": "../../textdetection-summarization/textdetection-summarization.md"
+        "title": "Lab 3: Create and view accounts (MongoDB/MERN stack)" ,
+        "filename": "../../financial-account-management-mern/financial-account-management-mern.md"
       },
       {
-        "title": "Lab 4: Speech Transcription And Image Generation For Hands-Free Storyboarding",
-        "filename": "../../speechtranscription-imagegen/speechtranscription-imagegen.md"
+        "title": "Lab 4: Deposit/withdraw money (ATM) (Polyglot)",
+        "filename": "../../financial/bank-transfer-microtx-saga-lockless/README.md"
       },
       {
-        "title": "Lab 5: Object Detection, Gen AI, And Sentiment Analysis For Situational Awareness And Creativity",
-        "filename": "../../vision-genai-sentiment/vision-genai-sentiment.md"
+        "title": "Lab 5: Transfer to external bank (MicroTx, Lock-free reservations)",
+        "filename": "../../financial/bank-transfer-microtx-saga-lockless/financial-bank-transfer.md"
       },
       {
-        "title": "Lab 6: Face Detection For Gaze and Head Pose Estimation",
-        "filename": "../../facialrecognition/facialrecognition.md"
+        "title": "Lab 6: Make purchases and visualize fraud (Globally Distributed DB, OML, Spatial)",
+        "filename": "../../financial-creditcard-purchase/financial-creditcard-purchase.md"
       },
       {
-        "title": "Lab 7: Real-time Speech Transcription and NL2SQL/Select AI for doctor-patient conversations and EHRs",
-        "filename": "../../realtimespeechselectai/realtimespeechselectai.md"
+        "title": "Lab 7: Detect money Laundering (Graph)",
+        "filename": "../../financial-fraud-alerts/financial-fraud-alerts.md"
       },
       {
-        "title": "Lab 8: Text Search and DBMS_SEARCH of AI results",
-        "filename": "../../search/search.md"
+        "title": "Lab 8: Transfer to brokerage accounts (Kafka and TxEventQ)",
+        "filename": "../../financial-brokerage-transfer/financial-brokerage-transfer.md"
       },
       {
-        "title": "Lab 9: Mixed Reality and Vision AI For Hearing And Vision Impaired And Alzheimer’s",
-        "filename": "../../ocivision-mixedreality/ocivision-mixedreality.md"
+        "title": "Lab 9: View stock ticker and buy/sell stock (TrueCache)",
+        "filename": "../../financial-stock-true-cache/financial-stock-true-cache.md"
       },
       {
-        "title": "Lab 10: Oracle Machine Learning For Healthcare",
-        "filename": "../../oml-healthcare/oml-healthcare.md"
+        "title": "Lab 10: Get personal financial insights (Vector Search, AI Agents and MCP)",
+        "filename": "../../financial-insights/financial-insights.md"
       },
       {
-        "title": "Lab 11: Deploy Your Own ChatGPT/AI Model On OCI",
-        "filename": "../../deploy-model-oci/deploy-model-oci.md"
+        "title": "Lab 11: \"Speak with your financial data\" (NL2SQL, Vector Search, Speech AI)",
+        "filename": "../../financial-speak-with-data/financial-speak-with-data.md"
       },
       {
-        "title": "Lab 12: Chatbot Using RAG and OCI Generative AI with LangChain",
-        "filename": "../../rag-chatbot/rag-chatbot.md"
-      },
-      {
-        "title": "Lab 13: Tear Down",
+        "title": "Lab 12: Tear Down",
         "filename": "../../teardown/teardown.md"
       },
       {
