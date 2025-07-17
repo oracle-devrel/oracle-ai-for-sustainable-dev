@@ -158,6 +158,20 @@ const DashBoard = () => {
           alt="Technical Architecture"
         />
       </ImageContainer>
+      {/* OCI Console For ADB (Developer Related) */}
+      <ImageContainer>
+        <h2>OCI Console For ADB (Developer Related)</h2>
+        <img
+          src={`${process.env.PUBLIC_URL}/images/databaseactions.png`}
+          alt="Database Actions"
+        />
+      </ImageContainer>
+      <ImageContainer>
+        <img
+          src={`${process.env.PUBLIC_URL}/images/view-all-database-actions.png`}
+          alt="View All Database Actions"
+        />
+      </ImageContainer>
       {/* tracing diagram Image */}
       <ImageContainer>
         <h2>End-to-end Tracing INTO Database</h2>
