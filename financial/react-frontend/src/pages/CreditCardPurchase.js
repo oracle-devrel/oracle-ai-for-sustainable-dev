@@ -456,7 +456,7 @@ const CreditCardPurchase = () => {
               <iframe
                 width="100%"
                 height="315"
-                src="https://www.youtube.com/embed/qHVYXagpAC0?t=1"
+                src="https://www.youtube.com/embed/qHVYXagpAC0?start=546&autoplay=0"
                 title="YouTube video player"
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -648,7 +648,7 @@ if (isAutomaticSharding) {
         <iframe
           width="100%"
           height="1000"
-          src="https://www.youtube.com/embed/qHVYXagpAC0?t=1"
+          src="https://www.youtube.com/embed/qHVYXagpAC0?start=546&autoplay=0"
           title="Raft vs Data Guard Demo"
           frameBorder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

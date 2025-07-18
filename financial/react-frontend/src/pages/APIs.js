@@ -176,7 +176,7 @@ const APIs = () => {
               <iframe
                 width="100%"
                 height="615"
-                src="https://www.youtube.com/embed/qHVYXagpAC0?t=169"
+                src="https://www.youtube.com/embed/qHVYXagpAC0?start=327&autoplay=0"
                 title="YouTube video player"
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
