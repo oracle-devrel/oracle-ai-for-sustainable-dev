@@ -10,7 +10,14 @@ const bankerAccent = "#5884A7";
 const bankerText = "#F9F9F9";
 const bankerPanel = "#223142";
 
-// Fix for default marker icons in Leaflet
+// Fix f                <a
+                  href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier/index.html"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: bankerAccent, textDecoration: 'none' }}
+                >
+                  Click here for workshop lab and further information
+                </a>lt marker icons in Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
@@ -403,7 +410,7 @@ const CreditCardPurchase = () => {
             <TextContent>
               <div>
                 <a
-                  href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier-financial/index.html"
+                  href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier/index.html"
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{ color: bankerAccent, textDecoration: 'none' }}

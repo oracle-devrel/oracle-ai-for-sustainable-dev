@@ -134,7 +134,7 @@ const DashBoard = () => {
         <br />
         <br />
         <a
-          href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier-financial/index.html"
+          href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier/index.html"
           target="_blank"
           rel="noopener noreferrer"
         >
