@@ -35,6 +35,7 @@ podman buildx build --memory=8g  --platform linux/amd64 \
   --build-arg REACT_APP_KAFKA_TXEVENTQ_SERVICE_URL=https://oracledatabase-financial.org \
   --build-arg REACT_APP_AIAGENT_VECTOR_ADVISOR_SERVICE_URL=https://oracledatabase-financial.org \
   --build-arg REACT_APP_SPEECH_SELECTAI_QUERY_SERVICE_URL=https://oracledatabase-financial.org \
+  --build-arg REACT_APP_ORDS_BASE_URL=https://ij1tyzir3wpwlpe-financialdb.adb.eu-frankfurt-1.oraclecloudapps.com/ords \
   -t $IMAGE .
 
 

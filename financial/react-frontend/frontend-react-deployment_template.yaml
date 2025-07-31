@@ -21,4 +21,6 @@ spec:
           env:
             - name: REACT_APP_BACKEND_URL
               value: http://backend.financial:8090
+            - name: REACT_APP_ORDS_BASE_URL
+              value: ORDS_BASE_URL_PLACEHOLDER
       restartPolicy: Always

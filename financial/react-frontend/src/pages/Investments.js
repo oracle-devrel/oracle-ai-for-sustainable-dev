@@ -63,6 +63,17 @@ const SearchForm = styled.form`
   gap: 12px;
 `;
 
+const DisclaimerText = styled.div`
+  background: ${bankerPanel};
+  border: 1px solid #ff6b6b;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 16px;
+  color: #ffcccc;
+  font-weight: bold;
+  text-align: center;
+`;
+
 const SearchLabel = styled.label`
   margin-right: 8px;
   font-weight: bold;
@@ -305,17 +316,20 @@ sql = """CREATE TABLE IF NOT EXISTS PDFCollection (
       {/* Search and Code Snippet Section */}
       <TwoColumnContainer>
         <LeftColumn>
+          <DisclaimerText>
+            ⚠️ This application should not be used for any actual financial advisement or actions
+          </DisclaimerText>
           <SearchForm onSubmit={handleSearch}>
-            <SearchLabel htmlFor="searchText">Search:</SearchLabel>
             <SearchInput
               type="text"
               id="searchText"
               name="searchText"
               value={searchText}
               onChange={e => setSearchText(e.target.value)}
+              placeholder="Ask for financial insights..."
             />
             <SearchButton type="submit" disabled={loading}>
-              {loading ? "Searching..." : "Search"}
+              {loading ? "Processing..." : "Ask AI Advisor"}
             </SearchButton>
           </SearchForm>
           {searchResult && (

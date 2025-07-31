@@ -11,6 +11,7 @@ import Messaging from './pages/Messaging';
 import StockTicker from './pages/StockTicker';
 import APIs from './pages/APIs';
 import SpeakWithData from './pages/SpeakWithData';
+import AgenticAIBuilder from './pages/AgenticAIBuilder';
 import Login from './pages/Login';
 import Graph from './pages/Graph'; 
 import CreditCardPurchase from './pages/CreditCardPurchase'; 
@@ -125,6 +126,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <SpeakWithData />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/agenticaibuilder"
+              element={
+                <ProtectedRoute>
+                  <AgenticAIBuilder />
                 </ProtectedRoute>
               }
             />

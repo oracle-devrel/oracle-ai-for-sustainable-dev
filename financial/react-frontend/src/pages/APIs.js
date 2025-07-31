@@ -86,12 +86,15 @@ const APIs = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Get ORDS base URL from environment variable
+  const ordsBaseUrl = process.env.REACT_APP_ORDS_BASE_URL || 'https://ij1mydb-financialdb.adb.eu-frankfurt-1.oraclecloudapps.com/ords';
+
   useEffect(() => {
     // Fetch data for the first table
     const fetchData = async () => {
       try {
         const response = await fetch(
-          'https://ij1tyzir3wpwlpe-financialdb.adb.eu-frankfurt-1.oraclecloudapps.com/ords/financial/accounts/'
+          `${ordsBaseUrl}/financial/accounts/`
         );
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -208,13 +211,13 @@ END;
 -- Use the generated REST endpoints
 
 // Get all accounts (GET)
-GET https://ij1tyzir3wpwlpe-financialdb.adb.eu-frankfurt-1.oraclecloudapps.com/ords/financial/accounts/
+GET ${ordsBaseUrl}/financial/accounts/
 
 // Get a single account (GET)
-GET https://ij1tyzir3wpwlpe-financialdb.adb.eu-frankfurt-1.oraclecloudapps.com/ords/financial/accounts/{account_id}
+GET ${ordsBaseUrl}/financial/accounts/{account_id}
 
 // Create an account (POST)
-POST https://ij1tyzir3wpwlpe-financialdb.adb.eu-frankfurt-1.oraclecloudapps.com/ords/financial/accounts/
+POST ${ordsBaseUrl}/financial/accounts/
 Content-Type: application/json
 {
   "account_id": "A123",

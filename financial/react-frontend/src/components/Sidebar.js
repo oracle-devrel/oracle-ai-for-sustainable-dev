@@ -15,7 +15,7 @@ const SidebarContainer = styled.div`
   position: fixed;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  overflow-y: auto;
 `;
 
 const SidebarHeader = styled.div`
@@ -29,6 +29,7 @@ const SidebarHeader = styled.div`
 const SidebarMenu = styled.ul`
   list-style: none;
   padding: 0;
+  flex: 1;
 `;
 
 const SidebarItem = styled.li`
@@ -77,6 +78,10 @@ const ToggleSwitchContainer = styled.div`
   align-items: center;
   justify-content: center;
   margin: 10px;
+  flex-shrink: 0;
+  background-color: ${bankerBg};
+  border-top: 1px solid ${bankerAccent};
+  padding-top: 15px;
 `;
 
 const ToggleSwitchLabel = styled.label`
@@ -284,6 +289,20 @@ const Sidebar = () => {
               {showDetails && <div>
                 NL2SQL, Vector Search, Speech AI <br />
                 Industrial Scientific
+              </div>}
+            </TextContainer>
+          </StyledNavLink>
+        </SidebarItem>
+        <SidebarItem>
+          <StyledNavLink to="/agenticaibuilder">
+            <IconWrapper>
+              <img src="/images/Side Menu Icons/Get Personal Financial Insights.svg" alt="Agentic AI Builder" />
+            </IconWrapper>
+            <TextContainer>
+              <HighlightedText>Agentic AI Builder</HighlightedText>
+              {showDetails && <div>
+                AI Agent Workflows, Visual Builder <br />
+                Oracle AI Platform
               </div>}
             </TextContainer>
           </StyledNavLink>
