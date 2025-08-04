@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: frontend-react
-          image: ghcr.io/paulparkinson/react-frontend:0.1.1753997044
+          image: ghcr.io/paulparkinson/react-frontend:0.1.1754067468
           imagePullPolicy: Always
           ports:
             - containerPort: 8080

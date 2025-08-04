@@ -1,0 +1,176 @@
+{
+  "spatial_digital_twins": {
+    "name": "Spatial Digital Twins and Logistics Optimization",
+    "description": "IoT-powered spatial analysis with real-time logistics optimization",
+    "components": {
+      "input_handlers": {
+        "IoT Sensors": {
+          "data_source": "iot_telemetry",
+          "sensor_types": {
+            "gps_tracking": {
+              "frequency": "1s",
+              "accuracy": "±3m",
+              "data_fields": ["latitude", "longitude", "altitude", "speed", "heading"]
+            },
+            "environmental": {
+              "frequency": "30s", 
+              "sensors": ["temperature", "humidity", "air_quality", "noise_level"],
+              "data_fields": ["sensor_id", "timestamp", "value", "unit", "status"]
+            },
+            "traffic_monitoring": {
+              "frequency": "5s",
+              "data_fields": ["vehicle_count", "average_speed", "congestion_level", "incident_detected"]
+            },
+            "facility_monitoring": {
+              "frequency": "60s",
+              "data_fields": ["occupancy", "energy_usage", "security_status", "equipment_health"]
+            }
+          },
+          "simulation_data": {
+            "vehicles": [
+              {"id": "V001", "lat": 37.7749, "lon": -122.4194, "speed": 45.2, "status": "en_route"},
+              {"id": "V002", "lat": 37.7849, "lon": -122.4094, "speed": 32.1, "status": "loading"},
+              {"id": "V003", "lat": 37.7649, "lon": -122.4294, "speed": 0.0, "status": "parked"}
+            ],
+            "facilities": [
+              {"id": "F001", "type": "warehouse", "lat": 37.7500, "lon": -122.4000, "capacity": 0.75},
+              {"id": "F002", "type": "distribution_center", "lat": 37.8000, "lon": -122.4500, "capacity": 0.60}
+            ]
+          }
+        },
+        "Real-time Location Data": {
+          "data_source": "gps_fleet_management",
+          "update_frequency": "real_time",
+          "accuracy_requirements": "sub_meter",
+          "data_retention": "30_days"
+        }
+      },
+      "processing_nodes": {
+        "Digital Twin Model": {
+          "vector_search_query": "digital twin spatial modeling 3d mapping gis geographic information",
+          "vector_collection": "repository_documents",
+          "model_types": {
+            "3d_spatial": {
+              "resolution": "1m",
+              "update_frequency": "5min",
+              "data_layers": ["terrain", "buildings", "infrastructure", "vegetation"]
+            },
+            "traffic_flow": {
+              "resolution": "lane_level",
+              "update_frequency": "1min", 
+              "prediction_horizon": "30min"
+            },
+            "facility_layout": {
+              "resolution": "room_level",
+              "update_frequency": "1hour",
+              "capacity_tracking": true
+            }
+          },
+          "spatial_analytics": {
+            "proximity_analysis": true,
+            "route_optimization": true,
+            "capacity_planning": true,
+            "predictive_modeling": true
+          }
+        },
+        "Spatial Analysis Engine": {
+          "vector_search_query": "spatial analysis gis geographic optimization location intelligence",
+          "analysis_types": {
+            "proximity_analysis": {
+              "search_radius": "5km",
+              "poi_categories": ["fuel_stations", "rest_areas", "maintenance_facilities"]
+            },
+            "corridor_analysis": {
+              "buffer_distance": "1km",
+              "analysis_factors": ["traffic_density", "road_quality", "weather_conditions"]
+            },
+            "network_analysis": {
+              "algorithms": ["dijkstra", "a_star", "floyd_warshall"],
+              "optimization_criteria": ["distance", "time", "fuel_efficiency", "cost"]
+            }
+          }
+        }
+      },
+      "decision_nodes": {
+        "Route Optimization": {
+          "decision_type": "multi_objective_optimization",
+          "optimization_objectives": {
+            "minimize_travel_time": {
+              "weight": 0.4,
+              "constraints": ["traffic_conditions", "road_restrictions", "vehicle_capabilities"]
+            },
+            "minimize_fuel_consumption": {
+              "weight": 0.3,
+              "factors": ["vehicle_efficiency", "route_topology", "load_weight", "weather"]
+            },
+            "maximize_delivery_efficiency": {
+              "weight": 0.2,
+              "metrics": ["on_time_delivery", "customer_satisfaction", "resource_utilization"]
+            },
+            "minimize_environmental_impact": {
+              "weight": 0.1,
+              "factors": ["co2_emissions", "noise_pollution", "urban_air_quality"]
+            }
+          },
+          "algorithms": {
+            "primary": "genetic_algorithm",
+            "fallback": "simulated_annealing",
+            "real_time": "greedy_optimization"
+          },
+          "constraints": {
+            "vehicle_capacity": "max_weight_volume",
+            "driver_hours": "regulatory_compliance",
+            "delivery_windows": "customer_requirements",
+            "prohibited_areas": "restricted_zones"
+          }
+        },
+        "Load Balancing": {
+          "decision_type": "dynamic_resource_allocation",
+          "balancing_criteria": {
+            "facility_capacity": 0.4,
+            "geographic_distribution": 0.3,
+            "cost_optimization": 0.2,
+            "service_level": 0.1
+          }
+        }
+      },
+      "output_handlers": {
+        "Optimized Routes": {
+          "output_format": "route_plan_with_analytics",
+          "route_details": {
+            "waypoints": true,
+            "estimated_times": true,
+            "fuel_consumption": true,
+            "alternative_routes": 3
+          },
+          "real_time_updates": {
+            "traffic_rerouting": true,
+            "incident_avoidance": true,
+            "dynamic_scheduling": true
+          },
+          "analytics": {
+            "efficiency_metrics": ["distance_saved", "time_saved", "fuel_saved", "cost_reduction"],
+            "environmental_impact": ["co2_reduction", "emission_savings"],
+            "service_metrics": ["on_time_percentage", "customer_satisfaction_score"]
+          }
+        },
+        "Logistics Control": {
+          "output_format": "operational_dashboard",
+          "control_actions": [
+            "route_adjustments",
+            "resource_reallocation", 
+            "schedule_optimization",
+            "exception_handling"
+          ],
+          "monitoring": {
+            "kpis": ["fleet_utilization", "delivery_performance", "cost_per_mile"],
+            "alerts": ["delays", "breakdowns", "capacity_exceeded", "sla_violations"]
+          }
+        }
+      }
+    },
+    "oracle_db_collections": ["repository_documents", "web_documents", "general_knowledge"],
+    "required_apis": ["gps_tracking", "traffic_data", "weather_api", "mapping_service"],
+    "execution_timeout": 180
+  }
+}

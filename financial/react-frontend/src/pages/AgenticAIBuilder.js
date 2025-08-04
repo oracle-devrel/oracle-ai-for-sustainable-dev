@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import agenticAIAPI from '../api/agenticAIAPI';
 
 // Banker blue theme colors
 const bankerBg = "#354F64";
@@ -121,6 +122,75 @@ const Button = styled.button`
 
   &:hover {
     background-color: ${bankerBg};
+  }
+
+  &:disabled {
+    background-color: #666;
+    cursor: not-allowed;
+  }
+`;
+
+const ExecuteButton = styled(Button)`
+  background-color: #28a745;
+  font-size: 16px;
+  padding: 16px 24px;
+  margin-top: 0;
+
+  &:hover:not(:disabled) {
+    background-color: #218838;
+  }
+`;
+
+const StatusIndicator = styled.div`
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 16px;
+
+  ${props => {
+    switch (props.status) {
+      case 'healthy':
+        return `background-color: #28a745; color: white;`;
+      case 'unhealthy':
+        return `background-color: #dc3545; color: white;`;
+      case 'running':
+        return `background-color: #ffc107; color: black;`;
+      case 'completed':
+        return `background-color: #28a745; color: white;`;
+      case 'failed':
+        return `background-color: #dc3545; color: white;`;
+      default:
+        return `background-color: #6c757d; color: white;`;
+    }
+  }}
+`;
+
+const WorkflowResult = styled.div`
+  border: 1px solid ${bankerAccent};
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 16px;
+  background-color: ${bankerBg};
+  max-height: 300px;
+  overflow-y: auto;
+  font-size: 12px;
+`;
+
+const LoadingSpinner = styled.div`
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid ${bankerAccent};
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  animation: spin 1s linear infinite;
+  display: inline-block;
+  margin-right: 8px;
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
   }
 `;
 
@@ -297,6 +367,35 @@ const AgenticAIBuilder = () => {
   });
   const [editingAgent, setEditingAgent] = useState(null);
   const [editFormData, setEditFormData] = useState({});
+  
+  // Backend integration state
+  const [backendHealth, setBackendHealth] = useState({ status: 'unknown' });
+  const [workflowStatus, setWorkflowStatus] = useState(null);
+  const [workflowResult, setWorkflowResult] = useState(null);
+  const [isExecuting, setIsExecuting] = useState(false);
+  const [currentWorkflowId, setCurrentWorkflowId] = useState(null);
+
+  // Check backend health on component mount
+  useEffect(() => {
+    checkBackendHealth();
+    const healthInterval = setInterval(checkBackendHealth, 30000); // Check every 30 seconds
+    return () => clearInterval(healthInterval);
+  }, []);
+
+  const checkBackendHealth = async () => {
+    try {
+      const health = await agenticAIAPI.checkBackendHealth();
+      setBackendHealth(health);
+    } catch (error) {
+      console.error('Health check failed:', error);
+      setBackendHealth({ 
+        status: 'unhealthy', 
+        error: error.message,
+        oracle_db_available: false,
+        llm_available: false 
+      });
+    }
+  };
 
   const componentTypes = [
     'Node',
@@ -512,6 +611,77 @@ const AgenticAIBuilder = () => {
     setAgents(exampleAgents);
     setEditingAgent(null);
     setEditFormData({});
+    // Clear any previous workflow results
+    setWorkflowResult(null);
+    setWorkflowStatus(null);
+    setCurrentWorkflowId(null);
+  };
+
+  const executeCurrentWorkflow = async () => {
+    if (agents.length === 0) {
+      alert('Please add some components to your workflow first.');
+      return;
+    }
+
+    if (backendHealth.status !== 'healthy') {
+      const proceed = window.confirm('Backend is not healthy. Do you want to proceed anyway? (This will show mock results)');
+      if (!proceed) return;
+    }
+
+    setIsExecuting(true);
+    setWorkflowResult(null);
+    setWorkflowStatus(null);
+
+    try {
+      // Format components for backend
+      const formattedComponents = agenticAIAPI.formatComponentsForBackend(agents);
+      
+      // Generate a workflow name based on components
+      const workflowName = generateWorkflowName(agents);
+      
+      // Start workflow execution
+      const startResponse = await agenticAIAPI.executeWorkflow(
+        workflowName,
+        formattedComponents,
+        { timestamp: new Date().toISOString() },
+        `Execute workflow with ${agents.length} components`
+      );
+
+      setCurrentWorkflowId(startResponse.workflow_id);
+      setWorkflowStatus({ status: 'running', workflow_id: startResponse.workflow_id });
+
+      // Poll for completion
+      const result = await agenticAIAPI.pollWorkflowUntilComplete(startResponse.workflow_id);
+      
+      setWorkflowResult(result);
+      setWorkflowStatus({ status: result.status, workflow_id: startResponse.workflow_id });
+
+    } catch (error) {
+      console.error('Workflow execution error:', error);
+      setWorkflowResult({ 
+        error: error.message, 
+        status: 'failed',
+        timestamp: new Date().toISOString()
+      });
+      setWorkflowStatus({ status: 'failed' });
+    } finally {
+      setIsExecuting(false);
+    }
+  };
+
+  const generateWorkflowName = (components) => {
+    if (components.length === 0) return 'Empty Workflow';
+    
+    const inputComponents = components.filter(c => c.componentType === 'Graph Input');
+    const outputComponents = components.filter(c => c.componentType === 'Graph Output');
+    
+    if (inputComponents.length > 0 && outputComponents.length > 0) {
+      return `${inputComponents[0].type} to ${outputComponents[0].type}`;
+    } else if (components.length > 0) {
+      return `${components[0].type} Workflow`;
+    }
+    
+    return 'Custom Workflow';
   };
 
   const calculatePosition = (index) => {
@@ -677,9 +847,7 @@ const AgenticAIBuilder = () => {
 
   return (
     <PageContainer>
-      <h2>Process: Build AI Agent Workflows</h2>
-      <h2>Tech: Agentic AI Builder</h2>
-      <h2>Reference: Oracle AI Platform</h2>
+      <h2>"Agentic AI with Oracle Database 23ai and NVidia GPUs running on Kubernetes"</h2>
 
       <MainContainer>
         <LeftPanel
@@ -709,17 +877,69 @@ const AgenticAIBuilder = () => {
         <RightPanel>
           <h3 style={{ marginTop: 0, color: bankerAccent }}>Components</h3>
           
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {componentTypes.map((componentType) => (
-              <Button 
-                key={componentType}
-                type="button"
-                onClick={() => addComponent(componentType)}
-              >
-                Add {componentType}
-              </Button>
-            ))}
-          </div>
+          {/* Backend Status */}
+          <StatusIndicator status={backendHealth.status}>
+            {isExecuting && <LoadingSpinner />}
+            Backend: {backendHealth.status}
+            {backendHealth.oracle_db_available && " | Oracle DB ✓"}
+            {backendHealth.llm_available && " | LLM ✓"}
+          </StatusIndicator>
+
+          {/* Execute Workflow Button */}
+          {agents.length > 0 && (
+            <ExecuteButton 
+              onClick={executeCurrentWorkflow}
+              disabled={isExecuting}
+            >
+              {isExecuting ? (
+                <>
+                  <LoadingSpinner />
+                  Executing Workflow...
+                </>
+              ) : (
+                `Execute Workflow (${agents.length} components)`
+              )}
+            </ExecuteButton>
+          )}
+
+          {/* Save Workflow Button */}
+          {agents.length > 0 && (
+            <ExecuteButton 
+              onClick={() => {
+                // TODO: Implement save workflow functionality
+                alert('Save workflow functionality coming soon!');
+              }}
+              disabled={isExecuting}
+              style={{ 
+                backgroundColor: '#007bff',
+                marginTop: '12px'
+              }}
+            >
+              Save Workflow
+            </ExecuteButton>
+          )}
+
+          {/* Workflow Status */}
+          {workflowStatus && (
+            <div style={{ marginTop: '16px' }}>
+              <StatusIndicator status={workflowStatus.status}>
+                Workflow: {workflowStatus.status}
+                {currentWorkflowId && ` (ID: ${currentWorkflowId.substring(0, 8)}...)`}
+              </StatusIndicator>
+            </div>
+          )}
+
+          {/* Workflow Results */}
+          {workflowResult && (
+            <WorkflowResult>
+              <h4 style={{ margin: '0 0 12px 0', color: bankerAccent }}>
+                Workflow Result
+              </h4>
+              <pre style={{ fontSize: '11px', overflow: 'auto', whiteSpace: 'pre-wrap' }}>
+                {JSON.stringify(workflowResult, null, 2)}
+              </pre>
+            </WorkflowResult>
+          )}
 
           {editingAgent && (
             <EditForm>
@@ -809,6 +1029,23 @@ const AgenticAIBuilder = () => {
                   style={{ fontSize: '12px', padding: '8px' }}
                 >
                   {workflow}
+                </Button>
+              ))}
+            </div>
+          </div>
+
+          <div style={{ marginTop: '24px', padding: '16px', border: `1px solid ${bankerAccent}`, borderRadius: '4px' }}>
+            <h4 style={{ margin: '0 0 16px 0', color: bankerAccent }}>Add Components</h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {componentTypes.map((componentType) => (
+                <Button 
+                  key={componentType}
+                  type="button"
+                  onClick={() => addComponent(componentType)}
+                  disabled={isExecuting}
+                  style={{ fontSize: '12px', padding: '8px' }}
+                >
+                  Add {componentType}
                 </Button>
               ))}
             </div>

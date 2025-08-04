@@ -253,7 +253,7 @@ const Sidebar = () => {
         <SidebarItem>
           <StyledNavLink to="/stockticker">
             <IconWrapper>
-              <img src="/images/Side Menu Icons/View Stock Ticker and Buy:Sell Stock.svg" alt="View stock ticker and buy/sell stock" />
+              <img src="/images/Side Menu Icons/View Stock Ticker.svg" alt="View stock ticker and buy/sell stock" />
             </IconWrapper>
             <TextContainer>
               <HighlightedText>View stock ticker and buy/sell stock</HighlightedText>

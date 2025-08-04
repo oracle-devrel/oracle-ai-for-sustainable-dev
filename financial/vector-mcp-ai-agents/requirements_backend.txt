@@ -1,0 +1,34 @@
+# Backend API requirements for Agentic AI LangGraph
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+pydantic>=2.5.0
+python-dotenv>=1.0.0
+python-multipart>=0.0.6
+
+# LangChain and LangGraph - Updated to more recent versions
+langgraph>=0.2.0
+langchain>=0.2.0
+langchain-openai>=0.1.0
+langchain-community>=0.2.0
+
+# Oracle Database and vector support - Updated versions
+oracledb>=2.0.0
+sentence-transformers>=3.0.0
+numpy>=1.26.0
+pandas>=2.2.0
+
+# Optional AI/ML dependencies
+torch==2.1.0
+transformers==4.36.0
+openai==1.3.8
+
+# Logging and utilities
+httpx==0.25.2
+asyncio-mqtt==0.13.0
+aiofiles==23.2.1
+
+# Development and testing
+pytest==7.4.3
+pytest-asyncio==0.21.1
+black==23.11.0
+flake8==6.1.0

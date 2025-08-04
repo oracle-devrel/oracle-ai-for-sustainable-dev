@@ -222,6 +222,37 @@ const VideoContainer = styled.div`
   }
 `;
 
+const ResultMessage = styled.div`
+  margin-top: 16px;
+  padding: 16px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-align: center;
+  border: 2px solid;
+  
+  ${props => {
+    if (props.message.includes('Anomaly detected')) {
+      return `
+        background-color: rgba(220, 53, 69, 0.1);
+        border-color: #dc3545;
+        color: #dc3545;
+      `;
+    } else if (props.message.includes('No anomaly detected')) {
+      return `
+        background-color: rgba(40, 167, 69, 0.1);
+        border-color: #28a745;
+        color: #28a745;
+      `;
+    } else {
+      return `
+        background-color: rgba(255, 193, 7, 0.1);
+        border-color: #ffc107;
+        color: #ffc107;
+      `;
+    }
+  }}
+`;
+
 const CreditCardPurchase = () => {
   const [formData, setFormData] = useState({
     cardNumber: '',
@@ -237,6 +268,7 @@ const CreditCardPurchase = () => {
     first: null,
     second: null,
   });
+  const [resultMessage, setResultMessage] = useState('');
   const mapRef = useRef();
 
   useEffect(() => {
@@ -338,12 +370,12 @@ const CreditCardPurchase = () => {
 
       const isFar = await response.json();
       if (isFar) {
-        alert('Anomaly detected! Distance between the two locations is greater than 500km.');
+        setResultMessage('🚨 Anomaly detected! Distance between the two locations is greater than 500km.');
       } else {
-        alert('No anomaly detected.  The distance between the two locations is NOT greater than 500km.');
+        setResultMessage('✅ No anomaly detected. The distance between the two locations is NOT greater than 500km.');
       }
     } catch (error) {
-      alert('Error checking distance: ' + error.message);
+      setResultMessage('❌ Error checking distance: ' + error.message);
     }
   };
 
@@ -565,6 +597,11 @@ const CreditCardPurchase = () => {
               <MapRightClickHandler onRightClick={handleMapRightClick} />
             </MapContainer>
           </MapWrapper>
+          {resultMessage && (
+            <ResultMessage message={resultMessage}>
+              {resultMessage}
+            </ResultMessage>
+          )}
         </LeftColumn>
         <RightColumn>
           <CodeTitle>Globally Distributed Database Connection Example</CodeTitle>
@@ -585,53 +622,6 @@ if (isAutomaticSharding) {
 }
 `}
           </code>
-          
-          <div style={{ marginTop: '32px' }}>
-            <h3 style={{ color: bankerAccent, marginBottom: '20px' }}>
-              Raft vs Data Guard Replication Comparison
-            </h3>
-            <Table>
-              <thead>
-                <tr>
-                  <TableHeader>Feature</TableHeader>
-                  <TableHeader>Raft Replication</TableHeader>
-                  <TableHeader>Data Guard Replication</TableHeader>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <TableCell><strong>Configuration Model</strong></TableCell>
-                  <TableCell>Active-Active Symmetric</TableCell>
-                  <TableCell>Active-Passive (Primary/Standby)</TableCell>
-                </tr>
-                <tr>
-                  <TableCell><strong>Management</strong></TableCell>
-                  <TableCell>Automated & Integrated</TableCell>
-                  <TableCell>Manual or Semi-Automated Configuration</TableCell>
-                </tr>
-                <tr>
-                  <TableCell><strong>Failover</strong></TableCell>
-                  <TableCell>Fast & Automatic with Zero Data Loss</TableCell>
-                  <TableCell>Fast, but often requires manual or scripted failover.</TableCell>
-                </tr>
-                <tr>
-                  <TableCell><strong>Complexity</strong></TableCell>
-                  <TableCell>Simplified for Developers</TableCell>
-                  <TableCell>Traditional & Powerful, but More Complex</TableCell>
-                </tr>
-                <tr>
-                  <TableCell><strong>Use Case</strong></TableCell>
-                  <TableCell>Ideal for cloud-native, distributed applications requiring extreme availability, automated operations, and horizontal scalability.</TableCell>
-                  <TableCell>The standard for enterprise-grade disaster recovery, backups, and protecting against site-wide outages.</TableCell>
-                </tr>
-                <tr>
-                  <TableCell><strong>Scalability</strong></TableCell>
-                  <TableCell>Automatically rebalances and reconfigures replication as the database scales horizontally (shards are added/removed).</TableCell>
-                  <TableCell>Scaling involves more traditional database administration tasks to add or manage standby sites.</TableCell>
-                </tr>
-              </tbody>
-            </Table>
-          </div>
         </RightColumn>
       </TwoColumnContainer>
 

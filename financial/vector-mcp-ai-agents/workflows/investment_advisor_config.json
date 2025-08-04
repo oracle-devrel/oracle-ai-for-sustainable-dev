@@ -1,0 +1,90 @@
+{
+  "investment_advisor": {
+    "name": "Investment Advisor Agent",
+    "description": "AI-powered investment analysis and portfolio recommendations",
+    "components": {
+      "input_handlers": {
+        "Market Data Input": {
+          "data_source": "market_api",
+          "simulation_data": {
+            "symbols": ["AAPL", "GOOGL", "MSFT", "TSLA", "NVDA"],
+            "price_ranges": {
+              "AAPL": [145.0, 155.0],
+              "GOOGL": [2750.0, 2850.0],
+              "MSFT": [340.0, 360.0],
+              "TSLA": [180.0, 220.0],
+              "NVDA": [420.0, 480.0]
+            }
+          }
+        }
+      },
+      "processing_nodes": {
+        "Risk Analysis": {
+          "vector_search_query": "risk assessment portfolio analysis financial market volatility",
+          "vector_collection": "pdf_documents",
+          "risk_factors": [
+            "market_volatility",
+            "sector_concentration", 
+            "interest_rate_sensitivity",
+            "inflation_exposure",
+            "liquidity_risk"
+          ],
+          "risk_thresholds": {
+            "low": 0.3,
+            "medium": 0.7,
+            "high": 0.8
+          }
+        },
+        "Portfolio Optimization": {
+          "vector_search_query": "portfolio optimization asset allocation modern portfolio theory",
+          "optimization_models": ["mean_reversion", "momentum", "value_investing"],
+          "constraints": {
+            "max_single_position": 0.2,
+            "min_diversification": 5,
+            "cash_reserve_min": 0.05
+          }
+        }
+      },
+      "decision_nodes": {
+        "Portfolio Strategy": {
+          "decision_type": "risk_based_allocation",
+          "strategies": {
+            "conservative": {
+              "stocks": 40,
+              "bonds": 50,
+              "cash": 10,
+              "risk_threshold": 0.7
+            },
+            "balanced": {
+              "stocks": 60,
+              "bonds": 30,
+              "cash": 10,
+              "risk_threshold": 0.5
+            },
+            "aggressive": {
+              "stocks": 80,
+              "bonds": 15,
+              "cash": 5,
+              "risk_threshold": 0.3
+            }
+          }
+        }
+      },
+      "output_handlers": {
+        "Investment Recommendation": {
+          "output_format": "portfolio_allocation",
+          "include_reasoning": true,
+          "confidence_threshold": 0.8,
+          "recommendations": {
+            "rebalancing_frequency": "quarterly",
+            "monitoring_metrics": ["sharpe_ratio", "max_drawdown", "beta"],
+            "risk_warnings": true
+          }
+        }
+      }
+    },
+    "oracle_db_collections": ["pdf_documents", "web_documents"],
+    "required_apis": ["market_data"],
+    "execution_timeout": 120
+  }
+}

@@ -106,6 +106,15 @@ const DashBoard = () => {
             >
               Open Grafana Dashboard
             </a>
+            <br />
+            <a
+              href="http://129.159.11.143:8000/"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: bankerAccent, textDecoration: 'underline' }}
+            >
+              Open Kubeview
+            </a>
             <div style={{ marginTop: 24 }}>
               <iframe
                 width="900"
@@ -158,19 +167,32 @@ const DashBoard = () => {
           alt="Technical Architecture"
         />
       </ImageContainer>
-      {/* OCI Console For ADB (Developer Related) */}
+      {/* OCI Console For ADB (Developer Related / Database Actions, OML, Graph Studio, etc. access) */}
       <ImageContainer>
         <h2>OCI Console For ADB (Developer Related)</h2>
+        <img
+          src={`${process.env.PUBLIC_URL}/images/view-all-database-actions.png`}
+          alt="View All Database Actions"
+        />
+      </ImageContainer>
+      <ImageContainer>
         <img
           src={`${process.env.PUBLIC_URL}/images/databaseactions.png`}
           alt="Database Actions"
         />
       </ImageContainer>
       <ImageContainer>
-        <img
-          src={`${process.env.PUBLIC_URL}/images/view-all-database-actions.png`}
-          alt="View All Database Actions"
-        />
+        <a
+          href="https://ij1tyzir3wpwlpe-financialdb.adb.eu-frankfurt-1.oraclecloudapps.com/ords/admin/_sdw/?nav=adpdi&adpdi=adp-data-load"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img
+            src={`${process.env.PUBLIC_URL}/images/datatransforms.png`}
+            alt="Data Transforms"
+            style={{ cursor: 'pointer' }}
+          />
+        </a>
       </ImageContainer>
       {/* tracing diagram Image */}
       <ImageContainer>

@@ -14,5 +14,6 @@ echo ${IMAGE}
 
 ./build.sh
 ./deploy.sh
+sleep 10
 echo logpod front
 logpod front
