@@ -174,7 +174,7 @@ pydeck==                                   0.8.1b0
 Pygments==                                 2.16.1
 pyOpenSSL==                                23.2.0
 pyparsing==                                3.1.2
-pypdf==                                    3.17.0
+pypdf== 6.0.0
 PyPika==                                   0.48.9
 pyproject_hooks==                          1.1.0
 pyproject-toml==                           0.0.10
