@@ -6,14 +6,14 @@ const fetch = require('node-fetch');
 
 // Initialize Express app
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5001; // Changed from 5000 to 5001 to avoid AirPlay conflict
 
 // Middleware
 app.use(bodyParser.json());
 app.use(cors());
 
 // MongoDB connection (using Oracle JSON Duality View as MongoDB API)
-const MONGO_URI = 'mongodb://financial:Welcome12345@IJ1TYZIR3WPWLPE-FINANCIALDB.adb.eu-frankfurt-1.oraclecloudapps.com:27017/financial?authMechanism=PLAIN&authSource=$external&ssl=true&retryWrites=false&loadBalanced=true';
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://financial:Welcome12345@IJ1TYZIR3WPWLPE-FINANCIALDB.adb.eu-frankfurt-1.oraclecloudapps.com:27017/financial?authMechanism=PLAIN&authSource=$external&ssl=true&retryWrites=false&loadBalanced=true';
 mongoose
   .connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('Connected to Oracle JSON Duality View via MongoDB API'))
@@ -32,6 +32,29 @@ const accountSchema = new mongoose.Schema({
 
 // Create the model
 const Account = mongoose.model('accounts_dv', accountSchema);
+
+// Root endpoint to verify server is running
+app.get('/', (req, res) => {
+  res.json({
+    message: 'MERN Stack Backend API is running!',
+    status: 'OK',
+    timestamp: new Date().toISOString(),
+    endpoints: {
+      'GET /': 'This status endpoint',
+      'GET /api/accounts': 'Get all accounts',
+      'POST /api/accounts': 'Create new account',
+      'GET /api/accounts/:id': 'Get account by ID',
+      'PUT /api/accounts/:id': 'Update account by ID',
+      'DELETE /api/accounts/:id': 'Delete account by ID',
+      'POST /accounts/api/accounts': 'Proxy endpoint for account creation'
+    },
+    database: {
+      type: 'Oracle Database via MongoDB API',
+      collection: 'accounts_dv',
+      connection: MONGO_URI ? 'Environment variable configured' : 'Using fallback configuration'
+    }
+  });
+});
 
 // CRUD Endpoints
 

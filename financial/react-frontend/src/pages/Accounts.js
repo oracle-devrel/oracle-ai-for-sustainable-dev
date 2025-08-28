@@ -173,11 +173,11 @@ const PanelSection = styled.div`
   }
 `;
 
-const REACT_APP_MERN_MONGODB_SERVICE_URL = process.env.REACT_APP_MERN_MONGODB_SERVICE_URL || 'http://localhost:8080';
-const REACT_APP_MERN_MONGODB_JSONDUALITY_ORACLE_SERVICE_URL =
-  process.env.REACT_APP_MERN_MONGODB_JSONDUALITY_ORACLE_SERVICE_URL || 'http://localhost:5000';
 const REACT_APP_MERN_SQL_ORACLE_SERVICE_URL =
-  process.env.REACT_APP_MERN_SQL_ORACLE_SERVICE_URL || 'http://localhost:6000';
+  process.env.REACT_APP_MERN_SQL_ORACLE_SERVICE_URL || 'http://localhost:8080';
+const REACT_APP_MERN_MONGODB_JSONDUALITY_ORACLE_SERVICE_URL =
+  process.env.REACT_APP_MERN_MONGODB_JSONDUALITY_ORACLE_SERVICE_URL || 'http://localhost:5001';
+const REACT_APP_MERN_MONGODB_SERVICE_URL = process.env.REACT_APP_MERN_MONGODB_SERVICE_URL || 'http://localhost:8080';
 
 const Accounts = () => {
   const [formData, setFormData] = useState({
@@ -206,10 +206,10 @@ const Accounts = () => {
     let postUrl;
     if (formData.writeOption === 'SQL') {
       postUrl = `${REACT_APP_MERN_SQL_ORACLE_SERVICE_URL}/accounts/api/accounts`;
+    } else if (formData.writeOption === 'MongoDB API accessing Oracle Database') {
+      postUrl = `${REACT_APP_MERN_MONGODB_JSONDUALITY_ORACLE_SERVICE_URL}/api/accounts`;
     } else if (formData.writeOption === 'MongoDB API') {
       postUrl = `${REACT_APP_MERN_MONGODB_SERVICE_URL}/accounts/api/accounts`;
-    } else if (formData.writeOption === 'MongoDB API accessing Oracle Database') {
-      postUrl = `${REACT_APP_MERN_MONGODB_JSONDUALITY_ORACLE_SERVICE_URL}/accounts/api/accounts`;
     }
 
     const payload = {
@@ -261,7 +261,7 @@ const Accounts = () => {
     } else if (formData.readOption === 'MongoDB API') {
       fetchUrl = `${REACT_APP_MERN_MONGODB_SERVICE_URL}/accounts/accounts`;
     } else if (formData.readOption === 'MongoDB API accessing Oracle Database') {
-      fetchUrl = `${REACT_APP_MERN_SQL_ORACLE_SERVICE_URL}/accounts/accounts`;
+      fetchUrl = `${REACT_APP_MERN_MONGODB_JSONDUALITY_ORACLE_SERVICE_URL}/api/accounts`;
     }
 
     try {
