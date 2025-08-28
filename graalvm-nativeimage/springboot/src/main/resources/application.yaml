@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: graalvmnativeimagejdbcdriver
+
+  # Datasource Configuration
+  datasource:
+    url: jdbc:oracle:thin:@<ATP Name>_high?TNS_ADMIN=/home/<myhomedir>/myatpwallet
+    username: ADMIN
+    password: <password>
+    driver-class-name: oracle.jdbc.OracleDriver
+    type: oracle.ucp.jdbc.PoolDataSource
+    oracleucp:
+      connection-factory-class-name: oracle.jdbc.pool.OracleDataSource
+      connection-pool-name: ConnectionPool
+      initial-pool-size: 15
+      min-pool-size: 10
+      max-pool-size: 30
