@@ -1,31 +1,33 @@
-# oracle-ai-for-sustainable-dev
+## This repos contains references and source for a number of workshops, demos, and activations...
 
-[![License: UPL](https://img.shields.io/badge/license-UPL-green)](https://img.shields.io/badge/license-UPL-green) [![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=oracle-devrel_oracle-ai-for-sustainable-dev)](https://sonarcloud.io/dashboard?id=oracle-devrel_oracle-ai-for-sustainable-dev)
+All are open open source and can be implemented with Oracle Database Container or Cloud versions, both of which are free and can be obtained [here](https://bit.ly/langflow_oracledatabase)
 
-## This is the source repos for the 
-## "Develop with Oracle AI and Database Services: Gen, Vision, Speech, Language, and OML" workshop
-
-## Introduction
-See workshop at https://apexapps.oracle.com/pls/apex/r/dbpm/livelabs/view-workshop?wid=3874
-
-## Getting Started
-MISSING
-
-### Prerequisites
-MISSING
-
-## Notes/Issues
-Spring Boot 3.0 requires Java 17 as a minimum version.
+You can also contact Paul Parkinson with any questions [here](https://www.linkedin.com/in/pauldparkinson/)
 
 
-## URLs
-https://apexapps.oracle.com/pls/apex/r/dbpm/livelabs/view-workshop?wid=3874
+## Blogs...
+
+[Develop Agentic AI Workflows with LangFlow and Oracle Database Blog](https://www.linkedin.com/pulse/develop-agentic-ai-workflows-langflow-oracle-database-paul-parkinson-axb4e)
+
+## CONTENT...
+
+### 1. Simplify Microservices with Converged Oracle Database (includes Financial Services / FinTech)
+Source code: see `financial` directory
+
+Workshop: https://apexapps.oracle.com/pls/apex/r/dbpm/livelabs/view-workshop?wid=637
+
+### 2. Develop with Oracle AI and Database Services: Gen, Vision, Speech, Language, OML, Select AI, RAG and Vector
+Source code: see root directory
+
+Workshop: https://apexapps.oracle.com/pls/apex/r/dbpm/livelabs/view-workshop?wid=3874
+
+
 
 ## Contributing
 This project is open source.  Please submit your contributions by forking this repository and submitting a pull request!  Oracle appreciates any contributions that are made by the open source community.
 
 ## License
-Copyright (c) 2024 Oracle and/or its affiliates.
+Copyright (c) 2025 Oracle and/or its affiliates.
 
 Licensed under the Universal Permissive License (UPL), Version 1.0.
 
