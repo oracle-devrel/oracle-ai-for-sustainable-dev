@@ -37,7 +37,9 @@ Workshop: https://apexapps.oracle.com/pls/apex/r/dbpm/livelabs/view-workshop?wid
 Source code: see `financial` directory
 
 Workshop: https://apexapps.oracle.com/pls/apex/r/dbpm/livelabs/view-workshop?wid=637
+
 Video: https://www.youtube.com/watch?v=qHVYXagpAC0
+
 Another video: https://www.youtube.com/watch?v=6dUcXgp8R8k
 
 
@@ -57,10 +59,14 @@ Workshop: https://apexapps.oracle.com/pls/apex/r/dbpm/livelabs/run-workshop?p210
 Source code: see https://github.com/paulparkinson/wasi-cycles
 
 Blog: https://www.linkedin.com/pulse/develop-wasmedge-wasmtime-wasmer-invoking-mongodb-kafka-parkinson-wajde
+
 Video: https://www.youtube.com/watch?v=KD3XFh72Vyo
 
 
+___________
+
 This repos...
+
 ![Oracle AI for Sustainable Development](bit.ly_pauloracledev.png)
 
 ## Contributing
