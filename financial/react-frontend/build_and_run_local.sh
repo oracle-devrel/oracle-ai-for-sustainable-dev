@@ -7,9 +7,9 @@ echo "1. Sourcing environment variables from ../.env"
 if [ -f "../.env" ]; then
     source ../.env
     echo "   Environment variables loaded successfully!"
-    echo "   REACT_APP_SPRINGBOOT_URL: $REACT_APP_SPRINGBOOT_URL"
-    echo "   REACT_APP_HELIDON_URL: $REACT_APP_HELIDON_URL"
-    echo "   REACT_APP_NODEJS_URL: $REACT_APP_NODEJS_URL"
+    echo "   REACT_APP_MERN_SQL_ORACLE_SERVICE_URL: $REACT_APP_MERN_SQL_ORACLE_SERVICE_URL"
+    echo "   REACT_APP_MERN_MONGODB_JSONDUALITY_ORACLE_SERVICE_URL: $REACT_APP_MERN_MONGODB_JSONDUALITY_ORACLE_SERVICE_URL"
+    echo "   REACT_APP_MERN_MONGODB_SERVICE_URL: $REACT_APP_MERN_MONGODB_SERVICE_URL"
 else
     echo "   Warning: ../.env file not found, using default configuration"
 fi
