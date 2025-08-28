@@ -205,11 +205,11 @@ const Accounts = () => {
 
     let postUrl;
     if (formData.writeOption === 'SQL') {
-      postUrl = `${REACT_APP_MERN_SQL_ORACLE_SERVICE_URL}/api/accounts`;
+      postUrl = `${REACT_APP_MERN_SQL_ORACLE_SERVICE_URL}/accounts/api/accounts`;
     } else if (formData.writeOption === 'MongoDB API') {
-      postUrl = `${REACT_APP_MERN_MONGODB_SERVICE_URL}/api/accounts`;
+      postUrl = `${REACT_APP_MERN_MONGODB_SERVICE_URL}/accounts/api/accounts`;
     } else if (formData.writeOption === 'MongoDB API accessing Oracle Database') {
-      postUrl = `${REACT_APP_MERN_SQL_ORACLE_SERVICE_URL}/api/accounts`;
+      postUrl = `${REACT_APP_MERN_MONGODB_JSONDUALITY_ORACLE_SERVICE_URL}/accounts/api/accounts`;
     }
 
     const payload = {
@@ -257,11 +257,11 @@ const Accounts = () => {
   const fetchAccounts = async () => {
     let fetchUrl;
     if (formData.readOption === 'SQL') {
-      fetchUrl = `${REACT_APP_MERN_SQL_ORACLE_SERVICE_URL}/accounts`;
+      fetchUrl = `${REACT_APP_MERN_SQL_ORACLE_SERVICE_URL}/accounts/accounts`;
     } else if (formData.readOption === 'MongoDB API') {
-      fetchUrl = `${REACT_APP_MERN_MONGODB_SERVICE_URL}/accounts`;
+      fetchUrl = `${REACT_APP_MERN_MONGODB_SERVICE_URL}/accounts/accounts`;
     } else if (formData.readOption === 'MongoDB API accessing Oracle Database') {
-      fetchUrl = `${REACT_APP_MERN_SQL_ORACLE_SERVICE_URL}/accounts`;
+      fetchUrl = `${REACT_APP_MERN_SQL_ORACLE_SERVICE_URL}/accounts/accounts`;
     }
 
     try {

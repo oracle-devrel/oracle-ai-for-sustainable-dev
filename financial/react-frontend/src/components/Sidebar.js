@@ -293,20 +293,6 @@ const Sidebar = () => {
             </TextContainer>
           </StyledNavLink>
         </SidebarItem>
-        <SidebarItem>
-          <StyledNavLink to="/agenticaibuilder">
-            <IconWrapper>
-              <img src="/images/Side Menu Icons/Get Personal Financial Insights.svg" alt="Agentic AI Builder" />
-            </IconWrapper>
-            <TextContainer>
-              <HighlightedText>Agentic AI Builder</HighlightedText>
-              {showDetails && <div>
-                AI Agent Workflows, Visual Builder <br />
-                Oracle AI Platform
-              </div>}
-            </TextContainer>
-          </StyledNavLink>
-        </SidebarItem>
       </SidebarMenu>
       <ToggleSwitchContainer>
         <ToggleSwitchLabel>
