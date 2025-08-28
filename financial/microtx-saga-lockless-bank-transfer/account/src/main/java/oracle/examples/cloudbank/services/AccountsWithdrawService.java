@@ -132,7 +132,7 @@ public class AccountsWithdrawService {
                 // https://docs.oracle.com/en/database/oracle/transaction-manager-for-microservices/24.2/tmmma/com/oracle/microtx/lra/lockfree/MicroTxLockFreeReservation.html
                 // https://docs.oracle.com/en/database/oracle/transaction-manager-for-microservices/24.4/tmmdg/verify.html
                 // https://www.youtube.com/watch?v=mBijkqoAibE
-                microTxLockFreeReservation.
+                microTxLockFreeReservation.compensate(connection);
             } catch (Exception e) {
                 log.warning("Failed to retrieve the underlying connection: " + e.getMessage());
             }
