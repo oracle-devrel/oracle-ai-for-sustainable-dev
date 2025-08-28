@@ -12,6 +12,7 @@ You can also contact Paul Parkinson with any questions [here](https://www.linked
 Source code: see https://github.com/paulparkinson/langflow-agenticai-oracle-mcp-vector-nl2sql
 
 Blog: https://www.linkedin.com/pulse/develop-agentic-ai-workflows-langflow-oracle-database-paul-parkinson-axb4e
+
 Video: https://www.youtube.com/watch?v=Jw23lukIqRc
 
 
@@ -19,6 +20,7 @@ Video: https://www.youtube.com/watch?v=Jw23lukIqRc
 Source code: see `ai/asdf` directory
 
 Blog: https://www.linkedin.com/pulse/develop-oci-real-time-speech-transcription-oracle-ai-speak-parkinson-pht8e
+
 AI Hub: https://www.oracle.com/artificial-intelligence/speak-with-ai-about-data-using-real-time/
 
 ### 3. Interactive AI Holograms: Develop a Digital Double Assistant with Oracle Database 23ai Select AI, Vector RAG, OCI Speech AI, and Audio2Face MetaHumans
