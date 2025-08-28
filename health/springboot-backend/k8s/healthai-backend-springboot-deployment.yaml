@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: healthai-backend-springboot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: healthai-backend
+  template:
+    metadata:
+      labels:
+        app: healthai-backend
+        version: springboot
+    spec:
+      containers:
+      - name: healthai-backend
+#        image: us-ashburn-1.ocir.io/oradbclouducm/gd74087885/healthai-backend-springboot:0.1
+        image: ${DOCKER_REGISTRY}/healthai-backend-springboot:0.1
+        imagePullPolicy: Always
+        env:
+        - name: LOG_LEVEL
+          value: "DEBUG"
+        - name: spring.datasource.username
+#          value: ADMIN
+          value: TESTUSER1
+        - name: spring.datasource.url
+          value: "jdbc:oracle:thin:@yourdb_high?TNS_ADMIN=/healthai/creds"
+        - name: spring.datasource.password
+          value: yourpw
+        - name: OCI_REGION
+          value: us-phoenix-1
+#          value: Welcome12345
+#        - name: spring.datasource.password
+#          valueFrom:
+#            secretKeyRef:
+#              name: dbuser
+#              key: dbpassword
+#              optional: true #not needed/used if using VAULT_SECRET_OCID exists
+        volumeMounts:
+        - name: creds
+          mountPath: /healthai/creds
+        ports:
+        - containerPort: 8080
+      restartPolicy: Always
+      volumes:
+      - name: creds
+        secret:
+          secretName: healthai-backend-db-tns-admin-secret
+      

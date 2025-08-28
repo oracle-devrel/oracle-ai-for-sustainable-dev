@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: healthai-frontend-flutter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: healthai-frontend
+  template:
+    metadata:
+      labels:
+        app: healthai-frontend
+        version: flutter
+    spec:
+      initContainers:
+        - name: install-fuser
+          image: debian:bullseye
+          command: ["sh", "-c"]
+          args: ["apt-get update && apt-get install -y psmisc"]
+          volumeMounts:
+            - name: shared-bin
+              mountPath: /usr/local/bin
+      containers:
+      - name: healthai-frontend
+#        image: us-ashburn-1.ocir.io/oradbclouducm/gd74087885/healthai-frontend-flutter:0.1
+        image: ${DOCKER_REGISTRY}/healthai-frontend-flutter:0.1
+        imagePullPolicy: Always
+        env:
+        - name: LOG_LEVEL
+          value: "DEBUG"
+        ports:
+        - containerPort: 5000
+        volumeMounts:
+          - name: shared-bin
+            mountPath: /usr/local/bin
+      volumes:
+        - name: shared-bin
+          emptyDir: { }
+      restartPolicy: Always
+      

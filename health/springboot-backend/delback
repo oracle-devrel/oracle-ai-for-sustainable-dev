@@ -1,0 +1,6 @@
+export k8s_pod=healthai-backend-springboot
+for line in $(kubectl get pods -n healthai | \
+  grep $k8s_pod | awk '{print $1}'); do
+    echo "kubectl delete pod $line "
+    kubectl delete pod $line -n healthai
+done
