@@ -15,19 +15,17 @@ spec:
     spec:
       containers:
       - name: healthai-backend
-#        image: us-ashburn-1.ocir.io/oradbclouducm/gd74087885/healthai-backend-springboot:0.1
-        image: ${DOCKER_REGISTRY}/healthai-backend-springboot:0.1
+        image: IMAGE_PLACEHOLDER
         imagePullPolicy: Always
         env:
         - name: LOG_LEVEL
           value: "DEBUG"
         - name: spring.datasource.username
-#          value: ADMIN
-          value: TESTUSER1
+          value: ADMIN
         - name: spring.datasource.url
-          value: "jdbc:oracle:thin:@yourdb_high?TNS_ADMIN=/healthai/creds"
+          value: "jdbc:oracle:thin:@financialdb_high?TNS_ADMIN=/healthai/creds"
         - name: spring.datasource.password
-          value: yourpw
+          value: Welcome12345*
         - name: OCI_REGION
           value: us-phoenix-1
 #          value: Welcome12345

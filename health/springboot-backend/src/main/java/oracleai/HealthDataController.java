@@ -27,7 +27,7 @@ import java.util.List;
 @RequestMapping("/data")
 public class HealthDataController {
 
-    private String schema = "DEMOUSER."; //including "." suffix, eg "DEMOUSER.", if other than current user for some reason
+    private String schema = ""; //including "." suffix, eg "DEMOUSER.", if other than current user for some reason
 
     JdbcTemplate jdbcTemplate;
 

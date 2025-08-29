@@ -1,40 +1,54 @@
-# Install Operating system and dependencies
-FROM ubuntu:20.04
+# Use Ubuntu base and install Flutter manually for better control
+FROM ubuntu:22.04
 
-ARG DEBIAN_FRONTEND=noninteractive
-RUN apt-get update
-RUN apt-get install -y curl git wget unzip libgconf-2-4 gdb libstdc++6 libglu1-mesa fonts-droid-fallback lib32stdc++6 python3
-RUN apt-get clean
+# Set environment variables
+ENV DEBIAN_FRONTEND=noninteractive
+ENV FLUTTER_HOME=/opt/flutter
+ENV PATH="$FLUTTER_HOME/bin:$PATH"
 
-# download Flutter SDK from Flutter Github repo
-RUN git clone https://github.com/flutter/flutter.git /usr/local/flutter
-#COPY chrome.dart /usr/local/flutter/packages/flutter_tools/lib/src/web/chrome.dart
-#edit /usr/local/flutter/packages/flutter_tools/lib/src/web/chrome.dart
-#after  '--disable-popup-blocking',
-# include     '--disable-web-security',
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    git \
+    wget \
+    unzip \
+    xz-utils \
+    zip \
+    libglu1-mesa \
+    python3 \
+    psmisc \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-# Set flutter environment path
-ENV PATH="/usr/local/flutter/bin:/usr/local/flutter/bin/cache/dart-sdk/bin:${PATH}"
+# Download and install Flutter
+RUN git clone https://github.com/flutter/flutter.git $FLUTTER_HOME && \
+    cd $FLUTTER_HOME && \
+    git checkout stable
 
-# Run flutter doctor
-RUN flutter doctor
+# Pre-download Flutter dependencies
+RUN flutter precache --web
 
 # Enable flutter web
-RUN flutter channel master
-RUN flutter upgrade
 RUN flutter config --enable-web
-COPY chrome.dart /usr/local/flutter/packages/flutter_tools/lib/src/web/chrome.dart
 
-# Copy files to container and build
-RUN mkdir /app/
+# Create app directory
+WORKDIR /app
+
+# Copy the app source code
 COPY . /app/
-WORKDIR /app/
+
+# Copy custom chrome configuration if needed
+RUN if [ -f "chrome.dart" ]; then \
+        cp chrome.dart $FLUTTER_HOME/packages/flutter_tools/lib/src/web/chrome.dart; \
+    fi
+
+# Build the Flutter web app
 RUN flutter build web
 
 # Record the exposed port
 EXPOSE 5000
 
-# make server startup script executable and start the web server
-RUN ["chmod", "+x", "/app/server/server.sh"]
+# Make server startup script executable and start the web server
+RUN chmod +x /app/server/server.sh
 
-ENTRYPOINT [ "/app/server/server.sh"]
+ENTRYPOINT ["/app/server/server.sh"]

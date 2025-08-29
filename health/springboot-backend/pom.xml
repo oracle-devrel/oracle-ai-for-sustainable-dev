@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.1</version>
+		<version>3.1.5</version>
 		<relativePath/>
 	</parent>
 	<groupId>oracleai</groupId>
@@ -15,13 +15,11 @@
 	<description>Oracle AI Demos</description>
 
 	<properties>
-		<spring-cloud.version>2021.0.5</spring-cloud.version>
-		<oracle.jdbc.version>21.7.0.0</oracle.jdbc.version>
-		<spring.boot.version>2.7.6</spring.boot.version>
+		<java.version>17</java.version>
+		<spring-cloud.version>2022.0.4</spring-cloud.version>
+		<oracle.jdbc.version>21.9.0.0</oracle.jdbc.version>
 		<spring.vault.version>3.1.1</spring.vault.version>
-		<oci.sdk.version>3.29.0</oci.sdk.version>
-
-
+		<oci.sdk.version>3.35.0</oci.sdk.version>
 		<jib-maven-plugin.version>3.3.1</jib-maven-plugin.version>
 		<liquibase.version>4.17.2</liquibase.version>
 		<docker.registry>${env.DOCKER_REGISTRY}</docker.registry>
@@ -55,11 +53,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-			<version>${spring.boot.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>com.oracle.database.jdbc</groupId>
 			<artifactId>ojdbc8</artifactId>
 			<version>${oracle.jdbc.version}</version>
@@ -87,7 +80,6 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
-			<version>${spring.boot.version}</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -107,7 +99,6 @@
 			<artifactId>jackson-databind</artifactId>
 		</dependency>
 
-
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
@@ -115,7 +106,6 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-jdbc</artifactId>
-			<version>5.3.25</version>
 		</dependency>
 
 <!--		<dependency>-->
@@ -153,7 +143,7 @@
 		<dependency>
 			<groupId>com.oracle.oci.sdk</groupId>
 			<artifactId>oci-java-sdk-generativeaiinference</artifactId>
-			<version>3.32.1</version>
+			<version>${oci.sdk.version}</version>
 		</dependency>
     </dependencies>
 	<dependencyManagement>
@@ -172,18 +162,15 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin><plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-compiler-plugin</artifactId><configuration><source>9</source><target>9</target></configuration></plugin>
-
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration><source>8</source><target>8</target></configuration>
+				<configuration>
+					<source>17</source>
+					<target>17</target>
+				</configuration>
 			</plugin>
-
 		</plugins>
 	</build>
 

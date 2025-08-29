@@ -5,11 +5,11 @@ export IMAGE_VERSION=0.1
 export IMAGE=${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_VERSION}
 
 
-docker build -t=$IMAGE .
+podman build -t=$IMAGE .
 
-docker push "$IMAGE"
+podman push "$IMAGE"
 if [  $? -eq 0 ]; then
-    docker rmi "$IMAGE"
+    podman rmi "$IMAGE"
 fi
 
 

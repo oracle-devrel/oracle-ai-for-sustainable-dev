@@ -23,8 +23,7 @@ spec:
               mountPath: /usr/local/bin
       containers:
       - name: healthai-frontend
-#        image: us-ashburn-1.ocir.io/oradbclouducm/gd74087885/healthai-frontend-flutter:0.1
-        image: ${DOCKER_REGISTRY}/healthai-frontend-flutter:0.1
+        image: IMAGE_PLACEHOLDER
         imagePullPolicy: Always
         env:
         - name: LOG_LEVEL
