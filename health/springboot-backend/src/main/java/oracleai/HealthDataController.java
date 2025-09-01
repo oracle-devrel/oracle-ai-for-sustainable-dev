@@ -27,7 +27,8 @@ import java.util.List;
 @RequestMapping("/data")
 public class HealthDataController {
 
-    private String schema = ""; //including "." suffix, eg "DEMOUSER.", if other than current user for some reason
+    private String schema = ""; // including "." suffix, eg "DEMOUSER.", if other than current user for some
+                                // reason
 
     JdbcTemplate jdbcTemplate;
 
@@ -37,36 +38,36 @@ public class HealthDataController {
     }
 
     /**
-     descr ANNUAL_DEATH_CAUSE;
-     Name                                Null?    Type
-     ----------------------------------- -------- ------------
-     ID                                  NOT NULL NUMBER
-     ENTITY                                       VARCHAR2(50)
-     CODE                                         VARCHAR2(50)
-     YEAR                                         NUMBER
-     DEATHS_MENINGITIS                            NUMBER
-     DEATHS_ALZHEIMERS_DISEASE                    NUMBER
-     DEATHS_PARKINSON_DISEASE                     NUMBER
-     DEATHS_NUTRITIONAL_DEFICIENCIES              NUMBER
-     DEATHS_MALARIA                               NUMBER
-     DEATHS_MATERNAL_DISORDERS                    NUMBER
-     DEATHS_HIV_AIDS                              NUMBER
-     DEATHS_DRUG_DISORDERS                        NUMBER
-     DEATHS_TUBERCULOSIS                          NUMBER
-     DEATHS_CARDIOVASCULAR                        NUMBER
-     DEATHS_RESPIRATORY_INFECTIONS                NUMBER
-     DEATHS_NEONATAL_DISORDERS                    NUMBER
-     DEATHS_ALCOHOL                               NUMBER
-     DEATHS_DIARRHEAL_DISEASES                    NUMBER
-     DEATHS_ENVIRONMENTAL_CHANGES                 NUMBER
-     DEATHS_NEOPLASMS                             NUMBER
-     DEATHS_DIABETES                              NUMBER
-     DEATHS_CHRONIC_KIDNEY                        NUMBER
-     DEATHS_PROTEIN_MALNUTRITION                  NUMBER
-     DEATHS_CHRONIC_RESPIRATORY_DISEASES          NUMBER
-     DEATHS_LIVER_DISEASES                        NUMBER
-     DEATHS_DIGESTIVE_DISEASES                    NUMBER
-     DEATHS_ACUTE_HEPATITIS                       NUMBER
+     * descr ANNUAL_DEATH_CAUSE;
+     * Name Null? Type
+     * ----------------------------------- -------- ------------
+     * ID NOT NULL NUMBER
+     * ENTITY VARCHAR2(50)
+     * CODE VARCHAR2(50)
+     * YEAR NUMBER
+     * DEATHS_MENINGITIS NUMBER
+     * DEATHS_ALZHEIMERS_DISEASE NUMBER
+     * DEATHS_PARKINSON_DISEASE NUMBER
+     * DEATHS_NUTRITIONAL_DEFICIENCIES NUMBER
+     * DEATHS_MALARIA NUMBER
+     * DEATHS_MATERNAL_DISORDERS NUMBER
+     * DEATHS_HIV_AIDS NUMBER
+     * DEATHS_DRUG_DISORDERS NUMBER
+     * DEATHS_TUBERCULOSIS NUMBER
+     * DEATHS_CARDIOVASCULAR NUMBER
+     * DEATHS_RESPIRATORY_INFECTIONS NUMBER
+     * DEATHS_NEONATAL_DISORDERS NUMBER
+     * DEATHS_ALCOHOL NUMBER
+     * DEATHS_DIARRHEAL_DISEASES NUMBER
+     * DEATHS_ENVIRONMENTAL_CHANGES NUMBER
+     * DEATHS_NEOPLASMS NUMBER
+     * DEATHS_DIABETES NUMBER
+     * DEATHS_CHRONIC_KIDNEY NUMBER
+     * DEATHS_PROTEIN_MALNUTRITION NUMBER
+     * DEATHS_CHRONIC_RESPIRATORY_DISEASES NUMBER
+     * DEATHS_LIVER_DISEASES NUMBER
+     * DEATHS_DIGESTIVE_DISEASES NUMBER
+     * DEATHS_ACUTE_HEPATITIS NUMBER
      */
     @CrossOrigin
     @GetMapping("/getCausesOfDeath")
@@ -79,17 +80,15 @@ public class HealthDataController {
         List<AnnualDeathCause> annualDeathCauses = new ArrayList<>();
         System.out.println("getCausesOfDeath ...");
         jdbcTemplate.query(sql, (RowMapper) (rs, rowNum) -> {
-            AnnualDeathCause feature =
-                    new AnnualDeathCause(
-                            rs.getString("ENTITY"),
-                            rs.getInt("YEAR"),
-                            rs.getInt("DEATHS_MENINGITIS"),
-                            rs.getInt("DEATHS_ALZHEIMERS_DISEASE"),
-                            rs.getInt("DEATHS_PARKINSON_DISEASE"),
-                            rs.getInt("DEATHS_NUTRITIONAL_DEFICIENCIES"),
-                            rs.getInt("DEATHS_MALARIA"),
-                            rs.getInt("DEATHS_MATERNAL_DISORDERS")
-                    );
+            AnnualDeathCause feature = new AnnualDeathCause(
+                    rs.getString("ENTITY"),
+                    rs.getInt("YEAR"),
+                    rs.getInt("DEATHS_MENINGITIS"),
+                    rs.getInt("DEATHS_ALZHEIMERS_DISEASE"),
+                    rs.getInt("DEATHS_PARKINSON_DISEASE"),
+                    rs.getInt("DEATHS_NUTRITIONAL_DEFICIENCIES"),
+                    rs.getInt("DEATHS_MALARIA"),
+                    rs.getInt("DEATHS_MATERNAL_DISORDERS"));
             annualDeathCauses.add(feature);
             return "";
         });
@@ -100,40 +99,40 @@ public class HealthDataController {
     }
 
     /**
-     descr CANCER_OPEN_RESEARCH
-
-     Name                    Null? Type
-     ----------------------- ----- ---------------
-     COLUMN_1                      NUMBER
-     DATE_RW                       DATE
-     STUDY                         VARCHAR2(4000)
-     STUDY_LINK                    VARCHAR2(256)
-     JOURNAL                       VARCHAR2(64)
-     SEVERE                        VARCHAR2(64)
-     SEVERE_LOWER_BOUND            NUMBER
-     SEVERE_UPPER_BOUND            NUMBER
-     SEVERE_P_VALUE                NUMBER
-     SEVERE_SIGNIFICANT            VARCHAR2(64)
-     SEVERE_ADJUSTED               VARCHAR2(64)
-     SEVERE_CALCULATED             VARCHAR2(64)
-     FATALITY                      VARCHAR2(64)
-     FATALITY_LOWER_BOUND          NUMBER
-     FATALITY_UPPER_BOUND          NUMBER
-     FATALITY_P_VALUE              VARCHAR2(64)
-     FATALITY_SIGNIFICANT          VARCHAR2(64)
-     FATALITY_ADJUSTED             VARCHAR2(64)
-     FATALITY_CALCULATED           VARCHAR2(64)
-     MULTIVARIATE_ADJUSTMENT       VARCHAR2(4000)
-     STUDY_TYPE                    VARCHAR2(64)
-     SAMPLE_SIZE                   VARCHAR2(32767)
-     STUDY_POPULATION              VARCHAR2(4000)
-     ADDED_ON                      DATE
-     CRITICAL_ONLY                 VARCHAR2(64)
-     Discharged vs. death?         VARCHAR2(64)
-
-
-     DATE_RW                       DATE
-     SEVERE_LOWER_BOUND            NUMBER
+     * descr CANCER_OPEN_RESEARCH
+     * 
+     * Name Null? Type
+     * ----------------------- ----- ---------------
+     * COLUMN_1 NUMBER
+     * DATE_RW DATE
+     * STUDY VARCHAR2(4000)
+     * STUDY_LINK VARCHAR2(256)
+     * JOURNAL VARCHAR2(64)
+     * SEVERE VARCHAR2(64)
+     * SEVERE_LOWER_BOUND NUMBER
+     * SEVERE_UPPER_BOUND NUMBER
+     * SEVERE_P_VALUE NUMBER
+     * SEVERE_SIGNIFICANT VARCHAR2(64)
+     * SEVERE_ADJUSTED VARCHAR2(64)
+     * SEVERE_CALCULATED VARCHAR2(64)
+     * FATALITY VARCHAR2(64)
+     * FATALITY_LOWER_BOUND NUMBER
+     * FATALITY_UPPER_BOUND NUMBER
+     * FATALITY_P_VALUE VARCHAR2(64)
+     * FATALITY_SIGNIFICANT VARCHAR2(64)
+     * FATALITY_ADJUSTED VARCHAR2(64)
+     * FATALITY_CALCULATED VARCHAR2(64)
+     * MULTIVARIATE_ADJUSTMENT VARCHAR2(4000)
+     * STUDY_TYPE VARCHAR2(64)
+     * SAMPLE_SIZE VARCHAR2(32767)
+     * STUDY_POPULATION VARCHAR2(4000)
+     * ADDED_ON DATE
+     * CRITICAL_ONLY VARCHAR2(64)
+     * Discharged vs. death? VARCHAR2(64)
+     * 
+     * 
+     * DATE_RW DATE
+     * SEVERE_LOWER_BOUND NUMBER
      */
     @CrossOrigin
     @GetMapping("/getCancerOpenResearch")
@@ -141,7 +140,7 @@ public class HealthDataController {
         String sql = "SELECT " +
                 "    TO_CHAR(DATE_RW, 'Month') AS Month_Name," +
                 "    EXTRACT(MONTH FROM DATE_RW) AS Month_Number," +
-//                "    EXTRACT(YEAR FROM DATE_RW) AS Year," +
+                // " EXTRACT(YEAR FROM DATE_RW) AS Year," +
                 "    SUM(SEVERE_LOWER_BOUND) AS Sum_Severe_Lower_Bound," +
                 "    SUM(SEVERE_UPPER_BOUND) AS Sum_Severe_Upper_Bound," +
                 "    SUM(FATALITY_LOWER_BOUND) AS Sum_Fatality_Lower_Bound," +
@@ -152,15 +151,13 @@ public class HealthDataController {
         List<CancerOpenResearch> cancerOpenResearches = new ArrayList<>();
         System.out.println("getCausesOfDeath ...");
         jdbcTemplate.query(sql, (RowMapper) (rs, rowNum) -> {
-            CancerOpenResearch cancerOpenResearch =
-                    new CancerOpenResearch(
-                            rs.getInt("Month_Number"),
-                            rs.getString("Month_Name"),
-                            rs.getInt("Sum_Severe_Lower_Bound"),
-                            rs.getInt("Sum_Severe_Upper_Bound"),
-                            rs.getInt("Sum_Fatality_Lower_Bound"),
-                            rs.getInt("Sum_Fatality_Upper_Bound")
-                    );
+            CancerOpenResearch cancerOpenResearch = new CancerOpenResearch(
+                    rs.getInt("Month_Number"),
+                    rs.getString("Month_Name"),
+                    rs.getInt("Sum_Severe_Lower_Bound"),
+                    rs.getInt("Sum_Severe_Upper_Bound"),
+                    rs.getInt("Sum_Fatality_Lower_Bound"),
+                    rs.getInt("Sum_Fatality_Upper_Bound"));
             cancerOpenResearches.add(cancerOpenResearch);
             return "";
         });
@@ -171,37 +168,37 @@ public class HealthDataController {
     }
 
     /**
-     descr US_HOSPITALS
-     Name       Null?    Type
-     ---------- -------- -------------------
-     ID_1       NOT NULL NUMBER
-     LATITUDE            NUMBER
-     LONGITUDE           NUMBER
-     OBJECTID            NUMBER
-     ID                  NUMBER
-     NAME                VARCHAR2(255)
-     ADDRESS             VARCHAR2(255)
-     CITY                VARCHAR2(50)
-     STATE               VARCHAR2(50)
-     ZIP                 NUMBER
-     TELEPHONE           VARCHAR2(50)
-     TYPE                VARCHAR2(50)
-     STATUS              VARCHAR2(50)
-     POPULATION          NUMBER
-     COUNTY              VARCHAR2(50)
-     COUNTYFIPS          NUMBER
-     COUNTRY             VARCHAR2(50)
-     LATITUDE2           NUMBER
-     LONGITUDE2          NUMBER
-     NAICS_CODE          NUMBER
-     NAICS_DESC          VARCHAR2(255)
-     SOURCE              VARCHAR2(255)
-     WEBSITE             VARCHAR2(255)
-     OWNER               VARCHAR2(255)
-     TTL_STAFF           NUMBER
-     BEDS                NUMBER
-     TRAUMA              VARCHAR2(50)
-     SHAPE               PUBLIC.SDO_GEOMETRY
+     * descr US_HOSPITALS
+     * Name Null? Type
+     * ---------- -------- -------------------
+     * ID_1 NOT NULL NUMBER
+     * LATITUDE NUMBER
+     * LONGITUDE NUMBER
+     * OBJECTID NUMBER
+     * ID NUMBER
+     * NAME VARCHAR2(255)
+     * ADDRESS VARCHAR2(255)
+     * CITY VARCHAR2(50)
+     * STATE VARCHAR2(50)
+     * ZIP NUMBER
+     * TELEPHONE VARCHAR2(50)
+     * TYPE VARCHAR2(50)
+     * STATUS VARCHAR2(50)
+     * POPULATION NUMBER
+     * COUNTY VARCHAR2(50)
+     * COUNTYFIPS NUMBER
+     * COUNTRY VARCHAR2(50)
+     * LATITUDE2 NUMBER
+     * LONGITUDE2 NUMBER
+     * NAICS_CODE NUMBER
+     * NAICS_DESC VARCHAR2(255)
+     * SOURCE VARCHAR2(255)
+     * WEBSITE VARCHAR2(255)
+     * OWNER VARCHAR2(255)
+     * TTL_STAFF NUMBER
+     * BEDS NUMBER
+     * TRAUMA VARCHAR2(50)
+     * SHAPE PUBLIC.SDO_GEOMETRY
      */
     @CrossOrigin
     @GetMapping("/getHospitals")
@@ -212,20 +209,19 @@ public class HealthDataController {
                 "ORDER BY count DESC " +
                 "FETCH FIRST 300 ROWS ONLY"; // 7563 rows
         List<Feature> features = new ArrayList<>();
-        System.out.println("getHospitals ..." );
+        System.out.println("getHospitals ...");
         jdbcTemplate.query(sql, new RowMapper() {
             public String mapRow(ResultSet rs, int rowNum) throws SQLException {
                 String name = rs.getString("name");
                 String address = rs.getString("ADDRESS");
-//               todo seems the database table has long and lat backwards?
+                // todo seems the database table has long and lat backwards?
                 double longitude = rs.getDouble("latitude");
                 double latitude = rs.getDouble("longitude");
-                int count = rs.getInt("count"); //currently unused
-                Feature feature =
-                        new Feature(
-                                name, "",
-                                "https://baycare.org/-/media/project/baycare/consumer-portal/hospitals-page/mease-countryside-hospital.jpg",
-                                longitude, latitude);
+                int count = rs.getInt("count"); // currently unused
+                Feature feature = new Feature(
+                        name, "",
+                        "https://baycare.org/-/media/project/baycare/consumer-portal/hospitals-page/mease-countryside-hospital.jpg",
+                        longitude, latitude);
                 features.add(feature);
                 return "";
             }
@@ -235,11 +231,10 @@ public class HealthDataController {
         return json;
     }
 
-
-
+    @CrossOrigin
     @GetMapping("/getDocuments")
     public String getDocuments() throws Exception {
-//    public ResponseEntity<String> getDocuments() throws Exception {
+        // public ResponseEntity<String> getDocuments() throws Exception {
         String sql = "SELECT jsondata FROM aidocument_results";
         List<JSONObject> results = jdbcTemplate.query(sql, new DocumentAnalysisRowMapper());
 
@@ -250,7 +245,7 @@ public class HealthDataController {
 
         System.out.println("DocumentAnalysisRowMapper.jsonArray.toString() " + jsonArray.toString());
         return jsonArray.toString();
-//        return ResponseEntity.ok(jsonArray.toString());
+        // return ResponseEntity.ok(jsonArray.toString());
     }
 
     private static class DocumentAnalysisRowMapper implements RowMapper<JSONObject> {
@@ -263,6 +258,3 @@ public class HealthDataController {
         }
     }
 }
-
-
-

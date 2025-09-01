@@ -51,4 +51,5 @@ echo ""
 echo "💡 To follow logs in real-time, use:"
 for POD in $PODS; do
     echo "   kubectl logs -f $POD -n health"
+    kubectl logs -f $POD -n health
 done

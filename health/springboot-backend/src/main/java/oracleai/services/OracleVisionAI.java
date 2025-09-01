@@ -1,19 +1,21 @@
 package oracleai.services;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.oracle.bmc.Region;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
-import com.oracle.bmc.Region;
 import com.oracle.bmc.aivision.AIServiceVisionClient;
 import com.oracle.bmc.aivision.model.*;
 import com.oracle.bmc.aivision.requests.AnalyzeImageRequest;
 import com.oracle.bmc.aivision.responses.AnalyzeImageResponse;
 import com.oracle.bmc.auth.AuthenticationDetailsProvider;
+
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class OracleVisionAI {
 
@@ -22,8 +24,9 @@ public class OracleVisionAI {
      */
     public static String processImage(byte[] bytes, ImageFeature feature) throws Exception {
         AuthenticationDetailsProvider provider = AuthProvider.getAuthenticationDetailsProvider();
+        System.out.println("processImage Using provider: " + provider);
         AIServiceVisionClient aiServiceVisionClient = AIServiceVisionClient.builder().build(provider);
-//        aiServiceVisionClient.setRegion(Region.US_PHOENIX_1);
+        aiServiceVisionClient.setRegion(Region.US_PHOENIX_1);
         List<ImageFeature> features = new ArrayList<>();
         features.add(feature);
         InlineImageDetails inlineImageDetails = InlineImageDetails.builder()
@@ -43,8 +46,7 @@ public class OracleVisionAI {
         return json;
     }
 
-
-    //For Text Detection....
+    // For Text Detection....
     @JsonIgnoreProperties(ignoreUnknown = true)
     @Getter
     @Setter
@@ -66,8 +68,7 @@ public class OracleVisionAI {
         private String text;
     }
 
-
-    //For Image Detection...
+    // For Image Detection...
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     @Getter
