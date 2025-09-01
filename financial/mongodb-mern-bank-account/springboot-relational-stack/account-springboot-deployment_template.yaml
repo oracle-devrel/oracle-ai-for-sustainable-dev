@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: account-springboot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: account
+  template:
+    metadata:
+      labels:
+        app: account
+    spec:
+      volumes:
+        - name: creds
+          secret:
+            secretName: financialdb-wallet-secret
+            defaultMode: 420
+      containers:
+        - name: account-springboot
+          image: IMAGE_PLACEHOLDER
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 443
+          env:
+            - name: DB_USER
+              value: financial
+            - name: DB_URL
+              value: jdbc:oracle:thin:@financialdb_high?TNS_ADMIN=/oraclefinancial/creds
+            - name: DB_PASSWORD
+              value: Welcome12345
+            - name: spring.datasource.username
+              value: financial
+            - name: spring.datasource.url
+              value: jdbc:oracle:thin:@financialdb_high?TNS_ADMIN=/oraclefinancial/creds
+            - name: spring.datasource.password
+              value: Welcome12345
+          resources: {}
+          volumeMounts:
+            - name: creds
+              mountPath: /oraclefinancial/creds
+      restartPolicy: Always
+#      imagePullSecrets:
+#        - name: regcred
+#      schedulerName: default-scheduler

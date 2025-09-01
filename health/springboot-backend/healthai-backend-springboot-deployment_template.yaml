@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: healthai-backend-springboot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: healthai-backend
+  template:
+    metadata:
+      labels:
+        app: healthai-backend
+        version: springboot
+    spec:
+      containers:
+      - name: healthai-backend
+        image: IMAGE_PLACEHOLDER
+        imagePullPolicy: Always
+        env:
+        - name: LOG_LEVEL
+          value: "DEBUG"
+        - name: spring.datasource.username
+          value: ADMIN
+        - name: spring.datasource.url
+          value: "jdbc:oracle:thin:@financialdb_high?TNS_ADMIN=/healthai/creds"
+        - name: spring.datasource.password
+          value: Welcome12345*
+        - name: OCI_REGION
+          value: us-phoenix-1
+        - name: OCICONFIG_FILE
+          value: "/root/.oci/config"
+        - name: OCICONFIG_PROFILE
+          value: "DEFAULT"
+        - name: COMPARTMENT_ID
+          value: "COMPARTMENT_ID_PLACEHOLDER"
+        - name: OBJECTSTORAGE_NAMESPACE
+          value: "OBJECTSTORAGE_NAMESPACE_PLACEHOLDER"
+        - name: OBJECTSTORAGE_BUCKETNAME
+          value: "OBJECTSTORAGE_BUCKETNAME_PLACEHOLDER"
+        - name: OBJECTSTORAGE_REGION
+          value: "OBJECTSTORAGE_REGION_PLACEHOLDER"
+        - name: ORDS_ENDPOINT_URL
+          value: "ORDS_ENDPOINT_URL_PLACEHOLDER"
+        - name: OCI_VISION_SERVICE_ENDPOINT
+          value: "OCI_VISION_SERVICE_ENDPOINT_PLACEHOLDER"
+        - name: OCI_SPEECH_SERVICE_ENDPOINT
+          value: "OCI_SPEECH_SERVICE_ENDPOINT_PLACEHOLDER"
+        - name: OCI_GENAI_SERVICE_ENDPOINT
+          value: "OCI_GENAI_SERVICE_ENDPOINT_PLACEHOLDER"
+        - name: OPENAI_API_KEY
+          value: "OPENAI_API_KEY_PLACEHOLDER"
+        - name: VISIONAI_XRAY_BREASTCANCER_MODEL_OCID
+          value: "VISIONAI_XRAY_BREASTCANCER_MODEL_OCID_PLACEHOLDER"
+        - name: VISIONAI_XRAY_LUNGCANCER_MODEL_OCID
+          value: "VISIONAI_XRAY_LUNGCANCER_MODEL_OCID_PLACEHOLDER"
+        - name: VISIONAI_XRAY_PNEUMONIA_MODEL_OCID
+          value: "VISIONAI_XRAY_PNEUMONIA_MODEL_OCID_PLACEHOLDER"
+        - name: VISIONAI_XRAY_PNEUMONIA_MODEL_DEEP_LEARNING_OCID
+          value: "VISIONAI_XRAY_PNEUMONIA_MODEL_DEEP_LEARNING_OCID_PLACEHOLDER"
+#          value: Welcome12345
+#        - name: spring.datasource.password
+#          valueFrom:
+#            secretKeyRef:
+#              name: dbuser
+#              key: dbpassword
+#              optional: true #not needed/used if using VAULT_SECRET_OCID exists
+        volumeMounts:
+        - name: creds
+          mountPath: /healthai/creds
+        - name: oci-config
+          mountPath: /root/.oci
+          readOnly: true
+        - name: oci-private-key
+          mountPath: /root/.ssh
+          readOnly: true
+        ports:
+        - containerPort: 8080
+      restartPolicy: Always
+      volumes:
+      - name: creds
+        secret:
+          secretName: healthai-backend-db-tns-admin-secret
+      - name: oci-config
+        configMap:
+          name: oci-config
+          defaultMode: 0600
+      - name: oci-private-key
+        secret:
+          secretName: oci-private-key
+          defaultMode: 0600
+      

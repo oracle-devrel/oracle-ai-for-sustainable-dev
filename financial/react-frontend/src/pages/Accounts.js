@@ -173,11 +173,11 @@ const PanelSection = styled.div`
   }
 `;
 
-const REACT_APP_MERN_MONGODB_SERVICE_URL = process.env.REACT_APP_MERN_MONGODB_SERVICE_URL || 'http://localhost:8080';
-const REACT_APP_MERN_MONGODB_JSONDUALITY_ORACLE_SERVICE_URL =
-  process.env.REACT_APP_MERN_MONGODB_JSONDUALITY_ORACLE_SERVICE_URL || 'http://localhost:5000';
 const REACT_APP_MERN_SQL_ORACLE_SERVICE_URL =
-  process.env.REACT_APP_MERN_SQL_ORACLE_SERVICE_URL || 'http://localhost:6000';
+  process.env.REACT_APP_MERN_SQL_ORACLE_SERVICE_URL || 'http://localhost:8080';
+const REACT_APP_MERN_MONGODB_JSONDUALITY_ORACLE_SERVICE_URL =
+  process.env.REACT_APP_MERN_MONGODB_JSONDUALITY_ORACLE_SERVICE_URL || 'http://localhost:5001';
+const REACT_APP_MERN_MONGODB_SERVICE_URL = process.env.REACT_APP_MERN_MONGODB_SERVICE_URL || 'http://localhost:8080';
 
 const Accounts = () => {
   const [formData, setFormData] = useState({
@@ -205,11 +205,11 @@ const Accounts = () => {
 
     let postUrl;
     if (formData.writeOption === 'SQL') {
-      postUrl = `${REACT_APP_MERN_SQL_ORACLE_SERVICE_URL}/api/accounts`;
-    } else if (formData.writeOption === 'MongoDB API') {
-      postUrl = `${REACT_APP_MERN_MONGODB_SERVICE_URL}/api/accounts`;
+      postUrl = `${REACT_APP_MERN_SQL_ORACLE_SERVICE_URL}/accounts/api/accounts`;
     } else if (formData.writeOption === 'MongoDB API accessing Oracle Database') {
-      postUrl = `${REACT_APP_MERN_SQL_ORACLE_SERVICE_URL}/api/accounts`;
+      postUrl = `${REACT_APP_MERN_MONGODB_JSONDUALITY_ORACLE_SERVICE_URL}/api/accounts`;
+    } else if (formData.writeOption === 'MongoDB API') {
+      postUrl = `${REACT_APP_MERN_MONGODB_SERVICE_URL}/accounts/api/accounts`;
     }
 
     const payload = {
@@ -257,11 +257,11 @@ const Accounts = () => {
   const fetchAccounts = async () => {
     let fetchUrl;
     if (formData.readOption === 'SQL') {
-      fetchUrl = `${REACT_APP_MERN_SQL_ORACLE_SERVICE_URL}/accounts`;
+      fetchUrl = `${REACT_APP_MERN_SQL_ORACLE_SERVICE_URL}/accounts/accounts`;
     } else if (formData.readOption === 'MongoDB API') {
-      fetchUrl = `${REACT_APP_MERN_MONGODB_SERVICE_URL}/accounts`;
+      fetchUrl = `${REACT_APP_MERN_MONGODB_SERVICE_URL}/accounts/accounts`;
     } else if (formData.readOption === 'MongoDB API accessing Oracle Database') {
-      fetchUrl = `${REACT_APP_MERN_SQL_ORACLE_SERVICE_URL}/accounts`;
+      fetchUrl = `${REACT_APP_MERN_MONGODB_JSONDUALITY_ORACLE_SERVICE_URL}/api/accounts`;
     }
 
     try {
@@ -309,7 +309,7 @@ const Accounts = () => {
             <div style={{ flex: 1, marginRight: '20px' }}>
               <div>
                 <a
-                  href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier-financial/index.html"
+                  href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier/index.html?lab=financial-account-management-mern"
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{ color: bankerAccent, textDecoration: 'none' }}
@@ -319,7 +319,7 @@ const Accounts = () => {
               </div>
               <div>
                 <a
-                  href="https://github.com/paulparkinson/oracle-ai-for-sustainable-dev/tree/main/financial/bank-account-management-mern"
+                  href="https://github.com/paulparkinson/oracle-ai-for-sustainable-dev/tree/main/financial"
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{ color: bankerAccent, textDecoration: 'none' }}
@@ -348,7 +348,7 @@ const Accounts = () => {
               <iframe
                 width="100%"
                 height="315"
-                src="https://www.youtube.com/embed/UljBwo_wGnE"
+                src="https://www.youtube.com/embed/qHVYXagpAC0?start=371&autoplay=0"
                 title="YouTube video player"
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

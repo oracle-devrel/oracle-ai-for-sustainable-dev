@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-sql-inventory
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka-sql-inventory
+  template:
+    metadata:
+      labels:
+        app: kafka-sql-inventory
+    spec:
+      volumes:
+        - name: creds
+          secret:
+            secretName: financialdb-wallet-secret
+            defaultMode: 420
+      containers:
+        - name: backend-springboot
+          image: eu-frankfurt-1.ocir.io/oradbclouducm/financial/kafka-sql-inventory:0.1.1749598079
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 443
+          env:
+            - name: DB_USER
+              value: financial
+            - name: DB_URL
+              value: jdbc:oracle:thin:@financialdb_high?TNS_ADMIN=/oraclefinancial/creds
+            - name: DB_PASSWORD
+              value: Welcome12345
+          #            - name: spring.datasource.username
+          #              value: financial
+          #            - name: spring.datasource.url
+          #              value: jdbc:oracle:thin:@financialdb_high?TNS_ADMIN=/oraclefinancial/creds
+          #            - name: spring.datasource.password
+          #              value: Welcome12345
+          resources: {}
+          volumeMounts:
+            - name: creds
+              mountPath: /oraclefinancial/creds
+      restartPolicy: Always
+#      imagePullSecrets:
+#        - name: regcred
+#      schedulerName: default-scheduler

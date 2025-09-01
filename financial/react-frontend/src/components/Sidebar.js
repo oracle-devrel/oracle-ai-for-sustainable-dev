@@ -15,7 +15,7 @@ const SidebarContainer = styled.div`
   position: fixed;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  overflow-y: auto;
 `;
 
 const SidebarHeader = styled.div`
@@ -29,6 +29,7 @@ const SidebarHeader = styled.div`
 const SidebarMenu = styled.ul`
   list-style: none;
   padding: 0;
+  flex: 1;
 `;
 
 const SidebarItem = styled.li`
@@ -77,6 +78,10 @@ const ToggleSwitchContainer = styled.div`
   align-items: center;
   justify-content: center;
   margin: 10px;
+  flex-shrink: 0;
+  background-color: ${bankerBg};
+  border-top: 1px solid ${bankerAccent};
+  padding-top: 15px;
 `;
 
 const ToggleSwitchLabel = styled.label`
@@ -138,7 +143,6 @@ const Sidebar = () => {
             </IconWrapper>
             <TextContainer>
               <HighlightedText>About this app</HighlightedText>
-              {showDetails && <div>Info and status</div>}
             </TextContainer>
           </StyledNavLink>
         </SidebarItem>
@@ -249,7 +253,7 @@ const Sidebar = () => {
         <SidebarItem>
           <StyledNavLink to="/stockticker">
             <IconWrapper>
-              <img src="/images/Side Menu Icons/View Stock Ticker and Buy:Sell Stock.svg" alt="View stock ticker and buy/sell stock" />
+              <img src="/images/Side Menu Icons/View Stock Ticker.svg" alt="View stock ticker and buy/sell stock" />
             </IconWrapper>
             <TextContainer>
               <HighlightedText>View stock ticker and buy/sell stock</HighlightedText>

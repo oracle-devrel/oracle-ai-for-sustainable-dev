@@ -63,6 +63,17 @@ const SearchForm = styled.form`
   gap: 12px;
 `;
 
+const DisclaimerText = styled.div`
+  background: ${bankerPanel};
+  border: 1px solid #ff6b6b;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 16px;
+  color: #ffcccc;
+  font-weight: bold;
+  text-align: center;
+`;
+
 const SearchLabel = styled.label`
   margin-right: 8px;
   font-weight: bold;
@@ -185,21 +196,45 @@ const Investments = () => {
     }
   };
 
-  const codeSnippet = `// Oracle Database Vector Search (PL/SQL)
-SELECT *
-FROM financial_docs
-WHERE VECTOR_SEARCH('compliance', :query)
-ORDER BY score DESC
-FETCH FIRST 5 ROWS ONLY;
+  const codeSnippet = `import ...
+  from langchain_community.vectorstores import OracleVS
+  
+  def create_vector_store(store_type, document_splits, embedder):
+    global vectorstore
+    print(f"Indexing: using {store_type} as Vector Store...")
 
-// Call MCP from PL/SQL
-DECLARE
-  result VARCHAR2(4000);
-BEGIN
-  result := MCP.GET_MARKET_DATA('AAPL');
-  DBMS_OUTPUT.PUT_LINE(result);
-END;
-`;
+    if store_type == "ORACLEDB":
+        connection = oracledb.connect(
+            user="ragchat",
+            password="ragchat",
+            dsn="localhost/freepdb1")
+        vectorstore = OracleVS.from_documents(
+            documents=document_splits,
+            embedding=embedder,
+            client=connection,
+            table_name="oravs",
+            distance_strategy=DistanceStrategy.DOT_PRODUCT
+        )
+        print(f"Vector Store Table: {vectorstore.table_name}")
+    elif store_type == "FAISS":
+        # modified to cache
+        vectorstore = FAISS.from_documents(
+            documents=document_splits, embedding=embedder
+        )
+    elif store_type == "CHROME":
+        # modified to cache
+        vectorstore = Chroma.from_documents(
+            documents=document_splits, embedding=embedder
+        )
+
+        //Or direct SQL...
+
+sql = """CREATE TABLE IF NOT EXISTS PDFCollection (
+                   id VARCHAR2(4000 BYTE) PRIMARY KEY,
+                   text VARCHAR2(4000 BYTE),
+                   metadata VARCHAR2(4000 BYTE),
+                   embedding VECTOR
+               )"""`;
 
   return (
     <PageContainer>
@@ -217,7 +252,7 @@ END;
             <TextContent>
               <div>
                 <a
-                  href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier-financial/index.html"
+                  href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier/index.html"
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{ color: bankerAccent, textDecoration: 'none' }}
@@ -266,7 +301,7 @@ END;
               <iframe
                 width="100%"
                 height="315"
-                src="https://www.youtube.com/embed/fijnYAQ8zlk" 
+                src="https://www.youtube.com/embed/qHVYXagpAC0?start=933&autoplay=0" 
                 title="YouTube video player"
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -281,17 +316,20 @@ END;
       {/* Search and Code Snippet Section */}
       <TwoColumnContainer>
         <LeftColumn>
+          <DisclaimerText>
+            ⚠️ This application should not be used for any actual financial advisement or actions
+          </DisclaimerText>
           <SearchForm onSubmit={handleSearch}>
-            <SearchLabel htmlFor="searchText">Search:</SearchLabel>
             <SearchInput
               type="text"
               id="searchText"
               name="searchText"
               value={searchText}
               onChange={e => setSearchText(e.target.value)}
+              placeholder="Ask for financial insights..."
             />
             <SearchButton type="submit" disabled={loading}>
-              {loading ? "Searching..." : "Search"}
+              {loading ? "Processing..." : "Ask AI Advisor"}
             </SearchButton>
           </SearchForm>
           {searchResult && (

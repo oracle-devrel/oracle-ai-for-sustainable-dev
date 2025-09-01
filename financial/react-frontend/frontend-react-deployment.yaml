@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-react
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: frontend-react
+          image: ghcr.io/paulparkinson/react-frontend:0.1.1754067468
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            - name: REACT_APP_BACKEND_URL
+              value: http://backend.financial:8090
+            - name: REACT_APP_ORDS_BASE_URL
+              value: https://ij1tyzir3wpwlpe-financialdb.adb.eu-frankfurt-1.oraclecloudapps.com/ords
+      restartPolicy: Always

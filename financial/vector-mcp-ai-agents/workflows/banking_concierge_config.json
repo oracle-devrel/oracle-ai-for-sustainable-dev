@@ -1,0 +1,104 @@
+{
+  "banking_concierge": {
+    "name": "Banking Concierge with Fraud Detection",
+    "description": "AI-powered customer service with integrated fraud detection",
+    "components": {
+      "input_handlers": {
+        "Customer Request": {
+          "data_source": "customer_input",
+          "request_types": [
+            "account_balance",
+            "transaction_history", 
+            "fund_transfer",
+            "card_services",
+            "loan_inquiry",
+            "investment_products"
+          ],
+          "customer_profile_fields": [
+            "customer_id",
+            "account_type",
+            "relationship_length",
+            "risk_profile"
+          ]
+        }
+      },
+      "processing_nodes": {
+        "Intent Recognition": {
+          "vector_search_query": "customer service banking intent classification nlp",
+          "vector_collection": "pdf_documents",
+          "intent_categories": {
+            "account_inquiry": {
+              "keywords": ["balance", "statement", "account", "summary"],
+              "confidence_threshold": 0.8
+            },
+            "transaction_support": {
+              "keywords": ["transfer", "payment", "transaction", "wire"],
+              "confidence_threshold": 0.85
+            },
+            "card_services": {
+              "keywords": ["card", "pin", "activate", "block", "limit"],
+              "confidence_threshold": 0.9
+            },
+            "complaint_resolution": {
+              "keywords": ["problem", "issue", "error", "dispute"],
+              "confidence_threshold": 0.75
+            }
+          }
+        },
+        "Customer Authentication": {
+          "vector_search_query": "customer authentication security banking verification",
+          "auth_methods": ["biometric", "otp", "security_questions", "device_fingerprint"],
+          "security_levels": {
+            "low": ["device_fingerprint"],
+            "medium": ["otp", "security_questions"],
+            "high": ["biometric", "otp", "security_questions"]
+          }
+        }
+      },
+      "decision_nodes": {
+        "Fraud Check": {
+          "decision_type": "fraud_risk_assessment",
+          "fraud_indicators": {
+            "transaction_patterns": {
+              "unusual_amount": 0.3,
+              "unusual_location": 0.4,
+              "unusual_time": 0.2,
+              "velocity_check": 0.5
+            },
+            "behavioral_patterns": {
+              "login_anomalies": 0.25,
+              "device_changes": 0.35,
+              "communication_style": 0.15
+            }
+          },
+          "risk_thresholds": {
+            "low": 0.2,
+            "medium": 0.5,
+            "high": 0.8
+          },
+          "actions": {
+            "low": "approve",
+            "medium": "additional_auth",
+            "high": "block_and_review"
+          }
+        }
+      },
+      "output_handlers": {
+        "Response Output": {
+          "output_format": "customer_response",
+          "response_templates": {
+            "account_inquiry": "Your account information has been retrieved successfully.",
+            "transaction_support": "Your transaction has been processed.",
+            "fraud_alert": "We've detected unusual activity and have secured your account.",
+            "general_help": "Thank you for contacting us. Your request has been processed."
+          },
+          "include_next_steps": true,
+          "escalation_triggers": ["high_complexity", "fraud_detected", "customer_dissatisfaction"]
+        }
+      }
+    },
+    "oracle_db_collections": ["pdf_documents", "web_documents"],
+    "required_apis": ["fraud_detection", "customer_data"],
+    "execution_timeout": 90
+  }
+}

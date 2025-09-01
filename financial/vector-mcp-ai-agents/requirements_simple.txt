@@ -1,0 +1,30 @@
+# Simplified requirements for Python 3.12 compatibility
+# Install these first, then add more specific versions
+
+# Core API framework
+fastapi
+uvicorn[standard]
+pydantic
+python-dotenv
+python-multipart
+
+# LangChain ecosystem (install latest compatible versions)
+langgraph
+langchain
+langchain-openai
+langchain-community
+
+# Oracle Database support
+oracledb
+
+# Vector search and ML
+sentence-transformers
+numpy
+pandas
+
+# Optional AI/ML dependencies (install if needed)
+# torch
+# transformers
+# scikit-learn
+# matplotlib
+# seaborn

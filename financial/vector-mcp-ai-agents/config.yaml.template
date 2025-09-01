@@ -1,0 +1,30 @@
+# Configuration for Agentic AI LangGraph Backend
+# Copy this to config.yaml and fill in your actual values
+
+# Oracle Database 23ai Configuration
+ORACLE_DB_USERNAME: "ADMIN"
+ORACLE_DB_PASSWORD: "your_oracle_password_here"
+ORACLE_DB_DSN: "your_oracle_dsn_here"
+
+# OpenAI Configuration (optional, for LLM features)
+OPENAI_API_KEY: "your_openai_api_key_here"
+
+# Backend API Configuration
+BACKEND_API_HOST: "0.0.0.0"
+BACKEND_API_PORT: 8001
+CORS_ORIGINS: 
+  - "http://localhost:3000"
+  - "http://localhost:3001"
+
+# Logging Configuration
+LOG_LEVEL: "INFO"
+LOG_FORMAT: "%(asctime)s - %(levelname)s - %(message)s"
+
+# Vector Search Configuration
+VECTOR_SEARCH_TOP_K: 5
+EMBEDDING_MODEL: "all-MiniLM-L12-v2"
+
+# Workflow Configuration
+MAX_WORKFLOW_EXECUTION_TIME: 300  # seconds
+POLLING_INTERVAL: 2  # seconds
+MAX_POLLING_ATTEMPTS: 30

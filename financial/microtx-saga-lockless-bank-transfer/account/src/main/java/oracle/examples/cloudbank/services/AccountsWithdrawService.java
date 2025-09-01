@@ -23,6 +23,7 @@ import static com.oracle.microtx.springboot.lra.annotation.LRA.*;
 public class AccountsWithdrawService {
     private static final Logger log = Logger.getLogger(AccountsWithdrawService.class.getName());
     public static final String WITHDRAW = "WITHDRAW";
+    public static boolean isUseLockFreeReservations; // is set per tx/withdraw request but is static so that it can be used elsewhere without being passed around (so note that it can be overridden mid saga as it is)
 
     @PersistenceContext
     private EntityManager entityManager; // Inject the EntityManager
@@ -50,6 +51,7 @@ public class AccountsWithdrawService {
                     AccountTransferDAO.getStatusString(ParticipantStatus.Active)));
             return ResponseEntity.ok("withdraw failed: account does not exist");
         }
+        this.isUseLockFreeReservations = isUseLockFreeReservations;
         if (isUseLockFreeReservations) {
             try {
                 Connection connection = entityManager.unwrap(Connection.class);
@@ -123,6 +125,18 @@ public class AccountsWithdrawService {
     @Compensate
     public ResponseEntity<?> compensateWork(@RequestHeader(LRA_HTTP_CONTEXT_HEADER) String lraId) throws Exception {
         log.info("Account withdraw compensate() called for LRA : " + lraId);
+        if (isUseLockFreeReservations) {
+            try {
+                Connection connection = entityManager.unwrap(Connection.class);
+                log.info("microTxLockFreeReservation.join connection: " + connection);
+                // https://docs.oracle.com/en/database/oracle/transaction-manager-for-microservices/24.2/tmmma/com/oracle/microtx/lra/lockfree/MicroTxLockFreeReservation.html
+                // https://docs.oracle.com/en/database/oracle/transaction-manager-for-microservices/24.4/tmmdg/verify.html
+                // https://www.youtube.com/watch?v=mBijkqoAibE
+                microTxLockFreeReservation.compensate(connection);
+            } catch (Exception e) {
+                log.warning("Failed to retrieve the underlying connection: " + e.getMessage());
+            }
+        }
         Journal journal = AccountTransferDAO.instance().getJournalForLRAid(lraId, WITHDRAW);
         String lraState = journal.getLraState();
         if(lraState.equals(ParticipantStatus.Compensating) ||

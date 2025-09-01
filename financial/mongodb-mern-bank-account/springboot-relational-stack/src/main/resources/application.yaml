@@ -1,0 +1,29 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: account
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+       dialect: org.hibernate.dialect.OracleDialect
+#       format_sql: true
+    show-sql: false
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:oracle:thin:@financialdb_high?TNS_ADMIN=/oraclefinancial/creds}
+    username: ${SPRING_DATASOURCE_USERNAME:financial}
+    password: ${SPRING_DATASOURCE_PASSWORD:Welcome12345}
+    driver-class-name: oracle.jdbc.OracleDriver
+    type: oracle.ucp.jdbc.PoolDataSource
+    oracleucp:
+      connection-factory-class-name: oracle.jdbc.pool.OracleDataSource
+      connection-pool-name: TransactionConnectionPool
+      initial-pool-size: 15
+      min-pool-size: 10
+      max-pool-size: 30
+#logging:
+#  level:
+#    org.hibernate.SQL: DEBUG
+#    org.hibernate.type.descriptor.sql.BasicBinder: TRACE

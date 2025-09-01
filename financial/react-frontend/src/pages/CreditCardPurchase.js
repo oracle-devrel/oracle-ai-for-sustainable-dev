@@ -10,7 +10,7 @@ const bankerAccent = "#5884A7";
 const bankerText = "#F9F9F9";
 const bankerPanel = "#223142";
 
-// Fix for default marker icons in Leaflet
+// Fix default marker icons in Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
@@ -170,6 +170,89 @@ const CodeTitle = styled.div`
   margin-bottom: 12px;
 `;
 
+const Table = styled.table`
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background-color: ${bankerPanel};
+  border: 1px solid ${bankerAccent};
+  border-radius: 8px;
+  overflow: hidden;
+`;
+
+const TableHeader = styled.th`
+  background-color: ${bankerAccent};
+  color: ${bankerText};
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid ${bankerAccent};
+  font-weight: bold;
+`;
+
+const TableCell = styled.td`
+  padding: 12px;
+  border-bottom: 1px solid rgba(88, 132, 167, 0.3);
+  color: ${bankerText};
+  vertical-align: top;
+`;
+
+const TableVideoContainer = styled.div`
+  display: flex;
+  gap: 32px;
+  margin-top: 40px;
+  width: 100%;
+  
+  @media (max-width: 1200px) {
+    flex-direction: column;
+    gap: 20px;
+  }
+`;
+
+const TableContainer = styled.div`
+  flex: 1;
+  min-width: 0;
+`;
+
+const VideoContainer = styled.div`
+  flex: 2;
+  min-width: 500px;
+  
+  @media (max-width: 1200px) {
+    min-width: 100%;
+  }
+`;
+
+const ResultMessage = styled.div`
+  margin-top: 16px;
+  padding: 16px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-align: center;
+  border: 2px solid;
+  
+  ${props => {
+    if (props.message.includes('Anomaly detected')) {
+      return `
+        background-color: rgba(220, 53, 69, 0.1);
+        border-color: #dc3545;
+        color: #dc3545;
+      `;
+    } else if (props.message.includes('No anomaly detected')) {
+      return `
+        background-color: rgba(40, 167, 69, 0.1);
+        border-color: #28a745;
+        color: #28a745;
+      `;
+    } else {
+      return `
+        background-color: rgba(255, 193, 7, 0.1);
+        border-color: #ffc107;
+        color: #ffc107;
+      `;
+    }
+  }}
+`;
+
 const CreditCardPurchase = () => {
   const [formData, setFormData] = useState({
     cardNumber: '',
@@ -185,6 +268,7 @@ const CreditCardPurchase = () => {
     first: null,
     second: null,
   });
+  const [resultMessage, setResultMessage] = useState('');
   const mapRef = useRef();
 
   useEffect(() => {
@@ -286,12 +370,12 @@ const CreditCardPurchase = () => {
 
       const isFar = await response.json();
       if (isFar) {
-        alert('Anomaly detected! Distance between the two locations is greater than 500km.');
+        setResultMessage('🚨 Anomaly detected! Distance between the two locations is greater than 500km.');
       } else {
-        alert('No anomaly detected.  The distance between the two locations is NOT greater than 500km.');
+        setResultMessage('✅ No anomaly detected. The distance between the two locations is NOT greater than 500km.');
       }
     } catch (error) {
-      alert('Error checking distance: ' + error.message);
+      setResultMessage('❌ Error checking distance: ' + error.message);
     }
   };
 
@@ -351,7 +435,7 @@ const CreditCardPurchase = () => {
             <TextContent>
               <div>
                 <a
-                  href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier-financial/index.html"
+                  href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier/index.html"
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{ color: bankerAccent, textDecoration: 'none' }}
@@ -380,13 +464,31 @@ const CreditCardPurchase = () => {
                 <li>Use OML4Py and notebooks locally or in execution environment as part of database</li>
                 <li>Spatial queries, JSON, graph, and AI with no plugins required nor scale trade-offs</li>
               </ul>
+              <div style={{ marginTop: '16px' }}>
+                <a
+                  href="http://localhost:8888/notebooks/prebuilt-notebook.ipynb"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: bankerAccent, textDecoration: 'none', display: 'block', marginBottom: '8px' }}
+                >
+                  Open Jupyter Notebook
+                </a>
+                <a
+                  href="https://ij1tyzir3wpwlpe-financialdb.adb.eu-frankfurt-1.oraclecloudapps.com/oml/index.html"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: bankerAccent, textDecoration: 'none', display: 'block' }}
+                >
+                  Open OML/OML4Py Notebook
+                </a>
+              </div>
             </TextContent>
             <VideoWrapper>
               <h4>Walkthrough Video:</h4>
               <iframe
                 width="100%"
                 height="315"
-                src="https://www.youtube.com/embed/mdsaLhx4hWE"
+                src="https://www.youtube.com/embed/qHVYXagpAC0?start=546&autoplay=0"
                 title="YouTube video player"
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -495,6 +597,11 @@ const CreditCardPurchase = () => {
               <MapRightClickHandler onRightClick={handleMapRightClick} />
             </MapContainer>
           </MapWrapper>
+          {resultMessage && (
+            <ResultMessage message={resultMessage}>
+              {resultMessage}
+            </ResultMessage>
+          )}
         </LeftColumn>
         <RightColumn>
           <CodeTitle>Globally Distributed Database Connection Example</CodeTitle>
@@ -517,6 +624,28 @@ if (isAutomaticSharding) {
           </code>
         </RightColumn>
       </TwoColumnContainer>
+
+      {/* Full Width Video Section */}
+      <div style={{ 
+        marginTop: '40px', 
+        textAlign: 'center',
+        padding: '20px',
+        background: bankerPanel,
+        borderRadius: '8px',
+        border: `1px solid ${bankerAccent}`
+      }}>
+        <h4 style={{ color: bankerAccent, marginBottom: '16px' }}>Demo Video:</h4>
+        <iframe
+          width="100%"
+          height="1000"
+          src="https://www.youtube.com/embed/qHVYXagpAC0?start=546&autoplay=0"
+          title="Raft vs Data Guard Demo"
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+          style={{ borderRadius: '8px', border: `1px solid ${bankerAccent}` }}
+        ></iframe>
+      </div>
     </PageContainer>
   );
 };

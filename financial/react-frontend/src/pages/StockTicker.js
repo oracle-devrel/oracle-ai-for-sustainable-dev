@@ -281,7 +281,7 @@ SELECT price FROM stock_cache WHERE ticker = :ticker;
             <TextContent>
               <div>
                 <a
-                  href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier-financial/index.html"
+                  href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier/index.html"
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{ color: bankerAccent, textDecoration: 'none' }}
@@ -319,7 +319,7 @@ SELECT price FROM stock_cache WHERE ticker = :ticker;
               <iframe
                 width="100%"
                 height="315"
-                src="https://www.youtube.com/embed/OHOlL9no2Sc"
+                src="https://www.youtube.com/embed/qHVYXagpAC0?start=895&autoplay=0"
                 title="YouTube video player"
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

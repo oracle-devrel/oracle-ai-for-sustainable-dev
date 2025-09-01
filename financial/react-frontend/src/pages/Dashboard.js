@@ -104,13 +104,22 @@ const DashBoard = () => {
               rel="noopener noreferrer"
               style={{ color: bankerAccent, textDecoration: 'underline' }}
             >
-              Open Grafana Dashboard (admin/Welcome12345*)
+              Open Grafana Dashboard
+            </a>
+            <br />
+            <a
+              href="http://129.159.11.143:8000/"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: bankerAccent, textDecoration: 'underline' }}
+            >
+              Open Kubeview
             </a>
             <div style={{ marginTop: 24 }}>
               <iframe
                 width="900"
                 height="506"
-                src="https://www.youtube.com/embed/Uuj9MCiYTPo"
+                src="https://www.youtube.com/embed/qHVYXagpAC0?start=169&autoplay=0"
                 title="Developer Details"
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -134,7 +143,7 @@ const DashBoard = () => {
         <br />
         <br />
         <a
-          href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier-financial/index.html"
+          href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier/index.html"
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -157,6 +166,33 @@ const DashBoard = () => {
           src={`${process.env.PUBLIC_URL}/images/er_diagram.png`}
           alt="Technical Architecture"
         />
+      </ImageContainer>
+      {/* OCI Console For ADB (Developer Related / Database Actions, OML, Graph Studio, etc. access) */}
+      <ImageContainer>
+        <h2>OCI Console For ADB (Developer Related)</h2>
+        <img
+          src={`${process.env.PUBLIC_URL}/images/view-all-database-actions.png`}
+          alt="View All Database Actions"
+        />
+      </ImageContainer>
+      <ImageContainer>
+        <img
+          src={`${process.env.PUBLIC_URL}/images/databaseactions.png`}
+          alt="Database Actions"
+        />
+      </ImageContainer>
+      <ImageContainer>
+        <a
+          href="https://ij1tyzir3wpwlpe-financialdb.adb.eu-frankfurt-1.oraclecloudapps.com/ords/admin/_sdw/?nav=adpdi&adpdi=adp-data-load"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img
+            src={`${process.env.PUBLIC_URL}/images/datatransforms.png`}
+            alt="Data Transforms"
+            style={{ cursor: 'pointer' }}
+          />
+        </a>
       </ImageContainer>
       {/* tracing diagram Image */}
       <ImageContainer>

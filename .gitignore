@@ -5,6 +5,9 @@ grabdish/inventory-micronaut/build/
 .deployed/
 .deployed/*.yaml
 
+# Generated deployment files with sensitive data
+**/healthai-backend-springboot-deployment.yaml
+
 # Compiled class file
 *.class
 
@@ -669,3 +672,6 @@ cython_debug/
 *pubspec*
 package*
 .dart*
+*.key
+*.cert
+*.p12

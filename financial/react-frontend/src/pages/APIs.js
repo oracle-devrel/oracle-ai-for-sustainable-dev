@@ -86,12 +86,15 @@ const APIs = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Get ORDS base URL from environment variable
+  const ordsBaseUrl = process.env.REACT_APP_ORDS_BASE_URL || 'https://ij1mydb-financialdb.adb.eu-frankfurt-1.oraclecloudapps.com/ords';
+
   useEffect(() => {
     // Fetch data for the first table
     const fetchData = async () => {
       try {
         const response = await fetch(
-          'https://ij1tyzir3wpwlpe-financialdb.adb.eu-frankfurt-1.oraclecloudapps.com/ords/financial/accounts/'
+          `${ordsBaseUrl}/financial/accounts/`
         );
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -141,7 +144,7 @@ const APIs = () => {
             <div style={{ flex: 1, marginRight: '20px' }}>
               <div>
                 <a
-                  href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier-financial/index.html"
+                  href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier/index.html"
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{ color: bankerAccent, textDecoration: 'none' }}
@@ -176,7 +179,7 @@ const APIs = () => {
               <iframe
                 width="100%"
                 height="615"
-                src="https://www.youtube.com/embed/8Tgmy74A4Bg"
+                src="https://www.youtube.com/embed/qHVYXagpAC0?start=327&autoplay=0"
                 title="YouTube video player"
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -192,14 +195,29 @@ const APIs = () => {
       <CodePanel>
         <CodeTitle>ORDS REST API Example</CodeTitle>
         <code>
-{`// Get all accounts (GET)
-GET https://ij1tyzir3wpwlpe-financialdb.adb.eu-frankfurt-1.oraclecloudapps.com/ords/financial/accounts/
+{`-- Enable ORDS for table
+BEGIN
+    ORDS.ENABLE_OBJECT(
+        P_ENABLED      => TRUE,
+        P_SCHEMA      => 'FINANCIAL',
+        P_OBJECT      =>  'account_detail',
+        P_OBJECT_TYPE      => 'TABLE',
+        P_OBJECT_ALIAS      => 'accounts',
+        P_AUTO_REST_AUTH      => FALSE
+    );
+    COMMIT;
+END;
+
+-- Use the generated REST endpoints
+
+// Get all accounts (GET)
+GET ${ordsBaseUrl}/financial/accounts/
 
 // Get a single account (GET)
-GET https://ij1tyzir3wpwlpe-financialdb.adb.eu-frankfurt-1.oraclecloudapps.com/ords/financial/accounts/{account_id}
+GET ${ordsBaseUrl}/financial/accounts/{account_id}
 
 // Create an account (POST)
-POST https://ij1tyzir3wpwlpe-financialdb.adb.eu-frankfurt-1.oraclecloudapps.com/ords/financial/accounts/
+POST ${ordsBaseUrl}/financial/accounts/
 Content-Type: application/json
 {
   "account_id": "A123",

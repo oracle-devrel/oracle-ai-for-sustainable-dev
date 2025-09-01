@@ -313,7 +313,7 @@ graph = session.get_graph(GRAPH_NAME)
               <TextContent>
                 <div>
                   <a
-                    href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier-financial/index.html"
+                    href="https://paulparkinson.github.io/converged/microservices-with-converged-db/workshops/freetier/index.html"
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{ color: bankerAccent, textDecoration: 'none' }}
@@ -349,7 +349,7 @@ graph = session.get_graph(GRAPH_NAME)
                 <iframe
                   width="100%"
                   height="315"
-                  src="https://www.youtube.com/embed/DVzpuhxiNvw"
+                  src="https://www.youtube.com/embed/qHVYXagpAC0?start=703&autoplay=0"
                   title="YouTube video player"
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

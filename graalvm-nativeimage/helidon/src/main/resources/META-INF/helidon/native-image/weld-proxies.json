@@ -1,0 +1,30 @@
+[
+    {
+        "bean-class": "io.helidon.integrations.datasource.ucp.cdi.UCPBackedDataSourceExtension",
+        "ifaces": [
+            "java.io.Serializable",
+            "java.sql.Wrapper",
+            "javax.naming.Referenceable",
+            "javax.naming.spi.ObjectFactory",
+            "javax.sql.CommonDataSource",
+            "javax.sql.DataSource",
+            "oracle.ucp.jdbc.PoolDataSource",
+            "oracle.ucp.UniversalConnectionPoolAdapter"
+        ]
+    },
+    {
+        "bean-class": "io.helidon.integrations.datasource.ucp.cdi.UniversalConnectionPoolExtension",
+        "ifaces": [
+            "java.io.Serializable",
+            "java.sql.Wrapper",
+            "javax.naming.Referenceable",
+            "javax.naming.spi.ObjectFactory",
+            "javax.sql.CommonDataSource",
+            "javax.sql.DataSource",
+            "javax.sql.XADataSource",
+            "oracle.ucp.jdbc.PoolDataSource",
+            "oracle.ucp.jdbc.PoolXADataSource",
+            "oracle.ucp.UniversalConnectionPoolAdapter"
+        ]
+    }
+]
