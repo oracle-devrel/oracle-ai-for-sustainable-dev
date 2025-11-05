@@ -6,8 +6,9 @@ require (
 	github.com/containers/common v0.63.0
 	github.com/docker/docker v28.1.1+incompatible // indirect
 	github.com/opencontainers/runtime-spec v1.2.1
-	github.com/sijms/go-ora v1.3.2
 )
+
+require github.com/sijms/go-ora/v2 v2.8.24
 
 require (
 	dario.cat/mergo v1.0.1 // indirect
@@ -34,7 +35,7 @@ require (
 	github.com/containers/storage v1.58.0 // indirect
 	github.com/coreos/go-systemd/v22 v22.5.1-0.20231103132048-7d375ecc2b09 // indirect
 	github.com/cyberphone/json-canonicalization v0.0.0-20241213102144-19d51d7fe467 // indirect
-	github.com/cyphar/filepath-securejoin v0.4.1 // indirect
+	github.com/cyphar/filepath-securejoin v0.5.1 // indirect
 	github.com/disiqueira/gotree/v3 v3.0.2 // indirect
 	github.com/docker/distribution v2.8.3+incompatible // indirect
 	github.com/docker/docker-credential-helpers v0.9.3 // indirect
@@ -87,7 +88,7 @@ require (
 	github.com/nxadm/tail v1.4.11 // indirect
 	github.com/oklog/ulid v1.3.1 // indirect
 	github.com/opencontainers/cgroups v0.0.1 // indirect
-	github.com/opencontainers/runc v1.2.6 // indirect
+	github.com/opencontainers/runc v1.2.8 // indirect
 	github.com/opencontainers/runtime-tools v0.9.1-0.20250303011046-260e151b8552 // indirect
 	github.com/opencontainers/selinux v1.12.0 // indirect
 	github.com/ostreedev/ostree-go v0.0.0-20210805093236-719684c64e4f // indirect
@@ -100,7 +101,6 @@ require (
 	github.com/sigstore/protobuf-specs v0.4.1 // indirect
 	github.com/sigstore/rekor v1.3.10 // indirect
 	github.com/sigstore/sigstore v1.9.3 // indirect
-	github.com/sijms/go-ora/v2 v2.8.24 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/skeema/knownhosts v1.3.1 // indirect
 	github.com/smallstep/pkcs7 v0.1.1 // indirect
