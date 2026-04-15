@@ -18,6 +18,8 @@
 --   - Select AI examples:
 --     https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/select-ai-examples.html
 
+set verify off echo off serveroutput on feedback on
+
 define demo_owner = 'ADMIN'
 define credential_name = 'OPENAI_CRED'
 define profile_name = 'OPENAI_INVENTORY_DEMO'
@@ -57,7 +59,7 @@ begin
 
     dbms_cloud.create_credential(
         credential_name => upper('&credential_name'),
-        username        => 'OPENAI',
+        username        => 'openai',
         password        => '&openai_api_key'
     );
 end;
@@ -86,7 +88,7 @@ begin
                 json_object('owner' value upper('&demo_owner'), 'name' value 'SC_WAREHOUSE_GEO'),
                 json_object('owner' value upper('&demo_owner'), 'name' value 'SC_WAREHOUSE_RISK_SNAPSHOT'),
                 json_object('owner' value upper('&demo_owner'), 'name' value 'SC_INVENTORY_RISK_DEMO_V')
-            ) returning clob
+            )
         )
     );
 end;

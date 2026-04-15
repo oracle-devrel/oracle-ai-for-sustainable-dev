@@ -4,14 +4,17 @@ This README uses placeholders such as `YOUR_PUBLIC_AGENT_HOST`, `YOUR_LE_CERT_NA
 
 This directory now holds the shared Java/Spring Boot A2A runtime for the Oracle demo's Java-served agent experiences.
 
-Today, the same Java process serves four agent surfaces:
+Today, the same Java process serves five agent surfaces:
 
-- graph agent at the root `/`
+- graph agent at `/graph`
 - spatial hotspot agent at `/spatial`
 - Select AI-style inventory analyst at `/select-ai`
+- inventory-system gateway at `/inventory-system`
 - inventory-action coordinator at `/inventory-action`
 
-The graph renderer still uses deterministic application logic plus custom Java2D image generation. The spatial agent now uses JTS for geometry work and Java2D for the rendered PNG. The action agent uses Google ADK Java when credentials are available and falls back cleanly when they are not.
+The legacy root `/` graph surface still exists for backward compatibility, but `/graph` is now the canonical graph route.
+
+The graph renderer still uses deterministic application logic plus custom Java2D image generation. The spatial agent now uses JTS for geometry work and Java2D for the rendered PNG. The inventory-system gateway keeps graph and spatial routing local, while delegating general inventory and SQL-style questions to the Oracle-hosted Oracle AI Database Agent before falling back to the in-process Select AI analyst if that remote handoff is unavailable. The action agent uses Google ADK Java when credentials are available and falls back cleanly when they are not.
 
 ## Related Files
 
@@ -29,7 +32,11 @@ The graph renderer still uses deterministic application logic plus custom Java2D
 - [`agent-card-graph.json`](/path/to/repo-root/oracle-ai-database-gcp-vertex-ai/oracle_agent_java/agent-card-graph.json): saved snapshot of the primary graph card.
 - [`agent-card-spatial.json`](/path/to/repo-root/oracle-ai-database-gcp-vertex-ai/oracle_agent_java/agent-card-spatial.json): saved snapshot of the spatial hotspot card served by the same Java process.
 - [`agent-card-select-ai.json`](/path/to/repo-root/oracle-ai-database-gcp-vertex-ai/oracle_agent_java/agent-card-select-ai.json): saved snapshot of the Select AI-style inventory analyst card.
+- [`agent-card-oracle-ai-database.json`](/path/to/repo-root/oracle-ai-database-gcp-vertex-ai/oracle_agent_java/agent-card-oracle-ai-database.json): checked-in snapshot of the Oracle-hosted Oracle AI Database agent card used by the inventory-system router.
+- [`agent-card-inventory-system.json`](/path/to/repo-root/oracle-ai-database-gcp-vertex-ai/oracle_agent_java/agent-card-inventory-system.json): saved snapshot of the inventory-system gateway card.
+- [`ORACLE_AI_DATABASE_DOWNSTREAM_AGENT.md`](/path/to/repo-root/oracle-ai-database-gcp-vertex-ai/oracle_agent_java/ORACLE_AI_DATABASE_DOWNSTREAM_AGENT.md): concise setup notes for using the Oracle AI Database agent behind another agent such as `oracle_inventory_system_agent`.
 - [`agent-card-action.json`](/path/to/repo-root/oracle-ai-database-gcp-vertex-ai/oracle_agent_java/agent-card-action.json): saved snapshot of the inventory-action coordinator card.
+- [`test_inventory_system.sh`](/path/to/repo-root/oracle-ai-database-gcp-vertex-ai/oracle_agent_java/test_inventory_system.sh): helper for exercising the inventory-system gateway over A2A JSON-RPC.
 
 ## Setup Instructions
 
@@ -84,16 +91,20 @@ The graph renderer still uses deterministic application logic plus custom Java2D
 
    Current tested import URLs:
    - graph alias card on the same Java process: `https://YOUR_PUBLIC_AGENT_HOST/agent-card-graph.json`
+   - graph dedicated A2A card path: `https://YOUR_PUBLIC_AGENT_HOST/graph/.well-known/agent-card.json`
    - spatial hotspot card on the same Java process: `https://YOUR_PUBLIC_AGENT_HOST/agent-card-spatial.json`
    - Select AI card on the same Java process: `https://YOUR_PUBLIC_AGENT_HOST/agent-card-select-ai.json`
+   - inventory-system card on the same Java process: `https://YOUR_PUBLIC_AGENT_HOST/agent-card-inventory-system.json`
    - inventory-action card on the same Java process: `https://YOUR_PUBLIC_AGENT_HOST/agent-card-action.json`
-   - graph default card path: `https://YOUR_PUBLIC_AGENT_HOST/.well-known/agent-card.json`
+   - mirrored Oracle AI Database card alias: `https://YOUR_PUBLIC_AGENT_HOST/oracle-ai-database-agent-card.json`
+   - graph legacy default card path: `https://YOUR_PUBLIC_AGENT_HOST/.well-known/agent-card.json`
    - dedicated spatial A2A card path: `https://YOUR_PUBLIC_AGENT_HOST/spatial/.well-known/agent-card.json`
    - dedicated Select AI A2A card path: `https://YOUR_PUBLIC_AGENT_HOST/select-ai/.well-known/agent-card.json`
+   - dedicated inventory-system A2A card path: `https://YOUR_PUBLIC_AGENT_HOST/inventory-system/.well-known/agent-card.json`
    - dedicated inventory-action A2A card path: `https://YOUR_PUBLIC_AGENT_HOST/inventory-action/.well-known/agent-card.json`
    - direct HTTPS on 8080: `https://YOUR_PUBLIC_AGENT_HOST:8080/.well-known/agent-card.json`
 
-   For Gemini Enterprise imports, prefer the four matching alias URLs: `agent-card-graph.json`, `agent-card-spatial.json`, `agent-card-select-ai.json`, and `agent-card-action.json`. The primary `/.well-known/agent-card.json` endpoint is still the graph card. The spatial, Select AI, and inventory-action cards are real additional agent surfaces in the same Spring Boot process.
+   For Gemini Enterprise imports, prefer the five matching alias URLs: `agent-card-graph.json`, `agent-card-spatial.json`, `agent-card-select-ai.json`, `agent-card-inventory-system.json`, and `agent-card-action.json`. The mirrored `oracle-ai-database-agent-card.json` endpoint exposes the external Oracle-hosted card metadata the inventory-system gateway delegates to for general database questions. The canonical graph runtime path is `/graph`, while the legacy root `/.well-known/agent-card.json` endpoint still exists as a compatibility graph card. The spatial, Select AI, inventory-system, and inventory-action cards are real additional agent surfaces in the same Spring Boot process.
 
    On the GCP VM, a reliable way to keep the `443` deployment alive after SSH exits is to
    start it as a transient `systemd` service instead of a background shell job:
@@ -293,6 +304,68 @@ Current expected response shape:
 - plain-text regional-driver detail for the requested or inferred SKU
 - metadata showing `executionMode=select-ai`
 - metadata showing `sourceDetail=DBMS_CLOUD_AI.GENERATE via profile YOUR_SELECT_AI_PROFILE_NAME`
+
+## Inventory-System Gateway
+
+The same Java process now also serves an inventory-system gateway at:
+
+- card alias: `https://YOUR_PUBLIC_AGENT_HOST/agent-card-inventory-system.json`
+- dedicated card path: `https://YOUR_PUBLIC_AGENT_HOST/inventory-system/.well-known/agent-card.json`
+- JSON-RPC endpoint: `https://YOUR_PUBLIC_AGENT_HOST/inventory-system`
+
+What it does today:
+
+- routes graph-style requests such as dependency, upstream, downstream, supplier, or property-graph questions to the local Oracle graph agent
+- routes map-style requests such as hotspot, county, latitude, longitude, or spatial questions to the local Oracle spatial agent
+- routes everything else to the Oracle-hosted Oracle AI Database Agent over A2A JSON-RPC
+- passes through remote database artifacts when the Oracle AI Database Agent returns them, so HTML charts and images can flow back through the gateway
+- if the remote Oracle AI Database Agent handoff fails, falls back to the in-process Select AI analyst and reports that fallback in the task metadata
+
+Environment knobs for the remote database handoff:
+
+- `ORACLE_AI_DATABASE_AGENT_URL`: override the default Oracle-hosted JSON-RPC endpoint
+- `ORACLE_AI_DATABASE_AGENT_BEARER_TOKEN`: optional bearer token for the remote delegate call
+- `ORACLE_AI_DATABASE_AGENT_AUTHORIZATION_HEADER`: optional full authorization header, if you need something other than `Bearer ...`
+- `ORACLE_AI_DATABASE_AGENT_TIMEOUT_SECONDS`: override the remote request timeout
+
+Recommended Gemini Enterprise prompt:
+
+```text
+Which products are at risk of stockouts next quarter, and which regions are driving that risk?
+```
+
+Graph-routing prompt:
+
+```text
+Show the supply chain dependency graph for SKU-500 and explain the active alert.
+```
+
+Spatial-routing prompt:
+
+```text
+Show that on a map for SKU-500 and highlight the warehouse hotspots.
+```
+
+Chart-style prompt:
+
+```text
+Create a chart of projected revenue impact by region for the current quarter.
+```
+
+Local test script:
+
+```bash
+./test_inventory_system.sh
+./test_inventory_system.sh "Show the supply chain dependency graph for SKU-500 and explain the active alert."
+GRAPH_AGENT_URL="https://YOUR_PUBLIC_AGENT_HOST" ./test_inventory_system.sh
+```
+
+Expected response shape:
+
+- plain-text summary for every route
+- PNG artifacts for graph or spatial requests
+- HTML or image artifacts when the remote Oracle AI Database Agent returns charts
+- metadata showing `delegatedTo=oracle-ai-database-agent`, `graph`, `spatial`, or `select-ai-fallback`
 
 ## Inventory Action Coordinator
 

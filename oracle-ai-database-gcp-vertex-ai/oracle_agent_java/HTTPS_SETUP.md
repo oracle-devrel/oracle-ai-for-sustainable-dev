@@ -10,8 +10,9 @@ For this project, a self-signed certificate is not a good fit because the caller
 
 Current tested public endpoints:
 
-- Agent base URL: `https://YOUR_PUBLIC_AGENT_HOST`
-- Agent card URL: `https://YOUR_PUBLIC_AGENT_HOST/.well-known/agent-card.json`
+- Graph base URL: `https://YOUR_PUBLIC_AGENT_HOST/graph`
+- Graph card URL: `https://YOUR_PUBLIC_AGENT_HOST/graph/.well-known/agent-card.json`
+- Legacy root graph card URL: `https://YOUR_PUBLIC_AGENT_HOST/.well-known/agent-card.json`
 - Graph alias card URL: `https://YOUR_PUBLIC_AGENT_HOST/agent-card-graph.json`
 - Spatial alias card URL: `https://YOUR_PUBLIC_AGENT_HOST/agent-card-spatial.json`
 
@@ -132,7 +133,7 @@ sudo systemctl status oracle-graph-agent.service
 Use the public agent card and the local test harness:
 
 ```bash
-curl -sS https://YOUR_PUBLIC_AGENT_HOST/.well-known/agent-card.json | python3 -m json.tool
+curl -sS https://YOUR_PUBLIC_AGENT_HOST/graph/.well-known/agent-card.json | python3 -m json.tool
 curl -sS https://YOUR_PUBLIC_AGENT_HOST/agent-card-graph.json | python3 -m json.tool
 curl -sS https://YOUR_PUBLIC_AGENT_HOST/agent-card-spatial.json | python3 -m json.tool
 GRAPH_AGENT_URL="https://YOUR_PUBLIC_AGENT_HOST" ./test.sh

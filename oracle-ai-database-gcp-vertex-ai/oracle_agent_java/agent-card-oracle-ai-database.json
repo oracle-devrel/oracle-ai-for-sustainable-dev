@@ -1,0 +1,102 @@
+{
+  "name": "Oracle AI Database Agent",
+  "description": "The Oracle AI Database Agent provides a seamless natural language interface for querying enterprise data stored in Oracle Database on Google Cloud.",
+  "url": "https://dataaccess.adb.us-ashburn-1.oraclecloudapps.com/adb/a2a/v1/agents/oracle_ai_database_agent",
+  "version": "1.0",
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false,
+    "stateTransitionHistory": false
+  },
+  "defaultInputModes": [
+    "text/plain"
+  ],
+  "defaultOutputModes": [
+    "text/plain"
+  ],
+  "skills": [
+    {
+      "id": "5",
+      "name": "SQL Query Executor",
+      "description": "Executes database queries based on natural language questions. Converts plain English requests into optimized SQL, runs them against your Oracle AI Database, and returns the results.",
+      "tags": [
+        "SQL",
+        "database",
+        "query",
+        "data access",
+        "analysis"
+      ]
+    },
+    {
+      "id": "4",
+      "name": "Distinct Values Finder",
+      "description": "Returns all unique values from a specified database column. Supports optional pattern matching to help filter results.",
+      "tags": [
+        "distinct",
+        "values",
+        "data profiling",
+        "database",
+        "column analysis"
+      ]
+    },
+    {
+      "id": "6",
+      "name": "Range Values Checker",
+      "description": "Retrieves the minimum and maximum values for a numeric, date, or timestamp column in your table.",
+      "tags": [
+        "range",
+        "min",
+        "max",
+        "numeric",
+        "date",
+        "database",
+        "column analysis"
+      ]
+    },
+    {
+      "id": "7",
+      "name": "Chart Generator",
+      "description": "Creates charts, graphs, or visualizations based on your data and preferences.",
+      "tags": [
+        "chart",
+        "graph",
+        "visualization",
+        "data display",
+        "reporting"
+      ]
+    }
+  ],
+  "supportsAuthenticatedExtendedCard": false,
+  "securitySchemes": {
+    "oauth2": {
+      "flows": {
+        "authorizationCode": {
+          "authorizationUrl": "https://dataaccess.adb.us-ashburn-1.oraclecloudapps.com/adb/auth/v1/connect/authorize",
+          "refreshUrl": "https://dataaccess.adb.us-ashburn-1.oraclecloudapps.com/adb/auth/v1/connect/token",
+          "scopes": {
+            "openid": "This is a mandatory scope."
+          },
+          "tokenUrl": "https://dataaccess.adb.us-ashburn-1.oraclecloudapps.com/adb/auth/v1/connect/token"
+        }
+      },
+      "type": "oauth2"
+    }
+  },
+  "security": [
+    {
+      "oauth2": []
+    }
+  ],
+  "additionalInterfaces": [
+    {
+      "transport": "JSONRPC",
+      "url": "https://dataaccess.adb.us-ashburn-1.oraclecloudapps.com/adb/a2a/v1/agents/oracle_ai_database_agent"
+    }
+  ],
+  "preferredTransport": "JSONRPC",
+  "protocolVersion": "0.3.0",
+  "provider": {
+    "organization": "Oracle",
+    "url": "https://www.oracle.com/cloud/google/oracle-database-at-google-cloud/"
+  }
+}

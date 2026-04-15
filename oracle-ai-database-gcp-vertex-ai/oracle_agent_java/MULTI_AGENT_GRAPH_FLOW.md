@@ -224,7 +224,7 @@ This is the tradeoff that keeps multi-agent integrations debuggable.
 
 Current public deployment target:
 
-- `https://YOUR_PUBLIC_AGENT_HOST/.well-known/agent-card.json`
+- `https://YOUR_PUBLIC_AGENT_HOST/graph/.well-known/agent-card.json`
 - `https://YOUR_PUBLIC_AGENT_HOST/agent-card-graph.json`
 - `https://YOUR_PUBLIC_AGENT_HOST/agent-card-spatial.json`
 

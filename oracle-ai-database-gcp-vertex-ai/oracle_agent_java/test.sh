@@ -24,7 +24,12 @@ elif [[ -f "$ENV_FILE" ]]; then
   set +a
 fi
 
-TARGET_URL="${GRAPH_AGENT_URL:-${PUBLIC_PROTOCOL:-http}://${PUBLIC_HOST:-localhost}:${GRAPH_AGENT_PORT:-${PORT:-8080}}}"
+BASE_URL="${GRAPH_AGENT_URL:-${PUBLIC_PROTOCOL:-http}://${PUBLIC_HOST:-localhost}:${GRAPH_AGENT_PORT:-${PORT:-8080}}}"
+if [[ "${BASE_URL%/}" == */graph ]]; then
+  TARGET_URL="${BASE_URL%/}"
+else
+  TARGET_URL="${BASE_URL%/}/graph"
+fi
 TEST_OUTPUT_DIR="${TEST_OUTPUT_DIR:-$SCRIPT_DIR/test-output}"
 
 mkdir -p "$TEST_OUTPUT_DIR"

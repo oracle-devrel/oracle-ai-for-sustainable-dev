@@ -7,6 +7,10 @@ grabdish/inventory-micronaut/build/
 
 # Generated deployment files with sensitive data
 **/healthai-backend-springboot-deployment.yaml
+oracle-ai-database-gcp-vertex-ai/.env_oracle-public-oracle-agent-26ai
+oracle-ai-database-gcp-vertex-ai/.env_oracle-public-kabharadbtest1
+oracle-ai-database-gcp-vertex-ai/.env_oracle-public-dbatpst0324
+oracle-ai-database-gcp-vertex-ai/.env_adb=*
 
 # TLS/SSL certificates and keys
 **/tls/

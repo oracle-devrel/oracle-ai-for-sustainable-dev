@@ -46,8 +46,8 @@ public class GraphA2AConfiguration {
     static AgentCard buildGraphAgentCard(Environment environment) {
         return buildAgentCard(
                 environment,
-                "oracle_graph_agent",
-                "Specialist in Oracle Graph dependency analysis and supply chain visualization."
+                "Oracle Database Property Graph Agent",
+                "Oracle Database property graph specialist for product SKUs such as SKU-500. Generates Oracle-backed supply chain dependency graphs, supplier-to-warehouse paths, upstream and downstream relationship analysis, and active disruption alerts as a text summary plus PNG image."
         );
     }
 
@@ -71,18 +71,19 @@ public class GraphA2AConfiguration {
                 "GRAPH_AGENT_PORT",
                 valueOrDefault(environment, "PORT", "8081")
         );
-        String graphUrl = firstNonBlank(
+        String baseUrl = firstNonBlank(
                 environment.getProperty("GRAPH_AGENT_URL"),
                 environment.getProperty("A2A_URL"),
                 String.format("%s://%s:%s", publicProtocol, publicHost, graphPort)
         );
+        String graphUrl = appendPath(baseUrl, "/graph");
 
         return new AgentCard(
                 agentName,
                 description,
                 graphUrl,
                 null,
-                "0.0.1",
+                "0.1.0",
                 null,
                 new AgentCapabilities(false, false, false, List.of()),
                 List.of("text/plain"),
@@ -90,10 +91,25 @@ public class GraphA2AConfiguration {
                 List.of(
                         new AgentSkill(
                                 "oracle_graph_agent",
-                                "model",
-                                "Specialist in Oracle Graph dependency analysis. When a user asks for supply chain dependencies or graph relationships, use the getSupplyChainDependencies tool.",
-                                List.of("llm"),
-                                List.of(),
+                                "supply-chain-dependency-graph-specialist",
+                                "Specialist in Oracle Graph dependency analysis for product SKUs such as SKU-500. Use this when a user asks for a supply chain dependency graph, supplier-to-warehouse path, upstream or downstream relationships, or active disruption alerts for a product.",
+                                List.of(
+                                        "llm",
+                                        "oracle",
+                                        "database",
+                                        "property-graph",
+                                        "supply-chain",
+                                        "dependencies",
+                                        "sku",
+                                        "image"
+                                ),
+                                List.of(
+                                        "Show the supply chain dependency graph for SKU-500 and explain the active alert.",
+                                        "Use the Oracle Database property graph to show supply chain dependencies for SKU-500 and render the graph as an image.",
+                                        "For SKU-500, show the supplier-to-warehouse dependency graph and explain the current disruption.",
+                                        "Visualize the upstream supplier path for SKU-500 and highlight the risky node.",
+                                        "For SKU-500, map the dependency relationships from supplier to warehouse to retailer."
+                                ),
                                 List.of("text/plain"),
                                 List.of("image/png", "text/plain"),
                                 null
@@ -101,10 +117,23 @@ public class GraphA2AConfiguration {
                         new AgentSkill(
                                 "oracle_graph_agent-getSupplyChainDependencies",
                                 "getSupplyChainDependencies",
-                                "Fetches supply chain dependencies from Oracle Property Graph for a specific product ID.",
-                                List.of("llm", "tools"),
-                                List.of(),
-                                null,
+                                "Fetches Oracle Property Graph supply chain dependencies and active alert context for a specific product ID such as SKU-500.",
+                                List.of(
+                                        "llm",
+                                        "tools",
+                                        "oracle",
+                                        "database",
+                                        "property-graph",
+                                        "sku",
+                                        "dependencies"
+                                ),
+                                List.of(
+                                        "Get the dependency graph for SKU-500.",
+                                        "Use Oracle Database property graph data for SKU-500.",
+                                        "Show the Oracle graph path for SKU-500.",
+                                        "Find the supply chain dependencies for SKU-500."
+                                ),
+                                List.of("text/plain"),
                                 List.of("image/png"),
                                 null
                         )
@@ -122,6 +151,13 @@ public class GraphA2AConfiguration {
 
     @Bean
     AgentExecutor agentExecutor(
+            Function<GraphTools.GraphRequest, GraphTools.GraphResponse> getSupplyChainDependencies,
+            GraphRequestParser graphRequestParser
+    ) {
+        return buildAgentExecutor(getSupplyChainDependencies, graphRequestParser);
+    }
+
+    static AgentExecutor buildAgentExecutor(
             Function<GraphTools.GraphRequest, GraphTools.GraphResponse> getSupplyChainDependencies,
             GraphRequestParser graphRequestParser
     ) {
@@ -190,7 +226,7 @@ public class GraphA2AConfiguration {
         };
     }
 
-    private static String formatResponse(GraphTools.GraphResponse graphResponse) {
+    static String formatResponse(GraphTools.GraphResponse graphResponse) {
         String productId = graphResponse.productId();
         List<String> route = new ArrayList<>();
         addRouteLabel(route, graphResponse, "SUPPLIER");
@@ -215,7 +251,7 @@ public class GraphA2AConfiguration {
                 + ". Data source: " + graphResponse.sourceDetail() + ".";
     }
 
-    private static String renderGraphPng(String productId, GraphTools.GraphResponse graphResponse) throws Exception {
+    static String renderGraphPng(String productId, GraphTools.GraphResponse graphResponse) throws Exception {
         int width = 1480;
         int height = 940;
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
@@ -673,6 +709,14 @@ public class GraphA2AConfiguration {
 
     private static String valueOrDefault(Environment environment, String key, String defaultValue) {
         return firstNonBlank(environment.getProperty(key), defaultValue);
+    }
+
+    private static String appendPath(String baseUrl, String path) {
+        String trimmedBase = baseUrl == null ? "" : baseUrl.trim();
+        if (trimmedBase.endsWith("/")) {
+            trimmedBase = trimmedBase.substring(0, trimmedBase.length() - 1);
+        }
+        return trimmedBase + path;
     }
 
     private static String firstNonBlank(String... values) {
