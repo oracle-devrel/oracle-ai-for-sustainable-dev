@@ -2,6 +2,50 @@
 
 This README now uses placeholders such as `YOUR_PUBLIC_AGENT_HOST`, `YOUR_VM_SSH_USER`, `YOUR_SELECT_AI_PROFILE_NAME`, and `/path/to/repo-root` so it can be shared more safely. Replace them with your environment-specific values when you run the demo.
 
+## Doc Index
+
+Use this section as the main entry point for the project documentation.
+
+Primary runbooks and status:
+
+- [README.md](./README.md): main project overview, shared mental model, demo flow, and top-level architecture.
+- [docs/DEMO_NOW_AND_NEXT.md](./docs/DEMO_NOW_AND_NEXT.md): what is best to use right now in the live demo, what is not reliable yet, how Deep Research fits today, and the end-goal architecture.
+- [docs/TODO.md](./docs/TODO.md): deferred work items, near-term hardening, and roadmap items such as NL2SQL for graph and spatial.
+- [docs/GEMINI_ENTERPRISE_AGENT_SETUP.md](./docs/GEMINI_ENTERPRISE_AGENT_SETUP.md): Gemini Enterprise imports, tested prompts, caveats, and expected behavior.
+- [docs/GCP_INFRA_SETUP.md](./docs/GCP_INFRA_SETUP.md): GCP setup and migration guide, starting with the compute-instance plan for moving this demo to another project.
+- [docs/GCP_SETUP_PROGRESS.md](./docs/GCP_SETUP_PROGRESS.md): live migration notes and step-by-step progress toward recreating this demo in a second GCP project.
+
+Java runtime docs:
+
+- [oracle_agent_java/README.md](./oracle_agent_java/README.md): shared Java runtime, live agent surfaces, HTTPS, and runtime behavior.
+- [oracle_agent_java/GRAPH_DATA_MODES.md](./oracle_agent_java/GRAPH_DATA_MODES.md): graph-agent `database|payload|auto` behavior and payload contract.
+- [oracle_agent_java/MULTI_AGENT_GRAPH_FLOW.md](./oracle_agent_java/MULTI_AGENT_GRAPH_FLOW.md): graph handoff patterns for A2A and multi-agent flows.
+- [oracle_agent_java/HTTPS_SETUP.md](./oracle_agent_java/HTTPS_SETUP.md): Let's Encrypt and HTTPS deployment notes.
+
+Python runtime reference:
+
+- [oracle_agent_python/README.md](./oracle_agent_python/README.md): earlier Python A2A spatial-style agent reference.
+
+Additional project docs:
+
+- [docs/README.md](./docs/README.md)
+- [docs/ADK_AGENT_README.md](./docs/ADK_AGENT_README.md)
+- [docs/ADK_RAG_IMPLEMENTATION.md](./docs/ADK_RAG_IMPLEMENTATION.md)
+- [docs/AGENT_FILES_COMPARISON.md](./docs/AGENT_FILES_COMPARISON.md)
+- [docs/AGENT_README.md](./docs/AGENT_README.md)
+- [docs/API_README.md](./docs/API_README.md)
+- [docs/BUG_REPORT_ADK_MCP.md](./docs/BUG_REPORT_ADK_MCP.md)
+- [docs/BUG_REPORT_ADK_MCP_ONEOF.md](./docs/BUG_REPORT_ADK_MCP_ONEOF.md)
+- [docs/DIRECTORY_STRUCTURE.md](./docs/DIRECTORY_STRUCTURE.md)
+- [docs/EMBEDDINGS_COMPARISON.md](./docs/EMBEDDINGS_COMPARISON.md)
+- [docs/MCP_IMPLEMENTATION_SUMMARY.md](./docs/MCP_IMPLEMENTATION_SUMMARY.md)
+- [docs/MCP_TOOLBOX_README.md](./docs/MCP_TOOLBOX_README.md)
+- [docs/QUICK_START_ADK_MCP.md](./docs/QUICK_START_ADK_MCP.md)
+- [docs/QUICK_START_SUMMARY.md](./docs/QUICK_START_SUMMARY.md)
+- [docs/TESTING_RESULTS.md](./docs/TESTING_RESULTS.md)
+- [docs/WORKSHOP.md](./docs/WORKSHOP.md)
+- [docs/oracle_ai_database_adk_agent.md](./docs/oracle_ai_database_adk_agent.md)
+
 This repo is set up for multiple A2A-style agents. A common pattern in this repo is:
 
 1. A caller sends a user message to an agent over A2A.
@@ -124,9 +168,9 @@ Inference from Google's docs: the Vertex AI ADC path is the better fit for this 
 
 ## Agent Directories
 
-- [oracle_spatial_agent_python](/path/to/repo-root/oracle-ai-database-gcp-vertex-ai/oracle_spatial_agent_python/README.md): earlier Python A2A agent for warehouse map workflows. It is now mostly a reference implementation.
-- [oracle_agent_java](/path/to/repo-root/oracle-ai-database-gcp-vertex-ai/oracle_agent_java/README.md): shared Java/Spring Boot A2A runtime serving the graph agent, spatial agent, Select AI agent, and inventory-action coordinator from one process.
-- [GEMINI_ENTERPRISE_AGENT_SETUP.md](/path/to/repo-root/oracle-ai-database-gcp-vertex-ai/GEMINI_ENTERPRISE_AGENT_SETUP.md): current Gemini Enterprise import URLs, which four agents to create, test prompts, expected behavior, payload-path notes, and the ADC caveat for the ADK action coordinator.
+- [oracle_agent_python](./oracle_agent_python/README.md): earlier Python A2A agent for warehouse map workflows. It is now mostly a reference implementation.
+- [oracle_agent_java](./oracle_agent_java/README.md): shared Java/Spring Boot A2A runtime serving the graph agent, spatial agent, Select AI agent, and inventory-action coordinator from one process.
+- [docs/GEMINI_ENTERPRISE_AGENT_SETUP.md](./docs/GEMINI_ENTERPRISE_AGENT_SETUP.md): current Gemini Enterprise import URLs, which four agents to create, test prompts, expected behavior, payload-path notes, and the ADC caveat for the ADK action coordinator.
 
 ## Demo Flow
 
@@ -220,4 +264,4 @@ Quick Gemini Enterprise test prompts:
 - Inventory action:
   `What inventory action should we take for SKU-500 given the current supply risk? Gather graph, spatial, and external evidence first, then recommend the safest next move and say whether approval is required.`
 
-The full import and test runbook is in [GEMINI_ENTERPRISE_AGENT_SETUP.md](/path/to/repo-root/oracle-ai-database-gcp-vertex-ai/GEMINI_ENTERPRISE_AGENT_SETUP.md).
+The full import and test runbook is in [docs/GEMINI_ENTERPRISE_AGENT_SETUP.md](/path/to/repo-root/oracle-ai-database-gcp-vertex-ai/docs/GEMINI_ENTERPRISE_AGENT_SETUP.md).

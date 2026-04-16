@@ -43,6 +43,7 @@ There are currently four importable agent cards for the Oracle AI Database demo:
    - uses `DBMS_CLOUD_AI.GENERATE` through the live `YOUR_SELECT_AI_PROFILE_NAME` profile
    - falls back to direct Oracle SQL summaries only if the profile is unavailable
    - now uses a generic schema-aware prompt, so it is not limited to the stockout-summary demo question
+   - is currently most reliable when you use self-contained prompts instead of short conversational follow-ups
 
    Current live card:
    - `name`: `oracle_select_ai_agent`
@@ -68,6 +69,7 @@ There are currently four importable agent cards for the Oracle AI Database demo:
 - The graph payload path is supported, but Gemini Enterprise may still rewrite pasted JSON in surprising ways. The parser now tolerates inline JSON, fenced JSON, and markdown-style escaped brackets such as `\[` and `\]`.
 - The spatial agent is now a real separate hotspot-map implementation in the shared Java runtime.
 - The Select AI agent is live and currently configured for real database-side generation through `DBMS_CLOUD_AI.GENERATE`.
+- The Select AI agent is currently more reliable as a single-turn agent than as a memory-driven multi-turn analyst. Prompts like `Now summarize the result in business language.` should be replaced with a fresh self-contained question.
 - The inventory action agent is live and working, but the ADK model path on the VM is currently falling back to deterministic local orchestration because the VM-side ADC refresh is stale.
 
 ## ADC Note
@@ -108,6 +110,10 @@ If you want the cleanest current demo setup in Gemini Enterprise, import these f
 If the graph agent is already imported in Gemini Enterprise and you want the latest runtime behavior, re-import or update it from:
 
 `https://YOUR_PUBLIC_AGENT_HOST/agent-card-graph.json`
+
+Canonical graph runtime path:
+
+`https://YOUR_PUBLIC_AGENT_HOST/graph`
 
 Note:
 - the live cards still report `version: 0.0.1`
@@ -267,13 +273,17 @@ Current local verification uses the seeded hotspot rows when the live Oracle hot
 Select:
 - `oracle_select_ai_agent`
 
-Use this prompt:
+Best live prompt right now:
 
 ```text
-Which products are at risk of stockouts next quarter, and which regions are driving that risk?
+Using only the Oracle inventory risk demo tables, list the top products at risk of stockouts next quarter, including stockout probability, projected revenue impact, and primary region.
 ```
 
 Other good prompts to try:
+
+```text
+For SKU-500, summarize in business language which warehouses are driving the risk and why.
+```
 
 ```text
 For SKU-700, which warehouse has the lowest coverage days and what hotspot score and revenue impact does it have?
@@ -286,6 +296,14 @@ What is the projected revenue impact for each product in the current quarter?
 ```text
 Show SQL for the warehouse hotspot metrics for SKU-500.
 ```
+
+Avoid for now:
+
+- `Now summarize the result in business language.`
+- `Based on that...`
+- `Tell me more about the previous answer...`
+
+Those conversational follow-ups do not yet carry enough prior result context through the current Select AI agent implementation.
 
 Expected result today:
 - a completed text response
@@ -325,15 +343,21 @@ Latest verified local response shape:
 For the current state of the demo, this is the best Gemini Enterprise order:
 
 1. Ask the Select AI agent:
-   `Which products are at risk of stockouts next quarter, and which regions are driving that risk?`
+   `Using only the Oracle inventory risk demo tables, list the top products at risk of stockouts next quarter, including stockout probability, projected revenue impact, and primary region.`
 
-2. Ask the spatial agent:
+2. Ask the Select AI agent again for drill-down:
+   `For SKU-500, summarize in business language which warehouses are driving the risk and why.`
+
+3. Ask the spatial agent:
    `Show that on a map for SKU-500 and highlight the warehouse hotspots plus the best relief route.`
 
-3. Ask the graph agent:
+4. Ask the graph agent:
    `Use the Oracle Database property graph to show supply chain dependencies for SKU-500 and render the graph as an image.`
 
-4. Ask the inventory action agent:
+5. Ask Deep Research:
+   `Research external factors over the next 90 days that could worsen supply risk for SKU-500, especially around Newark, Northeast distribution, upstream ports, and supplier lanes. Include weather, port congestion, labor actions, trade policy, and geopolitical issues. Return the top risks with citations and likely operational impact.`
+
+6. Ask the inventory action agent:
    `What inventory action should we take for SKU-500 given the current supply risk? Gather graph, spatial, and external evidence first, then recommend the safest next move and say whether approval is required.`
 
 ## Naming Note
@@ -345,7 +369,7 @@ For Gemini Enterprise imports, use the four matching alias-style URLs:
 - `agent-card-select-ai.json`
 - `agent-card-action.json`
 
-The default root path `/.well-known/agent-card.json` still exists and still points to the graph agent, but the alias URLs are the clearest and most consistent way to think about the four-agent setup.
+The legacy root path `/.well-known/agent-card.json` still exists for backward compatibility and still points to the graph agent, but the alias URLs plus the canonical `/graph` runtime path are the clearest and most consistent way to think about the four-agent setup.
 
 ## Next Recommended Follow-Up
 
