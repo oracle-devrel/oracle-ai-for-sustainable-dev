@@ -222,15 +222,32 @@ public class InventorySystemService {
                 - SALES_USER.SC_INVENTORY_RISK_SUMMARY(product_id, quarter_label, risk_level, stockout_probability, at_risk_units, projected_revenue_impact_usd, primary_region, recommendation_summary, active_flag)
                 - SALES_USER.SC_INVENTORY_RISK_DEMO_V(product_id, product_name, quarter_label, overall_risk_level, stockout_probability, product_at_risk_units, projected_revenue_impact_usd, primary_region, recommendation_summary, warehouse_name, county_name, state_code, region_name, hotspot_rank, hotspot_score, coverage_days, backlog_units, service_level_pct, at_risk_units, revenue_impact_usd, recommended_role, active_flag)
 
-                Run these SQL queries exactly and only report values returned by the database:
-                1. SELECT product_id, quarter_label, risk_level, stockout_probability, at_risk_units, projected_revenue_impact_usd, primary_region, recommendation_summary FROM SALES_USER.SC_INVENTORY_RISK_SUMMARY WHERE product_id = '%s' AND active_flag = 'Y'
-                2. SELECT region_name, SUM(at_risk_units) AS at_risk_units, SUM(revenue_impact_usd) AS revenue_impact_usd, MIN(coverage_days) AS min_coverage_days FROM SALES_USER.SC_INVENTORY_RISK_DEMO_V WHERE product_id = '%s' GROUP BY region_name ORDER BY at_risk_units DESC
+                Run this SQL exactly. It intentionally reads the small active demo view without a string-literal
+                WHERE predicate:
 
-                For broad stockout-risk prompts that do not specify a product, %s is the primary demo product. Report its stockout probability, risk level, primary region, at-risk units, revenue impact, recommendation, and driving regions when available.
-                If either query fails or those inventory-risk objects or %s are not accessible to the Oracle AI Database agent, say that clearly and do not answer from generic sales/product tables, numeric PROD_ID sample data, SALES, CUSTOMERS, or CHANNELS. Do not synthesize or infer missing values.
+                SELECT PRODUCT_ID, PRODUCT_NAME, QUARTER_LABEL, OVERALL_RISK_LEVEL, STOCKOUT_PROBABILITY,
+                       PRODUCT_AT_RISK_UNITS, PROJECTED_REVENUE_IMPACT_USD, PRIMARY_REGION,
+                       RECOMMENDATION_SUMMARY, REGION_NAME, SUM(AT_RISK_UNITS) AS REGION_AT_RISK_UNITS,
+                       SUM(REVENUE_IMPACT_USD) AS REGION_REVENUE_IMPACT_USD,
+                       MIN(COVERAGE_DAYS) AS MIN_COVERAGE_DAYS
+                FROM SALES_USER.SC_INVENTORY_RISK_DEMO_V
+                GROUP BY PRODUCT_ID, PRODUCT_NAME, QUARTER_LABEL, OVERALL_RISK_LEVEL, STOCKOUT_PROBABILITY,
+                         PRODUCT_AT_RISK_UNITS, PROJECTED_REVENUE_IMPACT_USD, PRIMARY_REGION,
+                         RECOMMENDATION_SUMMARY, REGION_NAME
+                ORDER BY PRODUCT_ID, REGION_AT_RISK_UNITS DESC
+
+                Use product_id %s, also known as Sustainable Widget 500, as the primary demo product for broad
+                stockout-risk prompts that do not specify a product. After the SQL returns, summarize only values
+                from the result set: product id, product name, quarter, stockout probability, risk level, primary
+                region, product at-risk units, projected revenue impact, recommendation, and the region names
+                driving the risk. Do not mention product ids, regions, probabilities, units, or revenue amounts that
+                are not in the SQL result. If the Oracle AI Database agent cannot access the inventory-risk view or
+                %s is not present in the SQL result, say that clearly and do not answer from generic sales/product
+                tables, numeric PROD_ID sample data, SALES, CUSTOMERS, or CHANNELS. Do not synthesize or infer
+                missing values.
 
                 User question: %s
-                """.formatted(productId, productId, productId, productId, prompt);
+                """.formatted(productId, productId, prompt);
     }
 
     private static String databaseDelegateErrorText(String userInput, Exception exception) {

@@ -142,6 +142,10 @@ The Oracle-hosted agent must be able to access the `SALES_USER.SC_INVENTORY_RISK
 If those objects are not registered or exposed to the Oracle AI Database agent, the gateway should surface that
 data-access gap instead of answering from generic sales sample tables.
 
+For the stockout-risk prompt, the gateway asks the hosted agent to run an uppercase aggregate query over
+`SALES_USER.SC_INVENTORY_RISK_DEMO_V` without a string-literal `WHERE` predicate. That shape has proven more
+reliable with the hosted SQL executor while still keeping the answer grounded in Oracle AI Database results.
+
 ## If it fails
 
 - `No Oracle OAuth bearer token was available`
