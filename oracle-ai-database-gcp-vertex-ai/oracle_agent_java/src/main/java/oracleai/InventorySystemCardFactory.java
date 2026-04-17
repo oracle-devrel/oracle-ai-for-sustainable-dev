@@ -26,28 +26,31 @@ final class InventorySystemCardFactory {
         );
         String inventorySystemUrl = appendPath(baseUrl, "/inventory-system");
         String description = "Inventory-system gateway agent. Routes general inventory questions to the Oracle AI "
-                + "Database Agent, while reserving dependency-graph requests for the Oracle property graph service "
-                + "and map or hotspot requests for the Oracle spatial service.";
+                + "Database Agent, while routing dependency-graph requests to the Oracle property graph service, "
+                + "map or hotspot requests to the Oracle spatial service, and action prompts to the inventory "
+                + "action coordinator.";
 
         return new AgentCard.Builder()
                 .name("oracle_inventory_system_agent")
                 .description(description)
                 .url(inventorySystemUrl)
-                .version("0.0.3")
+                .version("0.0.4")
                 .capabilities(new AgentCapabilities(false, false, false, List.of()))
                 .defaultInputModes(List.of("text/plain"))
-                .defaultOutputModes(List.of("image/png", "text/html", "text/plain"))
+                .defaultOutputModes(List.of("image/png", "application/json", "text/html", "text/plain"))
                 .skills(List.of(
                         new AgentSkill(
                                 "oracle_inventory_system_agent",
                                 "inventory-system-router",
                                 "Routes inventory questions to the best specialist: Oracle AI Database Agent for "
                                         + "general data analysis, Oracle property graph for dependency views, or "
-                                        + "Oracle spatial for hotspot rendering.",
+                                        + "Oracle spatial for hotspot rendering, and the inventory action coordinator "
+                                        + "for transfer recommendations.",
                                 List.of(
                                         "llm",
                                         "router",
                                         "inventory",
+                                        "action",
                                         "graph",
                                         "spatial",
                                         "database",
@@ -57,10 +60,11 @@ final class InventorySystemCardFactory {
                                         "Which products are at risk of stockouts next quarter, and which regions are driving that risk?",
                                         "Create a chart of projected revenue impact by region for the current quarter.",
                                         "Show the supply chain dependency graph for SKU-500 and explain the active alert.",
-                                        "Show that on a map for SKU-500 and highlight the warehouse hotspots."
+                                        "Show that on a map for SKU-500 and highlight the warehouse hotspots.",
+                                        "Suggest actions to take for SKU-500."
                                 ),
                                 List.of("text/plain"),
-                                List.of("image/png", "text/html", "text/plain"),
+                                List.of("image/png", "application/json", "text/html", "text/plain"),
                                 null
                         )
                 ))

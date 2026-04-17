@@ -1,8 +1,10 @@
 package oracleai;
 
 import io.a2a.spec.Artifact;
+import io.a2a.spec.DataPart;
 import io.a2a.spec.FilePart;
 import io.a2a.spec.FileWithBytes;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -19,6 +21,7 @@ public class InventorySystemService {
     private final Environment environment;
     private final SelectAiService selectAiService;
     private final OracleAiDatabaseAgentClient oracleAiDatabaseAgentClient;
+    private final InventoryActionAdkService inventoryActionAdkService;
     private final Function<GraphTools.GraphRequest, GraphTools.GraphResponse> getSupplyChainDependencies;
     private final SpatialTools spatialTools;
 
@@ -26,12 +29,14 @@ public class InventorySystemService {
             Environment environment,
             SelectAiService selectAiService,
             OracleAiDatabaseAgentClient oracleAiDatabaseAgentClient,
+            InventoryActionAdkService inventoryActionAdkService,
             Function<GraphTools.GraphRequest, GraphTools.GraphResponse> getSupplyChainDependencies,
             SpatialTools spatialTools
     ) {
         this.environment = environment;
         this.selectAiService = selectAiService;
         this.oracleAiDatabaseAgentClient = oracleAiDatabaseAgentClient;
+        this.inventoryActionAdkService = inventoryActionAdkService;
         this.getSupplyChainDependencies = getSupplyChainDependencies;
         this.spatialTools = spatialTools;
     }
@@ -45,10 +50,27 @@ public class InventorySystemService {
         Route route = Route.classify(normalized);
 
         return switch (route) {
+            case ACTION -> routeAction(normalized);
             case GRAPH -> routeGraph(normalized);
             case SPATIAL -> routeSpatial(normalized);
             case DATABASE -> routeDatabase(normalized, authorizationHeader);
         };
+    }
+
+    private InventorySystemResult routeAction(String userInput) {
+        InventoryActionAdkService.InventoryActionResult result = inventoryActionAdkService.run(
+                actionPrompt(userInput),
+                UUID.randomUUID().toString()
+        );
+
+        return new InventorySystemResult(
+                result.responseText(),
+                "inventory-action",
+                result.orchestrationMode(),
+                "Delegated to the inventory action coordinator; traceCount=" + result.trace().size(),
+                actionArtifacts(result),
+                "delegate-inventory-action"
+        );
     }
 
     private InventorySystemResult routeDatabase(String userInput, String authorizationHeader) {
@@ -170,13 +192,64 @@ public class InventorySystemService {
         return "SKU-500";
     }
 
+    private static String actionPrompt(String userInput) {
+        String prompt = userInput == null || userInput.isBlank()
+                ? "Suggest the best inventory action to take."
+                : userInput.trim();
+        String guidance = "Gather graph, spatial, and external evidence, then draft an inventory transfer action "
+                + "when a transfer is the best next move.";
+        if (containsProductId(prompt)) {
+            return prompt + "\n" + guidance;
+        }
+        return prompt + "\nUse SKU-500 as the default product id. " + guidance;
+    }
+
+    private static boolean containsProductId(String userInput) {
+        return PRODUCT_ID_PATTERN.matcher(userInput == null ? "" : userInput.toUpperCase()).find();
+    }
+
+    private static List<Artifact> actionArtifacts(InventoryActionAdkService.InventoryActionResult result) {
+        if (result.draftAction() == null || result.draftAction().isEmpty()) {
+            return List.of();
+        }
+
+        Map<String, Object> actionData = new LinkedHashMap<>();
+        actionData.put("action", result.draftAction());
+        if (result.policyResult() != null && !result.policyResult().isEmpty()) {
+            actionData.put("policy", result.policyResult());
+        }
+
+        Map<String, Object> metadata = new LinkedHashMap<>();
+        metadata.put("actionType", stringValue(result.draftAction().get("actionType")));
+        metadata.put("draftActionId", stringValue(result.draftAction().get("draftActionId")));
+        metadata.put("contentType", "application/json");
+
+        Artifact artifact = new Artifact.Builder()
+                .artifactId(UUID.randomUUID().toString())
+                .name("inventory_transfer_action")
+                .description("Draft inventory-transfer action recommendation")
+                .parts(new DataPart(actionData))
+                .metadata(metadata)
+                .extensions(List.of())
+                .build();
+        return List.of(artifact);
+    }
+
+    private static String stringValue(Object value) {
+        return value == null ? "" : value.toString();
+    }
+
     enum Route {
+        ACTION,
         GRAPH,
         SPATIAL,
         DATABASE;
 
         static Route classify(String userInput) {
             String normalized = userInput == null ? "" : userInput.toLowerCase();
+            if (isActionIntent(normalized)) {
+                return ACTION;
+            }
             if (containsAny(normalized, "map", "spatial", "hotspot", "county", "latitude", "longitude")) {
                 return SPATIAL;
             }
@@ -184,6 +257,31 @@ public class InventorySystemService {
                 return GRAPH;
             }
             return DATABASE;
+        }
+
+        private static boolean isActionIntent(String text) {
+            return containsAny(
+                    text,
+                    "suggest action",
+                    "suggest actions",
+                    "actions to take",
+                    "action to take",
+                    "what action",
+                    "which action",
+                    "recommend action",
+                    "recommended action",
+                    "inventory action",
+                    "next step",
+                    "next move",
+                    "what should we do",
+                    "transfer inventory",
+                    "inventory transfer",
+                    "move inventory",
+                    "rebalance inventory",
+                    "draft transfer",
+                    "draft an inventory",
+                    "take action"
+            ) || (text.contains("transfer") && text.contains("warehouse"));
         }
 
         private static boolean containsAny(String text, String... needles) {

@@ -155,6 +155,11 @@ def main():
     parser.add_argument("--timeout-seconds", type=int, default=300)
     parser.add_argument("--write-env", help="Optional path to a .env file to update with gateway OAuth settings.")
     parser.add_argument("--output-json", help="Optional path to write the full token response JSON.")
+    parser.add_argument(
+        "--suppress-token-output",
+        action="store_true",
+        help="Do not print access or refresh token values to stdout after a successful exchange.",
+    )
     args = parser.parse_args()
 
     redirect_uri = f"http://{args.host}:{args.port}{args.path}"
@@ -218,8 +223,11 @@ def main():
 
     print()
     print("Oracle OAuth token exchange succeeded.")
-    print(f"access_token: {access_token}")
-    print(f"refresh_token: {refresh_token}")
+    if args.suppress_token_output:
+        print("Token values suppressed; write them to a file with --output-json or --write-env.")
+    else:
+        print(f"access_token: {access_token}")
+        print(f"refresh_token: {refresh_token}")
 
     if args.output_json:
         output_path = Path(args.output_json).expanduser().resolve()

@@ -48,10 +48,26 @@ python3 mint_oracle_refresh_token.py \
   --client-id "<gateway-client-id>" \
   --client-secret "<gateway-client-secret>" \
   --output-json /tmp/oracle_inventory_gateway_tokens.json \
-  --write-env /tmp/oracle_inventory_gateway_oauth.env
+  --write-env /tmp/oracle_inventory_gateway_oauth.env \
+  --suppress-token-output
 ```
 
 Then open the printed Oracle authorize URL in a browser, sign in as the Oracle demo DB user, and let the callback complete on `127.0.0.1`.
+
+When refreshing an existing local env file, this keeps the client values out of shell history:
+
+```bash
+set -a
+source /tmp/oracle_inventory_gateway_oauth.env
+set +a
+python3 -u mint_oracle_refresh_token.py \
+  --client-id "$ORACLE_AI_DATABASE_AGENT_CLIENT_ID" \
+  --client-secret "$ORACLE_AI_DATABASE_AGENT_CLIENT_SECRET" \
+  --output-json /tmp/oracle_inventory_gateway_tokens.json \
+  --write-env /tmp/oracle_inventory_gateway_oauth.env \
+  --timeout-seconds 600 \
+  --suppress-token-output
+```
 
 The generated env file should contain:
 
@@ -79,6 +95,9 @@ The deployed VM flow used for the demo was:
 - The gateway must poll the same Oracle agent endpoint with JSON-RPC `tasks/get`.
 - The final answer may come back in `artifacts[].parts[].text`, not only in `status.message.parts`.
 - JSON-RPC `id` should be a string when calling the Oracle agent.
+- Oracle AI Database delegation failures are surfaced directly by default. Keep `INVENTORY_SYSTEM_ALLOW_LOCAL_SELECT_AI_FALLBACK`
+  unset or set to `false` when database questions must use only the Oracle AI Database agent.
+  Set it to `true` only for an explicit local demo fallback.
 
 Those behaviors are handled in:
 

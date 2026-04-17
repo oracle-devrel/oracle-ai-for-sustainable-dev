@@ -31,11 +31,11 @@ final class InventoryActionCardFactory {
                 "ADK-based coordinator for final-stage inventory action planning. It gathers graph, spatial, and external signals, checks policy, and drafts a recommended inventory move that still requires approval.",
                 inventoryActionUrl,
                 null,
-                "0.0.1",
+                "0.0.2",
                 null,
                 new AgentCapabilities(false, false, false, List.of()),
                 List.of("text/plain"),
-                List.of("text/plain"),
+                List.of("application/json", "text/plain"),
                 List.of(
                         new AgentSkill(
                                 "oracle_inventory_action_agent",
@@ -44,7 +44,7 @@ final class InventoryActionCardFactory {
                                 List.of("llm", "orchestration"),
                                 List.of(),
                                 List.of("text/plain"),
-                                List.of("text/plain"),
+                                List.of("application/json", "text/plain"),
                                 null
                         ),
                         new AgentSkill(
@@ -54,7 +54,7 @@ final class InventoryActionCardFactory {
                                 List.of("llm", "tools", "inventory"),
                                 List.of(),
                                 List.of("text/plain"),
-                                List.of("text/plain"),
+                                List.of("application/json", "text/plain"),
                                 null
                         )
                 ),

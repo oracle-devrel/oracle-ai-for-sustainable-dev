@@ -2,7 +2,7 @@
   "name": "oracle_inventory_action_agent",
   "description": "ADK-based coordinator for final-stage inventory action planning. It gathers graph, spatial, and external signals, checks policy, and drafts a recommended inventory move that still requires approval.",
   "url": "https://YOUR_PUBLIC_AGENT_HOST/inventory-action",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "capabilities": {
     "streaming": false,
     "pushNotifications": false,
@@ -13,6 +13,7 @@
     "text/plain"
   ],
   "defaultOutputModes": [
+    "application/json",
     "text/plain"
   ],
   "skills": [
@@ -29,6 +30,7 @@
         "text/plain"
       ],
       "outputModes": [
+        "application/json",
         "text/plain"
       ]
     },
@@ -46,6 +48,7 @@
         "text/plain"
       ],
       "outputModes": [
+        "application/json",
         "text/plain"
       ]
     }

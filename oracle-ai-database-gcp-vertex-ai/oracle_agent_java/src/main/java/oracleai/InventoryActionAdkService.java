@@ -121,6 +121,10 @@ public class InventoryActionAdkService {
         String normalizedInput = userInput == null || userInput.isBlank()
                 ? "Recommend an inventory action for SKU-500."
                 : userInput.trim();
+        if (!containsProductId(normalizedInput)) {
+            normalizedInput = normalizedInput
+                    + "\nUse SKU-500 as the default product id when the request does not specify one.";
+        }
         try {
             return runAdk(normalizedInput, contextId);
         } catch (Exception exception) {
@@ -173,10 +177,9 @@ public class InventoryActionAdkService {
         String destinationWarehouse = stringValue(spatialEvidence.get("recommendedDestinationWarehouse"));
         int units = intValue(spatialEvidence.get("suggestedTransferUnits"), 250);
 
-        String combinedReason = "Graph: "
-                + stringValue(graphEvidence.get("activeAlert"))
-                + ". External: "
-                + stringValue(externalSignals.get("signalSummary"));
+        String activeAlert = stringValue(graphEvidence.get("activeAlert"));
+        String signalSummary = stringValue(externalSignals.get("signalSummary"));
+        String combinedReason = combinedReason(activeAlert, signalSummary);
 
         Map<String, Object> policyResult = inventoryActionTools.checkTransferPolicy(
                 productId,
@@ -197,9 +200,7 @@ public class InventoryActionAdkService {
                 ? "Approval is required before execution."
                 : "Only standard review is required before execution.";
         String dependencyPath = stringValue(graphEvidence.get("dependencyPath"));
-        String activeAlert = stringValue(graphEvidence.get("activeAlert"));
         String hotspotSummary = stringValue(spatialEvidence.get("hotspotSummary"));
-        String signalSummary = stringValue(externalSignals.get("signalSummary"));
 
         List<String> rationaleParts = new ArrayList<>();
         if (!dependencyPath.isBlank()) {
@@ -232,7 +233,7 @@ public class InventoryActionAdkService {
                 "draftResult=" + draftResult
         );
 
-        return new InventoryActionResult(responseText, trace, "deterministic-fallback");
+        return new InventoryActionResult(responseText, trace, "deterministic-fallback", draftResult, policyResult);
     }
 
     private Session ensureSession(String userId, String sessionId) {
@@ -266,6 +267,10 @@ public class InventoryActionAdkService {
         return "SKU-500";
     }
 
+    private static boolean containsProductId(String userInput) {
+        return PRODUCT_ID_PATTERN.matcher(userInput == null ? "" : userInput.toUpperCase()).find();
+    }
+
     private static String stringValue(Object value) {
         return value == null ? "" : value.toString();
     }
@@ -279,6 +284,20 @@ public class InventoryActionAdkService {
         } catch (NumberFormatException exception) {
             return defaultValue;
         }
+    }
+
+    private static String combinedReason(String activeAlert, String signalSummary) {
+        List<String> reasonParts = new ArrayList<>();
+        if (!stringValue(activeAlert).isBlank()) {
+            reasonParts.add("Graph: " + toParenthetical(activeAlert) + ".");
+        }
+        if (!stringValue(signalSummary).isBlank()) {
+            reasonParts.add("External: " + toParenthetical(signalSummary) + ".");
+        }
+        if (reasonParts.isEmpty()) {
+            return "Inventory risk evidence supports a balancing transfer.";
+        }
+        return String.join(" ", reasonParts);
     }
 
     private static String toSentence(String value) {
@@ -303,5 +322,15 @@ public class InventoryActionAdkService {
         return normalized;
     }
 
-    public record InventoryActionResult(String responseText, List<String> trace, String orchestrationMode) {}
+    public record InventoryActionResult(
+            String responseText,
+            List<String> trace,
+            String orchestrationMode,
+            Map<String, Object> draftAction,
+            Map<String, Object> policyResult
+    ) {
+        public InventoryActionResult(String responseText, List<String> trace, String orchestrationMode) {
+            this(responseText, trace, orchestrationMode, Map.of(), Map.of());
+        }
+    }
 }

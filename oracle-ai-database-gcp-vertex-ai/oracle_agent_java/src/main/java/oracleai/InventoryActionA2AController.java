@@ -1,6 +1,7 @@
 package oracleai;
 
 import io.a2a.spec.AgentCard;
+import io.a2a.spec.DataPart;
 import io.a2a.spec.JSONRPCError;
 import io.a2a.spec.Message;
 import io.a2a.spec.Part;
@@ -14,6 +15,7 @@ import io.a2a.spec.TaskStatus;
 import io.a2a.spec.TextPart;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -86,15 +88,12 @@ public class InventoryActionA2AController {
 
             Message agentMessage = new Message(
                     Message.Role.AGENT,
-                    List.of(new TextPart(result.responseText())),
+                    responseParts(result),
                     UUID.randomUUID().toString(),
                     contextId,
                     taskId,
                     List.of(),
-                    Map.of(
-                            "coordinator", result.orchestrationMode(),
-                            "traceCount", result.trace().size()
-                    ),
+                    responseMetadata(result),
                     List.of()
             );
 
@@ -104,10 +103,7 @@ public class InventoryActionA2AController {
                     new TaskStatus(TaskState.COMPLETED, agentMessage, OffsetDateTime.now()),
                     List.of(),
                     userMessage == null ? List.of(agentMessage) : List.of(userMessage, agentMessage),
-                    Map.of(
-                            "coordinator", result.orchestrationMode(),
-                            "traceCount", result.trace().size()
-                    )
+                    responseMetadata(result)
             );
             tasks.put(taskId, completedTask);
             return new SendMessageResponse(request.getId(), completedTask);
@@ -190,5 +186,30 @@ public class InventoryActionA2AController {
                 metadata,
                 original.getExtensions() == null ? List.of() : original.getExtensions()
         );
+    }
+
+    private static List<Part<?>> responseParts(InventoryActionAdkService.InventoryActionResult result) {
+        List<Part<?>> parts = new ArrayList<>();
+        parts.add(new TextPart(result.responseText()));
+        if (result.draftAction() != null && !result.draftAction().isEmpty()) {
+            Map<String, Object> actionData = new LinkedHashMap<>();
+            actionData.put("action", result.draftAction());
+            if (result.policyResult() != null && !result.policyResult().isEmpty()) {
+                actionData.put("policy", result.policyResult());
+            }
+            parts.add(new DataPart(actionData));
+        }
+        return parts;
+    }
+
+    private static Map<String, Object> responseMetadata(InventoryActionAdkService.InventoryActionResult result) {
+        Map<String, Object> metadata = new LinkedHashMap<>();
+        metadata.put("coordinator", result.orchestrationMode());
+        metadata.put("traceCount", result.trace().size());
+        if (result.draftAction() != null && !result.draftAction().isEmpty()) {
+            metadata.put("actionType", result.draftAction().get("actionType"));
+            metadata.put("draftActionId", result.draftAction().get("draftActionId"));
+        }
+        return metadata;
     }
 }
