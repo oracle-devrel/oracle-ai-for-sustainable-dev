@@ -317,9 +317,11 @@ What it does today:
 
 - routes graph-style requests such as dependency, upstream, downstream, supplier, or property-graph questions to the local Oracle graph agent
 - routes map-style requests such as hotspot, county, latitude, longitude, or spatial questions to the local Oracle spatial agent
+- routes action prompts such as transfer, next move, or actions to take to the local inventory-action coordinator
 - routes everything else to the Oracle-hosted Oracle AI Database Agent over A2A JSON-RPC
+- constrains stockout and inventory-risk database prompts to the `SALES_USER.SC_INVENTORY_RISK_*` demo objects and uses `SKU-500` as the default product focus
 - passes through remote database artifacts when the Oracle AI Database Agent returns them, so HTML charts and images can flow back through the gateway
-- if the remote Oracle AI Database Agent handoff fails, falls back to the in-process Select AI analyst and reports that fallback in the task metadata
+- surfaces remote Oracle AI Database delegation failures by default; set `INVENTORY_SYSTEM_ALLOW_LOCAL_SELECT_AI_FALLBACK=true` only for an explicit local demo fallback
 
 Environment knobs for the remote database handoff:
 
@@ -327,6 +329,7 @@ Environment knobs for the remote database handoff:
 - `ORACLE_AI_DATABASE_AGENT_BEARER_TOKEN`: optional bearer token for the remote delegate call
 - `ORACLE_AI_DATABASE_AGENT_AUTHORIZATION_HEADER`: optional full authorization header, if you need something other than `Bearer ...`
 - `ORACLE_AI_DATABASE_AGENT_TIMEOUT_SECONDS`: override the remote request timeout
+- `INVENTORY_SYSTEM_ALLOW_LOCAL_SELECT_AI_FALLBACK`: defaults to disabled; set to `true` only when local Select AI fallback is acceptable
 
 Recommended Gemini Enterprise prompt:
 

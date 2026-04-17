@@ -2,7 +2,7 @@
   "name": "oracle_inventory_system_agent",
   "description": "Inventory-system gateway agent. Routes general inventory questions to the Oracle AI Database Agent, while routing dependency-graph requests to the Oracle property graph service, map or hotspot requests to the Oracle spatial service, and action prompts to the inventory action coordinator.",
   "url": "https://YOUR_PUBLIC_AGENT_HOST/inventory-system",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "capabilities": {
     "streaming": false,
     "pushNotifications": false,

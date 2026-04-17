@@ -102,6 +102,7 @@ The deployed VM flow used for the demo was:
 Those behaviors are handled in:
 
 - [OracleAiDatabaseAgentClient.java](/Users/pparkins/src/github.com/paulparkinson/oracle-ai-for-sustainable-dev/oracle-ai-database-gcp-vertex-ai/oracle_agent_java/src/main/java/oracleai/OracleAiDatabaseAgentClient.java)
+- [InventorySystemService.java](/Users/pparkins/src/github.com/paulparkinson/oracle-ai-for-sustainable-dev/oracle-ai-database-gcp-vertex-ai/oracle_agent_java/src/main/java/oracleai/InventorySystemService.java), which constrains stockout and inventory-risk prompts to the `SALES_USER.SC_INVENTORY_RISK_*` demo objects and defaults broad inventory-risk prompts to `SKU-500`.
 
 ## Quick verification
 
@@ -111,12 +112,17 @@ Public card:
 
 Good DB test prompt:
 
-`For year 2025, how did total sales revenue break down across sales channels?`
+`Which products are at risk of stockouts next quarter, and which regions are driving that risk?`
 
 Expected metadata on success:
 
 - `delegatedTo = oracle-ai-database-agent`
 - `executionMode = remote-a2a`
+
+The Oracle-hosted agent must be able to access the `SALES_USER.SC_INVENTORY_RISK_SUMMARY` and
+`SALES_USER.SC_INVENTORY_RISK_DEMO_V` objects for that prompt to return the `SKU-500` inventory-risk answer.
+If those objects are not registered or exposed to the Oracle AI Database agent, the gateway should surface that
+data-access gap instead of answering from generic sales sample tables.
 
 ## If it fails
 

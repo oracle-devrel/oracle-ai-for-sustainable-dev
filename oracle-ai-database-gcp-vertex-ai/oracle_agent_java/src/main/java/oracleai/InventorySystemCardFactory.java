@@ -34,7 +34,7 @@ final class InventorySystemCardFactory {
                 .name("oracle_inventory_system_agent")
                 .description(description)
                 .url(inventorySystemUrl)
-                .version("0.0.4")
+                .version("0.0.5")
                 .capabilities(new AgentCapabilities(false, false, false, List.of()))
                 .defaultInputModes(List.of("text/plain"))
                 .defaultOutputModes(List.of("image/png", "application/json", "text/html", "text/plain"))

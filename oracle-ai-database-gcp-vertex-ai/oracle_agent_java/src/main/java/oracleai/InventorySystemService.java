@@ -74,9 +74,10 @@ public class InventorySystemService {
     }
 
     private InventorySystemResult routeDatabase(String userInput, String authorizationHeader) {
+        String databasePrompt = databasePrompt(userInput);
         try {
             OracleAiDatabaseAgentClient.RemoteDatabaseResult result = oracleAiDatabaseAgentClient.answer(
-                    userInput,
+                    databasePrompt,
                     authorizationHeader
             );
             return new InventorySystemResult(
@@ -90,8 +91,7 @@ public class InventorySystemService {
         } catch (Exception exception) {
             if (!allowsLocalFallback()) {
                 return new InventorySystemResult(
-                        "Oracle AI Database agent handoff failed and local fallback is disabled for this gateway.\n\n"
-                                + "Delegate error: " + exception.getMessage(),
+                        databaseDelegateErrorText(userInput, exception),
                         "oracle-ai-database-agent-error",
                         "delegate-error",
                         "Oracle AI Database agent delegation failed: " + exception.getMessage(),
@@ -208,6 +208,64 @@ public class InventorySystemService {
         return PRODUCT_ID_PATTERN.matcher(userInput == null ? "" : userInput.toUpperCase()).find();
     }
 
+    private static String databasePrompt(String userInput) {
+        String prompt = userInput == null || userInput.isBlank()
+                ? "Which products are at risk of stockouts next quarter, and which regions are driving that risk?"
+                : userInput.trim();
+        if (!isInventoryRiskDatabasePrompt(prompt)) {
+            return prompt;
+        }
+
+        String productId = extractProductId(prompt);
+        return """
+                You are answering for the supply-chain inventory-risk demo. Use only these Oracle objects:
+                - SALES_USER.SC_INVENTORY_RISK_SUMMARY(product_id, quarter_label, risk_level, stockout_probability, at_risk_units, projected_revenue_impact_usd, primary_region, recommendation_summary, active_flag)
+                - SALES_USER.SC_INVENTORY_RISK_DEMO_V(product_id, product_name, quarter_label, overall_risk_level, stockout_probability, product_at_risk_units, projected_revenue_impact_usd, primary_region, recommendation_summary, warehouse_name, county_name, state_code, region_name, hotspot_rank, hotspot_score, coverage_days, backlog_units, service_level_pct, at_risk_units, revenue_impact_usd, recommended_role)
+
+                Run these SQL queries exactly and only report values returned by the database:
+                1. SELECT product_id, quarter_label, risk_level, stockout_probability, at_risk_units, projected_revenue_impact_usd, primary_region, recommendation_summary FROM SALES_USER.SC_INVENTORY_RISK_SUMMARY WHERE product_id = '%s' AND active_flag = 'Y'
+                2. SELECT region_name, SUM(at_risk_units) AS at_risk_units, SUM(revenue_impact_usd) AS revenue_impact_usd, MIN(coverage_days) AS min_coverage_days FROM SALES_USER.SC_INVENTORY_RISK_DEMO_V WHERE product_id = '%s' GROUP BY region_name ORDER BY at_risk_units DESC
+
+                For broad stockout-risk prompts that do not specify a product, %s is the primary demo product. Report its stockout probability, risk level, primary region, at-risk units, revenue impact, recommendation, and driving regions when available.
+                If either query fails or those inventory-risk objects or %s are not accessible to the Oracle AI Database agent, say that clearly and do not answer from generic sales/product tables, numeric PROD_ID sample data, SALES, CUSTOMERS, or CHANNELS. Do not synthesize or infer missing values.
+
+                User question: %s
+                """.formatted(productId, productId, productId, productId, prompt);
+    }
+
+    private static String databaseDelegateErrorText(String userInput, Exception exception) {
+        if (isInventoryRiskDatabasePrompt(userInput)) {
+            String productId = extractProductId(userInput);
+            return "Oracle AI Database agent could not query the inventory-risk demo objects for "
+                    + productId
+                    + ". I asked it to use SALES_USER.SC_INVENTORY_RISK_SUMMARY and "
+                    + "SALES_USER.SC_INVENTORY_RISK_DEMO_V, but the delegate failed.\n\n"
+                    + "Delegate error: " + exception.getMessage()
+                    + "\n\nNo local Select AI fallback was used. This usually means the Oracle AI Database "
+                    + "agent is not currently registered against, profiled for, or permitted to access the "
+                    + "SKU inventory-risk tables.";
+        }
+        return "Oracle AI Database agent handoff failed and local fallback is disabled for this gateway.\n\n"
+                + "Delegate error: " + exception.getMessage();
+    }
+
+    private static boolean isInventoryRiskDatabasePrompt(String userInput) {
+        String text = userInput == null ? "" : userInput.toLowerCase();
+        return containsAny(
+                text,
+                "stockout",
+                "stock out",
+                "inventory risk",
+                "inventory-risk",
+                "warehouse risk",
+                "coverage days",
+                "backlog",
+                "at-risk units",
+                "at risk units",
+                "revenue impact"
+        ) || (text.contains("products") && text.contains("at risk") && text.contains("regions"));
+    }
+
     private static List<Artifact> actionArtifacts(InventoryActionAdkService.InventoryActionResult result) {
         if (result.draftAction() == null || result.draftAction().isEmpty()) {
             return List.of();
@@ -285,13 +343,17 @@ public class InventorySystemService {
         }
 
         private static boolean containsAny(String text, String... needles) {
-            for (String needle : needles) {
-                if (text.contains(needle)) {
-                    return true;
-                }
-            }
-            return false;
+            return InventorySystemService.containsAny(text, needles);
         }
+    }
+
+    private static boolean containsAny(String text, String... needles) {
+        for (String needle : needles) {
+            if (text.contains(needle)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean allowsLocalFallback() {
