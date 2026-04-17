@@ -14,7 +14,7 @@ Today, the same Java process serves five agent surfaces:
 
 The legacy root `/` graph surface still exists for backward compatibility, but `/graph` is now the canonical graph route.
 
-The graph renderer still uses deterministic application logic plus custom Java2D image generation. The spatial agent now uses JTS for geometry work and Java2D for the rendered PNG. The inventory-system gateway keeps graph and spatial routing local, while delegating general inventory and SQL-style questions to the Oracle-hosted Oracle AI Database Agent before falling back to the in-process Select AI analyst if that remote handoff is unavailable. The action agent uses Google ADK Java when credentials are available and falls back cleanly when they are not.
+The graph renderer still uses deterministic application logic plus custom Java2D image generation. The spatial agent now uses JTS for geometry work and Java2D for the rendered PNG. The inventory-system gateway keeps graph and spatial routing local, while delegating general inventory and SQL-style questions to the Oracle-hosted Oracle AI Database Agent. Local Select AI fallback is disabled by default and should only be enabled deliberately for an offline demo path. The action agent uses Google ADK Java when credentials are available and falls back cleanly when they are not.
 
 ## Related Files
 
@@ -25,6 +25,7 @@ The graph renderer still uses deterministic application logic plus custom Java2D
 - [`sql/run_supply_chain_graph_seed.sh`](/path/to/repo-root/oracle-ai-database-gcp-vertex-ai/oracle_agent_java/sql/run_supply_chain_graph_seed.sh): SQLcl-based wrapper that logs row counts and runs verification queries after seeding.
 - [`sql/setup_inventory_risk_demo_schema.sql`](/path/to/repo-root/oracle-ai-database-gcp-vertex-ai/oracle_agent_java/sql/setup_inventory_risk_demo_schema.sql): idempotent setup DDL for the inventory-risk summary, warehouse-geo, and hotspot tables used by the spatial and Select AI flows.
 - [`sql/seed_inventory_risk_demo_data.sql`](/path/to/repo-root/oracle-ai-database-gcp-vertex-ai/oracle_agent_java/sql/seed_inventory_risk_demo_data.sql): idempotent sample data seed for the spatial and Select AI demo tables.
+- [`sql/extend_sales_data_profile_with_inventory.sql`](/path/to/repo-root/oracle-ai-database-gcp-vertex-ai/oracle_agent_java/sql/extend_sales_data_profile_with_inventory.sql): safely extends an existing `SALES_DATA_PROFILE` with the inventory-risk `SC_*` objects while preserving a `SALES_DATA_PROFILE_BEFORE_SC` rollback profile.
 - [`sql/configure_select_ai_openai_profile.sql`](/path/to/repo-root/oracle-ai-database-gcp-vertex-ai/oracle_agent_java/sql/configure_select_ai_openai_profile.sql): example database-side setup for a demo `DBMS_CLOUD_AI` profile using an external provider such as OpenAI.
 - [`GRAPH_DATA_MODES.md`](/path/to/repo-root/oracle-ai-database-gcp-vertex-ai/oracle_agent_java/GRAPH_DATA_MODES.md): how `GRAPH_DATA_MODE=database|payload|auto` works, the supported JSON contract, and the validation rules for multi-agent flows.
 - [`MULTI_AGENT_GRAPH_FLOW.md`](/path/to/repo-root/oracle-ai-database-gcp-vertex-ai/oracle_agent_java/MULTI_AGENT_GRAPH_FLOW.md): architecture notes for direct DB lookup vs upstream-agent payload handoff, including provenance, validation, and recommended `auto` behavior.
@@ -368,7 +369,7 @@ Expected response shape:
 - plain-text summary for every route
 - PNG artifacts for graph or spatial requests
 - HTML or image artifacts when the remote Oracle AI Database Agent returns charts
-- metadata showing `delegatedTo=oracle-ai-database-agent`, `graph`, `spatial`, or `select-ai-fallback`
+- metadata showing `delegatedTo=oracle-ai-database-agent`, `oracle-ai-database-agent-error`, `graph`, `spatial`, `inventory-action`, or `select-ai-fallback` when that optional fallback is explicitly enabled
 
 ## Inventory Action Coordinator
 

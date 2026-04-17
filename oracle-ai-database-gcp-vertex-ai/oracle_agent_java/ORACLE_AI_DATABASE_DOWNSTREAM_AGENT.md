@@ -39,6 +39,24 @@ Oracle registration endpoint:
 
 `POST https://dataaccess.adb.us-ashburn-1.oraclecloudapps.com/adb/auth/v1/connect/databases/<AUTONOMOUS_DB_OCID>/register`
 
+## Select AI profile objects
+
+If the Oracle AI Database agent is bound to the existing `SALES_DATA_PROFILE`, keep that profile name and
+extend its object list instead of switching the gateway to a separate profile. Use:
+
+```bash
+/opt/sqlcl/bin/sql -S "$DB_USERNAME/$DB_PASSWORD@$DB_DSN" @sql/extend_sales_data_profile_with_inventory.sql
+```
+
+The script preserves the current sales objects, adds the inventory-risk `SC_*` objects, and creates
+`SALES_DATA_PROFILE_BEFORE_SC` as a rollback snapshot the first time it runs. A healthy result is:
+
+- `SALES_DATA_PROFILE`: 24 objects total, 15 `SC_*` inventory objects, 9 existing sales objects
+- `SALES_DATA_PROFILE_BEFORE_SC`: 9 objects total, 0 `SC_*` inventory objects, 9 existing sales objects
+
+This updates the database-side `DBMS_CLOUD_AI` profile. The Oracle-hosted A2A agent may still require its
+database registration or object-access metadata to be refreshed before it can query the newly exposed objects.
+
 ## Minting the gateway refresh token
 
 Use the helper in this folder:
