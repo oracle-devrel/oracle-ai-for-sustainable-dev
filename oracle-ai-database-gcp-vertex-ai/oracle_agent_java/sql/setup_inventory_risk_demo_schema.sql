@@ -98,7 +98,7 @@ declare
     pragma exception_init(object_exists, -955);
 begin
     execute immediate q'[
-        CREATE VIEW sc_inventory_risk_demo_v AS
+        CREATE OR REPLACE VIEW sc_inventory_risk_demo_v AS
         SELECT
             summary.product_id,
             product.product_name,
@@ -125,7 +125,8 @@ begin
             snapshot.at_risk_units,
             snapshot.revenue_impact_usd,
             snapshot.risk_level,
-            snapshot.recommended_role
+            snapshot.recommended_role,
+            summary.active_flag
         FROM sc_inventory_risk_summary summary
         JOIN sc_products product
           ON product.product_id = summary.product_id
@@ -138,7 +139,7 @@ begin
           ON geo.warehouse_id = snapshot.warehouse_id
         WHERE summary.active_flag = 'Y'
     ]';
-    dbms_output.put_line('OK: created sc_inventory_risk_demo_v');
+    dbms_output.put_line('OK: created or replaced sc_inventory_risk_demo_v');
 exception
     when object_exists then
         dbms_output.put_line('SKIP: sc_inventory_risk_demo_v already exists');

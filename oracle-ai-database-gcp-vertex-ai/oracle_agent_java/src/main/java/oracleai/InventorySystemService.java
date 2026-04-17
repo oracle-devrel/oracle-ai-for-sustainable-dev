@@ -220,7 +220,7 @@ public class InventorySystemService {
         return """
                 You are answering for the supply-chain inventory-risk demo. Use only these Oracle objects:
                 - SALES_USER.SC_INVENTORY_RISK_SUMMARY(product_id, quarter_label, risk_level, stockout_probability, at_risk_units, projected_revenue_impact_usd, primary_region, recommendation_summary, active_flag)
-                - SALES_USER.SC_INVENTORY_RISK_DEMO_V(product_id, product_name, quarter_label, overall_risk_level, stockout_probability, product_at_risk_units, projected_revenue_impact_usd, primary_region, recommendation_summary, warehouse_name, county_name, state_code, region_name, hotspot_rank, hotspot_score, coverage_days, backlog_units, service_level_pct, at_risk_units, revenue_impact_usd, recommended_role)
+                - SALES_USER.SC_INVENTORY_RISK_DEMO_V(product_id, product_name, quarter_label, overall_risk_level, stockout_probability, product_at_risk_units, projected_revenue_impact_usd, primary_region, recommendation_summary, warehouse_name, county_name, state_code, region_name, hotspot_rank, hotspot_score, coverage_days, backlog_units, service_level_pct, at_risk_units, revenue_impact_usd, recommended_role, active_flag)
 
                 Run these SQL queries exactly and only report values returned by the database:
                 1. SELECT product_id, quarter_label, risk_level, stockout_probability, at_risk_units, projected_revenue_impact_usd, primary_region, recommendation_summary FROM SALES_USER.SC_INVENTORY_RISK_SUMMARY WHERE product_id = '%s' AND active_flag = 'Y'
