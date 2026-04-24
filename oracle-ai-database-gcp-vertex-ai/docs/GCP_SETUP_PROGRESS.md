@@ -152,12 +152,12 @@ This log records the actual migration work toward recreating the Oracle AI Datab
   - `TNS_ADMIN=/home/pparkins/wallets/oracle-agent-26ai`
   - `GRAPH_DATA_MODE=database`
 - Ran the graph schema setup wrapper on the VM:
-  - `oracle_agent_java/sql/run_supply_chain_graph_setup.sh`
+  - `sql/run_supply_chain_graph_setup.sh`
 - Confirmed the graph objects now exist in the new database, including:
   - `SUPPLY_CHAIN_GRAPH`
   - the `SC_*` demo tables
 - Ran the graph seed wrapper on the VM:
-  - `oracle_agent_java/sql/run_supply_chain_graph_seed.sh`
+  - `sql/run_supply_chain_graph_seed.sh`
 - Verified the seeded graph path for `SKU-500` in the new database:
   - `Vertex Plastics -> Columbus Final Pack -> Houston -> Newark Inventory Hub`
 - Ran the inventory-risk schema and seed SQL on the VM for the spatial and Select AI demo tables.

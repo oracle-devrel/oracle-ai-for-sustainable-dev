@@ -12,11 +12,11 @@ if [[ -f "$ENV_HELPER" ]]; then
   # shellcheck disable=SC1090
   source "$ENV_HELPER"
   load_env_defaults "$ENV_FILE" \
-    SPATIAL_AGENT_URL \
+    ACTION_AGENT_URL \
     A2A_URL \
     PUBLIC_PROTOCOL \
     PUBLIC_HOST \
-    SPATIAL_AGENT_PORT \
+    ACTION_AGENT_PORT \
     PORT \
     BIND_HOST
 elif [[ -f "$ENV_FILE" ]]; then
@@ -32,9 +32,9 @@ if [[ ! -x "$VENV_PYTHON" ]]; then
   exit 1
 fi
 
-export PORT="${SPATIAL_AGENT_PORT:-${PORT:-8080}}"
+export PORT="${ACTION_AGENT_PORT:-${PORT:-8080}}"
 
 cd "$SCRIPT_DIR"
 
-echo "Starting Oracle Spatial Agent on port $PORT"
+echo "Starting Oracle Inventory Action Agent on port $PORT"
 exec "$VENV_PYTHON" main.py

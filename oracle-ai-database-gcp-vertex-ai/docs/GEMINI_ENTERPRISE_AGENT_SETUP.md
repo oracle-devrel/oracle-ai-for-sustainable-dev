@@ -387,7 +387,7 @@ gcloud auth application-default login
 The Select AI agent is already using the live database-side profile:
 
 1. Oracle DB credential and profile created from the pattern in:
-   [configure_select_ai_openai_profile.sql](/path/to/repo-root/oracle-ai-database-gcp-vertex-ai/oracle_agent_java/sql/configure_select_ai_openai_profile.sql)
+   [configure_select_ai_openai_profile.sql](/path/to/repo-root/oracle-ai-database-gcp-vertex-ai/sql/configure_select_ai_openai_profile.sql)
 2. Shared environment set to `SELECT_AI_PROFILE=YOUR_SELECT_AI_PROFILE_NAME`
 3. Java service restarted on the GCP VM
 

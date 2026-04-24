@@ -45,7 +45,7 @@ If the Oracle AI Database agent is bound to the existing `SALES_DATA_PROFILE`, k
 extend its object list instead of switching the gateway to a separate profile. Use:
 
 ```bash
-/opt/sqlcl/bin/sql -S "$DB_USERNAME/$DB_PASSWORD@$DB_DSN" @sql/extend_sales_data_profile_with_inventory.sql
+/opt/sqlcl/bin/sql -S "$DB_USERNAME/$DB_PASSWORD@$DB_DSN" @../sql/extend_sales_data_profile_with_inventory.sql
 ```
 
 The script preserves the current sales objects, adds the inventory-risk `SC_*` objects, and creates

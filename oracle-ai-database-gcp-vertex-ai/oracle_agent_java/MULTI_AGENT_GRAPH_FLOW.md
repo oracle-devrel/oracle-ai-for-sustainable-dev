@@ -190,7 +190,7 @@ It then:
 3. runs the property-graph query
 4. maps the returned row into the node and edge structure used by the renderer
 
-The sample schema, seed data, and query patterns live under [`sql/`](/path/to/repo-root/oracle-ai-database-gcp-vertex-ai/oracle_agent_java/sql).
+The sample schema, seed data, and query patterns live under the shared repo-level [`sql/`](/path/to/repo-root/oracle-ai-database-gcp-vertex-ai/sql).
 
 ## Upstream Agent Guidance
 

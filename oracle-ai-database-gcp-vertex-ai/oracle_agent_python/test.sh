@@ -11,11 +11,11 @@ if [[ -f "$ENV_HELPER" ]]; then
   # shellcheck disable=SC1090
   source "$ENV_HELPER"
   load_env_defaults "$ENV_FILE" \
-    SPATIAL_AGENT_URL \
+    ACTION_AGENT_URL \
     A2A_URL \
     PUBLIC_PROTOCOL \
     PUBLIC_HOST \
-    SPATIAL_AGENT_PORT \
+    ACTION_AGENT_PORT \
     PORT
 elif [[ -f "$ENV_FILE" ]]; then
   set -a
@@ -24,7 +24,8 @@ elif [[ -f "$ENV_FILE" ]]; then
   set +a
 fi
 
-TARGET_URL="${SPATIAL_AGENT_URL:-${A2A_URL:-${PUBLIC_PROTOCOL:-http}://${PUBLIC_HOST:-localhost}:${SPATIAL_AGENT_PORT:-${PORT:-8080}}}}"
+TARGET_URL="${ACTION_AGENT_URL:-${A2A_URL:-${PUBLIC_PROTOCOL:-http}://${PUBLIC_HOST:-localhost}:${ACTION_AGENT_PORT:-${PORT:-8080}}}}"
+PROMPT="${1:-What inventory action should we take for SKU-500 given the current supply risk? Gather graph, spatial, and external evidence first.}"
 
 echo "-----------------------------------------------"
 echo "STEP 1: Testing Discovery"
@@ -33,7 +34,7 @@ curl -sS "$TARGET_URL/.well-known/agent-card.json"
 echo -e "\n"
 
 echo "-----------------------------------------------"
-echo "STEP 2: Testing Action (A2A JSON-RPC)"
+echo "STEP 2: Testing Action Coordinator (A2A JSON-RPC)"
 echo "-----------------------------------------------"
 ACTION_RESPONSE="$(curl -sS -X POST "$TARGET_URL/" \
   -H "Content-Type: application/json" \
@@ -48,7 +49,7 @@ ACTION_RESPONSE="$(curl -sS -X POST "$TARGET_URL/" \
         "parts": [
           {
             "kind": "text",
-            "text": "Show me a map for warehouses WH-101 and WH-202"
+            "text": "'"$PROMPT"'"
           }
         ]
       }
@@ -66,37 +67,16 @@ if "error" in payload:
     raise SystemExit(0)
 
 result = payload.get("result", {})
-artifacts = []
-for artifact in result.get("artifacts", []):
-    parts = []
-    for part in artifact.get("parts", []):
-        summary = {"kind": part.get("kind")}
-        file_info = part.get("file")
-        if isinstance(file_info, dict):
-            summary["mimeType"] = file_info.get("mimeType")
-            summary["name"] = file_info.get("name")
-            if file_info.get("bytes"):
-                summary["bytes"] = "<base64 omitted>"
-        if part.get("text"):
-            summary["text"] = part.get("text")
-        parts.append(summary)
-    artifacts.append(
-        {
-            "artifactId": artifact.get("artifactId"),
-            "name": artifact.get("name"),
-            "parts": parts,
-        }
-    )
-
 summary = {
     "status": (result.get("status") or {}).get("state"),
     "contextId": result.get("contextId"),
-    "artifacts": artifacts,
 }
 
 status_message = (result.get("status") or {}).get("message") or {}
 if status_message.get("parts"):
-    summary["statusMessageParts"] = status_message["parts"]
+    summary["statusMessage"] = status_message
+if status_message.get("metadata"):
+    summary["messageMetadata"] = status_message["metadata"]
 
 print(json.dumps(summary, indent=2))
 '

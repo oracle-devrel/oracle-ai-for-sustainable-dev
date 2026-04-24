@@ -24,6 +24,7 @@ fi
 
 export VIRTUAL_ENV="$VENV_DIR"
 export PATH="$VENV_DIR/bin:$PATH"
+export PORT="${ACTION_AGENT_PORT:-${PORT:-8080}}"
 unset PYTHONHOME || true
 
 hash -r 2>/dev/null || true
