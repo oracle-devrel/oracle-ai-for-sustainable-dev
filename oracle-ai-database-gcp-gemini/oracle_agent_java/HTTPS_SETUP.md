@@ -44,7 +44,7 @@ This matches the layout we used on the GCP VM:
 
 ## Issue the IP Certificate
 
-From [`oracle_agent_java`](/path/to/repo-root/oracle-ai-database-gcp-vertex-ai/oracle_agent_java), run:
+From [`oracle_agent_java`](/path/to/repo-root/oracle-ai-database-gcp-gemini/oracle_agent_java), run:
 
 ```bash
 PUBLIC_HOST="YOUR_PUBLIC_AGENT_HOST" \

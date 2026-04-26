@@ -1,4 +1,4 @@
-# Oracle AI Database + GCP Vertex AI
+# Oracle AI Database + GCP Gemini
 
 This directory contains RAG (Retrieval-Augmented Generation) AI agent implementations that integrate Oracle Database 26ai vector storage with Google Cloud Vertex AI for intelligent question-answering.
 

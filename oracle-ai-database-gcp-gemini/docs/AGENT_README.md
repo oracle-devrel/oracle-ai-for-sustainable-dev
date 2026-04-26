@@ -174,7 +174,7 @@ The agent is configured with these instructions:
 Already set up - just SSH to your VM and run:
 
 ```bash
-cd /home/YOUR_VM_SSH_USER/vectors/oracle-ai-database-gcp-vertex-ai
+cd /home/YOUR_VM_SSH_USER/vectors/oracle-ai-database-gcp-gemini
 ./run_agent.sh
 ```
 

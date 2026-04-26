@@ -72,7 +72,7 @@ Response to user
 
 ### Interactive Mode:
 ```bash
-cd oracle-ai-database-gcp-vertex-ai
+cd oracle-ai-database-gcp-gemini
 source ../.venv/bin/activate
 python3 oracle_ai_database_adk_rag.py
 ```

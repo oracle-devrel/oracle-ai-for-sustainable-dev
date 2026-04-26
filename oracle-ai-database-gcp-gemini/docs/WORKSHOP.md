@@ -84,7 +84,7 @@ This workshop demonstrates building a production-ready RAG (Retrieval Augmented 
 
 ```bash
 git clone https://github.com/paulparkinson/interactive-ai-holograms.git
-cd interactive-ai-holograms/oracle-ai-database-gcp-vertex-ai
+cd interactive-ai-holograms/oracle-ai-database-gcp-gemini
 ```
 
 ### 1.2 Configure Oracle Database
@@ -772,7 +772,7 @@ SELECT * FROM USER_INDEXES WHERE TABLE_NAME = 'RAG_TAB';
 
 ### Code Repository
 - GitHub: `paulparkinson/interactive-ai-holograms`
-- Directory: `oracle-ai-database-gcp-vertex-ai/`
+- Directory: `oracle-ai-database-gcp-gemini/`
 
 ### Support
 - Oracle Cloud Support: https://support.oracle.com

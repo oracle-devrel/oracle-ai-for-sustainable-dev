@@ -1,6 +1,6 @@
 # TODO
 
-This file tracks the main follow-up work for the Oracle AI Database GCP Vertex AI demo.
+This file tracks the main follow-up work for the Oracle AI Database GCP Gemini demo.
 
 ## Highest Priority
 

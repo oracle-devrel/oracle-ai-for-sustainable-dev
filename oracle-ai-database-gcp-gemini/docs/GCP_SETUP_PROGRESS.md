@@ -6,13 +6,13 @@ This log records the actual migration work toward recreating the Oracle AI Datab
 
 ### Completed locally
 
-- Moved the Oracle demo runbooks into `oracle-ai-database-gcp-vertex-ai/docs/` so the project README can act as the main documentation hub.
+- Moved the Oracle demo runbooks into `oracle-ai-database-gcp-gemini/docs/` so the project README can act as the main documentation hub.
 - Added a first-class `/graph` A2A controller to the shared Java runtime so the graph agent now has a canonical path that matches the other specialist agents.
 - Updated the graph card builder so the graph agent advertises `/graph` as its execution URL.
 - Kept the legacy root graph surface available as a backward-compatibility fallback.
 - Rebuilt the Java runtime locally and confirmed the project still compiles successfully.
 - Backed up the current shared environment file to:
-  - `oracle-ai-database-gcp-vertex-ai/.env_adb=pm=prod`
+  - `oracle-ai-database-gcp-gemini/.env_adb=pm=prod`
 
 ### GCP access checks performed from this workstation
 
@@ -144,7 +144,7 @@ This log records the actual migration work toward recreating the Oracle AI Datab
   - `sqlnet.ora`
   - `wallet.zip`
 - Created the shared VM environment file at:
-  - `/home/pparkins/oracle-ai-for-sustainable-dev/oracle-ai-database-gcp-vertex-ai/.env`
+  - `/home/pparkins/oracle-ai-for-sustainable-dev/oracle-ai-database-gcp-gemini/.env`
 - Pointed that VM `.env` at the new target resources:
   - `GOOGLE_CLOUD_PROJECT=oracle-public-488519`
   - `DB_DSN=oracleagent26ai_medium`
@@ -171,7 +171,7 @@ This log records the actual migration work toward recreating the Oracle AI Datab
   - test harness: `GRAPH_AGENT_URL=http://127.0.0.1:8081 ./test.sh`
   - outcome: completed successfully with a database-backed response for `SKU-500`
 - Saved a rendered verification artifact on the VM at:
-  - `/home/pparkins/oracle-ai-for-sustainable-dev/oracle-ai-database-gcp-vertex-ai/oracle_agent_java/test-output/supply-chain-graph.png`
+  - `/home/pparkins/oracle-ai-for-sustainable-dev/oracle-ai-database-gcp-gemini/oracle_agent_java/test-output/supply-chain-graph.png`
 - Enabled the `networkmanagement.googleapis.com` API during SSH troubleshooting to confirm network reachability to the VM.
 
 ### Public HTTPS cutover completed
@@ -202,7 +202,7 @@ This log records the actual migration work toward recreating the Oracle AI Datab
 - Verified the public graph agent end to end with:
   - `GRAPH_AGENT_URL=https://34.186.79.96 ./test.sh`
 - Confirmed the graph agent returns a live database-backed result for `SKU-500` over public HTTPS and writes a rendered PNG artifact on the VM at:
-  - `/home/pparkins/oracle-ai-for-sustainable-dev/oracle-ai-database-gcp-vertex-ai/oracle_agent_java/test-output/supply-chain-graph-2.png`
+  - `/home/pparkins/oracle-ai-for-sustainable-dev/oracle-ai-database-gcp-gemini/oracle_agent_java/test-output/supply-chain-graph-2.png`
 
 ### Inventory-action recovery after the retired Gemini model
 

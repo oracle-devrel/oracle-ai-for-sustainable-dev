@@ -78,7 +78,7 @@
 
 ### Test Approach 1 (GenerativeModel + Manual MCP):
 1. SSH to GCP instance
-2. Navigate to: `cd ~/oracle-ai-database-gcp-vertex-ai`
+2. Navigate to: `cd ~/oracle-ai-database-gcp-gemini`
 3. Run: `./run_genai_mcp_agent.sh`
 4. Test queries:
    - Documentation: "What is Oracle vector search?"
@@ -89,7 +89,7 @@
 
 ### Test Approach 2 (ADK McpToolset):
 1. SSH to GCP instance
-2. Navigate to: `cd ~/oracle-ai-database-gcp-vertex-ai`
+2. Navigate to: `cd ~/oracle-ai-database-gcp-gemini`
 3. Run: `./run_agent.sh`
 4. Test same queries as above
 5. Watch for:

@@ -5,7 +5,7 @@ This project is organized into purpose-specific directories for better maintaina
 ## Directory Layout
 
 ```
-oracle-ai-database-gcp-vertex-ai/
+oracle-ai-database-gcp-gemini/
 ├── .env                    # Environment configuration (database, GCP credentials)
 ├── .env_example            # Example environment file
 ├── run.sh                  # Main launcher script
@@ -26,7 +26,7 @@ oracle-ai-database-gcp-vertex-ai/
 
 ## Environment File Location
 
-All code references the `.env` file in the **parent directory** (root of oracle-ai-database-gcp-vertex-ai):
+All code references the `.env` file in the **parent directory** (root of oracle-ai-database-gcp-gemini):
 
 - **Notebooks** use: `os.path.join(os.path.dirname(os.getcwd()), '.env')`
 - **Python apps** use: `os.path.join(os.path.dirname(__file__), '..', '.env')`

@@ -1,4 +1,4 @@
-# Oracle AI Database GCP Vertex AI Demo
+# Oracle AI Database GCP Gemini Demo
 
 This README now uses placeholders such as `YOUR_PUBLIC_AGENT_HOST`, `YOUR_VM_SSH_USER`, `YOUR_SELECT_AI_PROFILE_NAME`, and `/path/to/repo-root` so it can be shared more safely. Replace them with your environment-specific values when you run the demo.
 
@@ -87,7 +87,7 @@ So the current local demo does not require live Vertex AI or Gemini API auth for
 
 ## Shared Repo Configuration
 
-The repo root has a shared config file at [`.env`](/path/to/repo-root/oracle-ai-database-gcp-vertex-ai/.env). Agent scripts can source this so we only maintain credentials, ports, model names, and related settings in one place.
+The repo root has a shared config file at [`.env`](/path/to/repo-root/oracle-ai-database-gcp-gemini/.env). Agent scripts can source this so we only maintain credentials, ports, model names, and related settings in one place.
 
 This repo now defaults to Vertex AI in that file:
 
@@ -151,7 +151,7 @@ Authenticate ADC with the repo helper:
 ./auth.sh
 ```
 
-`auth.sh` sources the repo [`.env`](/path/to/repo-root/oracle-ai-database-gcp-vertex-ai/.env), runs `gcloud auth application-default login`, and then runs `gcloud auth application-default set-quota-project` for `GOOGLE_CLOUD_PROJECT`.
+`auth.sh` sources the repo [`.env`](/path/to/repo-root/oracle-ai-database-gcp-gemini/.env), runs `gcloud auth application-default login`, and then runs `gcloud auth application-default set-quota-project` for `GOOGLE_CLOUD_PROJECT`.
 
 If you want to use service account impersonation, set:
 
@@ -206,7 +206,7 @@ That is the point where ADK Java becomes especially appropriate: it gives us a c
 
 ## Current Java ADK Implementation
 
-The first cut of that final-stage action flow now lives in the shared Java runtime at [oracle_agent_java](/path/to/repo-root/oracle-ai-database-gcp-vertex-ai/oracle_agent_java/README.md).
+The first cut of that final-stage action flow now lives in the shared Java runtime at [oracle_agent_java](/path/to/repo-root/oracle-ai-database-gcp-gemini/oracle_agent_java/README.md).
 
 What is implemented today:
 
@@ -264,4 +264,4 @@ Quick Gemini Enterprise test prompts:
 - Inventory action:
   `What inventory action should we take for SKU-500 given the current supply risk? Gather graph, spatial, and external evidence first, then recommend the safest next move and say whether approval is required.`
 
-The full import and test runbook is in [docs/GEMINI_ENTERPRISE_AGENT_SETUP.md](/path/to/repo-root/oracle-ai-database-gcp-vertex-ai/docs/GEMINI_ENTERPRISE_AGENT_SETUP.md).
+The full import and test runbook is in [docs/GEMINI_ENTERPRISE_AGENT_SETUP.md](/path/to/repo-root/oracle-ai-database-gcp-gemini/docs/GEMINI_ENTERPRISE_AGENT_SETUP.md).

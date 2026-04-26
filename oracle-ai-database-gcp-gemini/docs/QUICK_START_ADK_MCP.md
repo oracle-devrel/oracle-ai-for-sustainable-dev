@@ -41,7 +41,7 @@ You should see the MCP server start successfully.
 ### Step 2: Install Dependencies
 
 ```bash
-cd oracle-ai-database-gcp-vertex-ai
+cd oracle-ai-database-gcp-gemini
 
 # Create/activate virtual environment (recommended)
 python -m venv venv
@@ -228,7 +228,7 @@ The agent instructions specify:
 ## Files Summary
 
 ```
-oracle-ai-database-gcp-vertex-ai/
+oracle-ai-database-gcp-gemini/
 ├── oracle_ai_database_adk_agent.py              # ⭐ New MCP version
 ├── oracle_ai_database_adk_agent_ragonlynomcp.py # 📦 Backup (RAG only)
 ├── oracle_ai_database_adk_fullagent.py          # 🔧 Alternative (Gemini)
