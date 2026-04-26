@@ -12,7 +12,7 @@ The Java agent runtime is the implementation used in the live demo. The Python a
 
 ## LiveLabs Workshop
 
-For the guided hands-on version, use the Oracle LiveLabs workshop:
+This content will soon also be a part of the, already existing, Oracle LiveLabs workshop where you can find other examples as well:
 
 [Develop A2A Agentic AI with Oracle AI Database and GCP Gemini](https://livelabs.oracle.com/ords/r/dbpm/livelabs/view-workshop?wid=4330)
 
