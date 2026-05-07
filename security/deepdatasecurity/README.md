@@ -83,7 +83,7 @@ security/
       DeepDataSecurityController.java
       DeepDataSecurityService.java
       EnvironmentDatabaseAccessTokenService.java
-      OracleDataSourceConfiguration.java
+      UcpDataSourceConfiguration.java
     src/main/resources/application.yaml
     .env
     build.sh
@@ -107,6 +107,18 @@ The app uses the Oracle JDBC driver family shown in Oracle's Deep Data Security 
 ```
 
 If your deployment needs wallet helper artifacts, add Oracle's `ojdbc11-production` dependency set or the specific wallet/security artifacts that match your JDBC version.
+
+The app uses Oracle Universal Connection Pool (UCP):
+
+```xml
+<dependency>
+  <groupId>com.oracle.database.jdbc</groupId>
+  <artifactId>ucp</artifactId>
+  <version>23.26.1.0.0</version>
+</dependency>
+```
+
+`UcpDataSourceConfiguration` creates a `PoolDataSource` with `oracle.jdbc.pool.OracleDataSource` as the connection factory.
 
 ## Database Setup
 
@@ -209,15 +221,11 @@ For larger framework applications, the JDBC Service Provider Interface can reduc
 Oracle's Spring provider documentation configures:
 
 ```yaml
-spring:
-  datasource:
-    hikari:
-      data-source-properties:
-        oracle.jdbc.provider.endUserSecurityContext: ojdbc-provider-spring-end-user-security-context
-        oracle.jdbc.provider.endUserSecurityContext.registrationId: hrapp
+oracle.jdbc.provider.endUserSecurityContext: ojdbc-provider-spring-end-user-security-context
+oracle.jdbc.provider.endUserSecurityContext.registrationId: hrapp
 ```
 
-That provider-based mode is best when Spring Security owns authentication and you want the JDBC driver to attach the security context automatically. The code in this demo uses the API path instead so the mechanics are easy to see and adapt.
+With UCP, pass provider properties to the Oracle connection factory or set them as connection properties on the pool. That provider-based mode is best when Spring Security owns authentication and you want the JDBC driver to attach the security context automatically. The code in this demo uses the API path instead so the mechanics are easy to see and adapt.
 
 ## References
 
@@ -225,5 +233,3 @@ That provider-based mode is best when Spring Security owns authentication and yo
 - Oracle Deep Data Security overview: https://www.oracle.com/security/database-security/features/deep-data-security/
 - Oracle Deep Data Security Guide, Java application configuration and IAM details: https://docs.oracle.com/en/database/oracle/oracle-database/26/ddscg/update-application-configuration-iam-details.html#GUID-8016B699-FB00-4303-95E7-0AA803AB610F
 - End-user security context concepts: https://docs.oracle.com/en/database/oracle/oracle-database/26/ddscg/end-user-security-context1.html
-
-
