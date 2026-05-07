@@ -229,7 +229,23 @@ With UCP, pass provider properties to the Oracle connection factory or set them 
 
 ## References
 
-- Oracle JDBC getting started and 26ai driver/JDK compatibility: https://docs.oracle.com/en/database/oracle/oracle-database/26/jjdbc/JDBC-getting-started.html
-- Oracle Deep Data Security overview: https://www.oracle.com/security/database-security/features/deep-data-security/
-- Oracle Deep Data Security Guide, Java application configuration and IAM details: https://docs.oracle.com/en/database/oracle/oracle-database/26/ddscg/update-application-configuration-iam-details.html#GUID-8016B699-FB00-4303-95E7-0AA803AB610F
-- End-user security context concepts: https://docs.oracle.com/en/database/oracle/oracle-database/26/ddscg/end-user-security-context1.html
+- Oracle announcement blog: https://blogs.oracle.com/database/oracle-deep-data-security-is-now-available-in-oracle-ai-database-26ai
+  Short product context for why database-enforced end-user authorization matters for AI agents and highly privileged app connections.
+- Oracle Deep Data Security product page: https://www.oracle.com/security/database-security/features/deep-data-security/
+  High-level overview of the runtime flow this app demonstrates: define policies, propagate identity/context, establish security context, then enforce during SQL.
+- Oracle Deep Data Security concepts: https://docs.oracle.com/en/database/oracle/oracle-database/26/ddscg/understand-oracle-deep-data-security.html
+  Conceptual guide for the database-side model this app depends on: protected data, policies, end-user context, data roles, and enforcement.
+- Oracle JDBC getting started, DDS support: https://docs.oracle.com/en/database/oracle/oracle-database/26/jjdbc/JDBC-getting-started.html#GUID-10D8EFA5-7AF0-4462-986C-2DF461555D27
+  JDBC driver/version starting point for the Java app and the Oracle JDBC support area for Deep Data Security.
+- Oracle JDBC `OracleConnection` API reference: https://docs.oracle.com/en/database/oracle/oracle-database/19/jajdb/oracle/jdbc/OracleConnection.html
+  Baseline `OracleConnection` API reference for the unwrap target used by the app before invoking the DDS extension methods.
+- Oracle DDS Java API extension methods: https://docs.oracle.com/en/database/oracle/oracle-database/26/ddscg/update-application-configuration-iam-details.html#GUID-96A692EF-6D10-4925-AF71-70DC1143F22A
+  The Java pattern used in `DeepDataSecurityService`: create context, unwrap to `OracleConnection`, set before SQL, clear in `finally`.
+- Oracle DDS Java SPI/provider option: https://docs.oracle.com/en/database/oracle/oracle-database/26/ddscg/update-application-configuration-iam-details.html#GUID-78AC649A-CE5B-4499-AF91-3B10ADE1FD08
+  Alternate provider-driven approach if Spring Security should supply the end-user context automatically instead of this app doing it directly.
+- Oracle DDS framework examples: https://docs.oracle.com/en/database/oracle/oracle-database/26/ddscg/update-application-configuration-iam-details.html#GUID-8ED64BEE-74C3-43D2-94D1-E154FF3B1E97
+  Web-framework examples for passing bearer identity and IAM token settings into Deep Data Security flows.
+- Python article this Java demo was ported from: https://medium.com/@sharad-chandran/using-oracle-ai-database-deep-data-security-in-python-applications-bf84eb07f532
+  Original Python/Flask version of the app flow that this Spring Boot sample mirrors.
+- python-oracledb Deep Data Security docs: https://python-oracledb.readthedocs.io/en/latest/user_guide/connection_handling.html#deepdatasecurity
+  Python driver reference for the same concepts: end-user identity, database-access token, data roles, attributes, set, and clear.
