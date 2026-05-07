@@ -1,0 +1,15 @@
+server:
+  port: ${DEEPSEC_PORT:8080}
+
+logging:
+  level:
+    root: INFO
+
+deepsec:
+  jdbc-url: ${DEEPSEC_JDBC_URL:}
+  username: ${DEEPSEC_USERNAME:}
+  password: ${DEEPSEC_PASSWORD:}
+  database-access-token: ${DEEPSEC_DATABASE_ACCESS_TOKEN:}
+  sql: ${DEEPSEC_SQL:select employee_id || ':' || first_name || ' ' || last_name from employees fetch first 10 rows only}
+  data-roles: ${DEEPSEC_DATA_ROLES:employee_role}
+  attributes-json: ${DEEPSEC_ATTRIBUTES_JSON:{"hr.hcm_context":{"emp_id":3,"service_center_id":5}}}
