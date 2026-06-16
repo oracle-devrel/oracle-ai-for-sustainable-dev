@@ -1,0 +1,670 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Develop Database-Enforced End-User Auth with Oracle AI Database Deep Data Security and Java</title>
+  <style>
+    :root {
+      --ink: #1f2933;
+      --muted: #5f6b7a;
+      --line: #dde3ea;
+      --panel: #f7f9fc;
+      --accent: #0f6cbd;
+      --accent-dark: #0b4f8a;
+      --code: #111827;
+      --code-bg: #f4f6f8;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: #ffffff;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.65;
+    }
+
+    main {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 48px 22px 72px;
+    }
+
+    h1, h2, h3 {
+      line-height: 1.18;
+      letter-spacing: 0;
+      color: #111827;
+    }
+
+    h1 {
+      margin: 0 0 16px;
+      font-size: clamp(2.1rem, 5vw, 3.7rem);
+    }
+
+    h2 {
+      margin-top: 46px;
+      padding-top: 4px;
+      font-size: 1.85rem;
+    }
+
+    h3 {
+      margin-top: 32px;
+      font-size: 1.28rem;
+    }
+
+    p {
+      margin: 16px 0;
+      font-size: 1.05rem;
+    }
+
+    a {
+      color: var(--accent-dark);
+    }
+
+    ul, ol {
+      padding-left: 1.35rem;
+    }
+
+    li {
+      margin: 8px 0;
+    }
+
+    figure {
+      margin: 30px 0;
+      padding: 0;
+    }
+
+    img {
+      display: block;
+      max-width: 100%;
+      height: auto;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+    }
+
+    figcaption {
+      margin-top: 9px;
+      color: var(--muted);
+      font-size: 0.92rem;
+      text-align: center;
+    }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 0.93em;
+      color: #111827;
+      background: var(--code-bg);
+      padding: 0.12em 0.28em;
+      border-radius: 4px;
+    }
+
+    pre {
+      margin: 22px 0;
+      padding: 18px 20px;
+      overflow-x: auto;
+      color: #e5e7eb;
+      background: var(--code);
+      border-radius: 10px;
+      line-height: 1.45;
+    }
+
+    pre code {
+      color: inherit;
+      background: transparent;
+      padding: 0;
+      border-radius: 0;
+      font-size: 0.91rem;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 1.32rem;
+      line-height: 1.45;
+      margin: 0 0 22px;
+    }
+
+    .meta {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-bottom: 34px;
+    }
+
+    .video-embed {
+      position: relative;
+      width: 100%;
+      margin: 24px 0 36px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #000;
+      aspect-ratio: 16 / 9;
+    }
+
+    .video-embed iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    .callout {
+      margin: 28px 0;
+      padding: 20px 22px;
+      border-left: 4px solid var(--accent);
+      background: var(--panel);
+      border-radius: 8px;
+    }
+
+    .callout p {
+      margin: 0;
+    }
+
+    .flow {
+      margin: 30px 0;
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fbfcfe;
+    }
+
+    .flow ol {
+      margin: 0;
+    }
+
+    .tagline {
+      display: inline-block;
+      margin-bottom: 18px;
+      color: var(--accent-dark);
+      font-size: 0.88rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .references li {
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+<main>
+  <article>
+    <header>
+      <span class="tagline">Oracle AI Database 26ai + Spring Boot + Microsoft Entra ID</span>
+      <h1>Develop Database-Enforced End-User Auth with Oracle AI Database Deep Data Security and Java</h1>
+      <p class="subtitle">
+        A practical Spring Boot walkthrough for propagating Microsoft Entra identity through a pooled JDBC connection, then letting Oracle AI Database enforce row, column, and cell-level access rules.
+      </p>
+      <p class="meta">
+        All source code for the app is available at
+        <a href="https://github.com/paulparkinson/oracle-ai-for-sustainable-dev/tree/main/security/deepdatasecurity">github.com/paulparkinson/oracle-ai-for-sustainable-dev/security/deepdatasecurity</a>.
+      </p>
+      <p class="meta">
+        A complete end-to-end 8 minute walkthrough video can be found at
+        <a href="https://youtu.be/WfsqMX9QwPo">https://youtu.be/WfsqMX9QwPo</a>.
+      </p>
+      <div class="video-embed">
+        <iframe
+          src="https://www.youtube.com/embed/WfsqMX9QwPo"
+          title="Develop Database-Enforced End-User Auth with Oracle AI Database Deep Data Security and Java"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen>
+        </iframe>
+      </div>
+    </header>
+
+    <p>
+      Most enterprise Java services use a connection pool. That is good engineering: fast, stable, observable, and easy to operate. It also means every request may reach the database through the same application database account.
+    </p>
+
+    <p>
+      That is where authorization gets tricky. If Emma and Marvin both use the same pooled database user, the database cannot naturally tell which rows belong to Emma, which columns Marvin may see, or which values a manager may update unless the application pushes that logic down with every query. The other option is to create and select a separate datasource or connection pool for each user, which is not feasible for numerous operational reasons.
+    </p>
+
+    <h2>Why This Matters</h2>
+
+    <p>
+      Oracle Deep Data Security changes that shape. The application still uses a pooled database connection, but it attaches an end-user security context to the JDBC connection before executing SQL. Oracle AI Database then evaluates declarative data grants at execution time.
+    </p>
+
+    <p>
+      This is especially important for agentic applications. Agents, copilots, and natural-language SQL tools can fan out into many possible data paths. If every path depends on application-side filters, one missed branch can become a security bug. With Deep Data Security, the database remains the final policy enforcement point for fine-grained row, column, and cell-level access.
+    </p>
+
+    <div class="callout">
+      <p>
+        The important idea: the Spring Boot app does not rewrite SQL or implement authorization logic. It propagates identity and tokens to Oracle AI Database, which enforces authorization policies.
+      </p>
+    </div>
+
+    <p>
+      This blog is intended to be a complete walkthrough, so I include the Entra setup explicitly instead of only linking to the Microsoft documentation. That part is easy to get subtly wrong, and writing it down forced me to understand it better too.
+    </p>
+
+    <p>
+      A good starting point, and the one I extended to create this Java app, is Richard C. Evans's excellent <a href="https://livelabs.oracle.com/ords/r/dbpm/livelabs/run-workshop?p210_wid=4396">LiveLabs FastLab: Identity-Aware Database Access with Microsoft Entra ID and Oracle Deep Data Security</a>. While I am giving credit due, I will mention that Michael McMahon is the fantastic and friendly developer who wrote the Java support for this Deep Data Security feature.
+    </p>
+
+    <h2>What We Are Building</h2>
+
+    <p>
+      The demo is a Spring Boot application that authenticates a browser user with Microsoft Entra ID, requests a database-access token using the OAuth 2.0 on-behalf-of flow, attaches both tokens to an Oracle JDBC connection with <code>EndUserSecurityContext</code>, and runs a normal SQL query against an HR table.
+    </p>
+
+    <p>
+      The JDBC pieces come from the Oracle Database 26ai <a href="https://www.oracle.com/database/technologies/appdev/jdbc-downloads.html">JDBC Driver &amp; UCP downloads</a>. The project uses the 23.26.2.0.0 Maven artifacts for <code>ojdbc11</code>, <code>ucp</code>, and the wallet support jars.
+    </p>
+
+    <p>
+      In the database, Microsoft Entra app roles map to Oracle Deep Data Security data roles:
+    </p>
+
+    <pre><code class="language-sql">CREATE OR REPLACE DATA ROLE hrapp_employees
+  MAPPED TO 'AZURE_ROLE=EMPLOYEES';
+
+CREATE OR REPLACE DATA ROLE hrapp_managers
+  MAPPED TO 'AZURE_ROLE=MANAGERS';</code></pre>
+
+    <p>
+      If the signed-in user has the Entra app role <code>EMPLOYEES</code>, Oracle activates <code>HRAPP_EMPLOYEES</code>. If that same user later has the Entra app role <code>MANAGERS</code>, or a different signed-in user has <code>MANAGERS</code>, Oracle activates the manager data role. Users can also have multiple app roles. The application code and SQL query do not change.
+    </p>
+
+    <p>
+      There are two easy ways to demonstrate that. You can sign in as two different Entra users with different app-role assignments, or you can keep one real demo user, change that user's database/API Enterprise Application role assignment, get a fresh token, and map that same Entra username to different sample HR rows. In the video I use my Paul Parkinson Entra user for that one-user path; Emma, Marvin, Charlie, and Dana are sample database rows, not Entra users. In both cases, the user identity and role claims travel together in the security context, and the same endpoint and SQL return different data because Oracle sees different end-user identity and role claims.
+    </p>
+
+    <h2>The Runtime Flow</h2>
+
+    <div class="flow">
+      <ol>
+        <li>The browser opens <code>GET /deepsec/query</code>.</li>
+        <li>Spring Security redirects the browser to Microsoft Entra ID.</li>
+        <li>The user signs in.</li>
+        <li>Spring Security receives an authorization code and exchanges it for the user's Entra access token.</li>
+        <li>The backend exchanges that user token for a separate database-access token using OAuth 2.0 on-behalf-of.</li>
+        <li>The app creates an Oracle JDBC <code>EndUserSecurityContext</code> with both tokens.</li>
+        <li>Oracle AI Database validates the context, activates mapped data roles from the Entra <code>roles</code> claim, and enforces data grants while SQL runs.</li>
+        <li>The app clears the context before returning the connection to the pool.</li>
+      </ol>
+    </div>
+
+    <p>
+      This is the key separation: the user token proves who the browser user is, while the database-access token is addressed to the Oracle database resource. Both matter.
+    </p>
+
+    <p>
+      I run the same endpoint twice to make the behavior obvious. First, the signed-in Entra user has the <code>EMPLOYEES</code> app role, and one sample employee row is mapped to that user's <code>ORA_END_USER_CONTEXT.username</code>. The app executes the same business SQL and Oracle returns only that employee row:
+    </p>
+
+    <pre><code class="language-json">{"rows":["3:Emma Baker"]}</code></pre>
+
+    <p>
+      Then I either sign in as a separate manager Entra user or, for the video, change the same Paul Parkinson Entra user's database/API enterprise-application assignment so the fresh token carries <code>MANAGERS</code> instead of, or in addition to, <code>EMPLOYEES</code>. For the one-user demo, I map that same real Entra username to the sample manager row so the manager end-user context resolves to the manager employee ID.
+    </p>
+
+    <p>
+      The request is still <code>GET /deepsec/query</code>. The SQL is still the same default query. The connection pool is still the same application pool. The result set changes because Oracle activates <code>HRAPP_MANAGERS</code> from the token role claim and applies the manager data grant, which returns only rows in that manager user's permitted scope, with restricted columns still protected by the database.
+    </p>
+
+    <pre><code class="language-json">{"rows":["3:Emma Baker","4:Charlie Davis","5:Dana Lee"]}</code></pre>
+
+    <h2>Create an Oracle AI Database if You Don't Have One</h2>
+
+    <p>
+      You need an Oracle AI Database with Deep Data Security support. Any 23.26.2 or later database is fine for this walkthrough, including Autonomous Database, Oracle Database Free in a container, or another local or cloud database you can reach from the Spring Boot app.
+    </p>
+
+    <p>
+      The Java side uses the 23.26.2.0.0 JDBC/UCP artifacts, so keep the database and driver versions aligned at that level or later before you start troubleshooting identity behavior.
+    </p>
+
+    <h2>The Entra ID Setup in the Azure Portal</h2>
+
+    <p>
+      All of the identity setup below happens in the Azure Portal under Microsoft Entra ID. You will move between <strong>App registrations</strong> and <strong>Enterprise applications</strong>. App registrations define APIs, scopes, app roles, redirects, and secrets. Enterprise applications are where those app roles are assigned to users or groups.
+    </p>
+
+    <p>
+      Use two Entra app registrations:
+    </p>
+
+    <ul>
+      <li><strong>Spring Boot app registration:</strong> represents the Java web application and OAuth client.</li>
+      <li><strong>Database/API app registration:</strong> represents Oracle AI Database as the protected resource.</li>
+    </ul>
+
+    <h3>Spring Boot app registration</h3>
+
+    <p>
+      Create a separate app registration for the Spring Boot application. Add a Web redirect URI:
+    </p>
+
+    <figure>
+      <img src="images/blog-azure-spring-app-overview.png" alt="Microsoft Entra app registration overview for the DeepSec Sample Spring Boot App with identifiers redacted">
+      <figcaption>The Spring Boot app registration provides <code>DEEPSEC_ENTRA_CLIENT_ID</code> and <code>DEEPSEC_ENTRA_TENANT_ID</code>. Use the client secret value, not the secret ID.</figcaption>
+    </figure>
+
+    <pre><code class="language-text">http://localhost:8080/login/oauth2/code/entra</code></pre>
+
+    <p>
+      Expose an API for the Spring Boot app too, using:
+    </p>
+
+    <pre><code class="language-text">api://&lt;SPRING_BOOT_APP_CLIENT_ID&gt;</code></pre>
+
+    <p>
+      Add a delegated <code>user_impersonation</code> scope. This scope is requested during browser login so the resulting token has the Spring Boot app as its audience. That is required for the on-behalf-of exchange.
+    </p>
+
+    <h3>Database/API app registration</h3>
+
+    <p>
+      Create an app registration named something like <code>Oracle AI Database DeepSec API</code>. Set its Application ID URI to the default form:
+    </p>
+
+    <pre><code class="language-text">api://&lt;DB_APP_CLIENT_ID&gt;</code></pre>
+
+    <p>
+      That default <code>api://...</code> URI is the Autonomous Database path I use in this walkthrough. If you are targeting Oracle Database Free or another non-ADB database, use a domain-qualified <code>https://...</code> Application ID URI instead and keep the later database configuration, scope, and <code>tnsnames.ora</code> values aligned.
+    </p>
+
+    <p>
+      Add a delegated scope named <code>user_impersonation</code>. Add app roles named <code>EMPLOYEES</code> and <code>MANAGERS</code>. These are the role values Oracle later sees in the database-access token and maps to DDS data roles.
+    </p>
+
+    <figure>
+      <img src="images/blog-azure-database-enterprise-app-id.png" alt="Microsoft Entra enterprise application overview for the Oracle AI Database DeepSec API with identifiers redacted">
+      <figcaption>Copy the database/API Application ID. This value is used in the database scope, tnsnames.ora, and Oracle external authentication configuration.</figcaption>
+    </figure>
+
+    <figure>
+      <img src="images/blog-azure-create-app-role.png" alt="Azure Portal Create app role panel for an EMPLOYEES role">
+      <figcaption>Create app roles such as <code>EMPLOYEES</code> and <code>MANAGERS</code> with <code>Users/Groups</code> as the allowed member type. The database/API registration uses this same blade.</figcaption>
+    </figure>
+
+    <figure>
+      <img src="images/blog-azure-app-roles-created.png" alt="Azure Portal app roles page showing EMPLOYEES and MANAGERS roles">
+      <figcaption>The role value is what appears in the token's <code>roles</code> claim. For the database/API app registration, the database SQL maps those exact values to DDS data roles.</figcaption>
+    </figure>
+
+    <p>
+      In the database/API app manifest, set <code>requestedAccessTokenVersion</code> to <code>2</code>. In older Azure AD Graph and portal references this is often called <code>accessTokenAcceptedVersion</code>. It tells Microsoft Entra which access-token format the resource app supports. For this demo, the database-access token should decode with <code>ver=2.0</code> and an <code>aud</code> value matching the database/API app client ID.
+    </p>
+
+    <pre><code class="language-json">"requestedAccessTokenVersion": 2</code></pre>
+
+    <p>
+      I also added the <code>upn</code> optional claim for access tokens so the end-user context has a stable username value to compare against the sample <code>hr.employees.user_name</code> column.
+    </p>
+
+    <figure>
+      <img src="images/blog-azure-optional-upn-claim.png" alt="Azure Portal token configuration blade adding the upn optional claim to access tokens">
+      <figcaption>Token configuration is where the optional access-token claims are selected.</figcaption>
+    </figure>
+
+    <h3>Connect the two registrations</h3>
+
+    <figure>
+      <img src="images/blog-azure-api-permissions.png" alt="Azure Portal API permissions page showing Microsoft Graph User.Read and the Oracle AI Database DeepSec API user_impersonation scope">
+      <figcaption>The Spring Boot app requests the database/API <code>user_impersonation</code> permission so it can perform the on-behalf-of exchange.</figcaption>
+    </figure>
+
+    <p>
+      In the Spring Boot app registration, open API permissions, add a permission from <strong>My APIs</strong>, choose the database/API registration, and grant its delegated <code>user_impersonation</code> scope.
+    </p>
+
+    <p>
+      Then go to <strong>Enterprise applications</strong>, open the database/API enterprise application, and assign users or groups to <code>EMPLOYEES</code> or <code>MANAGERS</code>. For database enforcement, the important assignment is on the <strong>database/API enterprise application</strong>, because that is the resource for the database-access token Oracle validates.
+    </p>
+
+    <figure>
+      <img src="images/blog-azure-enterprise-users-groups.png" alt="Azure Portal Enterprise application Users and groups page showing a user assigned to the EMPLOYEES role">
+      <figcaption>The Enterprise application <code>Users and groups</code> blade is where a real user or group is assigned to <code>EMPLOYEES</code> or <code>MANAGERS</code>.</figcaption>
+    </figure>
+
+    <p>
+      The resulting application configuration looks like this:
+    </p>
+
+    <pre><code class="language-env">DEEPSEC_ENTRA_TENANT_ID="your-tenant-id"
+DEEPSEC_ENTRA_CLIENT_ID="&lt;SPRING_BOOT_APP_CLIENT_ID&gt;"
+DEEPSEC_ENTRA_CLIENT_SECRET="spring-boot-app-client-secret"
+DEEPSEC_ENTRA_DATABASE_SCOPE="api://&lt;DB_APP_CLIENT_ID&gt;/user_impersonation"
+DEEPSEC_ENTRA_APPLICATION_SCOPE="openid,profile,email,api://&lt;SPRING_BOOT_APP_CLIENT_ID&gt;/user_impersonation"</code></pre>
+
+    <h2>Configuring Oracle AI Database</h2>
+
+    <p>
+      Oracle AI Database needs to trust the Entra tenant and the database/API app registration before it can validate the database-access token. The repo includes two database-admin setup scripts, depending on where you run the database:
+    </p>
+
+    <ul>
+      <li><code>sql-entraid/01_enable_adb_entra_external_authentication.sql</code> uses <code>DBMS_CLOUD_ADMIN.ENABLE_EXTERNAL_AUTHENTICATION</code> for Autonomous Database.</li>
+      <li><code>sql-entraid/01_enable_database_free_entra_external_authentication.sql</code> uses <code>IDENTITY_PROVIDER_TYPE</code> and <code>IDENTITY_PROVIDER_CONFIG</code> for Oracle Database Free or another non-ADB install.</li>
+    </ul>
+
+    <pre><code class="language-sql">-- Autonomous Database, run once as ADMIN after editing DEFINE values:
+@security/deepdatasecurity/sql-entraid/01_enable_adb_entra_external_authentication.sql
+
+-- Oracle Database Free container, run once as SYSDBA or equivalent:
+@security/deepdatasecurity/sql-entraid/01_enable_database_free_entra_external_authentication.sql</code></pre>
+
+    <p>
+      One detail to watch: for Oracle Database Free and other non-ADB databases, <code>IDENTITY_PROVIDER_CONFIG.application_id_uri</code> is documented as a domain-qualified <code>https://...</code> URI. If you use that path, make the database/API app registration's Application ID URI, <code>DEEPSEC_ENTRA_DATABASE_SCOPE</code>, and the <code>tnsnames.ora</code> <code>azure_db_app_id_uri</code> value match that same URI.
+    </p>
+
+    <p>
+      Verify the database picked up the identity provider:
+    </p>
+
+    <pre><code class="language-sql">SELECT name, value
+  FROM v$parameter
+ WHERE name IN ('identity_provider_type', 'identity_provider_config');</code></pre>
+
+    <p>
+      The application connection-pool user only needs the ability to connect and attach an end-user security context:
+    </p>
+
+    <pre><code class="language-sql">GRANT CREATE SESSION TO hr_app_user;
+GRANT CREATE END USER SECURITY CONTEXT TO hr_app_user;</code></pre>
+
+    <h2>JDBC Thin and tnsnames.ora</h2>
+
+    <p>
+      The wallet's <code>tnsnames.ora</code> entry can carry Entra-specific connection metadata. The key additions are <code>token_auth=azure_interactive</code> and <code>azure_db_app_id_uri=api://&lt;DB_APP_CLIENT_ID&gt;</code> inside the <code>security</code> block. A <code>mydb_high</code> alias would look like this:
+    </p>
+
+    <pre><code class="language-text">mydb_high =
+  (description=
+    (retry_count=20)(retry_delay=3)
+    (address=(protocol=tcps)(port=1522)(host=adb.us-ashburn-1.oraclecloud.com))
+    (connect_data=(service_name=asdf_mydb_high.adb.oraclecloud.com))
+    (security=
+      (ssl_server_dn_match=yes)
+      (token_auth=azure_interactive)
+      (azure_db_app_id_uri=api://4ad8a6b8-asdf-asdf-asdf-5d14bcc22c8a)))</code></pre>
+
+    <p>
+      Use your own service name and database/API app ID URI, of course. <code>token_auth=azure_interactive</code> is useful for direct JDBC Thin testing because the driver can open the browser-based Entra sign-in flow. <code>azure_db_app_id_uri</code> tells the driver which Entra resource represents the database. The Spring Boot demo itself uses a normal pooled application database user and attaches the Deep Data Security context programmatically, so I keep a separate application alias without <code>token_auth=azure_interactive</code> for the UCP pool.
+    </p>
+
+    <h2>The Data Grants</h2>
+
+    <p>
+      The policy itself lives in SQL. For an employee, the row predicate says a user can see rows where the table username matches <code>ORA_END_USER_CONTEXT.username</code>:
+    </p>
+
+    <pre><code class="language-sql">CREATE OR REPLACE DATA GRANT hr.HRAPP_EMPLOYEES_ACCESS
+  AS SELECT, UPDATE(phone_number, first_name)
+  ON hr.employees
+  WHERE upper(user_name) = upper(ORA_END_USER_CONTEXT.username)
+  TO hrapp_employees;</code></pre>
+
+    <p>
+      For managers, the policy permits access to direct reports while excluding sensitive columns such as <code>ssn</code>:
+    </p>
+
+    <pre><code class="language-sql">CREATE OR REPLACE DATA GRANT hr.HRAPP_MANAGER_ACCESS
+  AS SELECT (ALL COLUMNS EXCEPT ssn),
+     UPDATE (salary, department_id, first_name)
+  ON hr.employees
+  WHERE manager_id = ORA_END_USER_CONTEXT.HR.EMP_CTX.ID
+  TO hrapp_managers;</code></pre>
+
+    <p>
+      Notice what is not happening here: the Java service/AI agent is not building custom SQL for employees and managers. The app can issue the same business query, and Oracle filters or restricts the result according to the active end-user security context.
+    </p>
+
+    <h2>The Spring Boot Code</h2>
+
+    <p>
+      The service first receives the browser user's Entra token from Spring Security. Then it requests a database-access token with the OAuth 2.0 on-behalf-of flow:
+    </p>
+
+    <pre><code class="language-java">MultiValueMap&lt;String, String&gt; form = new LinkedMultiValueMap&lt;&gt;();
+form.add("grant_type", "urn:ietf:params:oauth:grant-type:jwt-bearer");
+form.add("client_id", entraId.getClientId());
+form.add("client_secret", entraId.getClientSecret());
+form.add("scope", entraId.getDatabaseScope());
+form.add("assertion", endUserToken);
+form.add("requested_token_use", "on_behalf_of");</code></pre>
+
+    <p>
+      Then the app attaches the Deep Data Security context to the Oracle JDBC connection:
+    </p>
+
+    <p>
+      The method names are on <a href="https://docs.oracle.com/en/database/oracle/oracle-database/26/jajdb/oracle/jdbc/OracleConnection.html"><code>oracle.jdbc.OracleConnection</code></a>. The important calls are <code>setEndUserSecurityContext(...)</code> before SQL and <code>clearEndUserSecurityContext()</code> before returning the connection to the pool.
+    </p>
+
+    <pre><code class="language-java">OracleConnection oracleConnection =
+  connection instanceof OracleConnection
+    ? (OracleConnection) connection
+    : connection.unwrap(OracleConnection.class);
+
+EndUserSecurityContext context =
+    EndUserSecurityContext.createWithToken(databaseAccessToken, endUserToken);
+
+oracleConnection.setEndUserSecurityContext(context);
+try {
+    return runQuery(connection, sql);
+}
+finally {
+    oracleConnection.clearEndUserSecurityContext();
+}</code></pre>
+
+    <p>
+      The <code>finally</code> block is not cosmetic. In a pooled application, clearing the context before returning a connection to the pool is mandatory hygiene.
+    </p>
+
+    <h2>Running the Demo</h2>
+
+    <p>
+      The app reads a local <code>.env</code> file. The important defaults are intentionally boring:
+    </p>
+
+    <pre><code class="language-env">DEEPSEC_SQL="select employee_id || ':' || first_name || ' ' || last_name from hr.employees fetch first 10 rows only"</code></pre>
+
+    <p>
+      There is no app-side data-role switch in this flow. Oracle AI Database reads the Entra <code>roles</code> claim and activates the mapped DDS roles automatically.
+    </p>
+
+    <p>
+      Start the app:
+    </p>
+
+    <pre><code class="language-bash">cd security/deepdatasecurity
+cp .env_example .env
+vi .env
+./build.sh
+./run.sh</code></pre>
+
+    <p>
+      Then open:
+    </p>
+
+    <pre><code class="language-text">http://localhost:8080/deepsec/query</code></pre>
+
+    <p>
+      With the user assigned to <code>EMPLOYEES</code>, the query result should be limited to that user's employee row:
+    </p>
+
+    <pre><code class="language-json">{"rows":["3:Emma Baker"]}</code></pre>
+
+    <h2>The Nice Part: Changing Roles Without Changing Code</h2>
+
+    <p>
+      To demo manager behavior with one browser user, assign that same real Entra user to the <code>MANAGERS</code> app role in the database/API enterprise application, get a fresh token, and map that user's username to a sample manager row. In a real multi-user demo, you can instead sign in as a different Entra user who already has the <code>MANAGERS</code> app role and a matching manager row.
+    </p>
+
+    <p>
+      Now the Entra token contains a different role set. Oracle AI Database sees that during context creation, activates the matching DDS data role, and enforces the manager policy. The endpoint, Java code, connection pool, and SQL statement stay the same.
+    </p>
+
+    <p>
+      In the sample HR data used in the walkthrough, the manager row has direct reports Emma, Charlie, and Dana. So the same <code>/deepsec/query</code> call moves from a single employee row to the manager's direct-report set:
+    </p>
+
+    <pre><code class="language-json">{"rows":["3:Emma Baker","4:Charlie Davis","5:Dana Lee"]}</code></pre>
+
+    <h2>Helpful Tips</h2>
+
+    <p>
+      <code>/deepsec/whoami</code> is a setup/debug aid, not part of the authorization flow. It shows the exact username value Oracle sees in the end-user context. If your sample rows do not already match that value, use it to update one employee row for a quick demo:
+    </p>
+
+    <pre><code class="language-text">http://localhost:8080/deepsec/whoami</code></pre>
+
+    <pre><code class="language-sql">UPDATE hr.employees
+   SET user_name = '&lt;value returned by /deepsec/whoami&gt;'
+ WHERE employee_id = 101;
+COMMIT;</code></pre>
+
+    <ul>
+      <li><strong>Empty rows can be success.</strong> If <code>/deepsec/query</code> returns <code>{"rows":[]}</code> with no exception, the DDS policy probably filtered everything. Make sure <code>hr.employees.user_name</code> matches the end-user context username.</li>
+      <li><strong>Use schema-qualified table names.</strong> With an active end-user context, unqualified <code>employees</code> can resolve unexpectedly. Use <code>hr.employees</code>.</li>
+      <li><strong>Make the database/API token v2.</strong> If Oracle reports an invalid database-access token, decode it and check <code>ver=2.0</code> and an <code>aud</code> value matching the database/API app ID.</li>
+      <li><strong>Restart and use a fresh browser session after scope changes.</strong> The app reads <code>.env</code> at startup, and browsers cache login sessions aggressively.</li>
+    </ul>
+
+    <h2>What To Productionize</h2>
+
+    <ul>
+      <li>Store the Entra client secret in a secret manager, not in a local file.</li>
+      <li>Validate expected issuer, audience, scopes, tenant, and role claims explicitly.</li>
+      <li>Manage data roles and data grants with versioned database migrations.</li>
+      <li>Add integration tests that run the same query as employee and manager identities.</li>
+      <li>Audit end-user contexts and data grant behavior in database monitoring.</li>
+    </ul>
+
+    <h2>Next: Use Oracle JDBC Spring Provider, Deep Data Security with Zero Code Changes</h2>
+
+    <p>
+      I will extend this demo to use Oracle's <code>ojdbc-provider-spring</code> provider next. That provider lets Oracle JDBC read the current Spring Security context and propagate the end-user security context through the JDBC provider SPI, so the same Deep Data Security pattern can be enabled with configuration instead of explicit <code>OracleConnection.setEndUserSecurityContext(...)</code> calls in application code.
+    </p>
+
+    <p>
+      The relevant Oracle guide for that next step is <a href="https://docs.oracle.com/en/database/oracle/oracle-database/26/ddscg/set-spring-boot-application.html">Set Up the Spring Boot Application</a>.
+    </p>
+
+    <h2>References</h2>
+
+    <ul class="references">
+      <li><a href="https://github.com/paulparkinson/oracle-ai-for-sustainable-dev/tree/main/security/deepdatasecurity">Demo source code</a></li>
+      <li><a href="https://www.oracle.com/database/technologies/appdev/jdbc-downloads.html">Oracle Database JDBC driver and UCP downloads</a></li>
+      <li><a href="https://docs.oracle.com/en/database/oracle/oracle-database/26/jajdb/oracle/jdbc/OracleConnection.html">OracleConnection API reference, 26ai</a></li>
+      <li><a href="https://blogs.oracle.com/database/oracle-deep-data-security-is-now-available-in-oracle-ai-database-26ai">Oracle Deep Data Security announcement</a></li>
+      <li><a href="https://livelabs.oracle.com/ords/r/dbpm/livelabs/run-workshop?p210_wid=4396">Richard C. Evans, LiveLabs FastLab: Identity-Aware Database Access with Microsoft Entra ID and Oracle Deep Data Security</a></li>
+      <li><a href="https://docs.oracle.com/en/database/oracle/oracle-database/26/ddscg/understand-oracle-deep-data-security.html">Oracle Deep Data Security concepts</a></li>
+      <li><a href="https://docs.oracle.com/en/database/oracle/oracle-database/26/ddscg/configure-data-grants.html">Configure Deep Data Security data grants</a></li>
+      <li><a href="https://docs.oracle.com/en/database/oracle/oracle-database/26/sqlrf/create-data-grant.html">SQL Reference: CREATE DATA GRANT</a></li>
+      <li><a href="https://docs.oracle.com/en/database/oracle/oracle-database/26/dbseg/authenticating-and-authorizing-microsoft-entra-id-ms-ei-users-oracle-databases-oracle-exadata-datab.html">Microsoft Entra ID with Oracle AI Database</a></li>
+      <li><a href="https://learn.microsoft.com/en-us/entra/identity-platform/reference-app-manifest">Microsoft Entra app manifest reference</a></li>
+      <li><a href="https://learn.microsoft.com/en-us/entra/identity-platform/access-tokens">Microsoft identity platform access tokens</a></li>
+    </ul>
+  </article>
+</main>
+</body>
+</html>

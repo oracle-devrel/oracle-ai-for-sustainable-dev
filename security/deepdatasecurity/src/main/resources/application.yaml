@@ -1,0 +1,37 @@
+server:
+  port: ${DEEPSEC_PORT:8080}
+
+logging:
+  level:
+    root: INFO
+
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          entra:
+            client-id: ${DEEPSEC_ENTRA_CLIENT_ID:}
+            client-secret: ${DEEPSEC_ENTRA_CLIENT_SECRET:}
+            client-authentication-method: client_secret_post
+            authorization-grant-type: authorization_code
+            redirect-uri: ${DEEPSEC_ENTRA_REDIRECT_URI:{baseUrl}/login/oauth2/code/{registrationId}}
+            scope: ${DEEPSEC_ENTRA_APPLICATION_SCOPE:openid,profile,email}
+        provider:
+          entra:
+            authorization-uri: https://login.microsoftonline.com/${DEEPSEC_ENTRA_TENANT_ID:}/oauth2/v2.0/authorize
+            token-uri: https://login.microsoftonline.com/${DEEPSEC_ENTRA_TENANT_ID:}/oauth2/v2.0/token
+            jwk-set-uri: https://login.microsoftonline.com/${DEEPSEC_ENTRA_TENANT_ID:}/discovery/v2.0/keys
+            user-name-attribute: sub
+
+deepsec:
+  jdbc-url: ${DEEPSEC_JDBC_URL:}
+  username: ${DEEPSEC_USERNAME:}
+  password: ${DEEPSEC_PASSWORD:}
+  sql: ${DEEPSEC_SQL:select employee_id || ':' || first_name || ' ' || last_name from hr.employees fetch first 10 rows only}
+  attributes-json: ${DEEPSEC_ATTRIBUTES_JSON:}
+  entra-id:
+    tenant-id: ${DEEPSEC_ENTRA_TENANT_ID:}
+    client-id: ${DEEPSEC_ENTRA_CLIENT_ID:}
+    client-secret: ${DEEPSEC_ENTRA_CLIENT_SECRET:}
+    database-scope: ${DEEPSEC_ENTRA_DATABASE_SCOPE:}

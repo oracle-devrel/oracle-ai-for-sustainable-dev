@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+  <title id="title">Microsoft Entra app registration overview fields</title>
+  <desc id="desc">Sanitized Azure portal-style screenshot showing where to copy Application client ID and Directory tenant ID.</desc>
+  <defs>
+    <filter id="blur">
+      <feGaussianBlur stdDeviation="4"/>
+    </filter>
+    <style>
+      .page { fill: #f6f8fb; }
+      .top { fill: #0f6cbd; }
+      .nav { fill: #ffffff; stroke: #d8dee8; }
+      .card { fill: #ffffff; stroke: #d8dee8; }
+      .text { fill: #242424; font-family: "Segoe UI", Arial, sans-serif; }
+      .muted { fill: #5c6573; font-family: "Segoe UI", Arial, sans-serif; }
+      .link { fill: #0f6cbd; font-family: "Segoe UI", Arial, sans-serif; }
+      .highlight { fill: none; stroke: #ffb900; stroke-width: 5; rx: 8; }
+      .callout { fill: #fff4ce; stroke: #ffb900; stroke-width: 2; }
+      .secret { fill: #2f3a4a; filter: url(#blur); opacity: .9; }
+      .pill { fill: #e8f3ff; }
+    </style>
+  </defs>
+
+  <rect class="page" width="1280" height="720"/>
+  <rect class="top" width="1280" height="48"/>
+  <text x="24" y="31" class="text" fill="#fff" font-size="20" font-weight="600">Microsoft Azure</text>
+  <rect x="470" y="12" width="360" height="25" rx="3" fill="#ffffff" opacity=".9"/>
+  <text x="485" y="30" class="muted" font-size="13">Search resources, services, and docs</text>
+  <circle cx="1234" cy="24" r="16" fill="#5c6573"/>
+  <text x="1224" y="29" fill="#fff" font-family="Segoe UI, Arial, sans-serif" font-size="13" font-weight="600">DU</text>
+
+  <rect x="0" y="48" width="196" height="672" class="nav"/>
+  <text x="22" y="92" class="muted" font-size="13">Search</text>
+  <rect x="18" y="104" width="150" height="28" rx="2" fill="#fff" stroke="#aeb7c4"/>
+  <text x="22" y="165" class="text" font-size="14" font-weight="600">Overview</text>
+  <text x="22" y="198" class="muted" font-size="14">Quickstart</text>
+  <text x="22" y="231" class="muted" font-size="14">Integration assistant</text>
+  <text x="22" y="264" class="muted" font-size="14">Manage</text>
+  <text x="38" y="306" class="muted" font-size="14">Authentication</text>
+  <text x="38" y="339" class="muted" font-size="14">Certificates &amp; secrets</text>
+  <text x="38" y="372" class="muted" font-size="14">Expose an API</text>
+  <text x="38" y="405" class="muted" font-size="14">App roles</text>
+
+  <text x="230" y="92" class="text" font-size="30" font-weight="600">DeepSec Sample Spring Boot App</text>
+  <text x="230" y="128" class="muted" font-size="14">Home &gt; App registrations &gt; Overview</text>
+
+  <rect x="230" y="156" width="920" height="230" rx="4" class="card"/>
+  <text x="256" y="196" class="text" font-size="18" font-weight="600">Essentials</text>
+
+  <text x="256" y="238" class="muted" font-size="15">Display name</text>
+  <text x="450" y="238" class="link" font-size="15">DeepSec Sample Spring Boot App</text>
+
+  <text x="256" y="278" class="muted" font-size="15">Application (client) ID</text>
+  <rect x="450" y="260" width="330" height="24" rx="4" class="secret"/>
+  <text x="798" y="278" class="muted" font-size="13">copy this to DEEPSEC_ENTRA_CLIENT_ID</text>
+
+  <text x="256" y="318" class="muted" font-size="15">Object ID</text>
+  <rect x="450" y="300" width="330" height="24" rx="4" class="secret" opacity=".55"/>
+
+  <text x="256" y="358" class="muted" font-size="15">Directory (tenant) ID</text>
+  <rect x="450" y="340" width="330" height="24" rx="4" class="secret"/>
+  <text x="798" y="358" class="muted" font-size="13">copy this to DEEPSEC_ENTRA_TENANT_ID</text>
+
+  <rect x="245" y="247" width="570" height="54" rx="8" class="highlight"/>
+  <rect x="245" y="327" width="570" height="54" rx="8" class="highlight"/>
+
+  <path d="M815 274 C900 260 950 230 1006 206" fill="none" stroke="#ffb900" stroke-width="4"/>
+  <path d="M815 354 C910 372 960 418 1006 454" fill="none" stroke="#ffb900" stroke-width="4"/>
+
+  <rect x="1000" y="156" width="230" height="92" rx="8" class="callout"/>
+  <text x="1018" y="188" class="text" font-size="15" font-weight="600">Client ID</text>
+  <text x="1018" y="213" class="muted" font-size="13">Use the Application</text>
+  <text x="1018" y="232" class="muted" font-size="13">(client) ID value.</text>
+
+  <rect x="1000" y="414" width="230" height="92" rx="8" class="callout"/>
+  <text x="1018" y="446" class="text" font-size="15" font-weight="600">Tenant ID</text>
+  <text x="1018" y="471" class="muted" font-size="13">Use the Directory</text>
+  <text x="1018" y="490" class="muted" font-size="13">(tenant) ID value.</text>
+
+  <rect x="230" y="426" width="920" height="148" rx="4" class="card"/>
+  <text x="256" y="466" class="text" font-size="18" font-weight="600">Certificates &amp; secrets</text>
+  <text x="256" y="504" class="muted" font-size="15">Create a client secret and copy the secret</text>
+  <text x="573" y="504" class="text" font-size="15" font-weight="600">Value</text>
+  <text x="616" y="504" class="muted" font-size="15">, not the Secret ID.</text>
+  <rect x="256" y="526" width="250" height="28" rx="14" class="pill"/>
+  <text x="276" y="545" class="link" font-size="14">DEEPSEC_ENTRA_CLIENT_SECRET</text>
+
+  <text x="230" y="642" class="muted" font-size="13">Sanitized illustration for documentation. Values are intentionally blurred.</text>
+</svg>
