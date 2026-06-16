@@ -1,0 +1,60 @@
+{
+  "name": "oracle_inventory_action_agent",
+  "description": "ADK-based coordinator for final-stage inventory action planning. It gathers graph, spatial, and external signals, checks policy, and drafts a recommended inventory move that still requires approval.",
+  "url": "https://YOUR_PUBLIC_AGENT_HOST/inventory-action",
+  "version": "0.0.2",
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false,
+    "stateTransitionHistory": false,
+    "extensions": []
+  },
+  "defaultInputModes": [
+    "text/plain"
+  ],
+  "defaultOutputModes": [
+    "application/json",
+    "text/plain"
+  ],
+  "skills": [
+    {
+      "id": "oracle_inventory_action_agent",
+      "name": "inventory-action-coordinator",
+      "description": "Coordinates the final inventory action stage by gathering evidence and recommending a transfer, expedite, substitute, or hold action.",
+      "tags": [
+        "llm",
+        "orchestration"
+      ],
+      "examples": [],
+      "inputModes": [
+        "text/plain"
+      ],
+      "outputModes": [
+        "application/json",
+        "text/plain"
+      ]
+    },
+    {
+      "id": "oracle_inventory_action_agent-recommendInventoryAction",
+      "name": "recommendInventoryAction",
+      "description": "Given a product or risk prompt, gather graph, spatial, and external evidence before proposing a draft inventory move and indicating whether approval is required.",
+      "tags": [
+        "llm",
+        "tools",
+        "inventory"
+      ],
+      "examples": [],
+      "inputModes": [
+        "text/plain"
+      ],
+      "outputModes": [
+        "application/json",
+        "text/plain"
+      ]
+    }
+  ],
+  "supportsAuthenticatedExtendedCard": false,
+  "additionalInterfaces": [],
+  "preferredTransport": "JSONRPC",
+  "protocolVersion": "0.3.0"
+}

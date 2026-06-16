@@ -23,7 +23,7 @@ Blog: https://www.linkedin.com/pulse/develop-oci-real-time-speech-transcription-
 
 AI Hub: https://www.oracle.com/artificial-intelligence/speak-with-ai-about-data-using-real-time/
 
-### 3. Interactive AI Holograms: Develop a Digital Double Assistant with Oracle Database 23ai Select AI, Vector RAG, OCI Speech AI, and Audio2Face MetaHumans
+### 3. Interactive AI Holograms: Develop a Digital Double Assistant with Oracle Database 26ai Select AI, Vector RAG, OCI Speech AI, and Audio2Face MetaHumans
 Source code: see `interactive-ai-holograms` directory
 
 Blog: https://www.linkedin.com/pulse/interactive-ai-holograms-develop-digital-double-oracle-paul-parkinson-zdpjf

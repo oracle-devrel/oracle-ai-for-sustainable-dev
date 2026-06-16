@@ -23,11 +23,27 @@ fi
 export IMAGE=${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_VERSION}
 export IMAGE_VERSION=$IMAGE_VERSION
 
-# mvn install
-# mvn package docker:build
-mvn package
+# First, compile and package without Docker build to avoid credential issues
+echo "Building JAR..."
+mvn clean compile package -Ddockerfile.skip=true
 
-docker push $IMAGE
-if [  $? -eq 0 ]; then
-    docker rmi ${IMAGE}
+# If JAR build successful, then build Docker image with podman
+if [ $? -eq 0 ]; then
+    echo "JAR build successful, building Docker image with podman..."
+    # Use podman to build the image to avoid Docker credential issues
+    podman build -t $IMAGE --build-arg JAR_FILE=order-helidon.jar .
+    
+    if [ $? -eq 0 ]; then
+        echo "Docker image build successful, pushing with podman..."
+        podman push $IMAGE
+        if [ $? -eq 0 ]; then
+            podman rmi ${IMAGE}
+        fi
+    else
+        echo "Docker image build failed"
+        exit 1
+    fi
+else
+    echo "JAR build failed"
+    exit 1
 fi

@@ -1,0 +1,100 @@
+# MCP Toolbox Configuration for Oracle AI Database
+# This configuration defines the Oracle database source and tools for the agent
+
+sources:
+  oracle-ai-db:
+    kind: oracle
+    # TNS Alias connection (for Oracle Autonomous Database with wallet)
+    tnsAlias: ${DB_DSN}
+    tnsAdmin: ${DB_WALLET_DIR}
+    user: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    useOCI: true  # Required for wallet support
+
+tools:
+  # Vector similarity search in RAG table
+  search-rag-documents:
+    kind: oracle-sql
+    source: oracle-ai-db
+    description: >-
+      Search the RAG knowledge base using semantic similarity.
+      Returns relevant document chunks with their metadata.
+    parameters:
+      - name: query_text
+        type: string
+        description: The search query or question to find relevant documents for.
+      - name: top_k
+        type: integer
+        description: "Number of top results to return (default: 5)."
+    statement: |
+      SELECT 
+        id,
+        text,
+        link,
+        VECTOR_DISTANCE(embedding, 
+          (SELECT VECTOR_EMBEDDING(all_minilm_l12_v2 USING :query_text as data)), 
+          COSINE) as distance
+      FROM rag_tab
+      WHERE embedding IS NOT NULL
+      ORDER BY distance
+      FETCH FIRST :top_k ROWS ONLY
+
+  # Get table statistics
+  get-rag-stats:
+    kind: oracle-sql
+    source: oracle-ai-db
+    description: Get statistics about the RAG knowledge base (total documents, chunks, etc.).
+    statement: |
+      SELECT 
+        COUNT(*) as total_chunks,
+        COUNT(DISTINCT link) as total_documents,
+        COUNT(CASE WHEN embedding IS NOT NULL THEN 1 END) as embedded_chunks
+      FROM rag_tab
+
+  # Execute general SQL query
+  execute-sql:
+    kind: oracle-execute-sql
+    source: oracle-ai-db
+    description: >-
+      Execute any SQL query on the Oracle database.
+      Use this for schema inspection, data analysis, or custom queries.
+
+  # Get table schema information
+  get-table-schema:
+    kind: oracle-sql
+    source: oracle-ai-db
+    description: Get the schema/structure of a specific table including columns and data types.
+    parameters:
+      - name: table_name
+        type: string
+        description: The name of the table to inspect.
+    statement: |
+      SELECT 
+        column_name,
+        data_type,
+        data_length,
+        nullable
+      FROM user_tab_columns
+      WHERE table_name = UPPER(:table_name)
+      ORDER BY column_id
+
+  # List all user tables
+  list-tables:
+    kind: oracle-sql
+    source: oracle-ai-db
+    description: List all tables in the current Oracle schema.
+    statement: |
+      SELECT 
+        table_name,
+        num_rows,
+        last_analyzed
+      FROM user_tables
+      ORDER BY table_name
+
+toolsets:
+  oracle-rag-toolset:
+    - search-rag-documents
+    - get-rag-stats
+    - get-table-schema
+    - list-tables
+    - execute-sql

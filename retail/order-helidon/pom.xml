@@ -174,27 +174,44 @@
 <!--            <version>19.8.0.0</version>-->
 <!--            <type>pom</type>-->
 <!--        </dependency>-->
-            <dependency>
-                <groupId>com.oracle.database.jdbc.debug</groupId>
-                <artifactId>ojdbc8-debug</artifactId>
-                <version>21.1.0.0</version>
-                <type>pom</type>
-            </dependency>
+        <!-- Use full Oracle JDBC driver instead of production bundle for SSL support -->
+        <dependency>
+            <groupId>com.oracle.database.jdbc</groupId>
+            <artifactId>ojdbc8</artifactId>
+            <version>23.9.0.25.07</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.json</groupId>
+                    <artifactId>javax.json-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- Oracle UCP for connection pooling -->
+        <dependency>
+            <groupId>com.oracle.database.jdbc</groupId>
+            <artifactId>ucp</artifactId>
+            <version>23.9.0.25.07</version>
+        </dependency>
+        <!-- Oracle Security SDK for SSL/crypto support -->
+        <dependency>
+            <groupId>com.oracle.database.security</groupId>
+            <artifactId>oraclepki</artifactId>
+            <version>23.9.0.25.07</version>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.json</groupId>
+            <artifactId>jakarta.json-api</artifactId>
+            <version>2.1.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.parsson</groupId>
+            <artifactId>parsson</artifactId>
+            <version>1.1.5</version>
+        </dependency>
         <dependency>
             <groupId>com.oracle.database.messaging</groupId>
             <artifactId>aqapi</artifactId>
             <version>19.3.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.oracle.database.soda</groupId>
-            <artifactId>orajsoda</artifactId>
-            <version>1.1.7.1</version>
-            <exclusions>
-                <exclusion>
-                <groupId>com.oracle.database.jdbc</groupId>
-                <artifactId>ojdbc8</artifactId>
-                </exclusion>
-            </exclusions> 
         </dependency>
         <dependency>
             <groupId>javax.json.bind</groupId>

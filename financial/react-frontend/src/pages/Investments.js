@@ -272,12 +272,12 @@ sql = """CREATE TABLE IF NOT EXISTS PDFCollection (
               </div>
               <div>
                 <a
-                  href="http://141.148.204.74:8080"
+                  href={process.env.REACT_APP_AI_AGENTS_BACKEND_URL || "http://localhost:8080"}
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{ color: bankerAccent, textDecoration: 'none' }}
                 >
-                   AI Agents Backend
+                  AI Agents Backend
                 </a>
               </div>
               <h4>Financial Process:</h4>
@@ -301,7 +301,7 @@ sql = """CREATE TABLE IF NOT EXISTS PDFCollection (
               <iframe
                 width="100%"
                 height="315"
-                src="https://www.youtube.com/embed/qHVYXagpAC0?start=933&autoplay=0" 
+                src="https://www.youtube.com/embed/qHVYXagpAC0?start=933&autoplay=0"
                 title="YouTube video player"
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
