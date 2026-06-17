@@ -1,0 +1,3 @@
+oracle-db-otel-demo/target/
+.env
+*.log
