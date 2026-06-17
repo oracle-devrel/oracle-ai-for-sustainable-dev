@@ -19,7 +19,6 @@ echo about to build...
 #podman build -t=$IMAGE .
 #podman buildx build --platform linux/amd64 --build-arg REACT_APP_BACKEND_URL=https://oracledatabase-financial.org -t $IMAGE .
 #podman buildx build --platform linux/amd64 -t $IMAGE --load .
-#mongodb://financial:Welcome12345@IJ1TYZIR3WPWLPE-FINANCIALDB.adb.eu-frankfurt-1.oraclecloudapps.com:27017/financial?authMechanism=PLAIN&authSource=$external&ssl=true&retryWrites=false&loadBalanced=true
 podman buildx build --platform linux/amd64 \
   --build-arg MONGODB_URL="https://oracledatabase-financial.org" \
   -t $IMAGE .
@@ -31,4 +30,3 @@ podman push --format docker "$IMAGE"
 
 #podman run --rm -p 8080:8080 $IMAGE
 # podman run --rm -p 8080:8080 us-ashburn-1.ocir.io/oradbclouducm/financial/frontend:0.9
-

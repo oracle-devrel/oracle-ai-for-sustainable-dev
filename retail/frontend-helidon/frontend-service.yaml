@@ -1,22 +1,22 @@
-
-##
-## Copyright (c) 2021 Oracle and/or its affiliates.
-## Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl/
 apiVersion: v1
 kind: Service
 metadata:
   name: frontend
+  namespace: msdataworkshop
   labels:
     app: frontend
-  #annotations:
-  #  service.beta.kubernetes.io/oci-load-balancer-ssl-ports: "443"
-  #  service.beta.kubernetes.io/oci-load-balancer-tls-secret: ssl-certificate-secret
+  annotations:
+    service.beta.kubernetes.io/oci-load-balancer-ssl-ports: "443"
+    service.beta.kubernetes.io/oci-load-balancer-tls-secret: ssl-certificate-secret
+    service.beta.kubernetes.io/oci-load-balancer-backend-protocol: "HTTP"  # TLS termination at LB
 spec:
-#  type: LoadBalancer
-  type: ClusterIP
-  ports:
-  - port: 80
-    name: metrics
-    targetPort: 8080
+  type: LoadBalancer
   selector:
     app: frontend
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+    - name: https
+      port: 443
+      targetPort: 8080

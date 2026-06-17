@@ -1,4 +1,4 @@
-java #!/bin/bash
+#!/bin/bash
 ## Copyright (c) 2021 Oracle and/or its affiliates.
 ## Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl/
 
@@ -16,11 +16,23 @@ if [ -z "$DOCKER_REGISTRY" ]; then
 fi
 
 export IMAGE=${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_VERSION}
-export IMAGE_VERSION=$IMAGE_VERSION
 
-mvn package
+echo "Building Maven project..."
+mvn clean package
 
-docker push $IMAGE
-if [  $? -eq 0 ]; then
-    docker rmi ${IMAGE}
+echo "Building container image: ${IMAGE}"
+podman build --platform linux/amd64 \
+    --build-arg JAR_FILE=frontend-helidon.jar \
+    -t ${IMAGE} .
+
+echo "Pushing container image: ${IMAGE}"
+podman push ${IMAGE}
+
+if [ $? -eq 0 ]; then
+    echo "Successfully pushed ${IMAGE}"
+    # Optionally remove local image to save space
+    # podman rmi ${IMAGE}
+else
+    echo "Failed to push ${IMAGE}"
+    exit 1
 fi

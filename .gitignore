@@ -7,6 +7,17 @@ grabdish/inventory-micronaut/build/
 
 # Generated deployment files with sensitive data
 **/healthai-backend-springboot-deployment.yaml
+oracle-ai-database-gcp-gemini/.env_oracle-public-oracle-agent-26ai
+oracle-ai-database-gcp-gemini/.env_oracle-public-kabharadbtest1
+oracle-ai-database-gcp-gemini/.env_oracle-public-dbatpst0324
+oracle-ai-database-gcp-gemini/.env_adb=*
+
+# TLS/SSL certificates and keys
+**/tls/
+*.crt
+*.key
+*.pem
+*.p12
 
 # Compiled class file
 *.class
@@ -670,7 +681,7 @@ cython_debug/
 # Flutter/Dart plugins
 .flutter*
 *pubspec*
-package*
+packages/
 .dart*
 *.key
 *.cert

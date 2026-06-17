@@ -14,13 +14,11 @@ spec:
     spec:
       containers:
         - name: frontend-react
-          image: ghcr.io/paulparkinson/react-frontend:0.1.1754067468
+          image: eu-frankfurt-1.ocir.io/oradbclouducm/financial/react-frontend:0.1.1757037497
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
           env:
-            - name: REACT_APP_BACKEND_URL
-              value: http://backend.financial:8090
-            - name: REACT_APP_ORDS_BASE_URL
-              value: https://ij1tyzir3wpwlpe-financialdb.adb.eu-frankfurt-1.oraclecloudapps.com/ords
+            - name: TEST
+              value: TESTVALUE
       restartPolicy: Always

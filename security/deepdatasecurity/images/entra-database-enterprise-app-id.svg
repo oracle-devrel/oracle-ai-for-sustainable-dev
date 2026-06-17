@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="720" viewBox="0 0 1180 720" role="img" aria-labelledby="title desc">
+  <title id="title">Database Enterprise Application app ID field</title>
+  <desc id="desc">Sanitized Azure Enterprise Application overview showing the Application ID field to copy for the Oracle database API resource.</desc>
+  <defs>
+    <filter id="blur"><feGaussianBlur stdDeviation="4"/></filter>
+    <style>
+      .bg{fill:#f7f9fc}.top{fill:#0f6cbd}.nav{fill:#fff;stroke:#d8dee8}.card{fill:#fff;stroke:#d8dee8}.text{font-family:"Segoe UI",Arial,sans-serif;fill:#242424}.muted{font-family:"Segoe UI",Arial,sans-serif;fill:#5c6573}.link{font-family:"Segoe UI",Arial,sans-serif;fill:#0f6cbd}.secret{fill:#334155;filter:url(#blur);opacity:.9}.hl{fill:none;stroke:#ffb900;stroke-width:5;rx:8}.call{fill:#fff4ce;stroke:#ffb900;stroke-width:2}
+    </style>
+  </defs>
+  <rect class="bg" width="1180" height="720"/>
+  <rect class="top" width="1180" height="48"/>
+  <text x="24" y="31" fill="#fff" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="600">Microsoft Azure</text>
+  <rect x="0" y="48" width="210" height="672" class="nav"/>
+  <text x="25" y="104" class="text" font-size="14" font-weight="600">Overview</text>
+  <text x="25" y="146" class="muted" font-size="14">Deployment Plan</text>
+  <text x="25" y="188" class="muted" font-size="14">Manage</text>
+  <text x="45" y="226" class="muted" font-size="14">Properties</text>
+  <text x="45" y="264" class="muted" font-size="14">Users and groups</text>
+  <text x="45" y="302" class="muted" font-size="14">Single sign-on</text>
+  <text x="45" y="340" class="muted" font-size="14">Provisioning</text>
+
+  <text x="245" y="94" class="text" font-size="29" font-weight="600">Oracle AI Database DeepSec API</text>
+  <text x="245" y="126" class="muted" font-size="14">Enterprise Application / Overview</text>
+
+  <rect x="245" y="162" width="740" height="255" rx="4" class="card"/>
+  <text x="275" y="206" class="text" font-size="21" font-weight="600">Properties</text>
+  <rect x="275" y="232" width="56" height="56" rx="2" fill="#8a3ffc"/>
+  <text x="291" y="267" fill="#fff" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="600">OA</text>
+
+  <text x="355" y="246" class="muted" font-size="15">Name</text>
+  <rect x="500" y="226" width="290" height="28" rx="2" fill="#fff" stroke="#aeb7c4"/>
+  <text x="512" y="246" class="text" font-size="14">Oracle AI Database DeepSec API</text>
+
+  <text x="355" y="296" class="muted" font-size="15">Application ID</text>
+  <rect x="500" y="276" width="290" height="28" rx="2" class="secret"/>
+  <text x="810" y="296" class="muted" font-size="13">copy this as &lt;DB_APP_CLIENT_ID&gt;</text>
+  <rect x="348" y="268" width="592" height="48" rx="8" class="hl"/>
+
+  <text x="355" y="346" class="muted" font-size="15">Object ID</text>
+  <rect x="500" y="326" width="290" height="28" rx="2" class="secret" opacity=".55"/>
+
+  <path d="M790 292 C875 292 905 337 940 380" fill="none" stroke="#ffb900" stroke-width="4"/>
+  <rect x="835" y="392" width="280" height="110" rx="8" class="call"/>
+  <text x="856" y="426" class="text" font-size="16" font-weight="600">Database/API app ID</text>
+  <text x="856" y="454" class="muted" font-size="13">Use this value in:</text>
+  <text x="856" y="476" class="muted" font-size="13">.env scopes, tnsnames.ora,</text>
+  <text x="856" y="498" class="muted" font-size="13">and ENABLE_EXTERNAL_AUTHENTICATION.</text>
+
+  <rect x="245" y="470" width="515" height="122" rx="4" class="card"/>
+  <text x="270" y="506" class="text" font-size="17" font-weight="600">Do not use the Spring Boot app ID here</text>
+  <text x="270" y="534" class="muted" font-size="14">This is the database resource audience.</text>
+  <text x="270" y="558" class="muted" font-size="14">The Spring Boot app remains the OAuth client.</text>
+  <text x="245" y="650" class="muted" font-size="13">Sanitized illustration for documentation. Values are intentionally blurred.</text>
+</svg>
