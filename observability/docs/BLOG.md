@@ -62,6 +62,11 @@ management:
       endpoint: http://localhost:4318/v1/traces
 ```
 
+This is the right default for a Spring Boot application. The OpenTelemetry Java
+agent is a good option for broader auto-instrumentation, but the important
+database-side handoff is controlled by the Oracle JDBC driver, the database
+session, `DBMS_OBSERVABILITY`, and the collector endpoint.
+
 ## Adding Oracle JDBC Spans
 
 Oracle's OpenTelemetry provider for JDBC is the piece that makes the database
@@ -106,6 +111,12 @@ spring:
 The important one for this demo is `serverTelemetryTracesEnabled`. The goal is
 for the same trace context that exists in Spring to be propagated through the
 JDBC driver and into the database session.
+
+There is one practical caveat: the public app can prove the Spring, Micrometer,
+and JDBC span path first, while the final database-internals spans depend on a
+database and OJDBC combination that supports the server-side propagation path.
+Some current scenario material notes that a fixed or internal OJDBC build may
+be required for full OSCID propagation into Oracle Database server spans.
 
 ## Enabling Database Export
 
@@ -158,6 +169,9 @@ collector endpoint the database can reach, usually HTTPS with the required ACL
 and credential setup.
 
 ## Running The Demo
+
+The short path is below. The full setup, build, DB-side configuration, and
+troubleshooting steps are in `../RUNBOOK.md`.
 
 ```bash
 export DB_URL='jdbc:oracle:thin:@financialdb_high?TNS_ADMIN=/path/to/Wallet_financialdb'

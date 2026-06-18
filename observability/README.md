@@ -28,8 +28,20 @@ internals to the same collector when server-side tracing is enabled.
 - `oracle-db-otel-demo/`: Spring Boot demo app.
 - `docker-compose.yaml`: local Jaeger backend with OTLP ports enabled.
 - `sql/`: database-side setup scripts based on the attached Oracle notes.
+- `RUNBOOK.md`: step-by-step setup, run, verification, and troubleshooting.
 - `docs/BLOG.md`: working blog draft.
 - `docs/RESEARCH.md`: source notes and links.
+
+## Trace Modes
+
+The demo can be run in two useful modes:
+
+- App and JDBC tracing with the public Spring Boot demo dependencies.
+- App-to-database-internals tracing when the database, network ACLs, collector,
+  and Oracle JDBC driver support server-side OpenTelemetry propagation.
+
+Start with the app/JDBC mode, then add database server-side tracing once the
+collector is reachable from the database.
 
 ## Quick Start
 
@@ -68,6 +80,9 @@ Open Jaeger:
 http://localhost:16686
 ```
 
+For full setup, build, DB-side tracing, and troubleshooting instructions, see
+`RUNBOOK.md`.
+
 ## Database Server-Side Setup
 
 The database must be able to reach the OTLP collector endpoint. If the database
@@ -83,6 +98,12 @@ Review and run:
 
 For a local demo, set `SQL_TRACE` at the session level. Avoid instance-wide
 tracing in shared or production environments unless you have measured the cost.
+
+The separate `db-observability-scenarios` material notes that some current
+public driver/database combinations may show only app-side traces, or may need a
+fixed/internal OJDBC build for full server-side OSCID propagation. That does not
+invalidate the Spring Boot/Micrometer approach; it means the final database
+span continuation depends on the driver and database feature path.
 
 ## References
 

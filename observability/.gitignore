@@ -1,3 +1,4 @@
 oracle-db-otel-demo/target/
+db-observability-scenarios/
 .env
 *.log
