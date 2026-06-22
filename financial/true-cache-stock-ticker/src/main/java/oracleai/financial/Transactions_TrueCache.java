@@ -17,9 +17,9 @@ public class Transactions_TrueCache extends Thread {
 
   private static PoolDataSource pds = null;
   private static int duration;
-  static String url_primary = "172.20.1.195:1521/SALES";
-  static String user = "c##transactions";
-  static String password = "WElcomeHome123##";
+  static String url_primary = System.getenv().getOrDefault("TRUECACHE_DB_URL", "localhost:1521/FREEPDB1");
+  static String user = System.getenv().getOrDefault("TRUECACHE_DB_USER", "c##transactions");
+  static String password = System.getenv().getOrDefault("TRUECACHE_DB_PASSWORD", "");
 
   private static List<Integer> acctList = new ArrayList<Integer>();
 

@@ -19,7 +19,7 @@ spec:
             defaultMode: 420
       containers:
         - name: account-springboot
-          image: eu-frankfurt-1.ocir.io/oradbclouducm/financial/bank-account:0.1.1748547465
+          image: eu-frankfurt-1.ocir.io/<tenancy-namespace>/financial/bank-account:0.1.1748547465
           imagePullPolicy: Always
           ports:
             - containerPort: 443
@@ -29,13 +29,19 @@ spec:
             - name: DB_URL
               value: jdbc:oracle:thin:@financialdb_high?TNS_ADMIN=/oraclefinancial/creds
             - name: DB_PASSWORD
-              value: Welcome12345
+              valueFrom:
+                secretKeyRef:
+                  name: financialdb-credentials
+                  key: password
             - name: spring.datasource.username
               value: financial
             - name: spring.datasource.url
               value: jdbc:oracle:thin:@financialdb_high?TNS_ADMIN=/oraclefinancial/creds
             - name: spring.datasource.password
-              value: Welcome12345
+              valueFrom:
+                secretKeyRef:
+                  name: financialdb-credentials
+                  key: password
           resources: {}
           volumeMounts:
             - name: creds

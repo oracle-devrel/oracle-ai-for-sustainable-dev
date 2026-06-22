@@ -3,8 +3,8 @@ spring:
     allow-circular-references: true
   security:
     user:
-      name: oracleai
-      password: oracleai
+      name: ${SPRING_SECURITY_USER_NAME:oracleai}
+      password: ${SPRING_SECURITY_USER_PASSWORD:}
 
   web:
     resources:
@@ -61,7 +61,7 @@ spring:
 #    key-store-type: PKCS12
 ##    key-store: classpath:keystore.p12
 #    key-store: classpath:aiholoorg.p12
-#    key-store-password: Welcome1
+#    key-store-password: ${TLS_KEYSTORE_PASSWORD:}
 ##    key-alias: springboot
 #    key-alias: aiholoorg
 server:
@@ -75,6 +75,6 @@ server:
 #    key-store-type: PKCS12
 #    key-store: classpath:keystore.p12
 #    key-store: classpath:oracledatabasefinancialorg.p12
-#    key-store-password: Welcome1
+#    key-store-password: ${TLS_KEYSTORE_PASSWORD:}
 #    key-alias: springboot
 #    key-alias: oracledatabasefinancialorg

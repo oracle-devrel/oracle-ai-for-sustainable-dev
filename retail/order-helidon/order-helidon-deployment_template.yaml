@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: order
-        image: us-ashburn-1.ocir.io/oradbclouducm/gd74087885/order-helidon:0.1
+        image: us-ashburn-1.ocir.io/<tenancy-namespace>/gd74087885/order-helidon:0.1
         imagePullPolicy: Always
         env:
         - name: oracle.ucp.jdbc.PoolDataSource.orderpdb.user

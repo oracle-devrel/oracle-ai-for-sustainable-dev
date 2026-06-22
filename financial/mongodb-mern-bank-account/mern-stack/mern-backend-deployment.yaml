@@ -19,7 +19,7 @@ spec:
             defaultMode: 420
       containers:
         - name: mern-backend
-          image: eu-frankfurt-1.ocir.io/oradbclouducm/financial/mern-backend:0.1.1747795524
+          image: eu-frankfurt-1.ocir.io/<tenancy-namespace>/financial/mern-backend:0.1.1747795524
           imagePullPolicy: Always
           ports:
             - containerPort: 5000

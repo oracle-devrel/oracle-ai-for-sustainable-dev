@@ -207,7 +207,7 @@ const Investments = () => {
     if store_type == "ORACLEDB":
         connection = oracledb.connect(
             user="ragchat",
-            password="ragchat",
+            password=os.environ["DB_PASSWORD"],
             dsn="localhost/freepdb1")
         vectorstore = OracleVS.from_documents(
             documents=document_splits,

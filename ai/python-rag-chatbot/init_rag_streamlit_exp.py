@@ -2,6 +2,7 @@
 # This one is to be used with Streamlit
 #
 import oracledb
+import os
 import streamlit as st
 
 # for pdf post processing
@@ -208,9 +209,9 @@ def create_vector_store(store_type, document_splits, embedder):
 
     if store_type == "ORACLEDB":
         connection = oracledb.connect(
-            user="ragchat",
-            password="ragchat",
-            dsn="localhost/freepdb1")
+            user=os.environ.get("DB_USER", "ragchat"),
+            password=os.environ["DB_PASSWORD"],
+            dsn=os.environ.get("DB_DSN", "localhost/freepdb1"))
         vectorstore = OracleVS.from_documents(
             documents=document_splits,
             embedding=embedder,

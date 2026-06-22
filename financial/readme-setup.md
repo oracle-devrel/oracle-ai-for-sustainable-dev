@@ -702,8 +702,8 @@ The repo describes root-level domains such as `db`, `oci`, `graal`, `apex`, and
 I installed these two domains for Codex on this machine:
 
 ```text
-/Users/pparkins/.codex/skills/db
-/Users/pparkins/.codex/skills/oci
+$HOME/.codex/skills/db
+$HOME/.codex/skills/oci
 ```
 
 Restart Codex to pick up newly installed skills.
