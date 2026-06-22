@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: financial-config
+  namespace: financial
+data:
+  DB_URL: "jdbc:oracle:thin:@financialdb_high?TNS_ADMIN=/oraclefinancial/creds"
+  DB_USER: "financial"
+  PUBLIC_BASE_URL: "https://oracledev.ai/financial"
+  OTMM_COORDINATOR_URL: "http://otmm-tcs.otmm:9000/api/v1/lra-coordinator"
+  ACCOUNT_PARTICIPANT_URL: "http://account.financial:8080"
+  TRANSFER_PARTICIPANT_URL: "http://transfer.financial:8081"
+  ACCOUNT_DEPOSIT_URL: "http://account.financial:8080/deposit/deposit"
+  ACCOUNT_WITHDRAW_URL: "http://account.financial:8080/withdraw/withdraw"
+  TRANSFER_CANCEL_URL: "http://transfer.financial:8081/cancel"
+  TRANSFER_CANCEL_PROCESS_URL: "http://transfer.financial:8081/processcancel"
+  TRANSFER_CONFIRM_URL: "http://transfer.financial:8081/close"
+  TRANSFER_CONFIRM_PROCESS_URL: "http://transfer.financial:8081/processclose"

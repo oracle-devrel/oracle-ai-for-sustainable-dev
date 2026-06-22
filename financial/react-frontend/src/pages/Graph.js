@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import cytoscape from 'cytoscape';
+import { API_BASE_PATH, joinUrl } from '../config';
 
 // Banker blue theme colors
 const bankerBg = "#354F64";
@@ -173,7 +174,7 @@ const Graph = () => {
 
   // Create a transfer from srcAcctId to dstAcctId and plot it
   async function createAndPlotTransfer(cy, srcAcctId, dstAcctId, amount, description, index) {
-    const response = await fetch('https://oracleai-financial.org/financial/createtransfer', {
+    const response = await fetch(joinUrl(API_BASE_PATH, '/createtransfer'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -205,7 +206,7 @@ const Graph = () => {
     cy.elements().remove();
 
     // Fetch and add nodes
-    const accounts = await fetch('https://oracleai-financial.org/financial/accounts').then(res => res.json());
+    const accounts = await fetch(joinUrl(API_BASE_PATH, '/accounts')).then(res => res.json());
     const accountIds = accounts.slice(0, 20).map(acc => acc.ACCOUNT_ID);
     accounts.slice(0, 20).forEach(acc => {
       cy.add({ data: { id: String(acc.ACCOUNT_ID), label: acc.ACCOUNT_NAME || acc.ACCOUNT_ID } });
@@ -234,7 +235,7 @@ const Graph = () => {
 
   // Clear all transfers in backend and graph
   async function clearAllTransfers() {
-    await fetch('https://oracleai-financial.org/financial/cleartransfers', { method: 'POST' });
+    await fetch(joinUrl(API_BASE_PATH, '/cleartransfers'), { method: 'POST' });
     if (cy) {
       cy.elements('edge').remove();
       cy.layout({ name: 'cose' }).run();

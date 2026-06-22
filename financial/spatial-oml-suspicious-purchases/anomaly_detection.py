@@ -17,9 +17,13 @@ def create_connection():
     global connection
     # my_pwd = open('./my-pwd.txt','r').readline().strip()
     # my_dsn = open('./my-dsn.txt','r').readline().strip()
-    os.environ["TNS_ADMIN"] = "/Users/pparkins/Downloads/Wallet_financialdb"
+    os.environ["TNS_ADMIN"] = os.environ.get("TNS_ADMIN", "/path/to/Wallet_financialdb")
 
-    connection = oracledb.connect(user="financial", password="Welcome12345", dsn="financialdb_high")
+    connection = oracledb.connect(
+        user=os.environ.get("DB_USER", "financial"),
+        password=os.environ["DB_PASSWORD"],
+        dsn=os.environ.get("DB_DSN", "financialdb_high"),
+    )
      
 def get_cluster_centroids(cust):
     

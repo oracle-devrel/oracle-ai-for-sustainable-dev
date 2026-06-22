@@ -1,0 +1,5 @@
+.tmp/
+setup/.env
+setup/*.local
+Wallet_*/
+wallet/

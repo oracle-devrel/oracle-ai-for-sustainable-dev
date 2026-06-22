@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import { assetPath } from '../config';
 
 // Banker blue theme colors
 const bankerBg = "#354F64";
@@ -223,7 +224,7 @@ const result = await db.query(sql);
             {/* Video Snippet */}
             <div style={{ width: '100%', height: 'auto' }}>
               <video
-                src="/images/aiholotwitchsnippet.mp4"
+                src={assetPath('/images/aiholotwitchsnippet.mp4')}
                 autoPlay
                 loop
                 muted

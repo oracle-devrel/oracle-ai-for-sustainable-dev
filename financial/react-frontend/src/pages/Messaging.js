@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { ACCOUNT_SERVICE_URL, KAFKA_SERVICE_URL, joinUrl } from '../config';
 
 // Banker blue theme colors
 const bankerBg = "#354F64";
@@ -146,8 +147,8 @@ const CodeTitle = styled.div`
 `;
 
 const Messaging = () => {
-  const BASE_URL = 'https://oracleai-financial.org/financial/kafka';
-  const ACCOUNT_FETCH_URL = process.env.REACT_APP_MICROTX_ACCOUNT_SERVICE_URL || 'http://localhost:8080';
+  const BASE_URL = KAFKA_SERVICE_URL;
+  const ACCOUNT_FETCH_URL = ACCOUNT_SERVICE_URL;
 
   const [formData, setFormData] = useState({
     orderId: '',
@@ -177,7 +178,7 @@ const Messaging = () => {
   useEffect(() => {
     const fetchFromAccounts = async () => {
       try {
-        const response = await fetch(`${ACCOUNT_FETCH_URL}/accounts`);
+        const response = await fetch(joinUrl(ACCOUNT_FETCH_URL, '/accounts'));
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }

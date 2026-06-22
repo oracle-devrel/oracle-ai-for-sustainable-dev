@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { ACCOUNT_SERVICE_URL, joinUrl } from '../config';
 
 // Banker blue theme colors
 const bankerBg = "#354F64";
@@ -174,7 +175,7 @@ const PanelSection = styled.div`
 `;
 
 const REACT_APP_MERN_SQL_ORACLE_SERVICE_URL =
-  process.env.REACT_APP_MERN_SQL_ORACLE_SERVICE_URL || 'http://localhost:8080';
+  process.env.REACT_APP_MERN_SQL_ORACLE_SERVICE_URL || ACCOUNT_SERVICE_URL;
 const REACT_APP_MERN_MONGODB_JSONDUALITY_ORACLE_SERVICE_URL =
   process.env.REACT_APP_MERN_MONGODB_JSONDUALITY_ORACLE_SERVICE_URL || 'http://localhost:5001';
 const REACT_APP_MERN_MONGODB_SERVICE_URL = process.env.REACT_APP_MERN_MONGODB_SERVICE_URL || 'http://localhost:8080';
@@ -205,7 +206,7 @@ const Accounts = () => {
 
     let postUrl;
     if (formData.writeOption === 'SQL') {
-      postUrl = `${REACT_APP_MERN_SQL_ORACLE_SERVICE_URL}/accounts/api/accounts`;
+      postUrl = joinUrl(REACT_APP_MERN_SQL_ORACLE_SERVICE_URL, '/api/accounts');
     } else if (formData.writeOption === 'MongoDB API accessing Oracle Database') {
       postUrl = `${REACT_APP_MERN_MONGODB_JSONDUALITY_ORACLE_SERVICE_URL}/api/accounts`;
     } else if (formData.writeOption === 'MongoDB API') {
@@ -257,7 +258,7 @@ const Accounts = () => {
   const fetchAccounts = async () => {
     let fetchUrl;
     if (formData.readOption === 'SQL') {
-      fetchUrl = `${REACT_APP_MERN_SQL_ORACLE_SERVICE_URL}/accounts/accounts`;
+      fetchUrl = joinUrl(REACT_APP_MERN_SQL_ORACLE_SERVICE_URL, '/accounts');
     } else if (formData.readOption === 'MongoDB API') {
       fetchUrl = `${REACT_APP_MERN_MONGODB_SERVICE_URL}/accounts/accounts`;
     } else if (formData.readOption === 'MongoDB API accessing Oracle Database') {

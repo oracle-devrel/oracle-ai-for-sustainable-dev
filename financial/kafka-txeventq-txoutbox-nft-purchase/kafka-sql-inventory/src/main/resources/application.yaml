@@ -31,8 +31,8 @@ spring:
 
   datasource:
     username: ${DB_USER:financial} # Default to 'financial', overridden by environment variable DB_USER
-    password: ${DB_PASSWORD:Welcome12345} # Default to 'Welcome12345', overridden by environment variable DB_PASSWORD
-    url: ${DB_URL:jdbc:oracle:thin:@financialdb_high?TNS_ADMIN=/Users/pparkins/Downloads/Wallet_financialdb} # Default URL, overridden by environment variable DB_URL
+    password: ${DB_PASSWORD:} # Set DB_PASSWORD via environment variable or Kubernetes Secret
+    url: ${DB_URL:jdbc:oracle:thin:@financialdb_high?TNS_ADMIN=/path/to/Wallet_financialdb} # Default URL, overridden by environment variable DB_URL
 
   kafka:
     bootstrap-servers: kafka-service:9092

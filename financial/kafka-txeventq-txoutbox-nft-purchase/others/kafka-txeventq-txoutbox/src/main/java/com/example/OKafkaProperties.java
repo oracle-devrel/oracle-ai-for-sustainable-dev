@@ -20,7 +20,7 @@ public class OKafkaProperties {
         producerProps.put("security.protocol", "SSL");
         //location containing Oracle Wallet, tnsname.ora and ojdbc.properties file...
 //        producerProps.put("oracle.net.tns_admin", "/oraclefinancial/creds"); //location of ojdbc.properties file
-        producerProps.put("oracle.net.tns_admin", "/Users/pparkins/Downloads/Wallet_financialdb"); //location of ojdbc.properties file
+        producerProps.put("oracle.net.tns_admin", "/path/to/Wallet_financialdb"); //location of ojdbc.properties file
         producerProps.put("tns.alias", "financialdb_high");
         producerProps.put("enable.idempotence", "true");
         producerProps.put("oracle.transactional.producer", "true");

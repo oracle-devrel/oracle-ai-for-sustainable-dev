@@ -14,7 +14,7 @@ spring:
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:oracle:thin:@financialdb_high?TNS_ADMIN=/oraclefinancial/creds}
     username: ${SPRING_DATASOURCE_USERNAME:financial}
-    password: ${SPRING_DATASOURCE_PASSWORD:Welcome12345}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
     driver-class-name: oracle.jdbc.OracleDriver
     type: oracle.ucp.jdbc.PoolDataSource
     oracleucp:

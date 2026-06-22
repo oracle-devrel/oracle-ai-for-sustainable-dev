@@ -24,7 +24,7 @@ import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 
 @RestController
-@RequestMapping("/financial/kafka")
+@RequestMapping({"/financial/kafka", "/financial/api/kafka"})
 @CrossOrigin(origins = "*")
 public class KafkaController {
 

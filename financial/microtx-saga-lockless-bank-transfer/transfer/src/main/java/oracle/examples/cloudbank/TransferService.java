@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 import static com.oracle.microtx.springboot.lra.annotation.LRA.LRA_HTTP_CONTEXT_HEADER;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping({"/", "/financial/transfer-api"})
 public class TransferService {
 
     private static final Logger log = Logger.getLogger(TransferService.class.getSimpleName());
