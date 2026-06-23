@@ -18,6 +18,9 @@ PUBLIC_HOSTNAME="${PUBLIC_HOSTNAME:-oracledev.ai}"
 APP_BASE_PATH="${APP_BASE_PATH:-/financial}"
 PUBLIC_BASE_URL="${PUBLIC_BASE_URL:-https://${PUBLIC_HOSTNAME}${APP_BASE_PATH}}"
 INGRESS_CLASS_NAME="${INGRESS_CLASS_NAME:-nginx}"
+INGRESS_BASIC_AUTH_ENABLED="${INGRESS_BASIC_AUTH_ENABLED:-false}"
+INGRESS_BASIC_AUTH_SECRET_NAME="${INGRESS_BASIC_AUTH_SECRET_NAME:-financial-basic-auth}"
+INGRESS_BASIC_AUTH_REALM="${INGRESS_BASIC_AUTH_REALM:-Financial}"
 DB_SERVICE="${DB_SERVICE:-financialdb_high}"
 DB_USER="${DB_USER:-financial}"
 DB_URL="${DB_URL:-jdbc:oracle:thin:@${DB_SERVICE}?TNS_ADMIN=/oraclefinancial/creds}"
@@ -88,6 +91,21 @@ patches:
         value: "${OTMM_COORDINATOR_URL}"
 EOF
 
+if [[ "${INGRESS_BASIC_AUTH_ENABLED}" == "true" ]]; then
+  cat >> "${TMP_DIR}/kustomization.yaml" <<EOF
+  - target:
+      kind: Ingress
+      name: financial
+    patch: |-
+      - op: add
+        path: /metadata/annotations
+        value:
+          nginx.ingress.kubernetes.io/auth-type: "basic"
+          nginx.ingress.kubernetes.io/auth-secret: "${INGRESS_BASIC_AUTH_SECRET_NAME}"
+          nginx.ingress.kubernetes.io/auth-realm: "${INGRESS_BASIC_AUTH_REALM}"
+EOF
+fi
+
 if [[ "${DRY_RUN:-false}" == "true" ]]; then
   kubectl kustomize "${TMP_DIR}"
   exit 0
@@ -103,6 +121,7 @@ Applied financial core services.
 Namespace: ${K8S_NAMESPACE}
 Host:      ${PUBLIC_HOSTNAME}
 Images:    ${DOCKER_REGISTRY}/*:${TAG}
+Auth:      ${INGRESS_BASIC_AUTH_ENABLED}
 
 Next:
   kubectl -n ${K8S_NAMESPACE} get pods

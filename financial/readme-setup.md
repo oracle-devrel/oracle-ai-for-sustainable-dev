@@ -16,7 +16,8 @@ This setup scaffold now exists:
 - `k8s/overlays/full-create/`: overlay placeholder for full new environments.
 - `setup/env.example`: copy to `setup/.env` for local deployment settings.
 - `setup/build-images.sh`: builds and pushes the core images.
-- `setup/create-secrets.sh`: creates the wallet and DB credential secrets.
+- `setup/create-secrets.sh`: creates the wallet, DB credential, optional OCIR,
+  and optional nginx Basic Auth secrets.
 - `setup/install-nginx-ingress.sh`: installs or upgrades ingress-nginx.
 - `setup/setup-database.sh`: optional SQL setup runner.
 - `setup/deploy.sh`: applies the generated Kustomize deployment.
@@ -54,7 +55,8 @@ Current local/tooling facts:
   VCN-native pod networking, and database selection.
 - An ignored `setup/.env` exists locally with deployment settings such as image
   registry, host, app base path, wallet path, OCIR login values, ingress
-  external IP, and application database password. Do not commit it.
+  external IP, optional ingress Basic Auth values, and application database
+  password. Do not commit it.
 - Terraform apply completed for the OKE side. Two managed worker nodes are
   `Ready` in the current local deployment.
 - CertManager is installed as an OKE managed add-on and is `ACTIVE`; its pods
@@ -470,6 +472,22 @@ cp setup/env.example setup/.env
 setup/create-secrets.sh
 ```
 
+To require a password before the public app is served, enable nginx Basic Auth
+in the ignored `setup/.env`:
+
+```bash
+INGRESS_BASIC_AUTH_ENABLED=true
+INGRESS_BASIC_AUTH_SECRET_NAME=financial-basic-auth
+INGRESS_BASIC_AUTH_REALM=Financial
+INGRESS_BASIC_AUTH_USERNAME=financial
+INGRESS_BASIC_AUTH_PASSWORD=<webapp-password>
+```
+
+`setup/create-secrets.sh` stores the htpasswd entry in a Kubernetes Secret, and
+`setup/deploy.sh` adds the nginx ingress annotations. This is intentionally done
+at ingress rather than in React, because a React-only password check is visible
+in the browser bundle and is not real access control.
+
 ## MicroTx Plan
 
 The account and transfer apps currently expect:
@@ -569,6 +587,8 @@ passes the token via stdin.
 `setup/create-secrets.sh` also uses those values to create `ocir-pull-secret`
 and attach it to the namespace's default service account for private image
 pulls.
+If `INGRESS_BASIC_AUTH_ENABLED=true`, the same script also creates or updates
+the nginx Basic Auth secret named by `INGRESS_BASIC_AUTH_SECRET_NAME`.
 
 Deploy the Kustomize base with the same image tag:
 
@@ -587,6 +607,7 @@ The deploy script creates a temporary Kustomize overlay that patches:
 
 - image registry and tag;
 - ingress class;
+- optional nginx Basic Auth annotations;
 - public hostname;
 - `DB_URL`;
 - `DB_USER`;
