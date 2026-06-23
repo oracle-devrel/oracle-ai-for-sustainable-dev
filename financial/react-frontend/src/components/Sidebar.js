@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import styled from 'styled-components';
+import { assetPath } from '../config';
 
 // Banker blue theme colors
 const bankerBg = "#354F64";
@@ -139,7 +140,7 @@ const Sidebar = () => {
         <SidebarItem style={{ marginTop: 0, paddingTop: 32 }}>
           <StyledNavLink to="/financialstoryboard">
             <IconWrapper>
-              <img src="/images/Side Menu Icons/About this App.svg" alt="About this app" />
+              <img src={assetPath('/images/Side Menu Icons/About this App.svg')} alt="About this app" />
             </IconWrapper>
             <TextContainer>
               <HighlightedText>About this app</HighlightedText>
@@ -149,7 +150,7 @@ const Sidebar = () => {
         <SidebarItem>
           <StyledNavLink to="/dashboard">
             <IconWrapper>
-              <img src="/images/Side Menu Icons/Architecture and Setup.svg" alt="Architecture and setup" />
+              <img src={assetPath('/images/Side Menu Icons/Architecture and Setup.svg')} alt="Architecture and setup" />
             </IconWrapper>
             <TextContainer>
               <HighlightedText>Architecture and setup</HighlightedText>
@@ -160,7 +161,7 @@ const Sidebar = () => {
         <SidebarItem>
           <StyledNavLink to="/apis">
             <IconWrapper>
-              <img src="/images/Side Menu Icons/Publish Financial APIs.svg" alt="Publish financial APIs" />
+              <img src={assetPath('/images/Side Menu Icons/Publish Financial APIs.svg')} alt="Publish financial APIs" />
             </IconWrapper>
             <TextContainer>
               <HighlightedText>Publish financial APIs</HighlightedText>
@@ -171,7 +172,7 @@ const Sidebar = () => {
         <SidebarItem>
           <StyledNavLink to="/accounts">
             <IconWrapper>
-              <img src="/images/Side Menu Icons/Create and View Accounts.svg" alt="Create and view accounts" />
+              <img src={assetPath('/images/Side Menu Icons/Create and View Accounts.svg')} alt="Create and view accounts" />
             </IconWrapper>
             <TextContainer>
               <HighlightedText>Create and view accounts</HighlightedText>
@@ -183,7 +184,7 @@ const Sidebar = () => {
         <SidebarItem>
           <StyledNavLink to="/atm">
             <IconWrapper>
-              <img src="/images/Side Menu Icons/Deposit Withdraw Money ATM.svg" alt="Deposit/withdraw money (ATM)" />
+              <img src={assetPath('/images/Side Menu Icons/Deposit Withdraw Money ATM.svg')} alt="Deposit/withdraw money (ATM)" />
             </IconWrapper>
             <TextContainer>
               <HighlightedText>Deposit/withdraw money (ATM)</HighlightedText>
@@ -197,7 +198,7 @@ const Sidebar = () => {
         <SidebarItem>
           <StyledNavLink to="/transactions">
             <IconWrapper>
-              <img src="/images/Side Menu Icons/Transfer to External Bank.svg" alt="Transfer to external bank" />
+              <img src={assetPath('/images/Side Menu Icons/Transfer to External Bank.svg')} alt="Transfer to external bank" />
             </IconWrapper>
             <TextContainer>
               <HighlightedText>Transfer to external bank</HighlightedText>
@@ -211,7 +212,7 @@ const Sidebar = () => {
         <SidebarItem>
           <StyledNavLink to="/creditcardpurchase">
             <IconWrapper>
-              <img src="/images/Side Menu Icons/Make Purchases and Visualize Fraud.svg" alt="Make purchases and visualize fraud" />
+              <img src={assetPath('/images/Side Menu Icons/Make Purchases and Visualize Fraud.svg')} alt="Make purchases and visualize fraud" />
             </IconWrapper>
             <TextContainer>
               <HighlightedText>Make purchases and visualize fraud</HighlightedText>
@@ -225,7 +226,7 @@ const Sidebar = () => {
         <SidebarItem>
           <StyledNavLink to="/graph">
             <IconWrapper>
-              <img src="/images/Side Menu Icons/Detect Money Laundering.svg" alt="Detect money laundering" />
+              <img src={assetPath('/images/Side Menu Icons/Detect Money Laundering.svg')} alt="Detect money laundering" />
             </IconWrapper>
             <TextContainer>
               <HighlightedText>Detect money laundering</HighlightedText>
@@ -239,7 +240,7 @@ const Sidebar = () => {
         <SidebarItem>
           <StyledNavLink to="/messaging">
             <IconWrapper>
-              <img src="/images/Side Menu Icons/Transfer to External Bank.svg" alt="Transfer to brokerage accounts" />
+              <img src={assetPath('/images/Side Menu Icons/Transfer to External Bank.svg')} alt="Transfer to brokerage accounts" />
             </IconWrapper>
             <TextContainer>
               <HighlightedText>Assets/Inventory Management</HighlightedText>
@@ -253,7 +254,7 @@ const Sidebar = () => {
         <SidebarItem>
           <StyledNavLink to="/stockticker">
             <IconWrapper>
-              <img src="/images/Side Menu Icons/View Stock Ticker.svg" alt="View stock ticker and buy/sell stock" />
+              <img src={assetPath('/images/Side Menu Icons/View Stock Ticker.svg')} alt="View stock ticker and buy/sell stock" />
             </IconWrapper>
             <TextContainer>
               <HighlightedText>View stock ticker and buy/sell stock</HighlightedText>
@@ -268,7 +269,7 @@ const Sidebar = () => {
         <SidebarItem>
           <StyledNavLink to="/investments">
             <IconWrapper>
-              <img src="/images/Side Menu Icons/Get Personal Financial Insights.svg" alt="Get personal financial insights" />
+              <img src={assetPath('/images/Side Menu Icons/Get Personal Financial Insights.svg')} alt="Get personal financial insights" />
             </IconWrapper>
             <TextContainer>
               <HighlightedText>Get personal financial insights</HighlightedText>
@@ -282,7 +283,7 @@ const Sidebar = () => {
         <SidebarItem>
           <StyledNavLink to="/speakwithdata">
             <IconWrapper>
-              <img src="/images/Side Menu Icons/Speak with your Financial Data.svg" alt="Speak with your financial data" />
+              <img src={assetPath('/images/Side Menu Icons/Speak with your Financial Data.svg')} alt="Speak with your financial data" />
             </IconWrapper>
             <TextContainer>
               <HighlightedText>Speak with your financial data</HighlightedText>

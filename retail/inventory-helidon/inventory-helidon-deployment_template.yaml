@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: inventory
-          image: us-ashburn-1.ocir.io/oradbclouducm/gd35252210/inventory-helidon:0.1
+          image: us-ashburn-1.ocir.io/<tenancy-namespace>/gd35252210/inventory-helidon:0.1
           imagePullPolicy: Always
           env:
             - name: oracle.ucp.jdbc.PoolDataSource.inventorypdb.user

@@ -29,5 +29,5 @@ docker build -t=$IMAGE .
 
 #docker build . -t flutter_docker
 
-#docker run -i -p 8090:5000 -td us-ashburn-1.ocir.io/oradbclouducm/gd74087885/healthai-frontend-flutter:0.1
+#docker run -i -p 8090:5000 -td us-ashburn-1.ocir.io/<tenancy-namespace>/gd74087885/healthai-frontend-flutter:0.1
 

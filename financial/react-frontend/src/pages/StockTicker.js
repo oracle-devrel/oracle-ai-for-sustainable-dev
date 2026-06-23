@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
+import { API_BASE_PATH, TRUECACHE_SERVICE_URL, joinUrl } from '../config';
 
 // Banker blue theme colors
 const bankerBg = "#354F64";
@@ -186,12 +187,12 @@ const StockTicker = () => {
   const [customerIds, setCustomerIds] = useState([]);
 
   useEffect(() => {
-    fetch('https://oracleai-financial.org/financial/truecache/stockticker')
+    fetch(joinUrl(TRUECACHE_SERVICE_URL, '/stockticker'))
       .then(res => res.json())
       .then(data => setStockList(data))
       .catch(() => setStockList([]));
 
-    fetch('https://oracleai-financial.org/financial/accounts')
+    fetch(joinUrl(API_BASE_PATH, '/accounts'))
       .then(res => res.json())
       .then(data => {
         const ids = Array.from(new Set(data.map(acc => acc.CUSTOMER_ID))).filter(Boolean);
@@ -216,7 +217,7 @@ const StockTicker = () => {
       action,
     };
 
-    fetch('https://oracleai-financial.org/financial/truecache/stockbuyorsell', {
+    fetch(joinUrl(TRUECACHE_SERVICE_URL, '/stockbuyorsell'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -227,7 +228,7 @@ const StockTicker = () => {
       .then((data) => {
         if (data.success) {
           setLastAction({ ticker: formData.stock, action });
-          fetch('https://oracleai-financial.org/financial/truecache/stockticker')
+          fetch(joinUrl(TRUECACHE_SERVICE_URL, '/stockticker'))
             .then(res => res.json())
             .then(data => setStockList(data))
             .catch(() => setStockList([]));

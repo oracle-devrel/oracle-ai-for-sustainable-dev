@@ -15,7 +15,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/graph")
-//@CrossOrigin(origins = "https://oracledatabase-financial.org")
 @CrossOrigin(origins = "*")
 public class GraphController {
 

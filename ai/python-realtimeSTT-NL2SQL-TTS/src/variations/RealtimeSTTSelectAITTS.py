@@ -29,19 +29,19 @@ print(f"compartment_id: {compartment_id}")
 
 # connection = oracledb.connect(
 #     user="user",
-#     password="userpw",
+#     password=os.environ["DB_PASSWORD"],
 #     dsn="yourdb_high",
 #     config_dir=r"C:\locationofyourwallet",
 #     wallet_location=r"C:\locationofyourwallet",
-#     wallet_password="walletpw"
+#     wallet_password=os.environ.get("WALLET_PASSWORD")
 # )
 connection = oracledb.connect(
-    user="moviestream",
-    password="Welcome12345",
-    dsn="selectaidb_high",
-    config_dir="/Users/pparkins/Downloads/Wallet_SelectAIDB",
-    wallet_location="/Users/pparkins/Downloads/Wallet_SelectAIDB",
-    wallet_password="Welcome12345"
+    user=os.environ.get("DB_USER", "moviestream"),
+    password=os.environ["DB_PASSWORD"],
+    dsn=os.environ.get("DB_DSN", "selectaidb_high"),
+    config_dir=os.environ.get("TNS_ADMIN", "/path/to/Wallet_SelectAIDB"),
+    wallet_location=os.environ.get("TNS_ADMIN", "/path/to/Wallet_SelectAIDB"),
+    wallet_password=os.environ["DB_PASSWORD"]
 )
 print(f"Successfully connected to Oracle Database Connection: {connection}")
 

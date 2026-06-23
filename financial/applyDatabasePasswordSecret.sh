@@ -4,7 +4,7 @@
 read -p "Enter namespace (Eg msdataworkshop): " NAMESPACE
 
 # Prompt for the password (hidden input)
-read -s -p "Enter database password (eg Welcome12345): " DB_PASSWORD
+read -s -p "Enter database password: " DB_PASSWORD
 echo
 
 # Base64 encode the password

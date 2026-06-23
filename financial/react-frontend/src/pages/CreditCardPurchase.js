@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { MapContainer, TileLayer, Marker, Popup, useMapEvent } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
+import { ACCOUNT_SERVICE_URL, API_BASE_PATH, joinUrl } from '../config';
 
 // Banker blue theme colors
 const bankerBg = "#354F64";
@@ -274,7 +275,7 @@ const CreditCardPurchase = () => {
   useEffect(() => {
     const fetchAccountIds = async () => {
       try {
-        const response = await fetch('https://oracleai-financial.org/accounts/accounts');
+        const response = await fetch(joinUrl(ACCOUNT_SERVICE_URL, '/accounts'));
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -287,7 +288,7 @@ const CreditCardPurchase = () => {
 
     const fetchCoordinates = async () => {
       try {
-        const response = await fetch('https://oracleai-financial.org/financial/locations/coordinates');
+        const response = await fetch(joinUrl(API_BASE_PATH, '/locations/coordinates'));
         const data = await response.json();
         setCoordinates(data);
       } catch (error) {
@@ -358,7 +359,7 @@ const CreditCardPurchase = () => {
     };
 
     try {
-      const response = await fetch('https://oracleai-financial.org/financial/locations/check-distance', {
+      const response = await fetch(joinUrl(API_BASE_PATH, '/locations/check-distance'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

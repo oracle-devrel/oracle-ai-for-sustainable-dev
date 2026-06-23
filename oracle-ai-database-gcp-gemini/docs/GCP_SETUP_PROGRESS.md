@@ -19,7 +19,7 @@ This log records the actual migration work toward recreating the Oracle AI Datab
 - Confirmed `gcloud` is installed.
 - Confirmed the current local `gcloud` config project is still `adb-pm-prod`.
 - Hit a local permissions issue when trying to read or update some `gcloud` auth state inside the sandboxed environment because `~/.config/gcloud/credentials.db` was not writable in that mode.
-- Re-ran the `gcloud` checks with elevated permissions and confirmed the configured account is `paul.parkinson@oracle.com`.
+- Re-ran the `gcloud` checks with elevated permissions and confirmed the configured account is `<your-email>`.
 - Confirmed the active login token is stale right now because `gcloud projects describe oracle-public-488519` returned `invalid_grant`.
 - Completed a fresh `gcloud auth login --no-launch-browser` flow and restored local project access successfully.
 

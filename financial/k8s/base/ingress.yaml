@@ -1,0 +1,39 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: financial
+  namespace: financial
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: oracledev.ai
+      http:
+        paths:
+          - path: /financial/accounts-api
+            pathType: Prefix
+            backend:
+              service:
+                name: account
+                port:
+                  number: 8080
+          - path: /financial/transfer-api
+            pathType: Prefix
+            backend:
+              service:
+                name: transfer
+                port:
+                  number: 8081
+          - path: /financial/api
+            pathType: Prefix
+            backend:
+              service:
+                name: globallydistributeddatabase
+                port:
+                  number: 8080
+          - path: /financial
+            pathType: Prefix
+            backend:
+              service:
+                name: react-frontend
+                port:
+                  number: 80

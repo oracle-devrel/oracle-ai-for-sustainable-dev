@@ -25,9 +25,9 @@ pw = getpass.getpass("Enter database user password:")
 
 # Use this when making a connection with a wallet
 connection = oracledb.connect(
-    user="moviestream",
+    user=os.environ.get("DB_USER", "moviestream"),
     password=pw,
-    dsn="selectaidb_high",
+    dsn=os.environ.get("DB_DSN", "selectaidb_high"),
     config_dir=r"C:\Users\paulp\Downloads\Wallet_SelectAIDB",
     wallet_location=r"C:\Users\paulp\Downloads\Wallet_SelectAIDB"
 )

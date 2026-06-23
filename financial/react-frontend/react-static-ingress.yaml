@@ -10,10 +10,10 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: oracleai-financial.org
+    - host: oracledev.ai
       http:
         paths:
-          - path: /static/
+          - path: /financial/static/
             pathType: Prefix
             backend:
               service:

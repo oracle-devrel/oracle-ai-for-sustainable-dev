@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="720" viewBox="0 0 1180 720" role="img" aria-labelledby="title desc">
+  <title id="title">Database Enterprise Application users and groups assignment</title>
+  <desc id="desc">Sanitized Azure Enterprise Application users and groups page showing a user assigned to the EMPLOYEES app role.</desc>
+  <defs>
+    <style>
+      .bg{fill:#f7f9fc}.top{fill:#0f6cbd}.nav{fill:#fff;stroke:#d8dee8}.row{fill:#fff;stroke:#e5e7eb}.row2{fill:#f3f4f6;stroke:#e5e7eb}.text{font-family:"Segoe UI",Arial,sans-serif;fill:#242424}.muted{font-family:"Segoe UI",Arial,sans-serif;fill:#5c6573}.link{font-family:"Segoe UI",Arial,sans-serif;fill:#0f6cbd}.hl{fill:none;stroke:#ffb900;stroke-width:5;rx:8}.call{fill:#fff4ce;stroke:#ffb900;stroke-width:2}
+    </style>
+  </defs>
+  <rect class="bg" width="1180" height="720"/>
+  <rect class="top" width="1180" height="48"/>
+  <text x="24" y="31" fill="#fff" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="600">Microsoft Azure</text>
+  <rect x="0" y="48" width="210" height="672" class="nav"/>
+  <text x="25" y="104" class="muted" font-size="14">Overview</text>
+  <text x="25" y="146" class="muted" font-size="14">Deployment Plan</text>
+  <text x="25" y="188" class="muted" font-size="14">Manage</text>
+  <text x="45" y="226" class="muted" font-size="14">Properties</text>
+  <text x="45" y="264" class="text" font-size="14" font-weight="600">Users and groups</text>
+  <text x="45" y="302" class="muted" font-size="14">Single sign-on</text>
+
+  <text x="245" y="94" class="text" font-size="29" font-weight="600">Oracle AI Database DeepSec API</text>
+  <text x="245" y="126" class="muted" font-size="14">Enterprise Application / Users and groups</text>
+
+  <rect x="245" y="150" width="900" height="58" rx="4" fill="#eaf3ff"/>
+  <text x="270" y="184" class="muted" font-size="14">Assign users to database/API app roles here. These roles flow into tokens for Oracle Database.</text>
+
+  <text x="245" y="252" class="link" font-size="15">+ Add user/group</text>
+  <text x="360" y="252" class="muted" font-size="15">Edit assignment</text>
+  <text x="485" y="252" class="muted" font-size="15">Remove assignment</text>
+
+  <text x="285" y="318" class="muted" font-size="14">Display name</text>
+  <text x="690" y="318" class="muted" font-size="14">Object type</text>
+  <text x="930" y="318" class="muted" font-size="14">Role assigned</text>
+  <rect x="245" y="340" width="900" height="48" class="row2"/>
+  <circle cx="292" cy="364" r="18" fill="#107c10"/>
+  <text x="284" y="369" fill="#fff" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600">DU</text>
+  <text x="325" y="369" class="link" font-size="14">Demo User</text>
+  <text x="690" y="369" class="text" font-size="14">User</text>
+  <text x="930" y="369" class="text" font-size="14">EMPLOYEES</text>
+  <rect x="920" y="333" width="180" height="62" rx="8" class="hl"/>
+
+  <path d="M1010 395 C1028 442 1015 475 984 508" fill="none" stroke="#ffb900" stroke-width="4"/>
+  <rect x="720" y="512" width="390" height="108" rx="8" class="call"/>
+  <text x="744" y="546" class="text" font-size="16" font-weight="600">Demo sequence</text>
+  <text x="744" y="574" class="muted" font-size="14">First assign EMPLOYEES only and test.</text>
+  <text x="744" y="598" class="muted" font-size="14">Later add MANAGERS and get a fresh token.</text>
+
+  <rect x="245" y="512" width="390" height="108" rx="8" class="call"/>
+  <text x="269" y="546" class="text" font-size="16" font-weight="600">Correct Enterprise App</text>
+  <text x="269" y="574" class="muted" font-size="14">Use the database/API enterprise app,</text>
+  <text x="269" y="598" class="muted" font-size="14">not the Spring Boot client enterprise app.</text>
+</svg>

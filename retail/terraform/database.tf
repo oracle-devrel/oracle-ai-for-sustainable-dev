@@ -70,5 +70,6 @@ output "ns_objectstorage_namespace" {
   value = [data.oci_objectstorage_namespace.test_namespace.namespace]
 }
 output "autonomous_database_admin_password" {
-  value = ["Welcome12345"]
+  value     = [random_password.database_admin_password.result]
+  sensitive = true
 }

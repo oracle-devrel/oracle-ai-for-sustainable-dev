@@ -12,6 +12,6 @@ Oracle Database is created and the wallet is extracted to a directory such as `C
 ## To run within k8s...
 - create a Kubernetes secret using `createSecretFromWallet.sh` or `createSecretFromWalletMac.sh` script in the `k8s` directory
 - (optionally create a secret in OCI Vault and provide the secret OCID in the deploy descriptor - if present the microservice will use this instead of k8s secret)
-- export DOCKER_REGISTRY (eg `export DOCKER_REGISTRY=eu-frankfurt-1.ocir.io/oradbclouducm/financial` )
+- export DOCKER_REGISTRY (eg `export DOCKER_REGISTRY=eu-frankfurt-1.ocir.io/<tenancy-namespace>/financial` )
 - run ./all.sh
 

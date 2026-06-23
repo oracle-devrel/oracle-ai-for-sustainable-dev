@@ -1,0 +1,10 @@
+.tmp/
+setup/.env
+setup/*.local
+Wallet_*/
+wallet/
+*.p12
+*.key
+*.pem
+ewallet.p12
+cwallet.sso

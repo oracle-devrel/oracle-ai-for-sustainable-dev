@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: oracle-db-otel-demo
+  datasource:
+    driver-class-name: oracle.jdbc.OracleDriver
+    url: ${DB_URL:jdbc:oracle:thin:@financialdb_high?TNS_ADMIN=/path/to/Wallet_financialdb}
+    username: ${DB_USERNAME:financial}
+    password: ${DB_PASSWORD:}
+    hikari:
+      maximum-pool-size: ${DB_POOL_SIZE:4}
+      data-source-properties:
+        "[oracle.jdbc.provider.traceEventListener]": open-telemetry-trace-event-listener-provider
+        "[oracle.jdbc.serverTelemetryTracesEnabled]": ${ORACLE_JDBC_SERVER_TELEMETRY_TRACES_ENABLED:true}
+        "[oracle.jdbc.serverTelemetryMetricsEnabled]": ${ORACLE_JDBC_SERVER_TELEMETRY_METRICS_ENABLED:false}
+        "[oracle.jdbc.serverTelemetryLoggingEnabled]": ${ORACLE_JDBC_SERVER_TELEMETRY_LOGGING_ENABLED:false}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  tracing:
+    sampling:
+      probability: ${TRACE_SAMPLE_PROBABILITY:1.0}
+  otlp:
+    tracing:
+      endpoint: ${OTLP_TRACES_ENDPOINT:http://localhost:4318/v1/traces}
+
+logging:
+  pattern:
+    correlation: "[${spring.application.name:},%X{traceId:-},%X{spanId:-}] "
+  include-application-name: false

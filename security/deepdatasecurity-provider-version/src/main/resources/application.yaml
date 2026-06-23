@@ -1,0 +1,44 @@
+server:
+  port: ${DEEPSEC_PORT:8080}
+
+spring:
+  application:
+    name: deep-data-security-provider-version
+  datasource:
+    url: ${DEEPSEC_JDBC_URL:}
+    username: ${DEEPSEC_USERNAME:}
+    password: ${DEEPSEC_PASSWORD:}
+    driver-class-name: oracle.jdbc.OracleDriver
+    hikari:
+      maximum-pool-size: ${DEEPSEC_POOL_SIZE:4}
+      data-source-properties:
+        "[oracle.jdbc.provider.endUserSecurityContext]": ojdbc-provider-spring-end-user-security-context
+        "[oracle.jdbc.provider.endUserSecurityContext.registrationId]": entra
+        # Optional fixed data roles and attributes can be added here when needed.
+        # "[oracle.jdbc.provider.endUserSecurityContext.dataRoles]": HRAPP_EMPLOYEES
+        # "[oracle.jdbc.provider.endUserSecurityContext.endUserContextAttributes]": '{"hr.emp_ctx":{"id":100}}'
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${DEEPSEC_ENTRA_JWT_ISSUER_URI:https://login.microsoftonline.com/${DEEPSEC_ENTRA_TENANT_ID:}/v2.0}
+      client:
+        registration:
+          entra:
+            client-name: entra
+            client-id: ${DEEPSEC_ENTRA_CLIENT_ID:}
+            client-secret: ${DEEPSEC_ENTRA_CLIENT_SECRET:}
+            client-authentication-method: client_secret_post
+            authorization-grant-type: client_credentials
+            scope: ${DEEPSEC_ENTRA_DATABASE_SCOPE:}
+        provider:
+          entra:
+            authorization-uri: https://login.microsoftonline.com/${DEEPSEC_ENTRA_TENANT_ID:}/oauth2/v2.0/authorize
+            token-uri: https://login.microsoftonline.com/${DEEPSEC_ENTRA_TENANT_ID:}/oauth2/v2.0/token
+
+logging:
+  level:
+    root: INFO
+
+deepsec:
+  sql: ${DEEPSEC_SQL:select employee_id || ':' || first_name || ' ' || last_name from hr.employees fetch first 10 rows only}
