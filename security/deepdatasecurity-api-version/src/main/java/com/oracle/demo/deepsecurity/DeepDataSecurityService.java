@@ -69,7 +69,7 @@ public class DeepDataSecurityService {
             DeepDataSecurityContextHandle contextHandle = DeepDataSecurityContextHandle.set(
                     connection,
                     databaseAccessToken,
-                    contextAuthenticationToken,
+                    contextAuthenticationToken, // aka endUserToken
                     attributes());
             try {
                 return runQuery(connection, sql);
@@ -121,7 +121,8 @@ public class DeepDataSecurityService {
 
     private OracleJsonObject oracleJsonObject(JsonNode node) {
         try {
-            OracleJsonValue value = jsonFactory.createJsonTextValue(new StringReader(objectMapper.writeValueAsString(node)));
+            OracleJsonValue value = jsonFactory
+                    .createJsonTextValue(new StringReader(objectMapper.writeValueAsString(node)));
             if (value instanceof OracleJsonObject object) {
                 return object;
             }

@@ -26,6 +26,8 @@ public class DeepDataSecurityController {
         this.deepDataSecurityService = deepDataSecurityService;
     }
 
+    // API version: the controller needs the OAuth2AuthorizedClient so app code can
+    // pass the user's token into Oracle JDBC's EndUserSecurityContext API.
     @GetMapping("/query")
     public ResponseEntity<?> query(
             @RegisteredOAuth2AuthorizedClient("entra") OAuth2AuthorizedClient authorizedClient) {

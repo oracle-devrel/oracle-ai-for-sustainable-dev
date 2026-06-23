@@ -642,7 +642,8 @@ celerybeat.pid
 .env
 
 # Local-only deep data security recordings and screenshots
-security/deepdatasecurity/deepsec-vids/
+security/deepdatasecurity-api-version/deepsec-vids/
+security/deepdatasecurity-provider-version/deepsec-vids/
 .venv
 env/
 venv/

@@ -199,7 +199,7 @@
       </p>
       <p class="meta">
         All source code for the app is available at
-        <a href="https://github.com/paulparkinson/oracle-ai-for-sustainable-dev/tree/main/security/deepdatasecurity">github.com/paulparkinson/oracle-ai-for-sustainable-dev/security/deepdatasecurity</a>.
+        <a href="https://github.com/paulparkinson/oracle-ai-for-sustainable-dev/tree/main/security/deepdatasecurity-api-version">github.com/paulparkinson/oracle-ai-for-sustainable-dev/security/deepdatasecurity-api-version</a>.
       </p>
       <p class="meta">
         A complete end-to-end 8 minute walkthrough video can be found at
@@ -446,10 +446,10 @@ DEEPSEC_ENTRA_APPLICATION_SCOPE="openid,profile,email,api://&lt;SPRING_BOOT_APP_
     </ul>
 
     <pre><code class="language-sql">-- Autonomous Database, run once as ADMIN after editing DEFINE values:
-@security/deepdatasecurity/sql-entraid/01_enable_adb_entra_external_authentication.sql
+@security/deepdatasecurity-api-version/sql-entraid/01_enable_adb_entra_external_authentication.sql
 
 -- Oracle Database Free container, run once as SYSDBA or equivalent:
-@security/deepdatasecurity/sql-entraid/01_enable_database_free_entra_external_authentication.sql</code></pre>
+@security/deepdatasecurity-api-version/sql-entraid/01_enable_database_free_entra_external_authentication.sql</code></pre>
 
     <p>
       One detail to watch: for Oracle Database Free and other non-ADB databases, <code>IDENTITY_PROVIDER_CONFIG.application_id_uri</code> is documented as a domain-qualified <code>https://...</code> URI. If you use that path, make the database/API app registration's Application ID URI, <code>DEEPSEC_ENTRA_DATABASE_SCOPE</code>, and the <code>tnsnames.ora</code> <code>azure_db_app_id_uri</code> value match that same URI.
@@ -575,7 +575,7 @@ finally {
       Start the app:
     </p>
 
-    <pre><code class="language-bash">cd security/deepdatasecurity
+    <pre><code class="language-bash">cd security/deepdatasecurity-api-version
 cp .env_example .env
 vi .env
 ./build.sh
@@ -652,7 +652,7 @@ COMMIT;</code></pre>
     <h2>References</h2>
 
     <ul class="references">
-      <li><a href="https://github.com/paulparkinson/oracle-ai-for-sustainable-dev/tree/main/security/deepdatasecurity">Demo source code</a></li>
+      <li><a href="https://github.com/paulparkinson/oracle-ai-for-sustainable-dev/tree/main/security/deepdatasecurity-api-version">Demo source code</a></li>
       <li><a href="https://www.oracle.com/database/technologies/appdev/jdbc-downloads.html">Oracle Database JDBC driver and UCP downloads</a></li>
       <li><a href="https://docs.oracle.com/en/database/oracle/oracle-database/26/jajdb/oracle/jdbc/OracleConnection.html">OracleConnection API reference, 26ai</a></li>
       <li><a href="https://blogs.oracle.com/database/oracle-deep-data-security-is-now-available-in-oracle-ai-database-26ai">Oracle Deep Data Security announcement</a></li>

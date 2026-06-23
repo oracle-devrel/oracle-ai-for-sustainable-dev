@@ -30,7 +30,7 @@ The key message: the app does not hand-code row filtering, column masking, or ce
 
 1. Repository layout:
    ```bash
-   tree -L 4 security/deepdatasecurity
+   tree -L 4 security/deepdatasecurity-api-version
    ```
 
 2. Configuration:

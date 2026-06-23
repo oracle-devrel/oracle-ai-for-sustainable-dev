@@ -12,10 +12,10 @@
   </parent>
 
   <groupId>com.oracle.demo</groupId>
-  <artifactId>deep-data-security-springboot</artifactId>
+  <artifactId>deep-data-security-api-version</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <name>deep-data-security-springboot</name>
-  <description>Oracle AI Database Deep Data Security Spring Boot demo</description>
+  <name>deep-data-security-api-version</name>
+  <description>Oracle AI Database Deep Data Security Spring Boot demo using explicit JDBC API calls</description>
 
   <properties>
     <java.version>17</java.version>
