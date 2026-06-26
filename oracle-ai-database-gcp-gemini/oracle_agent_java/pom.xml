@@ -14,7 +14,7 @@
 	<properties>
 		<google.adk.version>1.0.0</google.adk.version>
 		<oracle-database.version>23.3.0.23.09</oracle-database.version>
-		<oracle.jdbc.version>23.3.0.23.09</oracle.jdbc.version>
+		<oracle.jdbc.version>23.26.2.0.0</oracle.jdbc.version>
 	</properties>
 
 	<dependencyManagement>
