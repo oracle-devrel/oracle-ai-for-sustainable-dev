@@ -42,3 +42,8 @@ logging:
 
 deepsec:
   sql: ${DEEPSEC_SQL:select employee_id || ':' || first_name || ' ' || last_name from hr.employees fetch first 10 rows only}
+  session-init-sql: ${DEEPSEC_SESSION_INIT_SQL:alter session disable parallel query}
+  browser:
+    tenant-id: ${DEEPSEC_ENTRA_TENANT_ID:}
+    client-id: ${DEEPSEC_ENTRA_BROWSER_CLIENT_ID:${DEEPSEC_ENTRA_CLIENT_ID:}}
+    scope: ${DEEPSEC_ENTRA_APPLICATION_SCOPE:}

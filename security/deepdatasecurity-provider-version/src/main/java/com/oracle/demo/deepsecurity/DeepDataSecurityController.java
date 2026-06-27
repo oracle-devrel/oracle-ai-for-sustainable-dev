@@ -55,6 +55,12 @@ public class DeepDataSecurityController {
         return new HealthResponse("ok");
     }
 
+    @GetMapping("/browser-config")
+    public BrowserConfigResponse browserConfig() {
+        DeepDataSecurityProperties.Browser browser = deepDataSecurityService.browserConfig();
+        return new BrowserConfigResponse(browser.getTenantId(), browser.getClientId(), browserScope(browser.getScope()));
+    }
+
     @GetMapping("/policies")
     public PolicyDemoResponse policies() {
         return new PolicyDemoResponse(
@@ -106,6 +112,9 @@ public class DeepDataSecurityController {
     record HealthResponse(String status) {
     }
 
+    record BrowserConfigResponse(String tenantId, String clientId, String scope) {
+    }
+
     record PolicyDemoResponse(
             String title,
             String enforcementPoint,
@@ -125,6 +134,19 @@ public class DeepDataSecurityController {
             current = current.getCause();
         }
         return messages;
+    }
+
+    private static String browserScope(String scopes) {
+        if (scopes == null || scopes.isBlank()) {
+            return "";
+        }
+        for (String scope : scopes.split(",")) {
+            String trimmed = scope.trim();
+            if (trimmed.startsWith("api://")) {
+                return trimmed;
+            }
+        }
+        return scopes.trim();
     }
 
     record ErrorResponse(List<String> errors) {
