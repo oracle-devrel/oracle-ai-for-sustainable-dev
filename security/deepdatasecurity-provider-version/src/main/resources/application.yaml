@@ -9,14 +9,6 @@ spring:
     username: ${DEEPSEC_USERNAME:}
     password: ${DEEPSEC_PASSWORD:}
     driver-class-name: oracle.jdbc.OracleDriver
-    hikari:
-      maximum-pool-size: ${DEEPSEC_POOL_SIZE:4}
-      data-source-properties:
-        "[oracle.jdbc.provider.endUserSecurityContext]": ojdbc-provider-spring-end-user-security-context
-        "[oracle.jdbc.provider.endUserSecurityContext.registrationId]": entra
-        # Optional fixed data roles and attributes can be added here when needed.
-        # "[oracle.jdbc.provider.endUserSecurityContext.dataRoles]": HRAPP_EMPLOYEES
-        # "[oracle.jdbc.provider.endUserSecurityContext.endUserContextAttributes]": '{"hr.emp_ctx":{"id":100}}'
   security:
     oauth2:
       resourceserver:
@@ -41,4 +33,20 @@ logging:
     root: INFO
 
 deepsec:
+  ucp:
+    connection-pool-name: ${DEEPSEC_UCP_POOL_NAME:DeepDataSecurityProviderUcpPool}
+    initial-pool-size: ${DEEPSEC_UCP_INITIAL_POOL_SIZE:1}
+    min-pool-size: ${DEEPSEC_UCP_MIN_POOL_SIZE:1}
+    max-pool-size: ${DEEPSEC_POOL_SIZE:4}
+  jdbc-provider:
+    end-user-security-context: ojdbc-provider-spring-end-user-security-context
+    registration-id: entra
+    # Optional fixed data roles and attributes can be added here when needed.
+    # data-roles: HRAPP_EMPLOYEES
+    # end-user-context-attributes: '{"hr.emp_ctx":{"id":100}}'
   sql: ${DEEPSEC_SQL:select employee_id || ':' || first_name || ' ' || last_name from hr.employees fetch first 10 rows only}
+  session-init-sql: ${DEEPSEC_SESSION_INIT_SQL:alter session disable parallel query}
+  browser:
+    tenant-id: ${DEEPSEC_ENTRA_TENANT_ID:}
+    client-id: ${DEEPSEC_ENTRA_BROWSER_CLIENT_ID:${DEEPSEC_ENTRA_CLIENT_ID:}}
+    scope: ${DEEPSEC_ENTRA_APPLICATION_SCOPE:}

@@ -24,8 +24,9 @@ public class DeepDataSecurityController {
         this.deepDataSecurityService = deepDataSecurityService;
     }
 
-    // Provider version: Spring Security requires and validates the bearer token before
-    // this method runs; ojdbc-provider-spring reads it through the JDBC provider SPI.
+    // Primary endpoint intentionally matches the API version. In the provider
+    // version, app code does not receive OAuth2AuthorizedClient; Spring Security
+    // validates the bearer token and ojdbc-provider-spring reads it through SPI.
     @GetMapping("/query")
     public ResponseEntity<?> query() {
         try {
@@ -53,6 +54,12 @@ public class DeepDataSecurityController {
     @GetMapping("/health")
     public HealthResponse health() {
         return new HealthResponse("ok");
+    }
+
+    @GetMapping("/browser-config")
+    public BrowserConfigResponse browserConfig() {
+        DeepDataSecurityProperties.Browser browser = deepDataSecurityService.browserConfig();
+        return new BrowserConfigResponse(browser.getTenantId(), browser.getClientId(), browserScope(browser.getScope()));
     }
 
     @GetMapping("/policies")
@@ -106,6 +113,9 @@ public class DeepDataSecurityController {
     record HealthResponse(String status) {
     }
 
+    record BrowserConfigResponse(String tenantId, String clientId, String scope) {
+    }
+
     record PolicyDemoResponse(
             String title,
             String enforcementPoint,
@@ -125,6 +135,19 @@ public class DeepDataSecurityController {
             current = current.getCause();
         }
         return messages;
+    }
+
+    private static String browserScope(String scopes) {
+        if (scopes == null || scopes.isBlank()) {
+            return "";
+        }
+        for (String scope : scopes.split(",")) {
+            String trimmed = scope.trim();
+            if (trimmed.startsWith("api://")) {
+                return trimmed;
+            }
+        }
+        return scopes.trim();
     }
 
     record ErrorResponse(List<String> errors) {

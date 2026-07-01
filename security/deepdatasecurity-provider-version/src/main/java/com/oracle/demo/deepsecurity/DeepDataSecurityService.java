@@ -34,6 +34,10 @@ public class DeepDataSecurityService {
         return rows.isEmpty() ? null : normalizeJsonScalar(rows.get(0));
     }
 
+    public DeepDataSecurityProperties.Browser browserConfig() {
+        return properties.getBrowser();
+    }
+
     private String normalizeJsonScalar(String value) {
         if (value == null) {
             return null;
@@ -51,13 +55,22 @@ public class DeepDataSecurityService {
 
     private List<String> runQuery(String sql) throws SQLException {
         try (Connection connection = dataSource.getConnection();
-                Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(sql)) {
-            java.util.ArrayList<String> rows = new java.util.ArrayList<>();
-            while (resultSet.next()) {
-                rows.add(resultSet.getString(1));
+                Statement statement = connection.createStatement()) {
+            runSessionInit(statement);
+            try (ResultSet resultSet = statement.executeQuery(sql)) {
+                java.util.ArrayList<String> rows = new java.util.ArrayList<>();
+                while (resultSet.next()) {
+                    rows.add(resultSet.getString(1));
+                }
+                return rows;
             }
-            return rows;
+        }
+    }
+
+    private void runSessionInit(Statement statement) throws SQLException {
+        String sessionInitSql = properties.getSessionInitSql();
+        if (sessionInitSql != null && !sessionInitSql.isBlank()) {
+            statement.execute(sessionInitSql);
         }
     }
 }

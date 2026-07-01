@@ -91,13 +91,22 @@ public class DeepDataSecurityService {
     }
 
     private List<String> runQuery(Connection connection, String sql) throws SQLException {
-        try (Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(sql)) {
+        try (Statement statement = connection.createStatement()) {
+            runSessionInit(statement);
+            try (ResultSet resultSet = statement.executeQuery(sql)) {
             java.util.ArrayList<String> rows = new java.util.ArrayList<>();
             while (resultSet.next()) {
                 rows.add(resultSet.getString(1));
             }
             return rows;
+            }
+        }
+    }
+
+    private void runSessionInit(Statement statement) throws SQLException {
+        String sessionInitSql = properties.getSessionInitSql();
+        if (sessionInitSql != null && !sessionInitSql.isBlank()) {
+            statement.execute(sessionInitSql);
         }
     }
 

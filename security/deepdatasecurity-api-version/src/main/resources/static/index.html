@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Deep Data Security API Demo</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <main class="shell">
+    <section class="panel">
+      <div>
+        <p class="eyebrow">Oracle Deep Data Security</p>
+        <h1>API Version</h1>
+      </div>
+      <div class="actions">
+        <button id="signInButton" type="button">Sign in</button>
+        <button id="queryButton" type="button" disabled>Run query</button>
+        <button id="signOutButton" type="button" disabled>Sign out</button>
+      </div>
+    </section>
+
+    <section class="grid">
+      <article class="card">
+        <h2>Status</h2>
+        <pre id="statusOutput">Loading...</pre>
+      </article>
+      <article class="card">
+        <h2>Result</h2>
+        <pre id="resultOutput">Ready.</pre>
+      </article>
+    </section>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>
