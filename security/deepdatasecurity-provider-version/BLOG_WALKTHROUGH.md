@@ -15,6 +15,7 @@ The key message for this version: the app does not call the Deep Data Security J
 - The provider supplies an `EndUserSecurityContext` to Oracle JDBC.
 - Oracle AI Database applies data grants during SQL execution.
 - The application service code just borrows a JDBC connection and runs SQL.
+- The public endpoint remains `GET /deepsec/query`, matching the explicit API version for side-by-side comparison.
 
 ## What to Capture
 
@@ -99,15 +100,25 @@ The app uses two different Entra ID tokens.
 - **End-user access token:** received in the HTTP `Authorization` header and validated by Spring Security resource-server support.
 - **Database-access token:** requested by `ojdbc-provider-spring` through the Spring OAuth2 client registration configured as `entra`.
 
-The protected endpoint therefore satisfies the provider requirement: it requires an OAuth 2.0 access token, and that token is available from Spring Security's request context when JDBC executes SQL.
+The protected endpoint therefore satisfies the provider requirement: it requires an OAuth 2.0 access token, and that token is available from Spring Security's request context when JDBC executes SQL. The provider version keeps the controller method as `query()` because the JDBC provider reads the token through SPI; the API version keeps the same URL but receives `OAuth2AuthorizedClient` because application code explicitly calls the JDBC Deep Data Security API.
 
-Provider configuration:
+Provider configuration with UCP:
 
 ```yaml
-spring.datasource.hikari.data-source-properties:
-  "[oracle.jdbc.provider.endUserSecurityContext]": ojdbc-provider-spring-end-user-security-context
-  "[oracle.jdbc.provider.endUserSecurityContext.registrationId]": entra
+deepsec:
+  ucp:
+    connection-pool-name: ${DEEPSEC_UCP_POOL_NAME:DeepDataSecurityProviderUcpPool}
+    initial-pool-size: ${DEEPSEC_UCP_INITIAL_POOL_SIZE:1}
+    min-pool-size: ${DEEPSEC_UCP_MIN_POOL_SIZE:1}
+    max-pool-size: ${DEEPSEC_POOL_SIZE:4}
+  jdbc-provider:
+    end-user-security-context: ojdbc-provider-spring-end-user-security-context
+    registration-id: entra
 ```
+
+`UcpDataSourceConfiguration` creates an Oracle UCP `PoolDataSource` and sets the
+provider keys as UCP connection properties. HikariCP is excluded from the JDBC
+starter so both Deep Data Security demos use UCP.
 
 For Entra-mapped data roles, Oracle AI Database reads the Entra `roles` claim and activates matching mappings such as `HRAPP_EMPLOYEES -> AZURE_ROLE=EMPLOYEES` and `HRAPP_MANAGERS -> AZURE_ROLE=MANAGERS`.
 
@@ -155,7 +166,7 @@ CREATE OR REPLACE DATA GRANT hr.HRAPP_EMPLOYEES_ACCESS
 
 1. The problem: AI apps often use powerful shared DB users.
 2. The goal: keep authorization in the database, not scattered through app code.
-3. The architecture: bearer token, database-access token, Spring Boot resource server, HikariCP, Oracle AI Database.
+3. The architecture: bearer token, database-access token, Spring Boot resource server, UCP, Oracle AI Database.
 4. The key configuration: `ojdbc-provider-spring` and the matching OAuth2 client registration.
 5. The policy model: `CREATE DATA GRANT` for row, column, and cell-level controls.
 6. The Entra ID setup: database app registration, app roles, Spring Boot app registration, users/groups.

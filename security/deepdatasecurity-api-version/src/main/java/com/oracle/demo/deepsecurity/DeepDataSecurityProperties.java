@@ -9,6 +9,7 @@ public class DeepDataSecurityProperties {
     private String username;
     private String password;
     private String sql = "select employee_id || ':' || first_name || ' ' || last_name from hr.employees fetch first 10 rows only";
+    private String sessionInitSql = "alter session disable parallel query";
     private String attributesJson = "";
     private EntraId entraId = new EntraId();
 
@@ -42,6 +43,14 @@ public class DeepDataSecurityProperties {
 
     public void setSql(String sql) {
         this.sql = sql;
+    }
+
+    public String getSessionInitSql() {
+        return sessionInitSql;
+    }
+
+    public void setSessionInitSql(String sessionInitSql) {
+        this.sessionInitSql = sessionInitSql;
     }
 
     public String getAttributesJson() {

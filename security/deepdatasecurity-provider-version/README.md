@@ -8,6 +8,10 @@ The app is a Spring Boot OAuth2 resource server. Protected endpoints require an 
 - a database-access token obtained through the configured Spring OAuth2 client registration
 
 The application code does not call `OracleConnection.setEndUserSecurityContext(...)` directly.
+Its public query endpoint intentionally matches the API-version demo:
+`GET /deepsec/query`. The difference is inside the controller/service plumbing:
+the provider version does not receive `OAuth2AuthorizedClient`; the JDBC provider
+reads the validated Spring Security context through SPI.
 
 ## Run
 
@@ -33,11 +37,19 @@ The application code does not call `OracleConnection.setEndUserSecurityContext(.
 
 ## Important Configuration
 
-The provider is enabled in `src/main/resources/application.yaml` through Hikari data-source properties:
+The app uses Oracle UCP for pooling. HikariCP is excluded from the JDBC starter
+so the two Deep Data Security demos use the same Oracle-aware pool.
+
+The provider is enabled in `src/main/resources/application.yaml` and applied as
+UCP connection properties in `UcpDataSourceConfiguration`:
 
 ```yaml
-oracle.jdbc.provider.endUserSecurityContext: ojdbc-provider-spring-end-user-security-context
-oracle.jdbc.provider.endUserSecurityContext.registrationId: entra
+deepsec:
+  ucp:
+    max-pool-size: ${DEEPSEC_POOL_SIZE:4}
+  jdbc-provider:
+    end-user-security-context: ojdbc-provider-spring-end-user-security-context
+    registration-id: entra
 ```
 
 The `registrationId` must match the OAuth2 client registration that can obtain a database-access token for Oracle Database.

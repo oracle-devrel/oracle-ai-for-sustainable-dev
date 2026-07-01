@@ -651,6 +651,21 @@ ENV/
 env.bak/
 venv.bak/
 
+# Financial app local deployment state and secrets
+financial/setup/*.local
+financial/infra/terraform/.terraform/
+financial/infra/terraform/terraform.tfstate*
+financial/infra/terraform/terraform.tfvars
+
+# Local-only imported observability reference app
+observability/db-observability-scenarios/
+
+# Local-only Deep Data Security video working files
+security/deepdatasecurity-api-version/deepsec-vids/
+
+# macOS metadata
+.DS_Store
+
 # Spyder project settings
 .spyderproject
 .spyproject

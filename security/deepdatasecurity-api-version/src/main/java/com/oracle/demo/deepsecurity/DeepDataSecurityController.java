@@ -26,10 +26,11 @@ public class DeepDataSecurityController {
         this.deepDataSecurityService = deepDataSecurityService;
     }
 
-    // API version: the controller needs the OAuth2AuthorizedClient so app code can
-    // pass the user's token into Oracle JDBC's EndUserSecurityContext API.
+    // Primary endpoint intentionally matches the provider version. In the API
+    // version, this method receives OAuth2AuthorizedClient because app code
+    // explicitly passes the user's token into Oracle JDBC's EndUserSecurityContext API.
     @GetMapping("/query")
-    public ResponseEntity<?> query(
+    public ResponseEntity<?> queryWithRegisteredClient(
             @RegisteredOAuth2AuthorizedClient("entra") OAuth2AuthorizedClient authorizedClient) {
         if (authorizedClient == null || authorizedClient.getAccessToken() == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -48,7 +49,7 @@ public class DeepDataSecurityController {
     }
 
     @GetMapping("/whoami")
-    public ResponseEntity<?> whoami(
+    public ResponseEntity<?> whoamiWithRegisteredClient(
             @RegisteredOAuth2AuthorizedClient("entra") OAuth2AuthorizedClient authorizedClient) {
         if (authorizedClient == null || authorizedClient.getAccessToken() == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)

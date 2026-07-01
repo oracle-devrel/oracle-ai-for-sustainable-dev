@@ -24,8 +24,9 @@ public class DeepDataSecurityController {
         this.deepDataSecurityService = deepDataSecurityService;
     }
 
-    // Provider version: Spring Security requires and validates the bearer token before
-    // this method runs; ojdbc-provider-spring reads it through the JDBC provider SPI.
+    // Primary endpoint intentionally matches the API version. In the provider
+    // version, app code does not receive OAuth2AuthorizedClient; Spring Security
+    // validates the bearer token and ojdbc-provider-spring reads it through SPI.
     @GetMapping("/query")
     public ResponseEntity<?> query() {
         try {
