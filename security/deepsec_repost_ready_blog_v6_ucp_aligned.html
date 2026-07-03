@@ -1,0 +1,333 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Develop Database-Enforced End-User Authorization with Oracle AI Database Deep Data Security, Spring Boot, UCP, and Microsoft Entra ID</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; line-height: 1.55; }
+    code, pre { font-family: "SFMono-Regular", Consolas, monospace; }
+    pre { background: #f5f7f9; border: 1px solid #dde3ea; padding: 12px; white-space: pre-wrap; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #d6dce3; padding: 8px; vertical-align: top; }
+    th { background: #eef2f6; }
+  </style>
+</head>
+<body>
+  <h1>Oracle AI Database 26ai + Spring Boot + Microsoft Entra ID</h1>
+  <h2>Develop Database-Enforced End-User Authorization with Oracle AI Database Deep Data Security, Spring Boot, UCP, and Microsoft Entra ID</h2>
+  <p>
+    This walkthrough shows how Microsoft Entra identity can flow through a
+    Spring Boot application and a pooled JDBC connection so Oracle AI Database
+    enforces end-user row, column, and cell-level authorization.
+  </p>
+
+  <p><strong>Feature image alt text:</strong> Diagram showing a browser user,
+  Microsoft Entra tokens, a Spring Boot application, an Oracle UCP connection
+  pool, Oracle JDBC Deep Data Security context propagation, and Oracle AI
+  Database enforcing fine-grained access policies.</p>
+
+  <h2>Key Takeaways</h2>
+  <ul>
+    <li>Pooled JDBC connections can still carry end-user identity when the application or JDBC provider attaches an Oracle JDBC end-user security context before SQL runs.</li>
+    <li>The OAuth on-behalf-of flow produces a separate database-access token, so the user token proves the browser user while the database token proves access to Oracle AI Database.</li>
+    <li>Microsoft Entra app roles such as <code>EMPLOYEES</code> and <code>MANAGERS</code> map to Oracle Deep Data Security data roles.</li>
+    <li>The same SQL and the same endpoint can return different rows and columns because Oracle AI Database enforces declarative data grants at execution time.</li>
+    <li>The repo now includes two aligned demos: an explicit JDBC API version and an <code>ojdbc-provider-spring</code> provider/SPI version. Both use Oracle UCP instead of HikariCP.</li>
+  </ul>
+
+  <h2>Why This Matters</h2>
+  <p>
+    Most enterprise Java services use a connection pool. That is good
+    engineering: fast, stable, observable, and easy to operate. It also means
+    many requests may reach the database through the same application database
+    account.
+  </p>
+  <p>
+    That is where authorization gets tricky. If Emma and Marvin both use the
+    same pooled database user, the database cannot naturally tell which rows
+    belong to Emma, which columns Marvin may see, or which values a manager may
+    update unless the application propagates end-user context.
+  </p>
+  <p>
+    Oracle Deep Data Security changes the shape of the problem. The application
+    still uses a pooled connection, but an end-user security context is attached
+    to the JDBC connection before SQL runs. Oracle AI Database evaluates
+    declarative data grants at execution time.
+  </p>
+  <p>
+    This matters even more for AI and agentic applications. Agents, copilots,
+    and natural-language SQL tools can fan out into many possible data paths.
+    With Deep Data Security, the database remains the final policy enforcement
+    point for fine-grained row, column, and cell-level access.
+  </p>
+
+  <h2>What We Are Building</h2>
+  <p>The demo has two implementations of the same idea.</p>
+  <table>
+    <tr>
+      <th>Version</th>
+      <th>What it demonstrates</th>
+      <th>Public endpoint</th>
+      <th>JDBC pool</th>
+    </tr>
+    <tr>
+      <td>API version</td>
+      <td>Application code obtains the signed-in user's token, obtains a database-access token, creates <code>EndUserSecurityContext</code>, calls <code>OracleConnection.setEndUserSecurityContext(...)</code>, runs SQL, then clears the context.</td>
+      <td><code>GET /deepsec/query</code></td>
+      <td>Oracle UCP</td>
+    </tr>
+    <tr>
+      <td>Provider/SPI version</td>
+      <td>Spring Security validates the OAuth 2.0 access token. <code>ojdbc-provider-spring</code> reads the authenticated Spring Security context through JDBC provider SPI and supplies the end-user security context to Oracle JDBC.</td>
+      <td><code>GET /deepsec/query</code></td>
+      <td>Oracle UCP</td>
+    </tr>
+  </table>
+
+  <p>
+    The entrance points are intentionally aligned. A user or reviewer can call
+    <code>GET /deepsec/query</code> in either app and compare the internals
+    instead of comparing different URLs. The difference is the token plumbing.
+  </p>
+
+  <h2>The Runtime Flow</h2>
+  <ol>
+    <li>The client calls <code>GET /deepsec/query</code>.</li>
+    <li>Spring Security authenticates the user or validates the incoming bearer token.</li>
+    <li>The application obtains or exposes an end-user access token.</li>
+    <li>A database-access token is obtained for the Oracle AI Database protected resource.</li>
+    <li>Oracle JDBC receives an <code>EndUserSecurityContext</code>.</li>
+    <li>The app can run session initialization SQL such as <code>alter session disable parallel query</code> before the business query.</li>
+    <li>Oracle AI Database validates the context, activates mapped data roles from the token claims, and enforces data grants while SQL runs.</li>
+    <li>The application returns the query result without hand-coding row or column authorization logic.</li>
+  </ol>
+
+  <h2>The Two Token Model</h2>
+  <table>
+    <tr>
+      <th>Token</th>
+      <th>What it proves</th>
+      <th>How the app uses it</th>
+    </tr>
+    <tr>
+      <td>End-user access token</td>
+      <td>The signed-in browser or API caller is an authenticated Microsoft Entra user.</td>
+      <td>The API version reads it from <code>OAuth2AuthorizedClient</code>. The provider version lets Spring Security validate it and makes it available through the request security context.</td>
+    </tr>
+    <tr>
+      <td>Database-access token</td>
+      <td>The request is addressed to the Oracle AI Database protected resource.</td>
+      <td>The API version requests it with on-behalf-of. The provider version requests it through the configured Spring OAuth2 client registration.</td>
+    </tr>
+  </table>
+
+  <h2>Aligned Controller Entry Points</h2>
+  <p>
+    The two demos intentionally keep the same public URL and response shape.
+    Their method signatures differ because they are teaching different
+    integration styles.
+  </p>
+  <h3>API Version</h3>
+  <pre><code>@GetMapping("/query")
+public ResponseEntity&lt;?&gt; queryWithRegisteredClient(
+    @RegisteredOAuth2AuthorizedClient("entra")
+    OAuth2AuthorizedClient authorizedClient) {
+  String endUserToken = authorizedClient.getAccessToken().getTokenValue();
+  List&lt;String&gt; rows = deepDataSecurityService.queryAsEndUser(endUserToken);
+  return ResponseEntity.ok(new QueryResponse(rows));
+}</code></pre>
+  <p>
+    The controller receives <code>OAuth2AuthorizedClient</code> because app code
+    explicitly passes the signed-in user's token into Oracle JDBC's
+    <code>EndUserSecurityContext</code> API.
+  </p>
+
+  <h3>Provider/SPI Version</h3>
+  <pre><code>@GetMapping("/query")
+public ResponseEntity&lt;?&gt; query() {
+  List&lt;String&gt; rows = deepDataSecurityService.queryAsEndUser();
+  return ResponseEntity.ok(new QueryResponse(rows));
+}</code></pre>
+  <p>
+    The provider controller stays clean. Spring Security validates the bearer
+    token before the method runs, and <code>ojdbc-provider-spring</code> reads
+    the authenticated context through JDBC provider SPI when the service borrows
+    a connection and executes SQL.
+  </p>
+
+  <h2>Oracle UCP Instead of HikariCP</h2>
+  <p>
+    Both demo apps now use Oracle UCP. HikariCP is excluded from the
+    <code>spring-boot-starter-jdbc</code> dependency so the comparison focuses on
+    the Deep Data Security integration style, not on different pool
+    implementations.
+  </p>
+  <pre><code>&lt;dependency&gt;
+  &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+  &lt;artifactId&gt;spring-boot-starter-jdbc&lt;/artifactId&gt;
+  &lt;exclusions&gt;
+    &lt;exclusion&gt;
+      &lt;groupId&gt;com.zaxxer&lt;/groupId&gt;
+      &lt;artifactId&gt;HikariCP&lt;/artifactId&gt;
+    &lt;/exclusion&gt;
+  &lt;/exclusions&gt;
+&lt;/dependency&gt;
+
+&lt;dependency&gt;
+  &lt;groupId&gt;com.oracle.database.jdbc&lt;/groupId&gt;
+  &lt;artifactId&gt;ucp&lt;/artifactId&gt;
+  &lt;version&gt;${oracle.jdbc.version}&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+
+  <p>
+    The API version creates a UCP <code>PoolDataSource</code>, sets the Oracle
+    datasource factory, and uses the normal application database user:
+  </p>
+  <pre><code>PoolDataSource dataSource = PoolDataSourceFactory.getPoolDataSource();
+dataSource.setConnectionFactoryClassName("oracle.jdbc.pool.OracleDataSource");
+dataSource.setURL(required(properties.getJdbcUrl(), "DEEPSEC_JDBC_URL"));
+dataSource.setUser(required(properties.getUsername(), "DEEPSEC_USERNAME"));
+dataSource.setPassword(required(properties.getPassword(), "DEEPSEC_PASSWORD"));
+dataSource.setConnectionPoolName("DeepDataSecurityApiUcpPool");
+dataSource.setInitialPoolSize(1);
+dataSource.setMinPoolSize(1);
+dataSource.setMaxPoolSize(10);</code></pre>
+
+  <p>
+    The provider version also creates a UCP <code>PoolDataSource</code>, then
+    adds the JDBC provider settings as UCP connection properties:
+  </p>
+  <pre><code>dataSource.setConnectionFactoryProperty(
+    "oracle.jdbc.provider.endUserSecurityContext",
+    "ojdbc-provider-spring-end-user-security-context");
+dataSource.setConnectionFactoryProperty(
+    "oracle.jdbc.provider.endUserSecurityContext.registrationId",
+    "entra");</code></pre>
+
+  <p>
+    The matching YAML makes the pool sizing and provider registration explicit:
+  </p>
+  <pre><code>deepsec:
+  ucp:
+    connection-pool-name: ${DEEPSEC_UCP_POOL_NAME:DeepDataSecurityProviderUcpPool}
+    initial-pool-size: ${DEEPSEC_UCP_INITIAL_POOL_SIZE:1}
+    min-pool-size: ${DEEPSEC_UCP_MIN_POOL_SIZE:1}
+    max-pool-size: ${DEEPSEC_POOL_SIZE:4}
+  jdbc-provider:
+    end-user-security-context: ojdbc-provider-spring-end-user-security-context
+    registration-id: entra</code></pre>
+
+  <h2>Database and Microsoft Entra Setup</h2>
+  <p>
+    Oracle AI Database must trust the Microsoft Entra tenant and the
+    database/API app registration before it can validate the database-access
+    token. The database/API app registration defines app roles such as
+    <code>EMPLOYEES</code> and <code>MANAGERS</code>. Users or groups are
+    assigned to those roles on the Enterprise Application for that resource.
+  </p>
+  <pre><code>CREATE OR REPLACE DATA ROLE hrapp_employees
+  MAPPED TO 'AZURE_ROLE=EMPLOYEES';
+
+CREATE OR REPLACE DATA ROLE hrapp_managers
+  MAPPED TO 'AZURE_ROLE=MANAGERS';</code></pre>
+
+  <p>
+    The application connection-pool user still needs only the privileges required
+    to connect and attach an end-user security context:
+  </p>
+  <pre><code>GRANT CREATE SESSION TO hr_app_user;
+GRANT CREATE END USER SECURITY CONTEXT TO hr_app_user;</code></pre>
+
+  <h2>Data Grants</h2>
+  <p>
+    The policy itself lives in SQL. For an employee, the row predicate says a
+    user can see rows where the table username matches
+    <code>ORA_END_USER_CONTEXT.username</code>:
+  </p>
+  <pre><code>CREATE OR REPLACE DATA GRANT hr.HRAPP_EMPLOYEES_ACCESS
+  AS SELECT, UPDATE(phone_number, first_name)
+  ON hr.employees
+  WHERE upper(user_name) = upper(ORA_END_USER_CONTEXT.username)
+  TO hrapp_employees;</code></pre>
+
+  <p>
+    For managers, the policy permits access to direct reports while excluding
+    sensitive columns such as <code>ssn</code>:
+  </p>
+  <pre><code>CREATE OR REPLACE DATA GRANT hr.HRAPP_MANAGER_ACCESS
+  AS SELECT (ALL COLUMNS EXCEPT ssn),
+     UPDATE (salary, department_id, first_name)
+  ON hr.employees
+  WHERE manager_id = ORA_END_USER_CONTEXT.HR.EMP_CTX.ID
+  TO hrapp_managers;</code></pre>
+
+  <p>
+    The Java service or AI agent is not building custom SQL for employees and
+    managers. The app can issue the same business query, and Oracle filters or
+    restricts the result according to the active end-user security context.
+  </p>
+
+  <h2>Expected Demo Result</h2>
+  <p>
+    Run the same endpoint with two role contexts. With an employee token, the
+    same query returns the single permitted employee row:
+  </p>
+  <pre><code>{"rows":["3:Emma Baker"]}</code></pre>
+
+  <p>
+    With a manager token, the same endpoint and SQL return the manager's
+    permitted direct reports:
+  </p>
+  <pre><code>{"rows":["3:Emma Baker","4:Charlie Davis","5:Dana Lee"]}</code></pre>
+
+  <h2>Build and Verify</h2>
+  <p>Build both demos:</p>
+  <pre><code>cd security/deepdatasecurity-api-version
+mvn test
+
+cd ../deepdatasecurity-provider-version
+mvn -Dojdbc.provider.version=1.1.0 test</code></pre>
+
+  <p>Verify the pool dependency path:</p>
+  <pre><code>mvn dependency:tree -Dincludes=com.oracle.database.jdbc:ucp,com.zaxxer:HikariCP</code></pre>
+
+  <p>
+    The expected output shows <code>com.oracle.database.jdbc:ucp</code> and does
+    not show <code>com.zaxxer:HikariCP</code>.
+  </p>
+
+  <h2>How To Explain the Difference</h2>
+  <p>
+    Use this short version when presenting:
+  </p>
+  <blockquote>
+    The API version shows the explicit mechanics: receive the OAuth2 authorized
+    client, get the user's token, request a database token, set the Oracle JDBC
+    end-user security context, run SQL, and clear the context. The provider
+    version keeps the same public endpoint but moves that context setup into the
+    JDBC provider/Spring integration. Both use UCP, both use the same database
+    policy model, and both let Oracle AI Database enforce the authorization.
+  </blockquote>
+
+  <h2>Production Notes</h2>
+  <ul>
+    <li>Store Entra client secrets and database credentials in a secrets manager.</li>
+    <li>Validate issuer, audience, scopes, and expected role claims for user tokens.</li>
+    <li>Keep JDBC and UCP artifacts on the same Oracle release version.</li>
+    <li>Manage data grants as versioned database migration scripts.</li>
+    <li>Add tests that run the same SQL as different users or roles and assert row, column, and cell-level behavior.</li>
+    <li>Audit data grants and active end-user contexts with Oracle Deep Data Security dictionary views.</li>
+  </ul>
+
+  <h2>References</h2>
+  <ul>
+    <li>Oracle Deep Data Security concepts: https://docs.oracle.com/en/database/oracle/oracle-database/26/ddscg/understand-oracle-deep-data-security.html</li>
+    <li>Fine-grained data authorization: https://docs.oracle.com/en/database/oracle/oracle-database/26/ddscg/fine-grained-data-authorization.html</li>
+    <li>Configure data grants: https://docs.oracle.com/en/database/oracle/oracle-database/26/ddscg/configure-data-grants.html</li>
+    <li>CREATE DATA GRANT SQL reference: https://docs.oracle.com/en/database/oracle/oracle-database/26/sqlrf/create-data-grant.html</li>
+    <li>JDBC Deep Data Security support: https://docs.oracle.com/en/database/oracle/oracle-database/26/jjdbc/JDBC-getting-started.html</li>
+    <li>Oracle UCP documentation: https://docs.oracle.com/en/database/oracle/oracle-database/26/jjucp/index.html</li>
+    <li>Microsoft Entra ID with Oracle AI Database: https://docs.oracle.com/en/database/oracle/oracle-database/26/dbseg/authenticating-and-authorizing-microsoft-entra-id-ms-ei-users-oracle-databases-oracle-exadata-datab.html</li>
+  </ul>
+</body>
+</html>

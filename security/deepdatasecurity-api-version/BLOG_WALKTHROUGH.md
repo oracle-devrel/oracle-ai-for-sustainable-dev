@@ -23,8 +23,10 @@ The key message: the app does not hand-code row filtering, column masking, or ce
 - Optional local DDS data roles or runtime attributes can be attached when explicitly configured.
 - The app unwraps the pooled JDBC connection to `OracleConnection`.
 - The app calls `setEndUserSecurityContext(...)`.
+- The app runs the optional session initialization SQL, defaulting to `alter session disable parallel query`.
 - Oracle AI Database applies data grants during SQL execution.
 - The app calls `clearEndUserSecurityContext()` before the connection returns to the pool.
+- The public endpoint remains `GET /deepsec/query`, matching the provider/SPI version for side-by-side comparison.
 
 ## What to Capture
 
@@ -106,6 +108,13 @@ The app uses two different Entra ID tokens.
 
 - **End-user access token:** issued after the user signs in through authorization-code flow. Spring Security handles the redirect, callback, code exchange, and token storage. The app reads this token from `OAuth2AuthorizedClient`.
 - **Database-access token:** issued by exchanging the signed-in user's token through the on-behalf-of grant. `EntraDatabaseAccessTokenService` requests it server-side with this app's client credentials, the user's token as the assertion, and the database/API delegated scope.
+
+The API and provider demos intentionally expose the same `GET /deepsec/query`
+endpoint. The API version's controller receives `OAuth2AuthorizedClient` because
+application code explicitly passes the end-user token into
+`EndUserSecurityContext`. The provider version keeps the controller signature as
+`query()` because `ojdbc-provider-spring` reads the authenticated Spring Security
+context through JDBC provider SPI.
 
 For OBO, the browser login token must be addressed to the Spring Boot app. The database/API scope is requested only in the backend OBO exchange. The database/API app should issue v2 access tokens; with v2 tokens Oracle expects the database-access token audience to use the app ID value.
 
