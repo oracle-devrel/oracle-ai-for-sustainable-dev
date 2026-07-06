@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">Client and database server spans flow to the same OpenTelemetry collector</title>
+  <desc id="desc">Diagram showing Spring Boot and Oracle JDBC client-side spans and Oracle AI Database server-side spans both exporting through OTLP to the same OpenTelemetry collector and observability backend.</desc>
+  <rect width="1200" height="675" fill="#fbfaf8"/>
+  <text x="600" y="62" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="34" font-weight="700" fill="#20242a">One Trace, Two Export Paths</text>
+  <text x="600" y="102" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="21" font-weight="600" fill="#4f5965">Client-side spans and Oracle AI Database server-side spans meet in the same OpenTelemetry collector</text>
+
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M2,2 L10,6 L2,10" fill="none" stroke="#4f5965" stroke-width="2"/>
+    </marker>
+  </defs>
+
+  <g transform="translate(90 175)">
+    <rect width="310" height="135" rx="10" fill="#ffffff" stroke="#d6d6d6" stroke-width="2"/>
+    <text x="28" y="42" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="700" fill="#20242a">Java / Spring Boot</text>
+    <text x="28" y="73" font-family="Arial, Helvetica, sans-serif" font-size="17" fill="#5c6673">HTTP span</text>
+    <text x="28" y="101" font-family="Arial, Helvetica, sans-serif" font-size="17" fill="#5c6673">Micrometer observation</text>
+    <circle cx="250" cy="70" r="28" fill="none" stroke="#245a70" stroke-width="4"/>
+    <path d="M234 70 h32 M250 54 v32" stroke="#245a70" stroke-width="4" stroke-linecap="round"/>
+  </g>
+
+  <g transform="translate(90 390)">
+    <rect width="310" height="125" rx="10" fill="#ffffff" stroke="#d6d6d6" stroke-width="2"/>
+    <text x="28" y="42" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="700" fill="#20242a">Oracle JDBC</text>
+    <text x="28" y="73" font-family="Arial, Helvetica, sans-serif" font-size="17" fill="#5c6673">round-trip child spans</text>
+    <text x="28" y="101" font-family="Arial, Helvetica, sans-serif" font-size="17" fill="#5c6673">trace context propagation</text>
+  </g>
+
+  <line x1="245" y1="320" x2="245" y2="370" stroke="#4f5965" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <g transform="translate(800 285)">
+    <rect width="310" height="145" rx="10" fill="#ffffff" stroke="#d6d6d6" stroke-width="2"/>
+    <ellipse cx="62" cy="48" rx="34" ry="13" fill="none" stroke="#c74634" stroke-width="4"/>
+    <path d="M28 48 v46 c0 7 15 13 34 13s34-6 34-13 V48" fill="none" stroke="#c74634" stroke-width="4"/>
+    <path d="M28 72 c0 7 15 13 34 13s34-6 34-13" fill="none" stroke="#c74634" stroke-width="4"/>
+    <text x="116" y="48" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="700" fill="#20242a">Oracle AI Database</text>
+    <text x="116" y="80" font-family="Arial, Helvetica, sans-serif" font-size="17" fill="#5c6673">DB Server span</text>
+    <text x="116" y="108" font-family="Arial, Helvetica, sans-serif" font-size="17" fill="#5c6673">SQL and session metadata</text>
+  </g>
+
+  <g transform="translate(470 275)">
+    <rect width="250" height="165" rx="82" fill="#ffffff" stroke="#c74634" stroke-width="3"/>
+    <text x="125" y="66" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700" fill="#20242a">OpenTelemetry</text>
+    <text x="125" y="98" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700" fill="#20242a">Collector</text>
+    <text x="125" y="130" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#5c6673">same trace id</text>
+  </g>
+
+  <line x1="405" y1="238" x2="500" y2="292" stroke="#245a70" stroke-width="4" marker-end="url(#arrow)"/>
+  <line x1="405" y1="452" x2="500" y2="410" stroke="#245a70" stroke-width="4" marker-end="url(#arrow)"/>
+  <line x1="795" y1="358" x2="735" y2="358" stroke="#c74634" stroke-width="4" marker-end="url(#arrow)"/>
+
+  <g transform="translate(470 555)">
+    <path d="M0 0 H260" stroke="#c74634" stroke-width="7" stroke-linecap="round"/>
+    <text x="130" y="42" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="20" font-weight="700" fill="#c74634">one continuous trace</text>
+  </g>
+</svg>
