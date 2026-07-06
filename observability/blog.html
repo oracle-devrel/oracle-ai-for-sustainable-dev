@@ -2,9 +2,22 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>End-to-End OpenTelemetry Tracing from Spring Boot to Oracle Database Internals</title>
+  <title>Trace AI Agent Workloads from Spring Boot to Oracle AI Database Internals</title>
+  <meta name="description" content="Build a continuous OpenTelemetry trace from a Spring Boot AI agent workload through Oracle JDBC into Oracle AI Database server-side spans, then connect SQL_ID to SQL text, bind samples, SQL Monitor, and DBMS_XPLAN.">
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; line-height: 1.55; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; line-height: 1.55; color: #1f2933; }
+    main { max-width: 980px; margin: 0 auto; padding: 32px 20px 56px; }
+    h1 { line-height: 1.1; margin-bottom: 8px; }
+    h2 { margin-top: 34px; }
+    .subtitle { font-size: 1.22rem; color: #4b5563; margin-top: 0; }
+    .featured-image-placeholder {
+      border: 2px dashed #c74634;
+      background: #fbf7f4;
+      padding: 22px;
+      margin: 28px 0;
+    }
+    .featured-image-placeholder strong { color: #7a2d23; }
+    .featured-image-placeholder p { margin: 8px 0 0; }
     code, pre { font-family: "SFMono-Regular", Consolas, monospace; }
     pre { background: #f5f7f9; border: 1px solid #dde3ea; padding: 12px; white-space: pre-wrap; }
     table { border-collapse: collapse; width: 100%; }
@@ -13,31 +26,49 @@
   </style>
 </head>
 <body>
-  <h1>Oracle Database + Spring Boot + OpenTelemetry</h1>
-  <h2>Build One Continuous Trace from an Agentic Spring Boot App into Oracle Database Internals</h2>
+<main>
+  <h1>Trace AI Agent Workloads from Spring Boot to Oracle AI Database Internals</h1>
+  <p class="subtitle">Build one continuous OpenTelemetry trace across a Spring Boot agent workload, Oracle JDBC, and Oracle AI Database server-side execution.</p>
 
   <p>
-    This walkthrough shows how to trace a request from a Spring Boot
-    application through Oracle JDBC and into Oracle Database server-side
-    execution, then view the whole path in Jaeger. The demo also frames the
-    request as an agentic AI task so the trace can answer a practical question:
-    which agent did the work, which SQL did it run, and what did Oracle Database
-    report about that SQL?
+    This walkthrough answers a practical question for agentic applications:
+    can you see one trace that starts with an AI agent request, crosses the
+    Spring Boot and JDBC layers, and continues inside Oracle AI Database? Yes.
+    With Spring Boot, Micrometer, Oracle JDBC observability providers, and
+    <code>DBMS_OBSERVABILITY</code>, the same request can appear in Jaeger as
+    application spans, JDBC spans, and Oracle AI Database server-side spans.
   </p>
 
-  <p><strong>Feature image alt text:</strong> Diagram showing a browser request
-  entering a Spring Boot service, flowing through Micrometer and Oracle JDBC
-  OpenTelemetry spans, crossing into an Oracle Database DB Server span, and
-  linking by SQL ID to SQL Monitor and DBMS_XPLAN diagnostics.</p>
+  <p>
+    The demo frames the request as an AI agent task so the trace can answer
+    who did the work, which SQL ran, and what Oracle AI Database reported about
+    that SQL. The key bridge is <code>oracle.db.query.sql.id</code>, which links
+    the visual trace to SQL text, bind samples, SQL Monitor, and
+    <code>DBMS_XPLAN</code> execution-plan details.
+  </p>
+
+  <figure class="featured-image-placeholder" role="img" aria-label="Oracle AI Database branded technical diagram showing an AI agent request flowing through Spring Boot, Micrometer, Oracle JDBC OpenTelemetry spans, an Oracle AI Database DB Server span, SQL_ID diagnostics, and Jaeger.">
+    <strong>Featured image production note</strong>
+    <p>
+      Use the approved Oracle Developers cover template. The cover should say
+      "Oracle AI Database" and show a deliberate technical diagram: AI agent
+      request -> Spring Boot -> Oracle JDBC -> Oracle AI Database DB Server span
+      -> SQL_ID diagnostics -> Jaeger. Do not use a purely AI-generated image.
+    </p>
+    <p>
+      <strong>Alt text:</strong> Oracle AI Database branded technical diagram
+      showing an AI agent request flowing through Spring Boot, Micrometer,
+      Oracle JDBC OpenTelemetry spans, an Oracle AI Database DB Server span,
+      SQL_ID diagnostics, and Jaeger.
+    </p>
+  </figure>
 
   <h2>Key Takeaways</h2>
   <ul>
-    <li>Spring Boot Actuator and Micrometer provide the application trace context.</li>
-    <li><code>ojdbc-provider-observability</code> emits Oracle JDBC spans into that same context.</li>
-    <li>Oracle JDBC server telemetry propagates the trace context into the database.</li>
-    <li><code>DBMS_OBSERVABILITY</code> exports Oracle Database server-side spans to an OTLP backend.</li>
-    <li><code>oracle.db.query.sql.id</code> is the bridge from the visual Jaeger trace to SQL text, SQL Monitor, and <code>DBMS_XPLAN</code>.</li>
-    <li>The agent endpoint sets Oracle <code>MODULE</code>, <code>ACTION</code>, and <code>CLIENT_IDENTIFIER</code>, which becomes the foundation for security and audit correlation.</li>
+    <li>Spring Boot and Micrometer create the application trace context, while Oracle JDBC adds database client spans.</li>
+    <li><code>DBMS_OBSERVABILITY</code> exports Oracle AI Database server-side spans so Jaeger can show the database as part of the same request.</li>
+    <li><code>oracle.db.query.sql.id</code> connects the visual trace to SQL text, bind samples, SQL Monitor, and <code>DBMS_XPLAN</code>.</li>
+    <li>Agent metadata, <code>MODULE</code>, <code>ACTION</code>, and <code>CLIENT_IDENTIFIER</code> create a foundation for security and audit correlation.</li>
   </ul>
 
   <h2>What We Are Building</h2>
@@ -65,7 +96,7 @@
   -> Spring Boot HTTP span
   -> Micrometer observation
   -> Oracle JDBC provider spans
-  -> Oracle Database DB Server span
+  -> Oracle AI Database DB Server span
   -> HTTPS OTLP endpoint
   -> Jaeger</code></pre>
 
@@ -136,13 +167,13 @@ management:
     sampling:
       probability: 1.0</code></pre>
 
-  <h2>Database Server-Side Setup</h2>
+  <h2>How Do We Export Database Server-Side Spans?</h2>
   <p>
     The database server-side exporter needs a reachable HTTPS OTLP endpoint.
     Jaeger accepts OTLP HTTP on port <code>4318</code>, so the verified OCI VM
     setup puts a small TLS proxy in front of Jaeger:
   </p>
-  <pre><code>Oracle Database -> https://otel-tls-proxy:4318/v1/traces
+  <pre><code>Oracle AI Database -> https://otel-tls-proxy:4318/v1/traces
 otel-tls-proxy -> http://oracle-db-otel-jaeger:4318/v1/traces</code></pre>
 
   <p>
@@ -171,7 +202,7 @@ end;
   <pre><code>alter system set "_kstrc_service_mask"=8 scope=both;
 alter system set "_kstrc_archiver"='otel_traces://https://otel-tls-proxy:4318/v1/traces' scope=both;</code></pre>
 
-  <h2>The JDBC Trace Propagation Workaround</h2>
+  <h2>How Does JDBC Propagate the Trace Context?</h2>
   <p>
     The app uses the published <code>ojdbc-provider-observability</code>
     dependency. It does not require a local patched JDBC jar. The important app
@@ -185,7 +216,7 @@ oracleConnection.setServerTelemetry(
     EnumSet.noneOf(OracleConnection.ServerTelemetry.class));
 oracleConnection.setServerTelemetry(requestedTelemetry);</code></pre>
 
-  <h2>Make the DB Span Useful</h2>
+  <h2>How Do We Make the Database Span Useful?</h2>
   <p>
     A generic <code>DB Server</code> span proves that the trace crossed into the
     database, but the demo makes it more useful by setting database session
@@ -205,7 +236,7 @@ end;
     <code>oracle.db.pdb</code>, and <code>oracle.db.query.sql.id</code>.
   </p>
 
-  <h2>SQL_ID Is the Bridge</h2>
+  <h2>Why Is SQL_ID the Bridge?</h2>
   <p>
     The most important database attribute is
     <code>oracle.db.query.sql.id</code>. Use it as the bridge from the visual
@@ -238,7 +269,7 @@ end;
     </tr>
   </table>
 
-  <h2>Agentic AI Demo Page</h2>
+  <h2>What Does the Agentic AI Demo Page Show?</h2>
   <p>
     The browser endpoint keeps the demo cohesive by returning the agent story,
     database diagnostics, and Jaeger trace on one page:
@@ -257,7 +288,7 @@ end;
     <li>An embedded Jaeger trace loaded after a short delay so spans have time to flush.</li>
   </ul>
 
-  <h2>Build and Run</h2>
+  <h2>How Do You Build and Run the Demo?</h2>
   <p>On an OCI Linux x86_64 VM with Java 25:</p>
   <pre><code>sudo dnf install -y podman git java-25-openjdk java-25-openjdk-devel maven jq curl openssl
 export JAVA_HOME=/usr/lib/jvm/java-25-openjdk
@@ -288,11 +319,11 @@ curl -sS \
   'http://127.0.0.1:8080/trace/agent-task?agentId=claims-investigator-agent&amp;task=investigate_payment_anomalies' \
   | jq .</code></pre>
 
-  <h2>Verified Result</h2>
+  <h2>What Does Success Look Like?</h2>
   <p>
     On the OCI VM, Jaeger showed a single trace containing both services:
     <code>springboot-oracle-db-otel-demo</code> from the Java process and
-    <code>oracle-db</code> from Oracle Database server-side export.
+    <code>oracle-db</code> from Oracle AI Database server-side export.
   </p>
   <pre><code>{
   "services": [
@@ -308,15 +339,17 @@ curl -sS \
   ]
 }</code></pre>
 
-  <h2>Security and Audit Correlation Plan</h2>
+  <h2>How Can This Connect to Security and Auditing?</h2>
   <p>
     The next step is to connect this observability story to the Deep Data
-    Security work. The trace already carries the join keys we need:
+    Security work. Observability shows what the agent did; database security
+    explains why Oracle AI Database allowed or denied it. The trace already
+    carries the join keys we need:
   </p>
   <ul>
     <li><code>trace.traceId</code> identifies the distributed request.</li>
     <li><code>agent.id</code> identifies the AI actor in the application span.</li>
-    <li><code>oracle.db.module=agent:&lt;agent-id&gt;</code> identifies the same actor inside Oracle Database.</li>
+    <li><code>oracle.db.module=agent:&lt;agent-id&gt;</code> identifies the same actor inside Oracle AI Database.</li>
     <li><code>oracle.db.action</code> identifies the database phase.</li>
     <li><code>CLIENT_IDENTIFIER=traceId=&lt;trace-id&gt;</code> gives database security and audit policy a compact correlation value.</li>
     <li><code>oracle.db.query.sql.id</code> bridges the trace to SQL text, SQL Monitor, <code>DBMS_XPLAN</code>, and later audit records.</li>
@@ -328,7 +361,52 @@ curl -sS \
     rows allowed or filtered, and a denied-operation example. After that, a
     scoped audit policy can record the same actor, module, action, SQL ID, and
     trace id so the page shows one story: this agent made this request, Oracle
-    Database enforced these policies, and the audit trail recorded it.
+    AI Database enforced these policies, and the audit trail recorded it.
+  </p>
+
+  <p>
+    The trace itself is not auditing. It is observability: useful for debugging,
+    performance, causality, and visual correlation. Auditing requires durable
+    database records, such as Unified Auditing or Fine-Grained Auditing entries,
+    retained under a security-controlled policy. The best pattern is to use
+    traces to explain the execution path and audit records to prove the
+    security-relevant facts.
+  </p>
+
+  <p>
+    A companion design note expands this direction:
+    <a href="agent-security-observability.md">Agent Security Observability With Oracle AI Database</a>.
+  </p>
+
+  <h2>FAQ</h2>
+  <h3>Does this replace database auditing?</h3>
+  <p>
+    No. The trace is observability, not an audit trail. Use Oracle AI Database
+    Unified Auditing or Fine-Grained Auditing when you need durable security
+    evidence about users, roles, objects, SQL, and policy decisions.
+  </p>
+
+  <h3>Why is <code>oracle.db.query.sql.id</code> so important?</h3>
+  <p>
+    It connects the Jaeger span to Oracle AI Database internals. With the SQL_ID,
+    you can find SQL text, captured bind samples, SQL Monitor data, and
+    <code>DBMS_XPLAN</code> execution-plan details.
+  </p>
+
+  <h3>Do I need a patched JDBC driver?</h3>
+  <p>
+    No. The verified version of this demo uses the published
+    <code>ojdbc-provider-observability</code> dependency. The application uses
+    an unset-then-set server telemetry step so the trace state is sent to the
+    database.
+  </p>
+
+  <h3>Why frame this as an AI agent workload?</h3>
+  <p>
+    Agentic applications need explainability across application and database
+    boundaries. Adding agent id, task, module, action, client identifier, and
+    SQL_ID makes the trace useful for operations, security review, and future
+    audit correlation.
   </p>
 
   <h2>References</h2>
@@ -339,5 +417,6 @@ curl -sS \
     <li>Spring Boot tracing: <a href="https://docs.spring.io/spring-boot/reference/actuator/tracing.html">https://docs.spring.io/spring-boot/reference/actuator/tracing.html</a></li>
     <li>Jaeger getting started: <a href="https://www.jaegertracing.io/docs/latest/getting-started/">https://www.jaegertracing.io/docs/latest/getting-started/</a></li>
   </ul>
+</main>
 </body>
 </html>
