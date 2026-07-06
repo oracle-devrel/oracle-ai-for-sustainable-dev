@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <title>Trace AI Agent Workloads from Spring Boot to Oracle AI Database Internals</title>
-  <meta name="description" content="Build a continuous OpenTelemetry trace from a Spring Boot AI agent workload through Oracle JDBC into Oracle AI Database server-side spans, then connect SQL_ID to SQL text, bind samples, SQL Monitor, and DBMS_XPLAN.">
+  <meta name="description" content="Build a continuous OpenTelemetry trace from a Spring Boot AI agent workload through Oracle JDBC into Oracle AI Database server-side spans for observability, security correlation, and performance profiling.">
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; line-height: 1.55; color: #1f2933; }
     main { max-width: 980px; margin: 0 auto; padding: 32px 20px 56px; }
@@ -35,39 +35,46 @@
     can you see one trace that starts with an AI agent request, crosses the
     Spring Boot and JDBC layers, and continues inside Oracle AI Database? Yes.
     With Spring Boot, Micrometer, Oracle JDBC observability providers, and
-    <code>DBMS_OBSERVABILITY</code>, the same request can appear in Jaeger as
-    application spans, JDBC spans, and Oracle AI Database server-side spans.
+    <code>DBMS_OBSERVABILITY</code>, the same request can appear in any
+    OpenTelemetry-compatible observability backend as application spans, JDBC
+    spans, and Oracle AI Database server-side spans. This walkthrough uses
+    Jaeger because it is simple to run and easy to inspect, but the same signal
+    can be viewed in any OpenTelemetry-compliant observability tool.
   </p>
 
   <p>
-    The demo frames the request as an AI agent task so the trace can answer
-    who did the work, which SQL ran, and what Oracle AI Database reported about
-    that SQL. The key bridge is <code>oracle.db.query.sql.id</code>, which links
-    the visual trace to SQL text, bind samples, SQL Monitor, and
-    <code>DBMS_XPLAN</code> execution-plan details.
+    That database-internal span is the important part. Typical database
+    observability stops at the database edge: the application trace shows that
+    JDBC waited on the database, then the user must switch tools and manually
+    investigate inside the database. Oracle AI Database keeps the trace
+    continuous. Developers, DevOps teams, and security reviewers can see how
+    long the database actually took, correlate it to database-side evidence,
+    and use the same trace for performance profiling, troubleshooting, and
+    security context.
   </p>
 
-  <figure class="featured-image-placeholder" role="img" aria-label="Oracle AI Database branded technical diagram showing an AI agent request flowing through Spring Boot, Micrometer, Oracle JDBC OpenTelemetry spans, an Oracle AI Database DB Server span, SQL_ID diagnostics, and Jaeger.">
+  <figure class="featured-image-placeholder" role="img" aria-label="Oracle AI Database branded technical diagram showing an AI agent request flowing through Spring Boot, Micrometer, Oracle JDBC OpenTelemetry spans, an Oracle AI Database DB Server span, SQL diagnostics, and an OpenTelemetry-compatible observability backend.">
     <strong>Featured image production note</strong>
     <p>
       Use the approved Oracle Developers cover template. The cover should say
       "Oracle AI Database" and show a deliberate technical diagram: AI agent
       request -> Spring Boot -> Oracle JDBC -> Oracle AI Database DB Server span
-      -> SQL_ID diagnostics -> Jaeger. Do not use a purely AI-generated image.
+      -> SQL diagnostics -> OpenTelemetry backend. Do not use a purely
+      AI-generated image.
     </p>
     <p>
       <strong>Alt text:</strong> Oracle AI Database branded technical diagram
       showing an AI agent request flowing through Spring Boot, Micrometer,
       Oracle JDBC OpenTelemetry spans, an Oracle AI Database DB Server span,
-      SQL_ID diagnostics, and Jaeger.
+      SQL diagnostics, and an OpenTelemetry-compatible observability backend.
     </p>
   </figure>
 
   <h2>Key Takeaways</h2>
   <ul>
+    <li>Oracle AI Database lets the trace continue into database server-side execution instead of stopping at the database edge.</li>
     <li>Spring Boot and Micrometer create the application trace context, while Oracle JDBC adds database client spans.</li>
-    <li><code>DBMS_OBSERVABILITY</code> exports Oracle AI Database server-side spans so Jaeger can show the database as part of the same request.</li>
-    <li><code>oracle.db.query.sql.id</code> connects the visual trace to SQL text, bind samples, SQL Monitor, and <code>DBMS_XPLAN</code>.</li>
+    <li><code>DBMS_OBSERVABILITY</code> exports Oracle AI Database server-side spans to OpenTelemetry-compatible observability tools; this demo uses Jaeger.</li>
     <li>Agent metadata, <code>MODULE</code>, <code>ACTION</code>, and <code>CLIENT_IDENTIFIER</code> create a foundation for security and audit correlation.</li>
   </ul>
 
@@ -87,7 +94,7 @@
     </tr>
     <tr>
       <td><code>GET /trace/agent-task/view</code></td>
-      <td>Browser-friendly agentic demo that returns the trace id, agent id, database session metadata, SQL ID, SQL text, bind values, SQL Monitor preview, <code>DBMS_XPLAN</code>, and an embedded Jaeger trace on one page.</td>
+      <td>Browser-friendly agentic demo that returns the trace id, agent id, database session metadata, SQL ID, SQL text, bind values, SQL Monitor preview, <code>DBMS_XPLAN</code>, and an embedded Jaeger trace on one page. Jaeger is the demo viewer; the telemetry is OpenTelemetry-compatible.</td>
     </tr>
   </table>
 
@@ -98,7 +105,7 @@
   -> Oracle JDBC provider spans
   -> Oracle AI Database DB Server span
   -> HTTPS OTLP endpoint
-  -> Jaeger</code></pre>
+  -> OpenTelemetry-compatible observability backend (Jaeger in this demo)</code></pre>
 
   <h2>Updated Maven Dependencies</h2>
   <p>
@@ -141,11 +148,22 @@
     <code>23.26.2.0.0</code>.
   </p>
 
+  <p>
+    The related Oracle JDBC OpenTelemetry provider implements the JDBC driver
+    <code>TraceEventListener</code> interface and publishes JDBC events into
+    OpenTelemetry. Those events include database round trips and connection
+    behavior, with attributes such as connection id, database operation,
+    database user, tenant, and SQL ID. SQL text and connection details are
+    treated as sensitive and are disabled by default unless explicitly enabled.
+  </p>
+
   <h2>Spring Boot Configuration</h2>
   <p>
-    Spring Boot sends application and JDBC spans to Jaeger through OTLP HTTP.
-    Oracle JDBC provider properties enable the JDBC trace listener and identify
-    the Java service in the collector.
+    Spring Boot sends application and JDBC spans through OTLP HTTP. The demo
+    sends them to Jaeger, but the same OpenTelemetry signal can be collected by
+    any OpenTelemetry-compatible observability platform. Oracle JDBC provider
+    properties enable the JDBC trace listener and identify the Java service in
+    the collector.
   </p>
   <pre><code>spring:
   application:
@@ -170,11 +188,18 @@ management:
   <h2>How Do We Export Database Server-Side Spans?</h2>
   <p>
     The database server-side exporter needs a reachable HTTPS OTLP endpoint.
-    Jaeger accepts OTLP HTTP on port <code>4318</code>, so the verified OCI VM
-    setup puts a small TLS proxy in front of Jaeger:
+    The verified OCI VM demo uses Jaeger, which accepts OTLP HTTP on port
+    <code>4318</code>, and puts a small TLS proxy in front of it for database
+    server-side export:
   </p>
   <pre><code>Oracle AI Database -> https://otel-tls-proxy:4318/v1/traces
 otel-tls-proxy -> http://oracle-db-otel-jaeger:4318/v1/traces</code></pre>
+
+  <p>
+    Replace Jaeger with another OpenTelemetry-compatible collector or backend
+    by changing the OTLP endpoint. The important requirement is that Oracle AI
+    Database can reach the endpoint over HTTPS for server-side trace export.
+  </p>
 
   <p>
     Configure the database with <code>DBMS_OBSERVABILITY</code>, grant network
@@ -236,11 +261,30 @@ end;
     <code>oracle.db.pdb</code>, and <code>oracle.db.query.sql.id</code>.
   </p>
 
-  <h2>Why Is SQL_ID the Bridge?</h2>
+  <h2>Why Does Tracing Inside the Database Matter?</h2>
   <p>
-    The most important database attribute is
-    <code>oracle.db.query.sql.id</code>. Use it as the bridge from the visual
-    trace to Oracle SQL diagnostics:
+    Without database server-side spans, an application trace can usually tell
+    you only that the application waited on a database call. That is useful, but
+    incomplete. The developer or DevOps engineer still has to leave the trace,
+    open a database tool, find the related session or SQL, and reconstruct what
+    happened.
+  </p>
+
+  <p>
+    Oracle AI Database closes that gap by exporting a database server-side span
+    into the same distributed trace. The span makes database time visible in the
+    same timeline as HTTP, application, and JDBC work. That is valuable for
+    performance profiling because the database duration is explicit; for
+    troubleshooting because the database event is no longer detached from the
+    request; and for security because the same trace can carry agent, user,
+    module, action, and client identifier context.
+  </p>
+
+  <h2>How Do We Link the Trace to SQL Diagnostics?</h2>
+  <p>
+    The demo also captures <code>oracle.db.query.sql.id</code>. This is a
+    practical detail rather than the whole story: it gives you a direct bridge
+    from the visual trace to Oracle SQL diagnostics when you need to drill down.
   </p>
   <table>
     <tr>
@@ -249,7 +293,7 @@ end;
     </tr>
     <tr>
       <td>Visual database server span</td>
-      <td>Jaeger span attribute <code>oracle.db.query.sql.id</code></td>
+      <td>Span attribute <code>oracle.db.query.sql.id</code> in the OpenTelemetry trace</td>
     </tr>
     <tr>
       <td>Full SQL text</td>
@@ -386,19 +430,20 @@ curl -sS \
     evidence about users, roles, objects, SQL, and policy decisions.
   </p>
 
-  <h3>Why is <code>oracle.db.query.sql.id</code> so important?</h3>
+  <h3>Do I have to use Jaeger?</h3>
   <p>
-    It connects the Jaeger span to Oracle AI Database internals. With the SQL_ID,
-    you can find SQL text, captured bind samples, SQL Monitor data, and
-    <code>DBMS_XPLAN</code> execution-plan details.
+    No. Jaeger is used here because it is easy to run and inspect, but the demo
+    exports OpenTelemetry traces. The same approach can feed any
+    OpenTelemetry-compatible observability tool that can receive the app/JDBC
+    spans and the Oracle AI Database server-side spans.
   </p>
 
-  <h3>Do I need a patched JDBC driver?</h3>
+  <h3>What makes this different from ordinary database tracing?</h3>
   <p>
-    No. The verified version of this demo uses the published
-    <code>ojdbc-provider-observability</code> dependency. The application uses
-    an unset-then-set server telemetry step so the trace state is sent to the
-    database.
+    Ordinary application traces often stop at the database edge. Oracle AI
+    Database can export database server-side spans into the same trace, so the
+    database portion is visible without breaking continuity or switching
+    immediately to a separate diagnostic workflow.
   </p>
 
   <h3>Why frame this as an AI agent workload?</h3>
@@ -412,10 +457,12 @@ curl -sS \
   <h2>References</h2>
   <ul>
     <li>Oracle JDBC Observability provider: <a href="https://github.com/oracle/ojdbc-extensions/tree/main/ojdbc-provider-observability">https://github.com/oracle/ojdbc-extensions/tree/main/ojdbc-provider-observability</a></li>
+    <li>Oracle JDBC OpenTelemetry provider: <a href="https://github.com/oracle/ojdbc-extensions/tree/main/ojdbc-provider-opentelemetry">https://github.com/oracle/ojdbc-extensions/tree/main/ojdbc-provider-opentelemetry</a></li>
     <li>Oracle <code>DBMS_OBSERVABILITY</code>: <a href="https://docs.oracle.com/en/database/oracle/oracle-database/26/arpls/dbms_observability.html">https://docs.oracle.com/en/database/oracle/oracle-database/26/arpls/dbms_observability.html</a></li>
     <li>Oracle SQL monitoring and tracing: <a href="https://docs.oracle.com/en/database/oracle/oracle-database/26/tgsql/monitoring-and-tracing-sql.html">https://docs.oracle.com/en/database/oracle/oracle-database/26/tgsql/monitoring-and-tracing-sql.html</a></li>
+    <li>Oracle AI Database application tracing: <a href="https://docs.oracle.com/en/database/oracle/oracle-database/26/tgsql/performing-application-tracing.html">https://docs.oracle.com/en/database/oracle/oracle-database/26/tgsql/performing-application-tracing.html</a></li>
+    <li>OpenTelemetry protocol exporters: <a href="https://opentelemetry.io/docs/specs/otel/protocol/exporter/">https://opentelemetry.io/docs/specs/otel/protocol/exporter/</a></li>
     <li>Spring Boot tracing: <a href="https://docs.spring.io/spring-boot/reference/actuator/tracing.html">https://docs.spring.io/spring-boot/reference/actuator/tracing.html</a></li>
-    <li>Jaeger getting started: <a href="https://www.jaegertracing.io/docs/latest/getting-started/">https://www.jaegertracing.io/docs/latest/getting-started/</a></li>
   </ul>
 </main>
 </body>
