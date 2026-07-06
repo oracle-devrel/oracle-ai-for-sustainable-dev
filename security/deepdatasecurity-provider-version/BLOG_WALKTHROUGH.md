@@ -50,7 +50,7 @@ The key message for this version: the app does not call the Deep Data Security J
    ./build.sh
    ```
 
-   `build.sh` installs `ojdbc-provider-spring` from Oracle's `ojdbc-extensions` source into the local Maven cache if Maven Central does not yet have the documented artifact.
+   `build.sh` resolves `com.oracle.database.jdbc:ojdbc-provider-spring:1.1.0` directly from Maven Central.
 
 7. Run:
    ```bash

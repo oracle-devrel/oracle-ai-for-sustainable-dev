@@ -20,9 +20,9 @@ spec:
             defaultMode: 420
       containers:
         - name: oraclejavaai
-          image: us-ashburn-1.ocir.io/<tenancy-namespace>/podsofkon/podsofkon:sustainableai
-#          image: us-ashburn-1.ocir.io/<tenancy-namespace>/oraclejavaai/oraclejavaai:0.2
-#          image: us-ashburn-1.ocir.io/<tenancy-namespace>/gd74087885/xr-admin:0.1
+          image: us-ashburn-1.ocir.io/oradbclouducm/podsofkon/podsofkon:sustainableai
+#          image: us-ashburn-1.ocir.io/oradbclouducm/oraclejavaai/oraclejavaai:0.2
+#          image: us-ashburn-1.ocir.io/oradbclouducm/gd74087885/xr-admin:0.1
           ports:
             - name: http
               containerPort: 8080
@@ -37,10 +37,7 @@ spec:
             - name: spring.datasource.url
               value: jdbc:oracle:thin:@ragdb_tp?TNS_ADMIN=/oraclejavaai/creds
             - name: spring.datasource.password
-              valueFrom:
-                secretKeyRef:
-                  name: financialdb-credentials
-                  key: password
+              value: Welcome123456
           resources: {}
           volumeMounts:
             - name: creds

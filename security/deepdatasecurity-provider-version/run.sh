@@ -8,6 +8,4 @@ set -a
 source .env
 set +a
 
-./install-ojdbc-provider-spring.sh
-
-mvn -Dojdbc.provider.version="${OJDBC_PROVIDER_VERSION:-1.1.0}" spring-boot:run
+mvn spring-boot:run

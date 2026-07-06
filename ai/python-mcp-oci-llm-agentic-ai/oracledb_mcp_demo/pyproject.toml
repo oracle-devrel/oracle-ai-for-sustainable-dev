@@ -1,0 +1,68 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "oracledb_mcp_demo"
+version = "0.1.0"
+description = "Oracle Mcp - AI-powered Oracle database assistant"
+authors = [{name = "Oracle Mcp Team"}]
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+dependencies = [
+    "click>=8.0.0",
+    "openai>=1.0.0",
+    "pydantic>=2.0.0",
+    "asyncio-mqtt>=0.16.0",
+    "oracledb>=2.0.0",
+    "oci>=2.118.0",
+    "mcp>=1.0.0",
+    "chromadb>=0.4.0",
+ ##   "sentence-transformers>=2.2.0",
+    "langchain>=0.3.0",
+    "langchain-core>=0.2.0", 
+    "langchain-community>=0.3.0",
+    "rich>=13.0.0"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.0.0",
+    "pytest-mock>=3.10.0",
+    "black>=23.0.0",
+    "flake8>=6.0.0",
+    "mypy>=1.0.0",
+]
+
+[project.scripts]
+oracle-copilot = "oracledb_mcp_demo.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["oracledb_mcp_demo*", "core*", "vector_db*", "llm*", "mcp_client*", "config*"]
+
+[tool.black]
+line-length = 88
+target-version = ['py38']
+
+[tool.flake8]
+max-line-length = 88
+extend-ignore = ["E203", "W503"]
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true 

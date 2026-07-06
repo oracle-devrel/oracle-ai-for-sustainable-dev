@@ -25,10 +25,7 @@ spec:
         - name: spring.datasource.url
           value: "jdbc:oracle:thin:@financialdb_high?TNS_ADMIN=/healthai/creds"
         - name: spring.datasource.password
-          valueFrom:
-            secretKeyRef:
-              name: dbuser
-              key: dbpassword
+          value: Welcome12345*
         - name: OCI_REGION
           value: us-phoenix-1
         - name: OCICONFIG_FILE
@@ -61,7 +58,7 @@ spec:
           value: "VISIONAI_XRAY_PNEUMONIA_MODEL_OCID_PLACEHOLDER"
         - name: VISIONAI_XRAY_PNEUMONIA_MODEL_DEEP_LEARNING_OCID
           value: "VISIONAI_XRAY_PNEUMONIA_MODEL_DEEP_LEARNING_OCID_PLACEHOLDER"
-#          value: <db-password>
+#          value: Welcome12345
 #        - name: spring.datasource.password
 #          valueFrom:
 #            secretKeyRef:

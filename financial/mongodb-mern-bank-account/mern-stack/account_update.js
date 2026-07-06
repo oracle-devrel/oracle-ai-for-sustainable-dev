@@ -5,11 +5,7 @@ import os
 simulate_crash = True
 
 # Connect to MongoDB
-mongo_uri = os.environ.get("MONGO_URI")
-if not mongo_uri:
-    raise RuntimeError("MONGO_URI environment variable is required.")
-
-client = MongoClient(mongo_uri)
+client = MongoClient("mongodb://[financial:Welcome12345@]IJ1TYZIR3WPWLPE-FINANCIALDB.adb.eu-frankfurt-1.oraclecloudapps.com:27017/[financial]?authMechanism=PLAIN&authSource=$external&ssl=true&retryWrites=false&loadBalanced=tru")
 db = client["testdb"]
 collection = db["testcollection"]
 

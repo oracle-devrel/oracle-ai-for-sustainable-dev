@@ -54,6 +54,6 @@ deepsec:
 
 The `registrationId` must match the OAuth2 client registration that can obtain a database-access token for Oracle Database.
 
-The Oracle documentation currently lists `com.oracle.database.jdbc:ojdbc-provider-spring:1.1.0`, but Maven Central may not have that artifact available yet. The local `build.sh` and `run.sh` scripts call `install-ojdbc-provider-spring.sh`, which installs the provider from Oracle's `ojdbc-extensions` source into your local Maven cache when the artifact is not already resolvable.
+`com.oracle.database.jdbc:ojdbc-provider-spring:1.1.0` is available from Maven Central, so the local build and run scripts resolve it directly through Maven. No manual `ojdbc-extensions` clone or local Maven install step is required.
 
 For the explicit API-call version, see `../deepdatasecurity-api-version`.

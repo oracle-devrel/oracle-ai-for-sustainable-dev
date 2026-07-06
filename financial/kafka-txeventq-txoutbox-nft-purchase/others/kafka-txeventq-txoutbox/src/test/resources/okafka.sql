@@ -1,7 +1,7 @@
 alter session set container=freepdb1;
 
 -- In our exampel, this user is created by Testcontainers
--- create user TESTUSER identified by ${DB_PASSWORD};
+-- create user TESTUSER identified by Welcome123#;
 
 -- You may wish to modify the unlimited tablespace grant as appropriate.
 grant resource, connect, unlimited tablespace to TESTUSER;

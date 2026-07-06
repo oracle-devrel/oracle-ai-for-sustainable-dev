@@ -134,13 +134,13 @@
     <dependency>
       <groupId>com.oracle.database.jdbc</groupId>
       <artifactId>ojdbc8</artifactId>
-      <version>23.26.2.0.0</version>
+      <version>19.3.0.0</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.oracle.database.xml</groupId>
       <artifactId>xdb</artifactId>
-      <version>23.26.2.0.0</version>
+      <version>19.3.0.0</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -212,7 +212,7 @@
     <jar.main.class>com.helidon.se.Main</jar.main.class>
     <skipTests>true</skipTests>
     <junit.version>4.13.1</junit.version>
-    <ojdbc10.version>23.26.2.0.0</ojdbc10.version>
+    <ojdbc10.version>19.3.0.0</ojdbc10.version>
     <helidon.version>1.4.3</helidon.version>
     <shade-plugin.version>3.2.1</shade-plugin.version>
     <logback.version>1.2.3</logback.version>

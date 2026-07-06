@@ -30,7 +30,4 @@ function Import-DotEnv {
 
 Import-DotEnv ".env"
 
-.\install-ojdbc-provider-spring.ps1
-
-$ProviderVersion = if ($env:OJDBC_PROVIDER_VERSION) { $env:OJDBC_PROVIDER_VERSION } else { "1.1.0" }
-mvn "-Dojdbc.provider.version=$ProviderVersion" clean package
+mvn clean package

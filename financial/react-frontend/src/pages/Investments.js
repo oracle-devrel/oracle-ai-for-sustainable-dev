@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { API_BASE_PATH, joinUrl } from '../config';
 
 // Banker blue theme colors
 const bankerBg = "#354F64";
@@ -161,7 +160,7 @@ const Investments = () => {
     setSearchResult("");
     try {
       // 1. Fetch stock info for the customer
-      const stockInfoResp = await fetch(joinUrl(API_BASE_PATH, "/stockinfoforcustid"), {
+      const stockInfoResp = await fetch("https://oracleai-financial.org/financial/stockinfoforcustid", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({}) // Add customer id if needed, e.g. { customerId }
@@ -178,7 +177,7 @@ const Investments = () => {
         stockInfo;
 
       // 3. Query endpoint
-      const response = await fetch(joinUrl(API_BASE_PATH, "/query"), {
+      const response = await fetch("https://oracleai-financial.org/financial/query", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -207,7 +206,7 @@ const Investments = () => {
     if store_type == "ORACLEDB":
         connection = oracledb.connect(
             user="ragchat",
-            password=os.environ["DB_PASSWORD"],
+            password="ragchat",
             dsn="localhost/freepdb1")
         vectorstore = OracleVS.from_documents(
             documents=document_splits,

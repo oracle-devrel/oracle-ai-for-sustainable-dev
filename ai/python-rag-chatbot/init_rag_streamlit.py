@@ -2,7 +2,6 @@
 # This one is to be used with Streamlit
 #
 import oracledb
-import os
 import streamlit as st
 
 # for pdf post processing
@@ -202,9 +201,9 @@ def create_retriever(vectorstore):
 def create_vector_store(store_type, document_splits, embedder):
     print(f"Indexing: using {store_type} as Vector Store...")
     connection = oracledb.connect(
-        user=os.environ.get("DB_USER", "ragchat"),
-        password=os.environ["DB_PASSWORD"],
-        dsn=os.environ.get("DB_DSN", "localhost/freepdb1"))
+        user="ragchat",
+        password="ragchat",
+        dsn="localhost/freepdb1")
 
     if store_type == "CHROME":
         # modified to cache

@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping({"/accounts", "/financial/accounts-api"})
+@RequestMapping("/accounts")
 public class AccountAndJournalAdminService {
 
     final AccountRepository accountRepository;
@@ -225,3 +225,4 @@ public class AccountAndJournalAdminService {
         }
     }
 }
+

@@ -119,8 +119,8 @@ The deployed VM flow used for the demo was:
 
 Those behaviors are handled in:
 
-- [OracleAiDatabaseAgentClient.java](/path/to/oracle-ai-for-sustainable-dev/oracle-ai-database-gcp-gemini/oracle_agent_java/src/main/java/oracleai/OracleAiDatabaseAgentClient.java)
-- [InventorySystemService.java](/path/to/oracle-ai-for-sustainable-dev/oracle-ai-database-gcp-gemini/oracle_agent_java/src/main/java/oracleai/InventorySystemService.java), which constrains stockout and inventory-risk prompts to the `SALES_USER.SC_INVENTORY_RISK_*` demo objects and defaults broad inventory-risk prompts to `SKU-500`.
+- [OracleAiDatabaseAgentClient.java](/Users/pparkins/src/github.com/paulparkinson/oracle-ai-for-sustainable-dev/oracle-ai-database-gcp-gemini/oracle_agent_java/src/main/java/oracleai/OracleAiDatabaseAgentClient.java)
+- [InventorySystemService.java](/Users/pparkins/src/github.com/paulparkinson/oracle-ai-for-sustainable-dev/oracle-ai-database-gcp-gemini/oracle_agent_java/src/main/java/oracleai/InventorySystemService.java), which constrains stockout and inventory-risk prompts to the `SALES_USER.SC_INVENTORY_RISK_*` demo objects and defaults broad inventory-risk prompts to `SKU-500`.
 
 ## Quick verification
 

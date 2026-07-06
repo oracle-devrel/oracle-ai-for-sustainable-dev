@@ -38,7 +38,7 @@ dependencies {
 
     implementation("javax.annotation:javax.annotation-api")
     runtimeOnly("ch.qos.logback:logback-classic")
-    implementation("com.oracle.database.jdbc:ojdbc8-production:23.26.2.0.0")
+    implementation("com.oracle.database.jdbc:ojdbc8-production:21.1.0.0")
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.testcontainers:oracle-xe")
     testImplementation("org.testcontainers:testcontainers")

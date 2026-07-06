@@ -37,10 +37,8 @@ APP_SCOPE="$(
     awk '/^api:\/\// {print; exit}'
 )"
 
-./install-ojdbc-provider-spring.sh
-
 echo "Building deepdatasecurity-provider-version..."
-mvn -Dojdbc.provider.version="${OJDBC_PROVIDER_VERSION:-1.1.0}" test
+mvn test
 
 cat <<EOF
 
@@ -70,4 +68,4 @@ Optional CLI bearer-token test:
 
 EOF
 
-mvn -Dojdbc.provider.version="${OJDBC_PROVIDER_VERSION:-1.1.0}" spring-boot:run
+mvn spring-boot:run

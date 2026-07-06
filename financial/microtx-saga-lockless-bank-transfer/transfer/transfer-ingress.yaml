@@ -9,13 +9,13 @@ metadata:
 spec:
   tls:
     - hosts:
-        - oracledev.ai
-      secretName: oracledev-ai-tls
+        - oracledatabase-financial.org
+      secretName: oracledatabase-financial-tls
   rules:
-    - host: oracledev.ai
+    - host: oracledatabase-financial.org
       http:
         paths:
-          - path: /financial/transfer-api
+          - path: /
             pathType: Prefix
             backend:
               service:

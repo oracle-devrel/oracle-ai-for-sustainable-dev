@@ -28,12 +28,12 @@ compartment_id = os.getenv('COMPARTMENT_ID')
 print(f"compartment_id: {compartment_id}")
 
 connection = oracledb.connect(
-    user=os.environ.get("DB_USER", "user"),
-    password=os.environ["DB_PASSWORD"],
-    dsn=os.environ.get("DB_DSN", "yourdb_high"),
-    config_dir=os.environ.get("TNS_ADMIN", r"C:\locationofyourwallet"),
-    wallet_location=os.environ.get("TNS_ADMIN", r"C:\locationofyourwallet"),
-    wallet_password=os.environ.get("WALLET_PASSWORD")
+    user="user",
+    password="userpw",
+    dsn="yourdb_high",
+    config_dir=r"C:\locationofyourwallet",
+    wallet_location=r"C:\locationofyourwallet",
+    wallet_password="walletpw"
 )
 print(f"Successfully connected to Oracle Database Connection: {connection}")
 

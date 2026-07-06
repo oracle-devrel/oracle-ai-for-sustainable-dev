@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: supplier
-        image: us-ashburn-1.ocir.io/<tenancy-namespace>/gd35252210/supplier-helidon-se:0.1
+        image: us-ashburn-1.ocir.io/oradbclouducm/gd35252210/supplier-helidon-se:0.1
         imagePullPolicy: Always
         env:
         - name: database.user

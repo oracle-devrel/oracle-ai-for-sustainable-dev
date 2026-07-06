@@ -10,11 +10,11 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: oracledev.ai
+    - host: oracleai-financial.org
       http:
         paths:
           # Rule for React frontend
-          - path: /financial
+          - path: /
             pathType: Prefix
             backend:
               service:
@@ -22,7 +22,7 @@ spec:
                 port:
                   number: 80
           # Rule for accounts endpoint
-          - path: /financial/mern-backend
+          - path: /mern-backend
             pathType: Prefix
             backend:
               service:
@@ -30,7 +30,7 @@ spec:
                 port:
                   number: 5000
           # Rule for accounts endpoint
-          - path: /financial/accounts-api
+          - path: /accounts
             pathType: Prefix
             backend:
               service:
@@ -38,7 +38,7 @@ spec:
                 port:
                   number: 8080
           # Rule for transfer endpoint
-          - path: /financial/transfer-api
+          - path: /transfer
             pathType: Prefix
             backend:
               service:
@@ -46,7 +46,7 @@ spec:
                 port:
                   number: 8081
           # Rule for graph endpoint
-          - path: /financial/graph
+          - path: /graph
             pathType: Prefix
             backend:
               service:
@@ -54,7 +54,7 @@ spec:
                 port:
                   number: 8080
           # Rule for truecache endpoint
-          - path: /financial/truecache
+          - path: /truecache
             pathType: Prefix
             backend:
               service:
@@ -62,7 +62,7 @@ spec:
                 port:
                   number: 8080
           # Rule for gdd_spatial endpoint
-          - path: /financial/api
+          - path: /financial
             pathType: Prefix
             backend:
               service:
@@ -70,7 +70,7 @@ spec:
                 port:
                   number: 8080
           # Rule for kafka endpoint
-          - path: /financial/kafka
+          - path: /kafka
             pathType: Prefix
             backend:
               service:
@@ -78,7 +78,7 @@ spec:
                 port:
                   number: 8080
           # Rule for aiagent endpoint
-          - path: /financial/aiagent
+          - path: /aiagent
             pathType: Prefix
             backend:
               service:
@@ -86,7 +86,7 @@ spec:
                 port:
                   number: 8080
           # Rule for selectai endpoint
-          - path: /financial/selectai
+          - path: /selectai
             pathType: Prefix
             backend:
               service:
@@ -94,7 +94,7 @@ spec:
                 port:
                   number: 8080
           # Rule for grafana endpoint
-          - path: /financial/grafana
+          - path: /grafana
             pathType: Prefix
             backend:
               service:

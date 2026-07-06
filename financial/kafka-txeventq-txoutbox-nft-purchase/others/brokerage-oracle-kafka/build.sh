@@ -2,8 +2,8 @@
 
 export IMAGE_NAME=frontend
 export IMAGE_VERSION=0.1
-#export DOCKER_REGISTRY=us-ashburn-1.ocir.io/<tenancy-namespace>/financial
-#export DOCKER_REGISTRY0=us-ashburn-1.ocir.io/<tenancy-namespace>/gd35252210
+#export DOCKER_REGISTRY=us-ashburn-1.ocir.io/oradbclouducm/financial
+#export DOCKER_REGISTRY0=us-ashburn-1.ocir.io/oradbclouducm/gd35252210
 
 if [ -z "$DOCKER_REGISTRY" ]; then
     echo "Error: DOCKER_REGISTRY env variable needs to be set!"
