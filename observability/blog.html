@@ -10,14 +10,10 @@
     h1 { line-height: 1.1; margin-bottom: 8px; }
     h2 { margin-top: 34px; }
     .subtitle { font-size: 1.22rem; color: #4b5563; margin-top: 0; }
-    .featured-image-placeholder {
-      border: 2px dashed #c74634;
-      background: #fbf7f4;
-      padding: 22px;
-      margin: 28px 0;
-    }
-    .featured-image-placeholder strong { color: #7a2d23; }
-    .featured-image-placeholder p { margin: 8px 0 0; }
+    figure { margin: 28px 0; }
+    figcaption { color: #5c6673; font-size: 0.95rem; margin-top: 8px; }
+    img { max-width: 100%; height: auto; border: 1px solid #d6dce3; border-radius: 8px; }
+    .cover img { border: 0; border-radius: 0; }
     code, pre { font-family: "SFMono-Regular", Consolas, monospace; }
     pre { background: #f5f7f9; border: 1px solid #dde3ea; padding: 12px; white-space: pre-wrap; }
     table { border-collapse: collapse; width: 100%; }
@@ -53,21 +49,9 @@
     security context.
   </p>
 
-  <figure class="featured-image-placeholder" role="img" aria-label="Oracle AI Database branded technical diagram showing an AI agent request flowing through Spring Boot, Micrometer, Oracle JDBC OpenTelemetry spans, an Oracle AI Database DB Server span, SQL diagnostics, and an OpenTelemetry-compatible observability backend.">
-    <strong>Featured image production note</strong>
-    <p>
-      Use the approved Oracle Developers cover template. The cover should say
-      "Oracle AI Database" and show a deliberate technical diagram: AI agent
-      request -> Spring Boot -> Oracle JDBC -> Oracle AI Database DB Server span
-      -> SQL diagnostics -> OpenTelemetry backend. Do not use a purely
-      AI-generated image.
-    </p>
-    <p>
-      <strong>Alt text:</strong> Oracle AI Database branded technical diagram
-      showing an AI agent request flowing through Spring Boot, Micrometer,
-      Oracle JDBC OpenTelemetry spans, an Oracle AI Database DB Server span,
-      SQL diagnostics, and an OpenTelemetry-compatible observability backend.
-    </p>
+  <figure class="cover">
+    <img src="images/oracle-ai-database-otel-trace-cover.svg" alt="Oracle AI Database branded technical diagram showing an AI agent request flowing through Spring Boot, Micrometer, Oracle JDBC OpenTelemetry spans, an Oracle AI Database DB Server span, SQL diagnostics, and an OpenTelemetry-compatible observability backend.">
+    <figcaption>Featured cover diagram: one OpenTelemetry trace from an AI agent request into Oracle AI Database server-side execution.</figcaption>
   </figure>
 
   <h2>Key Takeaways</h2>
@@ -106,6 +90,11 @@
   -> Oracle AI Database DB Server span
   -> HTTPS OTLP endpoint
   -> OpenTelemetry-compatible observability backend (Jaeger in this demo)</code></pre>
+
+  <figure>
+    <img src="images/agentic-ai-database-trace-dashboard.png" alt="Agentic AI database trace page showing agent task metadata, database session details, trace bridge, SQL runtime statistics, and SQL Monitor information.">
+    <figcaption>The demo page keeps the agent task, database session context, SQL diagnostics, and trace bridge together.</figcaption>
+  </figure>
 
   <h2>Updated Maven Dependencies</h2>
   <p>
@@ -158,6 +147,25 @@
   </p>
 
   <h2>Spring Boot Configuration</h2>
+  <p>
+    The Oracle JDBC OpenTelemetry extensions expect the application to already
+    have an active OpenTelemetry context. They do not create the root
+    application trace by themselves. In this demo, Spring Boot Actuator and
+    Micrometer provide the HTTP and application observations, and the Oracle
+    JDBC provider adds child spans for JDBC driver events such as database
+    round trips. The provider also propagates the trace context to Oracle AI
+    Database so the database can export its server-side span into the same
+    trace.
+  </p>
+
+  <p>
+    If you do not want to add application instrumentation directly, use the
+    <a href="https://opentelemetry.io/docs/zero-code/java/agent/">OpenTelemetry Java agent</a>
+    for zero-code Java instrumentation. The Oracle JDBC extensions can then add
+    database round-trip spans as children of the current application span and
+    propagate that context to the server.
+  </p>
+
   <p>
     Spring Boot sends application and JDBC spans through OTLP HTTP. The demo
     sends them to Jaeger, but the same OpenTelemetry signal can be collected by
@@ -261,6 +269,11 @@ end;
     <code>oracle.db.pdb</code>, and <code>oracle.db.query.sql.id</code>.
   </p>
 
+  <figure>
+    <img src="images/jaeger-database-server-span.png" alt="Jaeger trace timeline showing Spring Boot and Oracle JDBC spans with an Oracle AI Database DB Server span selected and database-side tags visible.">
+    <figcaption>The selected database server-side span shows database timing and database-side tags in the same trace as the application request.</figcaption>
+  </figure>
+
   <h2>Why Does Tracing Inside the Database Matter?</h2>
   <p>
     Without database server-side spans, an application trace can usually tell
@@ -312,6 +325,16 @@ end;
       <td><code>DBMS_SQL_MONITOR.REPORT_SQL_MONITOR</code></td>
     </tr>
   </table>
+
+  <figure>
+    <img src="images/sql-text-bind-samples-monitor.png" alt="Demo page showing full SQL text from SQL_ID to V$SQL.SQL_FULLTEXT, captured bind sample explanation, and SQL Monitor report preview.">
+    <figcaption>SQL_ID lets the demo drill from the trace into full SQL text, bind-sample notes, and SQL Monitor output.</figcaption>
+  </figure>
+
+  <figure>
+    <img src="images/sql-monitor-dbms-xplan-preview.png" alt="Demo page showing SQL Monitor report preview and DBMS_XPLAN execution plan output for the traced SQL statement.">
+    <figcaption>SQL Monitor and DBMS_XPLAN make the traced database span useful for performance profiling and SQL diagnostics.</figcaption>
+  </figure>
 
   <h2>What Does the Agentic AI Demo Page Show?</h2>
   <p>
@@ -461,6 +484,7 @@ curl -sS \
     <li>Oracle <code>DBMS_OBSERVABILITY</code>: <a href="https://docs.oracle.com/en/database/oracle/oracle-database/26/arpls/dbms_observability.html">https://docs.oracle.com/en/database/oracle/oracle-database/26/arpls/dbms_observability.html</a></li>
     <li>Oracle SQL monitoring and tracing: <a href="https://docs.oracle.com/en/database/oracle/oracle-database/26/tgsql/monitoring-and-tracing-sql.html">https://docs.oracle.com/en/database/oracle/oracle-database/26/tgsql/monitoring-and-tracing-sql.html</a></li>
     <li>Oracle AI Database application tracing: <a href="https://docs.oracle.com/en/database/oracle/oracle-database/26/tgsql/performing-application-tracing.html">https://docs.oracle.com/en/database/oracle/oracle-database/26/tgsql/performing-application-tracing.html</a></li>
+    <li>OpenTelemetry Java agent: <a href="https://opentelemetry.io/docs/zero-code/java/agent/">https://opentelemetry.io/docs/zero-code/java/agent/</a></li>
     <li>OpenTelemetry protocol exporters: <a href="https://opentelemetry.io/docs/specs/otel/protocol/exporter/">https://opentelemetry.io/docs/specs/otel/protocol/exporter/</a></li>
     <li>Spring Boot tracing: <a href="https://docs.spring.io/spring-boot/reference/actuator/tracing.html">https://docs.spring.io/spring-boot/reference/actuator/tracing.html</a></li>
   </ul>
