@@ -112,7 +112,57 @@
     <figcaption>The demo page keeps the agent task, database session context, SQL diagnostics, and trace bridge together.</figcaption>
   </figure>
 
-  <h2>Updated Maven Dependencies and Application Instrumentation</h2>
+  <h2>How to setup and run the example?</h2>
+  <p>
+    The demo can run on any Linux environment or VM with enough memory for
+    Oracle Database Free, Jaeger, an HTTPS proxy, and the Spring Boot app. You
+    can also use an Autonomous Database in Oracle Cloud instead of a local
+    database; the important requirements are JDBC connectivity and a database
+    server-side exporter that can reach an HTTPS OTLP endpoint.
+  </p>
+  <ol>
+    <li>Install Java 25, Maven, Git, Podman, curl, jq, and OpenSSL.</li>
+    <li>Run Oracle Database Free on Linux, or provision an Autonomous Database in Oracle Cloud.</li>
+    <li>Clone the source from <code>github.com/oracle-devrel/oracle-ai-for-sustainable-dev</code> and use the <code>observability</code> folder.</li>
+    <li>Start Jaeger with OTLP HTTP enabled. In the sample setup, Jaeger receives app and JDBC spans on <code>http://127.0.0.1:4318/v1/traces</code>.</li>
+    <li>Put a small HTTPS proxy in front of Jaeger's OTLP endpoint for database server-side export. The sample uses NGINX as <code>otel-tls-proxy</code>, forwarding <code>https://otel-tls-proxy:4318/v1/traces</code> to Jaeger's <code>http://oracle-db-otel-jaeger:4318/v1/traces</code>.</li>
+    <li>Configure <code>DBMS_OBSERVABILITY</code>, network ACLs, and the database wallet/trust path so Oracle AI Database can push server-side spans to the HTTPS OTLP endpoint.</li>
+    <li>Configure, build, and run the Spring Boot app, then open the agent task view or call the JSON endpoint to generate a trace.</li>
+  </ol>
+
+  <pre><code>sudo dnf install -y podman git java-25-openjdk java-25-openjdk-devel maven jq curl openssl
+export JAVA_HOME=/usr/lib/jvm/java-25-openjdk
+export PATH="$JAVA_HOME/bin:$PATH"
+
+git clone https://github.com/oracle-devrel/oracle-ai-for-sustainable-dev.git
+cd oracle-ai-for-sustainable-dev/observability/springboot-oracle-db-otel-demo
+mvn -DskipTests package</code></pre>
+
+  <p>Keep database credentials and runtime endpoints outside the repository:</p>
+  <pre><code>export DB_URL='jdbc:oracle:thin:@//127.0.0.1:1521/FREEPDB1'
+export DB_USERNAME='FINANCIAL'
+export DB_PASSWORD='&lt;app-user-password&gt;'
+export OTLP_TRACES_ENDPOINT='http://127.0.0.1:4318/v1/traces'
+export TRACE_SAMPLE_PROBABILITY=1.0
+export ORACLE_JDBC_SERVER_TELEMETRY_TRACES_ENABLED=true
+export ORACLE_JDBC_SERVER_TELEMETRY_LOGGING_ENABLED=false
+export ORACLE_JDBC_TRACEPARENT_CLIENT_INFO_ENABLED=true
+export ORACLE_JDBC_TRACELEVEL_CLIENT_INFO_ENABLED=true</code></pre>
+
+  <pre><code>java -jar target/springboot-oracle-db-otel-demo-0.0.1-SNAPSHOT.jar
+
+curl -sS http://127.0.0.1:8080/trace/roundtrip | jq .
+
+curl -sS \
+  'http://127.0.0.1:8080/trace/agent-task?agentId=claims-investigator-agent&amp;task=investigate_payment_anomalies' \
+  | jq .</code></pre>
+
+  <p>
+    For the cohesive browser view, open:
+  </p>
+  <pre><code>http://127.0.0.1:8080/trace/agent-task/view?agentId=claims-investigator-agent&amp;task=investigate_payment_anomalies</code></pre>
+
+  <h2>Maven Dependencies and The Oracle JDBC observability provider</h2>
   <p>
     The app uses Java 25, the latest Oracle JDBC 23.26 line available from Maven Central,
     the published Maven Central <code>ojdbc-provider-observability</code>
@@ -169,56 +219,6 @@
     database user, tenant, and SQL ID. SQL text and connection details are
     treated as sensitive and are disabled by default unless explicitly enabled.
   </p>
-
-  <h2>How Do You Recreate the Setup?</h2>
-  <p>
-    The demo can run on any Linux environment or VM with enough memory for
-    Oracle Database Free, Jaeger, an HTTPS proxy, and the Spring Boot app. You
-    can also use an Autonomous Database in Oracle Cloud instead of a local
-    database; the important requirements are JDBC connectivity and a database
-    server-side exporter that can reach an HTTPS OTLP endpoint.
-  </p>
-  <ol>
-    <li>Install Java 25, Maven, Git, Podman, curl, jq, and OpenSSL.</li>
-    <li>Run Oracle Database Free on Linux, or provision an Autonomous Database in Oracle Cloud.</li>
-    <li>Clone the source from <code>github.com/oracle-devrel/oracle-ai-for-sustainable-dev</code> and use the <code>observability</code> folder.</li>
-    <li>Start Jaeger with OTLP HTTP enabled. In the sample setup, Jaeger receives app and JDBC spans on <code>http://127.0.0.1:4318/v1/traces</code>.</li>
-    <li>Put a small HTTPS proxy in front of Jaeger's OTLP endpoint for database server-side export. The sample uses NGINX as <code>otel-tls-proxy</code>, forwarding <code>https://otel-tls-proxy:4318/v1/traces</code> to Jaeger's <code>http://oracle-db-otel-jaeger:4318/v1/traces</code>.</li>
-    <li>Configure <code>DBMS_OBSERVABILITY</code>, network ACLs, and the database wallet/trust path so Oracle AI Database can push server-side spans to the HTTPS OTLP endpoint.</li>
-    <li>Configure, build, and run the Spring Boot app, then open the agent task view or call the JSON endpoint to generate a trace.</li>
-  </ol>
-
-  <pre><code>sudo dnf install -y podman git java-25-openjdk java-25-openjdk-devel maven jq curl openssl
-export JAVA_HOME=/usr/lib/jvm/java-25-openjdk
-export PATH="$JAVA_HOME/bin:$PATH"
-
-git clone https://github.com/oracle-devrel/oracle-ai-for-sustainable-dev.git
-cd oracle-ai-for-sustainable-dev/observability/springboot-oracle-db-otel-demo
-mvn -DskipTests package</code></pre>
-
-  <p>Keep database credentials and runtime endpoints outside the repository:</p>
-  <pre><code>export DB_URL='jdbc:oracle:thin:@//127.0.0.1:1521/FREEPDB1'
-export DB_USERNAME='FINANCIAL'
-export DB_PASSWORD='&lt;app-user-password&gt;'
-export OTLP_TRACES_ENDPOINT='http://127.0.0.1:4318/v1/traces'
-export TRACE_SAMPLE_PROBABILITY=1.0
-export ORACLE_JDBC_SERVER_TELEMETRY_TRACES_ENABLED=true
-export ORACLE_JDBC_SERVER_TELEMETRY_LOGGING_ENABLED=false
-export ORACLE_JDBC_TRACEPARENT_CLIENT_INFO_ENABLED=true
-export ORACLE_JDBC_TRACELEVEL_CLIENT_INFO_ENABLED=true</code></pre>
-
-  <pre><code>java -jar target/springboot-oracle-db-otel-demo-0.0.1-SNAPSHOT.jar
-
-curl -sS http://127.0.0.1:8080/trace/roundtrip | jq .
-
-curl -sS \
-  'http://127.0.0.1:8080/trace/agent-task?agentId=claims-investigator-agent&amp;task=investigate_payment_anomalies' \
-  | jq .</code></pre>
-
-  <p>
-    For the cohesive browser view, open:
-  </p>
-  <pre><code>http://127.0.0.1:8080/trace/agent-task/view?agentId=claims-investigator-agent&amp;task=investigate_payment_anomalies</code></pre>
 
   <h2>How Do the Spring Boot and JDBC Spans Get Created?</h2>
   <p>
