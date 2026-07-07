@@ -29,14 +29,14 @@
 
   <line x1="245" y1="320" x2="245" y2="370" stroke="#4f5965" stroke-width="3" marker-end="url(#arrow)"/>
 
-  <g transform="translate(800 285)">
-    <rect width="310" height="145" rx="10" fill="#ffffff" stroke="#d6d6d6" stroke-width="2"/>
+  <g transform="translate(760 285)">
+    <rect width="390" height="145" rx="10" fill="#ffffff" stroke="#d6d6d6" stroke-width="2"/>
     <ellipse cx="62" cy="48" rx="34" ry="13" fill="none" stroke="#c74634" stroke-width="4"/>
     <path d="M28 48 v46 c0 7 15 13 34 13s34-6 34-13 V48" fill="none" stroke="#c74634" stroke-width="4"/>
     <path d="M28 72 c0 7 15 13 34 13s34-6 34-13" fill="none" stroke="#c74634" stroke-width="4"/>
-    <text x="116" y="48" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="700" fill="#20242a">Oracle AI Database</text>
+    <text x="116" y="48" font-family="Arial, Helvetica, sans-serif" font-size="21" font-weight="700" fill="#20242a">Oracle AI Database</text>
     <text x="116" y="80" font-family="Arial, Helvetica, sans-serif" font-size="17" fill="#5c6673">DB Server span</text>
-    <text x="116" y="108" font-family="Arial, Helvetica, sans-serif" font-size="17" fill="#5c6673">SQL and session metadata</text>
+    <text x="116" y="108" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#5c6673">SQL and session metadata</text>
   </g>
 
   <g transform="translate(470 275)">
@@ -48,7 +48,7 @@
 
   <line x1="405" y1="238" x2="500" y2="292" stroke="#245a70" stroke-width="4" marker-end="url(#arrow)"/>
   <line x1="405" y1="452" x2="500" y2="410" stroke="#245a70" stroke-width="4" marker-end="url(#arrow)"/>
-  <line x1="795" y1="358" x2="735" y2="358" stroke="#c74634" stroke-width="4" marker-end="url(#arrow)"/>
+  <line x1="755" y1="358" x2="735" y2="358" stroke="#c74634" stroke-width="4" marker-end="url(#arrow)"/>
 
   <g transform="translate(470 555)">
     <path d="M0 0 H260" stroke="#c74634" stroke-width="7" stroke-linecap="round"/>

@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Advanced End-to-End Agentic AI Observability: Trace Java and Spring Boot into Oracle AI Database Internals</title>
+  <title>Advanced End-to-End Agentic AI Observability: Tracing from the Agent all the way into Oracle AI Database (using the Java observability provider and server-side OTel exporter)</title>
   <meta name="description" content="A developer how-to for continuous OpenTelemetry tracing from a Spring Boot AI agent workload through Oracle JDBC into Oracle AI Database server-side spans for observability, security correlation, and performance profiling.">
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; line-height: 1.55; color: #1f2933; }
@@ -23,7 +23,7 @@
 </head>
 <body>
 <main>
-  <h1>Advanced End-to-End Agentic AI Observability: Trace Java and Spring Boot into Oracle AI Database Internals</h1>
+  <h1>Advanced End-to-End Agentic AI Observability: Tracing from the Agent all the way into Oracle AI Database (using the Java observability provider and server-side OTel exporter)</h1>
   <p class="subtitle">A developer how-to for one continuous OpenTelemetry trace across a Spring Boot agent workload, Oracle JDBC, and Oracle AI Database server-side execution.</p>
 
   <p>
@@ -103,15 +103,20 @@
   </figure>
 
   <figure>
+    <img src="images/jaeger-database-server-span.png" alt="Jaeger trace timeline showing Spring Boot and Oracle JDBC spans with an Oracle AI Database DB Server span selected and database-side tags visible.">
+    <figcaption>The selected database server-side span shows database timing and database-side tags in the same trace as the application request.</figcaption>
+  </figure>
+
+  <figure>
     <img src="images/agentic-ai-database-trace-dashboard.png" alt="Agentic AI database trace page showing agent task metadata, database session details, trace bridge, SQL runtime statistics, and SQL Monitor information.">
     <figcaption>The demo page keeps the agent task, database session context, SQL diagnostics, and trace bridge together.</figcaption>
   </figure>
 
-  <h2>Updated Maven Dependencies</h2>
+  <h2>Updated Maven Dependencies and Application Instrumentation</h2>
   <p>
     The app uses Java 25, the latest Oracle JDBC 23.26 line available from Maven Central,
     the published Maven Central <code>ojdbc-provider-observability</code>
-    artifact, and the Oracle JDBC production dependency.
+    artifact, and the Oracle JDBC 17 production dependency.
   </p>
   <pre><code>&lt;properties&gt;
   &lt;java.version&gt;25&lt;/java.version&gt;
@@ -121,8 +126,23 @@
 &lt;/properties&gt;
 
 &lt;dependency&gt;
+  &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+  &lt;artifactId&gt;spring-boot-starter-actuator&lt;/artifactId&gt;
+&lt;/dependency&gt;
+
+&lt;dependency&gt;
+  &lt;groupId&gt;io.micrometer&lt;/groupId&gt;
+  &lt;artifactId&gt;micrometer-tracing-bridge-otel&lt;/artifactId&gt;
+&lt;/dependency&gt;
+
+&lt;dependency&gt;
+  &lt;groupId&gt;io.opentelemetry&lt;/groupId&gt;
+  &lt;artifactId&gt;opentelemetry-exporter-otlp&lt;/artifactId&gt;
+&lt;/dependency&gt;
+
+&lt;dependency&gt;
   &lt;groupId&gt;com.oracle.database.jdbc&lt;/groupId&gt;
-  &lt;artifactId&gt;ojdbc11-production&lt;/artifactId&gt;
+  &lt;artifactId&gt;ojdbc17-production&lt;/artifactId&gt;
   &lt;version&gt;${oracle.jdbc.version}&lt;/version&gt;
   &lt;type&gt;pom&lt;/type&gt;
 &lt;/dependency&gt;
@@ -134,15 +154,15 @@
 &lt;/dependency&gt;</code></pre>
 
   <p>
-    The <code>oracle-database.version</code> property matters because Spring
-    Boot manages some Oracle dependency versions. Setting it keeps
-    <code>ojdbc11-production</code>, <code>ojdbc11</code>, <code>ucp11</code>,
-    <code>oraclepki</code>, and related transitive artifacts aligned on
-    <code>23.26.2.0.0</code>.
+    Spring Boot Actuator creates the observation infrastructure, Micrometer
+    bridges those observations to OpenTelemetry, and the OTLP exporter sends
+    spans to the collector. The <code>oracle-database.version</code> property
+    keeps Oracle JDBC, UCP, wallet/security, and related transitive artifacts
+    aligned on <code>23.26.2.0.0</code>.
   </p>
 
   <p>
-    The related Oracle JDBC OpenTelemetry provider implements the JDBC driver
+    The Oracle JDBC observability provider implements the JDBC driver
     <code>TraceEventListener</code> interface and publishes JDBC events into
     OpenTelemetry. Those events include database round trips and connection
     behavior, with attributes such as connection id, database operation,
@@ -150,7 +170,57 @@
     treated as sensitive and are disabled by default unless explicitly enabled.
   </p>
 
-  <h2>Spring Boot Configuration</h2>
+  <h2>How Do You Recreate the Setup?</h2>
+  <p>
+    The demo can run on any Linux environment or VM with enough memory for
+    Oracle Database Free, Jaeger, an HTTPS proxy, and the Spring Boot app. You
+    can also use an Autonomous Database in Oracle Cloud instead of a local
+    database; the important requirements are JDBC connectivity and a database
+    server-side exporter that can reach an HTTPS OTLP endpoint.
+  </p>
+  <ol>
+    <li>Install Java 25, Maven, Git, Podman, curl, jq, and OpenSSL.</li>
+    <li>Run Oracle Database Free on Linux, or provision an Autonomous Database in Oracle Cloud.</li>
+    <li>Clone the source from <code>github.com/oracle-devrel/oracle-ai-for-sustainable-dev</code> and use the <code>observability</code> folder.</li>
+    <li>Start Jaeger with OTLP HTTP enabled. In the sample setup, Jaeger receives app and JDBC spans on <code>http://127.0.0.1:4318/v1/traces</code>.</li>
+    <li>Put a small HTTPS proxy in front of Jaeger's OTLP endpoint for database server-side export. The sample uses NGINX as <code>otel-tls-proxy</code>, forwarding <code>https://otel-tls-proxy:4318/v1/traces</code> to Jaeger's <code>http://oracle-db-otel-jaeger:4318/v1/traces</code>.</li>
+    <li>Configure <code>DBMS_OBSERVABILITY</code>, network ACLs, and the database wallet/trust path so Oracle AI Database can push server-side spans to the HTTPS OTLP endpoint.</li>
+    <li>Configure, build, and run the Spring Boot app, then open the agent task view or call the JSON endpoint to generate a trace.</li>
+  </ol>
+
+  <pre><code>sudo dnf install -y podman git java-25-openjdk java-25-openjdk-devel maven jq curl openssl
+export JAVA_HOME=/usr/lib/jvm/java-25-openjdk
+export PATH="$JAVA_HOME/bin:$PATH"
+
+git clone https://github.com/oracle-devrel/oracle-ai-for-sustainable-dev.git
+cd oracle-ai-for-sustainable-dev/observability/springboot-oracle-db-otel-demo
+mvn -DskipTests package</code></pre>
+
+  <p>Keep database credentials and runtime endpoints outside the repository:</p>
+  <pre><code>export DB_URL='jdbc:oracle:thin:@//127.0.0.1:1521/FREEPDB1'
+export DB_USERNAME='FINANCIAL'
+export DB_PASSWORD='&lt;app-user-password&gt;'
+export OTLP_TRACES_ENDPOINT='http://127.0.0.1:4318/v1/traces'
+export TRACE_SAMPLE_PROBABILITY=1.0
+export ORACLE_JDBC_SERVER_TELEMETRY_TRACES_ENABLED=true
+export ORACLE_JDBC_SERVER_TELEMETRY_LOGGING_ENABLED=false
+export ORACLE_JDBC_TRACEPARENT_CLIENT_INFO_ENABLED=true
+export ORACLE_JDBC_TRACELEVEL_CLIENT_INFO_ENABLED=true</code></pre>
+
+  <pre><code>java -jar target/springboot-oracle-db-otel-demo-0.0.1-SNAPSHOT.jar
+
+curl -sS http://127.0.0.1:8080/trace/roundtrip | jq .
+
+curl -sS \
+  'http://127.0.0.1:8080/trace/agent-task?agentId=claims-investigator-agent&amp;task=investigate_payment_anomalies' \
+  | jq .</code></pre>
+
+  <p>
+    For the cohesive browser view, open:
+  </p>
+  <pre><code>http://127.0.0.1:8080/trace/agent-task/view?agentId=claims-investigator-agent&amp;task=investigate_payment_anomalies</code></pre>
+
+  <h2>How Do the Spring Boot and JDBC Spans Get Created?</h2>
   <p>
     The Oracle JDBC OpenTelemetry extensions expect the application to already
     have an active OpenTelemetry context. They do not create the root
@@ -186,7 +256,7 @@
     password: ${DB_PASSWORD}
     oracleucp:
       connection-factory-properties:
-        "[oracle.jdbc.provider.traceEventListener]": ojdbc-provider-opentelemetry-trace-event-listener
+        "[oracle.jdbc.provider.traceEventListener]": observability-trace-event-listener-provider
         "[oracle.jdbc.provider.traceEventListener.unique_identifier]": springboot-oracle-db-otel-demo
 
 management:
@@ -201,8 +271,9 @@ management:
   <p>
     The database server-side exporter needs a reachable HTTPS OTLP endpoint.
     The verified Linux demo uses Jaeger, which accepts OTLP HTTP on port
-    <code>4318</code>, and puts a small TLS proxy in front of it for database
-    server-side export:
+    <code>4318</code>, and puts a small HTTPS proxy in front of it for database
+    server-side export. In the sample, that proxy is NGINX with a trusted
+    local certificate:
   </p>
   <pre><code>Oracle AI Database -> https://otel-tls-proxy:4318/v1/traces
 otel-tls-proxy -> http://oracle-db-otel-jaeger:4318/v1/traces</code></pre>
@@ -273,30 +344,6 @@ end;
     <code>oracle.db.pdb</code>, and <code>oracle.db.query.sql.id</code>.
   </p>
 
-  <figure>
-    <img src="images/jaeger-database-server-span.png" alt="Jaeger trace timeline showing Spring Boot and Oracle JDBC spans with an Oracle AI Database DB Server span selected and database-side tags visible.">
-    <figcaption>The selected database server-side span shows database timing and database-side tags in the same trace as the application request.</figcaption>
-  </figure>
-
-  <h2>Why Does Tracing Inside the Database Matter?</h2>
-  <p>
-    Without database server-side spans, an application trace can usually tell
-    you only that the application waited on a database call. That is useful, but
-    incomplete. The developer or DevOps engineer still has to leave the trace,
-    open a database tool, find the related session or SQL, and reconstruct what
-    happened.
-  </p>
-
-  <p>
-    Oracle AI Database closes that gap by exporting a database server-side span
-    into the same distributed trace. The span makes database time visible in the
-    same timeline as HTTP, application, and JDBC work. That is valuable for
-    performance profiling because the database duration is explicit; for
-    troubleshooting because the database event is no longer detached from the
-    request; and for security because the same trace can carry agent, user,
-    module, action, and client identifier context.
-  </p>
-
   <h2>How Do We Link the Trace to SQL Diagnostics?</h2>
   <p>
     The demo also captures <code>oracle.db.query.sql.id</code>. This is a
@@ -358,37 +405,6 @@ end;
     <li>SQL Monitor and <code>DBMS_XPLAN</code> output.</li>
     <li>An embedded Jaeger trace loaded after a short delay so spans have time to flush.</li>
   </ul>
-
-  <h2>How Do You Build and Run the Demo?</h2>
-  <p>On a Linux x86_64 environment or VM with Java 25:</p>
-  <pre><code>sudo dnf install -y podman git java-25-openjdk java-25-openjdk-devel maven jq curl openssl
-export JAVA_HOME=/usr/lib/jvm/java-25-openjdk
-export PATH="$JAVA_HOME/bin:$PATH"</code></pre>
-
-  <p>Build the app:</p>
-  <pre><code>cd observability/springboot-oracle-db-otel-demo
-mvn -DskipTests package</code></pre>
-
-  <p>Set runtime configuration outside the repo:</p>
-  <pre><code>export DB_URL='jdbc:oracle:thin:@//127.0.0.1:1521/FREEPDB1'
-export DB_USERNAME='FINANCIAL'
-export DB_PASSWORD='&lt;app-user-password&gt;'
-export OTLP_TRACES_ENDPOINT='http://127.0.0.1:4318/v1/traces'
-export TRACE_SAMPLE_PROBABILITY=1.0
-export ORACLE_JDBC_SERVER_TELEMETRY_TRACES_ENABLED=true
-export ORACLE_JDBC_SERVER_TELEMETRY_LOGGING_ENABLED=false
-export ORACLE_JDBC_TRACEPARENT_CLIENT_INFO_ENABLED=true
-export ORACLE_JDBC_TRACELEVEL_CLIENT_INFO_ENABLED=true</code></pre>
-
-  <p>Run it:</p>
-  <pre><code>java -jar target/springboot-oracle-db-otel-demo-0.0.1-SNAPSHOT.jar</code></pre>
-
-  <p>Generate a trace:</p>
-  <pre><code>curl -sS http://127.0.0.1:8080/trace/roundtrip | jq .
-
-curl -sS \
-  'http://127.0.0.1:8080/trace/agent-task?agentId=claims-investigator-agent&amp;task=investigate_payment_anomalies' \
-  | jq .</code></pre>
 
   <h2>What Does Success Look Like?</h2>
   <p>

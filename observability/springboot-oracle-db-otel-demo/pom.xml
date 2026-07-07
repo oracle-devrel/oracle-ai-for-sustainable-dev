@@ -15,7 +15,7 @@
   <artifactId>springboot-oracle-db-otel-demo</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>springboot-oracle-db-otel-demo</name>
-  <description>End-to-end OpenTelemetry tracing from Spring Boot to Oracle Database</description>
+  <description>End-to-end OpenTelemetry tracing from Spring Boot to Oracle AI Database</description>
 
   <properties>
     <java.version>25</java.version>
@@ -60,7 +60,7 @@
     </dependency>
     <dependency>
       <groupId>com.oracle.database.jdbc</groupId>
-      <artifactId>ojdbc11-production</artifactId>
+      <artifactId>ojdbc17-production</artifactId>
       <version>${oracle.jdbc.version}</version>
       <type>pom</type>
     </dependency>
