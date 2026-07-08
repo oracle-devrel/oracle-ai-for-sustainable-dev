@@ -50,11 +50,17 @@ public class LakehouseController {
         return service.columns(tableName);
     }
 
+    @GetMapping("/api/lakehouse/objects")
+    Object objects(@RequestParam(defaultValue = "%") String nameLike) throws SQLException {
+        return service.visibleObjects(nameLike);
+    }
+
     @GetMapping("/api/lakehouse/help")
     Map<String, Object> help() {
         return Map.of(
                 "purpose", "Query Oracle SQL objects backed by Oracle lakehouse and Iceberg table support through normal JDBC.",
                 "configure", "Set DB_URL, DB_USERNAME, DB_PASSWORD, and ICEBERG_TABLE_NAME.",
+                "discover", "Use /api/lakehouse/objects?nameLike=ICEBERG to find visible SQL objects.",
                 "note", "The Iceberg table is created and managed by Oracle Database/lakehouse SQL features; the Spring app uses Oracle JDBC to query it like a normal SQL table or view.");
     }
 

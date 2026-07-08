@@ -20,6 +20,7 @@
   <properties>
     <java.version>25</java.version>
     <oracle.jdbc.version>23.26.2.0.0</oracle.jdbc.version>
+    <oracle.osdt.version>21.21.0.0</oracle.osdt.version>
   </properties>
 
   <dependencyManagement>
@@ -56,6 +57,21 @@
       <groupId>com.oracle.database.jdbc</groupId>
       <artifactId>ucp17</artifactId>
       <version>${oracle.jdbc.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.oracle.database.security</groupId>
+      <artifactId>oraclepki</artifactId>
+      <version>${oracle.jdbc.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.oracle.database.security</groupId>
+      <artifactId>osdt_core</artifactId>
+      <version>${oracle.osdt.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.oracle.database.security</groupId>
+      <artifactId>osdt_cert</artifactId>
+      <version>${oracle.osdt.version}</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>

@@ -4,7 +4,13 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLXML;
 import java.sql.Statement;
+import java.sql.Timestamp;
+import java.sql.Clob;
+import java.sql.Blob;
+import java.sql.Date;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -82,6 +88,24 @@ public class LakehouseQueryService {
         return queryRows(executableSql);
     }
 
+    public List<Map<String, Object>> visibleObjects(String nameLike) throws SQLException {
+        String pattern = nameLike == null || nameLike.isBlank()
+                ? "%"
+                : nameLike.trim().toUpperCase(Locale.ROOT);
+        if (!pattern.contains("%") && !pattern.contains("_")) {
+            pattern = "%" + pattern + "%";
+        }
+        String sql = """
+                select owner, object_name, object_type
+                  from all_objects
+                 where object_type in ('TABLE', 'VIEW', 'MATERIALIZED VIEW', 'SYNONYM')
+                   and object_name like '%s'
+                 order by owner, object_type, object_name
+                 fetch first 100 rows only
+                """.formatted(escapeSqlLiteral(pattern));
+        return queryRows(sql);
+    }
+
     private Number scalarNumber(String sql) throws SQLException {
         try (Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
@@ -112,11 +136,38 @@ public class LakehouseQueryService {
         while (resultSet.next()) {
             Map<String, Object> row = new LinkedHashMap<>();
             for (int i = 1; i <= columnCount; i++) {
-                row.put(resultSet.getMetaData().getColumnLabel(i), resultSet.getObject(i));
+                row.put(resultSet.getMetaData().getColumnLabel(i), jsonSafeValue(resultSet, i));
             }
             rows.add(row);
         }
         return rows;
+    }
+
+    private static Object jsonSafeValue(ResultSet resultSet, int columnIndex) throws SQLException {
+        Object value = resultSet.getObject(columnIndex);
+        if (value == null) {
+            return null;
+        }
+        if (value instanceof Timestamp timestamp) {
+            return timestamp.toInstant().toString();
+        }
+        if (value instanceof Date || value instanceof Time) {
+            return value.toString();
+        }
+        if (value instanceof Clob clob) {
+            return clob.getSubString(1, Math.toIntExact(Math.min(clob.length(), 10_000)));
+        }
+        if (value instanceof Blob blob) {
+            return "<BLOB " + blob.length() + " bytes>";
+        }
+        if (value instanceof SQLXML sqlxml) {
+            return sqlxml.getString();
+        }
+        Package valuePackage = value.getClass().getPackage();
+        if (valuePackage != null && valuePackage.getName().startsWith("oracle.sql")) {
+            return resultSet.getString(columnIndex);
+        }
+        return value;
     }
 
     private String configuredTableName() {
@@ -132,6 +183,10 @@ public class LakehouseQueryService {
             throw new IllegalArgumentException("Invalid table name: " + tableName);
         }
         return trimmed;
+    }
+
+    private static String escapeSqlLiteral(String value) {
+        return value.replace("'", "''");
     }
 
     private static String sanitizeUrl(String url) {

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Build a Spring Boot Lakehouse App with Oracle AI Database, Oracle JDBC, and Apache Iceberg</title>
+  <title>Build a Spring Boot Lakehouse App with Oracle AI Database, Oracle JDBC, and Iceberg Tables</title>
   <style>
     body { margin: 0; font-family: Arial, Helvetica, sans-serif; color: #1f2933; background: #f7f7f5; line-height: 1.55; }
     article { max-width: 980px; margin: 0 auto; padding: 42px 24px 72px; background: #fff; }
@@ -16,15 +16,20 @@
     img { max-width: 100%; border: 1px solid #d9dee3; }
     figcaption { color: #5f6470; font-size: 14px; margin-top: 8px; }
     code { background: #eef1f4; padding: 2px 5px; border-radius: 4px; }
-    pre { background: #111820; color: #f7f7f5; padding: 18px; overflow-x: auto; border-radius: 6px; }
+    pre { background: #f5f7f9; border: 1px solid #dde3ea; padding: 12px; white-space: pre-wrap; overflow-x: auto; border-radius: 6px; }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
     a { color: #1f6fb2; }
   </style>
 </head>
 <body>
 <article>
   <p class="eyebrow">Oracle AI Database Lakehouse</p>
-  <h1>Build a Spring Boot Lakehouse App with Oracle AI Database, Oracle JDBC, and Apache Iceberg</h1>
+  <h1>Build a Spring Boot Lakehouse App with Oracle AI Database, Oracle JDBC, and Iceberg Tables</h1>
   <p class="subtitle">A practical Java 25 and <code>ojdbc17</code> demo for querying Iceberg-backed lakehouse data through Oracle SQL.</p>
+  <p>
+    All source code, configuration, SQL setup scripts, and the sample Spring Boot app are available in the
+    <a href="https://github.com/oracle-devrel/oracle-ai-for-sustainable-dev/tree/main/lakehouse">lakehouse folder on GitHub</a>.
+  </p>
 
   <figure>
     <img src="images/oracle-ai-database-lakehouse-cover.svg" alt="Diagram showing Spring Boot and Oracle JDBC querying Oracle AI Database, which connects SQL analytics to Apache Iceberg tables in object storage.">
@@ -37,7 +42,7 @@
       <li>Apache Iceberg gives object-store data table semantics: schema evolution, snapshots, partitioning, and multi-engine access.</li>
       <li>A lakehouse combines data lake storage economics with data warehouse-style SQL, governance, and analytics.</li>
       <li>Oracle lakehouse support lets Oracle AI Database expose lakehouse data as SQL objects, so Java apps can query it through Oracle JDBC.</li>
-      <li>The sample app uses Java 25, Spring Boot, <code>ojdbc17</code>, and <code>ucp17</code> to query a configured Iceberg-backed Oracle table or view.</li>
+      <li>The sample app uses Java 25, Spring Boot, <code>ojdbc17</code>, <code>ucp17</code>, and Oracle wallet support libraries to query a configured Iceberg-backed Oracle table or view.</li>
     </ul>
   </section>
 
@@ -71,11 +76,13 @@ curl 'http://localhost:8080/api/lakehouse/sample?tableName=LAKEHOUSE_DEMO.SALES_
   <h2>Maven Dependencies</h2>
   <p>
     The demo follows the repo's Java 25 pattern and uses the Oracle JDBC 17-plus driver line.
-    The app depends directly on <code>ojdbc17</code> for the driver and <code>ucp17</code> for Oracle UCP connection pooling.
+    The app depends directly on <code>ojdbc17</code> for the driver, <code>ucp17</code> for Oracle UCP connection pooling,
+    and the Oracle wallet/security libraries needed for Autonomous Database wallet connections.
   </p>
   <pre><code>&lt;properties&gt;
   &lt;java.version&gt;25&lt;/java.version&gt;
   &lt;oracle.jdbc.version&gt;23.26.2.0.0&lt;/oracle.jdbc.version&gt;
+  &lt;oracle.osdt.version&gt;21.21.0.0&lt;/oracle.osdt.version&gt;
 &lt;/properties&gt;
 
 &lt;dependency&gt;
@@ -87,6 +94,21 @@ curl 'http://localhost:8080/api/lakehouse/sample?tableName=LAKEHOUSE_DEMO.SALES_
   &lt;groupId&gt;com.oracle.database.jdbc&lt;/groupId&gt;
   &lt;artifactId&gt;ucp17&lt;/artifactId&gt;
   &lt;version&gt;${oracle.jdbc.version}&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+  &lt;groupId&gt;com.oracle.database.security&lt;/groupId&gt;
+  &lt;artifactId&gt;oraclepki&lt;/artifactId&gt;
+  &lt;version&gt;${oracle.jdbc.version}&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+  &lt;groupId&gt;com.oracle.database.security&lt;/groupId&gt;
+  &lt;artifactId&gt;osdt_core&lt;/artifactId&gt;
+  &lt;version&gt;${oracle.osdt.version}&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+  &lt;groupId&gt;com.oracle.database.security&lt;/groupId&gt;
+  &lt;artifactId&gt;osdt_cert&lt;/artifactId&gt;
+  &lt;version&gt;${oracle.osdt.version}&lt;/version&gt;
 &lt;/dependency&gt;</code></pre>
 
   <h2>How to Run the Example</h2>
@@ -98,6 +120,24 @@ curl 'http://localhost:8080/api/lakehouse/sample?tableName=LAKEHOUSE_DEMO.SALES_
     <li>Start with <code>./run.sh</code>.</li>
     <li>Open <code>/api/lakehouse/summary</code> to confirm the app can query the configured Iceberg table.</li>
   </ol>
+  <p>
+    To smoke-test the app with the financial Autonomous Database before a real Iceberg-backed object is available,
+    run <code>lakehouse/sql/setup_financial_smoke_test.sql</code> as the <code>FINANCIAL</code> user and set
+    <code>ICEBERG_TABLE_NAME=LAKEHOUSE_JDBC_SMOKE_TEST</code>. This verifies the wallet, Oracle JDBC 17,
+    Oracle UCP, metadata endpoint, and sample-row endpoint. It is intentionally labeled as a smoke test because
+    the table is regular Oracle data, not an Iceberg table.
+  </p>
+  <pre><code>export DB_URL='jdbc:oracle:thin:@financialdb_high?TNS_ADMIN=/path/to/Wallet_financialdb'
+export DB_USERNAME=financial
+export DB_PASSWORD='&lt;financial-password&gt;'
+export ICEBERG_TABLE_NAME=LAKEHOUSE_JDBC_SMOKE_TEST
+
+./build.sh
+./run.sh
+
+curl http://localhost:8080/api/database
+curl 'http://localhost:8080/api/lakehouse/objects?nameLike=LAKEHOUSE'
+curl http://localhost:8080/api/lakehouse/summary</code></pre>
 
   <h2>Where Oracle Lakehouse Support Fits</h2>
   <p>
@@ -133,6 +173,7 @@ curl 'http://localhost:8080/api/lakehouse/sample?tableName=LAKEHOUSE_DEMO.SALES_
 
   <h2>References</h2>
   <ul>
+    <li><a href="https://github.com/oracle-devrel/oracle-ai-for-sustainable-dev/tree/main/lakehouse">Lakehouse demo source code</a></li>
     <li><a href="https://iceberg.apache.org/">Apache Iceberg project</a></li>
     <li><a href="https://www.oracle.com/database/technologies/maven-central-guide.html">Oracle JDBC Maven Central Guide</a></li>
     <li><a href="https://www.oracle.com/database/">Oracle AI Database</a></li>

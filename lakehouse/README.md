@@ -7,7 +7,8 @@ table or view is available in Oracle AI Database.
 
 ## What is in this folder?
 
-- `pom.xml` - Spring Boot 3.5 app using Java 25, `ojdbc17`, and `ucp17`.
+- `pom.xml` - Spring Boot 3.5 app using Java 25, `ojdbc17`, `ucp17`,
+  and Oracle wallet support libraries.
 - `src/main/java` - REST endpoints for database metadata and Iceberg table samples.
 - `src/main/resources/application.yaml` - environment-driven Oracle UCP/JDBC and demo settings.
 - `.env_example` - local configuration template.
@@ -23,7 +24,8 @@ table or view is available in Oracle AI Database.
 - Network access from the app to the database.
 
 The app uses the Oracle JDBC 17-plus driver line through `ojdbc17` and `ucp17`.
-The app sets `java.version` to `25` as requested.
+It also includes the Oracle wallet support libraries needed for Autonomous
+Database wallet connections. The app sets `java.version` to `25` as requested.
 
 ## Configure
 
@@ -54,10 +56,37 @@ Then try:
 
 ```bash
 curl http://localhost:8080/api/database
+curl 'http://localhost:8080/api/lakehouse/objects?nameLike=ICEBERG'
 curl http://localhost:8080/api/lakehouse/summary
 curl 'http://localhost:8080/api/lakehouse/sample?tableName=LAKEHOUSE_DEMO.SALES_ICEBERG&limit=10'
 curl 'http://localhost:8080/api/lakehouse/columns?tableName=LAKEHOUSE_DEMO.SALES_ICEBERG'
 ```
+
+## Financial Database Smoke Test
+
+The app can be smoke-tested against the existing financial Autonomous Database
+even before you create a real Iceberg-backed table. Use the financial wallet
+and point `ICEBERG_TABLE_NAME` at the setup table created by:
+
+```bash
+sql financial/<password>@financialdb_high @lakehouse/sql/setup_financial_smoke_test.sql
+```
+
+Then run:
+
+```bash
+export DB_URL='jdbc:oracle:thin:@financialdb_high?TNS_ADMIN=/path/to/Wallet_financialdb'
+export DB_USERNAME=financial
+export DB_PASSWORD='<financial-password>'
+export ICEBERG_TABLE_NAME=LAKEHOUSE_JDBC_SMOKE_TEST
+./build.sh
+./run.sh
+```
+
+This verifies wallet connectivity, Oracle JDBC 17, Oracle UCP, endpoint
+behavior, table metadata, and sample-row queries. It is not a substitute for a
+real Iceberg-backed object; switch `ICEBERG_TABLE_NAME` to the Oracle SQL object
+that exposes Iceberg table data when lakehouse setup is complete.
 
 ## How the Demo Relates to Iceberg
 
