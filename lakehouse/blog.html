@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Build a Spring Boot Lakehouse App with Oracle AI Database, Oracle JDBC, and Apache Iceberg</title>
+  <style>
+    body { margin: 0; font-family: Arial, Helvetica, sans-serif; color: #1f2933; background: #f7f7f5; line-height: 1.55; }
+    article { max-width: 980px; margin: 0 auto; padding: 42px 24px 72px; background: #fff; }
+    h1 { font-size: 42px; line-height: 1.1; margin: 20px 0 12px; }
+    h2 { font-size: 28px; margin-top: 42px; border-top: 1px solid #d9dee3; padding-top: 26px; }
+    h3 { font-size: 21px; margin-top: 28px; }
+    .subtitle { font-size: 21px; color: #4b5563; margin-bottom: 28px; }
+    .eyebrow { color: #c74634; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
+    .takeaways, .faq { background: #f2f4f6; border-left: 5px solid #c74634; padding: 18px 24px; }
+    img { max-width: 100%; border: 1px solid #d9dee3; }
+    figcaption { color: #5f6470; font-size: 14px; margin-top: 8px; }
+    code { background: #eef1f4; padding: 2px 5px; border-radius: 4px; }
+    pre { background: #111820; color: #f7f7f5; padding: 18px; overflow-x: auto; border-radius: 6px; }
+    a { color: #1f6fb2; }
+  </style>
+</head>
+<body>
+<article>
+  <p class="eyebrow">Oracle AI Database Lakehouse</p>
+  <h1>Build a Spring Boot Lakehouse App with Oracle AI Database, Oracle JDBC, and Apache Iceberg</h1>
+  <p class="subtitle">A practical Java 25 and <code>ojdbc17</code> demo for querying Iceberg-backed lakehouse data through Oracle SQL.</p>
+
+  <figure>
+    <img src="images/oracle-ai-database-lakehouse-cover.svg" alt="Diagram showing Spring Boot and Oracle JDBC querying Oracle AI Database, which connects SQL analytics to Apache Iceberg tables in object storage.">
+    <figcaption>Oracle AI Database acts as the SQL and governance layer while the application uses ordinary Oracle JDBC.</figcaption>
+  </figure>
+
+  <section class="takeaways">
+    <h2>Key Takeaways</h2>
+    <ul>
+      <li>Apache Iceberg gives object-store data table semantics: schema evolution, snapshots, partitioning, and multi-engine access.</li>
+      <li>A lakehouse combines data lake storage economics with data warehouse-style SQL, governance, and analytics.</li>
+      <li>Oracle lakehouse support lets Oracle AI Database expose lakehouse data as SQL objects, so Java apps can query it through Oracle JDBC.</li>
+      <li>The sample app uses Java 25, Spring Boot, <code>ojdbc17</code>, and <code>ucp17</code> to query a configured Iceberg-backed Oracle table or view.</li>
+    </ul>
+  </section>
+
+  <h2>Why Iceberg Matters to a Lakehouse</h2>
+  <p>
+    A data lake is great for storing files cheaply, but files alone do not behave like governed database tables.
+    Apache Iceberg fills that gap by adding table metadata over files such as Parquet. That metadata tracks schema,
+    snapshots, manifests, partitions, and data files so multiple engines can safely work with the same analytical table.
+  </p>
+  <p>
+    A lakehouse builds on that idea. It keeps data in open lake storage while adding the SQL access, governance,
+    and operational patterns people expect from a warehouse. In the Oracle world, Oracle AI Database can be the SQL
+    engine and governance point for lakehouse data, while applications still connect through the familiar Oracle JDBC path.
+  </p>
+
+  <h2>What the Spring Boot App Demonstrates</h2>
+  <p>
+    The app in this folder does not parse Iceberg metadata or read Parquet files directly. Instead, it assumes Oracle
+    AI Database exposes an Iceberg-backed table or view. The app connects through Oracle JDBC and queries that object
+    using normal SQL.
+  </p>
+  <p>
+    That is the useful developer shape of Oracle JDBC Iceberg table support: the lakehouse integration is handled by
+    Oracle Database, and the Java application keeps using the same JDBC primitives it already knows: a datasource,
+    SQL statements, fetch size, query timeout, and result sets.
+  </p>
+  <pre><code>curl http://localhost:8080/api/database
+curl http://localhost:8080/api/lakehouse/summary
+curl 'http://localhost:8080/api/lakehouse/sample?tableName=LAKEHOUSE_DEMO.SALES_ICEBERG&amp;limit=10'</code></pre>
+
+  <h2>Maven Dependencies</h2>
+  <p>
+    The demo follows the repo's Java 25 pattern and uses the Oracle JDBC 17-plus driver line.
+    The app depends directly on <code>ojdbc17</code> for the driver and <code>ucp17</code> for Oracle UCP connection pooling.
+  </p>
+  <pre><code>&lt;properties&gt;
+  &lt;java.version&gt;25&lt;/java.version&gt;
+  &lt;oracle.jdbc.version&gt;23.26.2.0.0&lt;/oracle.jdbc.version&gt;
+&lt;/properties&gt;
+
+&lt;dependency&gt;
+  &lt;groupId&gt;com.oracle.database.jdbc&lt;/groupId&gt;
+  &lt;artifactId&gt;ojdbc17&lt;/artifactId&gt;
+  &lt;version&gt;${oracle.jdbc.version}&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+  &lt;groupId&gt;com.oracle.database.jdbc&lt;/groupId&gt;
+  &lt;artifactId&gt;ucp17&lt;/artifactId&gt;
+  &lt;version&gt;${oracle.jdbc.version}&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+
+  <h2>How to Run the Example</h2>
+  <ol>
+    <li>Create or identify an Oracle SQL object that exposes Iceberg-backed lakehouse data.</li>
+    <li>Clone the repo and enter the <code>lakehouse</code> directory.</li>
+    <li>Copy <code>.env_example</code> to <code>.env</code> and set <code>DB_URL</code>, <code>DB_USERNAME</code>, <code>DB_PASSWORD</code>, and <code>ICEBERG_TABLE_NAME</code>.</li>
+    <li>Build with JDK 25 using <code>./build.sh</code>.</li>
+    <li>Start with <code>./run.sh</code>.</li>
+    <li>Open <code>/api/lakehouse/summary</code> to confirm the app can query the configured Iceberg table.</li>
+  </ol>
+
+  <h2>Where Oracle Lakehouse Support Fits</h2>
+  <p>
+    Oracle's lakehouse direction is about letting customers bring SQL, AI, security, and governance to data that may
+    live in object storage and open table formats. That matters because enterprise AI and analytics teams often need
+    to combine curated warehouse data with large analytical datasets that already live in the lake.
+  </p>
+  <p>
+    The clean application architecture is to keep lakehouse integration in the database tier. The Java service gets
+    a stable SQL object, Oracle JDBC gets a normal connection, and Oracle AI Database controls access, optimization,
+    and operational policy.
+  </p>
+
+  <h2>Production Notes</h2>
+  <ul>
+    <li>Use a database wallet, vault, or secret manager for credentials.</li>
+    <li>Grant the application user only the lakehouse tables or views it needs.</li>
+    <li>Prefer views or synonyms when you want a stable application-facing name over evolving lakehouse objects.</li>
+    <li>Set JDBC fetch size based on expected row width and network latency.</li>
+  </ul>
+
+  <section class="faq">
+    <h2>FAQ</h2>
+    <h3>Does the Java app need to understand Iceberg files?</h3>
+    <p>No. Oracle AI Database exposes the lakehouse/Iceberg data as SQL objects. The Java app uses Oracle JDBC and SQL.</p>
+    <h3>Is <code>ojdbc17</code> a JDK 25 artifact?</h3>
+    <p>No. It is the Oracle JDBC 17-plus driver line. This sample sets Java 25 for the Spring Boot build while using that JDBC line.</p>
+    <h3>Can this work with Autonomous Database?</h3>
+    <p>Yes, when the database environment is configured with the relevant lakehouse/Iceberg support and the app can connect to it.</p>
+    <h3>Where is the source code?</h3>
+    <p>The sample lives in the repository under <code>lakehouse</code>.</p>
+  </section>
+
+  <h2>References</h2>
+  <ul>
+    <li><a href="https://iceberg.apache.org/">Apache Iceberg project</a></li>
+    <li><a href="https://www.oracle.com/database/technologies/maven-central-guide.html">Oracle JDBC Maven Central Guide</a></li>
+    <li><a href="https://www.oracle.com/database/">Oracle AI Database</a></li>
+  </ul>
+</article>
+</body>
+</html>

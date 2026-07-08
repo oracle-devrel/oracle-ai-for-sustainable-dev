@@ -11,6 +11,7 @@ oracle-ai-database-gcp-gemini/.env_oracle-public-oracle-agent-26ai
 oracle-ai-database-gcp-gemini/.env_oracle-public-kabharadbtest1
 oracle-ai-database-gcp-gemini/.env_oracle-public-dbatpst0324
 oracle-ai-database-gcp-gemini/.env_adb=*
+lakehouse/.env
 
 # TLS/SSL certificates and keys
 **/tls/

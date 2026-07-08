@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: springboot-oracle-lakehouse-iceberg-demo
+  datasource:
+    url: ${DB_URL:jdbc:oracle:thin:@//localhost:1521/FREEPDB1}
+    username: ${DB_USERNAME:lakehouse_demo}
+    password: ${DB_PASSWORD:}
+
+lakehouse:
+  ucp:
+    connection-pool-name: ${DB_POOL_NAME:LakehouseIcebergUcpPool}
+    initial-pool-size: ${DB_INITIAL_POOL_SIZE:1}
+    min-pool-size: ${DB_MIN_POOL_SIZE:1}
+    max-pool-size: ${DB_POOL_SIZE:4}
+    row-prefetch: ${ORACLE_JDBC_ROW_PREFETCH:100}
+  iceberg:
+    table-name: ${ICEBERG_TABLE_NAME:}
+    sample-limit: ${ICEBERG_SAMPLE_LIMIT:25}
+    query-timeout-seconds: ${ICEBERG_QUERY_TIMEOUT_SECONDS:30}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+
+logging:
+  level:
+    com.oracle.demo.lakehouse: ${APP_LOG_LEVEL:INFO}
