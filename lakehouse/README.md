@@ -7,8 +7,8 @@ table or view is available in Oracle AI Database.
 
 ## What is in this folder?
 
-- `pom.xml` - Spring Boot 3.5 app using Java 25, `ojdbc17`, `ucp17`,
-  and Oracle wallet support libraries.
+- `pom.xml` - Spring Boot 3.5 app using Java 25, `ojdbc17-production`,
+  and Oracle UCP.
 - `src/main/java` - REST endpoints for database metadata and Iceberg table samples.
 - `src/main/resources/application.yaml` - environment-driven Oracle UCP/JDBC and demo settings.
 - `.env_example` - local configuration template.
@@ -23,9 +23,10 @@ table or view is available in Oracle AI Database.
   exposes Iceberg/lakehouse data.
 - Network access from the app to the database.
 
-The app uses the Oracle JDBC 17-plus driver line through `ojdbc17` and `ucp17`.
-It also includes the Oracle wallet support libraries needed for Autonomous
-Database wallet connections. The app sets `java.version` to `25` as requested.
+The app uses the Oracle JDBC production dependency to keep the driver,
+wallet/security libraries, and related runtime artifacts aligned. It also
+depends directly on `ucp17` because the code creates an Oracle UCP connection
+pool explicitly. The app sets `java.version` to `25` as requested.
 
 ## Configure
 

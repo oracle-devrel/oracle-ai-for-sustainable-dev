@@ -25,7 +25,7 @@
 <article>
   <p class="eyebrow">Oracle AI Database Lakehouse</p>
   <h1>Build a Spring Boot Lakehouse App with Oracle AI Database, Oracle JDBC, and Iceberg Tables</h1>
-  <p class="subtitle">A practical Java 25 and <code>ojdbc17</code> demo for querying Iceberg-backed lakehouse data through Oracle SQL.</p>
+  <p class="subtitle">A practical Spring Boot demo for querying Iceberg-backed lakehouse data through Oracle SQL and ordinary JDBC.</p>
   <p>
     All source code, configuration, SQL setup scripts, and the sample Spring Boot app are available in the
     <a href="https://github.com/oracle-devrel/oracle-ai-for-sustainable-dev/tree/main/lakehouse">lakehouse folder on GitHub</a>.
@@ -41,8 +41,8 @@
     <ul>
       <li>Apache Iceberg gives object-store data table semantics: schema evolution, snapshots, partitioning, and multi-engine access.</li>
       <li>A lakehouse combines data lake storage economics with data warehouse-style SQL, governance, and analytics.</li>
-      <li>Oracle Autonomous AI Lakehouse combines Autonomous AI Database with open lakehouse access, including Iceberg tables across OCI, AWS, Azure, Google Cloud, and Exadata Cloud@Customer.</li>
-      <li>The sample app uses Java 25, Spring Boot, <code>ojdbc17</code>, <code>ucp17</code>, and Oracle wallet support libraries to query a configured Iceberg-backed Oracle table or view.</li>
+      <li>Oracle Autonomous AI Lakehouse combines Autonomous AI Database with open lakehouse access for AI and analytics across cloud and lakehouse data.</li>
+      <li>The sample app uses Spring Boot, Oracle JDBC production dependencies, and Oracle UCP to query a configured Iceberg-backed Oracle table or view.</li>
     </ul>
   </section>
 
@@ -83,7 +83,7 @@
     </tr>
     <tr>
       <td>Catalog or metadata pointer</td>
-      <td>Resolves table metadata through a catalog such as AWS Glue, Polaris, Unity/UniForm, Hadoop-style metadata, or a direct <code>metadata.json</code> pointer.</td>
+      <td>Resolves table metadata through a supported catalog such as AWS Glue, Snowflake Polaris/Horizon, Databricks Unity/UniForm, Hadoop-style metadata, or a direct <code>metadata.json</code> pointer.</td>
     </tr>
     <tr>
       <td>Oracle Autonomous AI Database</td>
@@ -112,40 +112,26 @@ curl 'http://localhost:8080/api/lakehouse/sample?tableName=LAKEHOUSE_DEMO.SALES_
 
   <h2>Maven Dependencies</h2>
   <p>
-    The demo follows the repo's Java 25 pattern and uses the Oracle JDBC 17-plus driver line.
-    The app depends directly on <code>ojdbc17</code> for the driver, <code>ucp17</code> for Oracle UCP connection pooling,
-    and the Oracle wallet/security libraries needed for Autonomous Database wallet connections.
+    The app uses the Oracle JDBC production dependency to keep the driver, wallet/security libraries, and related
+    runtime artifacts aligned. It also depends directly on <code>ucp17</code> because the code creates an Oracle UCP
+    pool explicitly.
   </p>
   <pre><code>&lt;properties&gt;
   &lt;java.version&gt;25&lt;/java.version&gt;
   &lt;oracle.jdbc.version&gt;23.26.2.0.0&lt;/oracle.jdbc.version&gt;
-  &lt;oracle.osdt.version&gt;21.21.0.0&lt;/oracle.osdt.version&gt;
+  &lt;oracle-database.version&gt;${oracle.jdbc.version}&lt;/oracle-database.version&gt;
 &lt;/properties&gt;
 
 &lt;dependency&gt;
   &lt;groupId&gt;com.oracle.database.jdbc&lt;/groupId&gt;
-  &lt;artifactId&gt;ojdbc17&lt;/artifactId&gt;
+  &lt;artifactId&gt;ojdbc17-production&lt;/artifactId&gt;
   &lt;version&gt;${oracle.jdbc.version}&lt;/version&gt;
+  &lt;type&gt;pom&lt;/type&gt;
 &lt;/dependency&gt;
 &lt;dependency&gt;
   &lt;groupId&gt;com.oracle.database.jdbc&lt;/groupId&gt;
   &lt;artifactId&gt;ucp17&lt;/artifactId&gt;
   &lt;version&gt;${oracle.jdbc.version}&lt;/version&gt;
-&lt;/dependency&gt;
-&lt;dependency&gt;
-  &lt;groupId&gt;com.oracle.database.security&lt;/groupId&gt;
-  &lt;artifactId&gt;oraclepki&lt;/artifactId&gt;
-  &lt;version&gt;${oracle.jdbc.version}&lt;/version&gt;
-&lt;/dependency&gt;
-&lt;dependency&gt;
-  &lt;groupId&gt;com.oracle.database.security&lt;/groupId&gt;
-  &lt;artifactId&gt;osdt_core&lt;/artifactId&gt;
-  &lt;version&gt;${oracle.osdt.version}&lt;/version&gt;
-&lt;/dependency&gt;
-&lt;dependency&gt;
-  &lt;groupId&gt;com.oracle.database.security&lt;/groupId&gt;
-  &lt;artifactId&gt;osdt_cert&lt;/artifactId&gt;
-  &lt;version&gt;${oracle.osdt.version}&lt;/version&gt;
 &lt;/dependency&gt;</code></pre>
 
   <h2>How to Run the Example</h2>
@@ -178,9 +164,13 @@ curl http://localhost:8080/api/lakehouse/summary</code></pre>
 
   <h2>How to Set Up Oracle AI Lakehouse for This App</h2>
   <p>
-    The exact SQL depends on your Iceberg source and catalog. Oracle's documentation covers catalog-managed options
-    such as AWS Glue, Snowflake Polaris/Horizon, Databricks Unity Catalog with UniForm, and non-catalog options such
-    as Hadoop-style metadata or a direct <code>metadata.json</code> pointer. The common setup pattern is:
+    The exact SQL depends on your Iceberg source and catalog. Oracle's Iceberg documentation lists the supported
+    configurations, including AWS Glue with Amazon S3, Snowflake Polaris/Horizon with Amazon S3 or Azure ADLS Gen2,
+    Databricks Unity Catalog with UniForm on Amazon S3 or Azure ADLS Gen2, Hadoop-style metadata on OCI Object
+    Storage, and direct <code>metadata.json</code> pointers for Amazon S3, Azure ADLS Gen2, or OCI Object Storage.
+    Oracle's broader Autonomous AI Lakehouse positioning spans multiple clouds, including Google Cloud, but the
+    current Iceberg setup matrix should be treated as the source of truth for which object stores and catalogs are
+    supported for this particular external-table path. The common setup pattern is:
   </p>
   <ol>
     <li>Provision or use an Autonomous AI Database or Autonomous AI Lakehouse instance.</li>
@@ -259,8 +249,8 @@ curl http://localhost:8080/api/lakehouse/summary</code></pre>
     <h2>FAQ</h2>
     <h3>Does the Java app need to understand Iceberg files?</h3>
     <p>No. Oracle AI Database exposes the lakehouse/Iceberg data as SQL objects. The Java app uses Oracle JDBC and SQL.</p>
-    <h3>Is <code>ojdbc17</code> a JDK 25 artifact?</h3>
-    <p>No. It is the Oracle JDBC 17-plus driver line. This sample sets Java 25 for the Spring Boot build while using that JDBC line.</p>
+    <h3>Why use the Oracle JDBC production dependency?</h3>
+    <p>It keeps the driver, wallet/security libraries, and related runtime artifacts aligned, while <code>ucp17</code> supplies the explicit UCP pool used by this demo.</p>
     <h3>Can this work with Autonomous Database?</h3>
     <p>Yes, when the database environment is configured with the relevant lakehouse/Iceberg support and the app can connect to it.</p>
     <h3>Does the app change when I move from the smoke-test table to an Iceberg-backed table?</h3>
