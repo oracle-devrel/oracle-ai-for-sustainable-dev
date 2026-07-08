@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="520" viewBox="0 0 1120 520" role="img" aria-labelledby="title desc">
+  <title id="title">Iceberg table metadata connects object storage files to Oracle AI Database SQL</title>
+  <desc id="desc">Diagram showing Parquet files in object storage, Apache Iceberg metadata, Oracle AI Database SQL and governance, and a Spring Boot JDBC application.</desc>
+  <rect width="1120" height="520" fill="#ffffff"/>
+  <text x="56" y="58" font-family="Arial, Helvetica, sans-serif" font-size="34" font-weight="700" fill="#1f2933">Why Iceberg Matters to a Lakehouse</text>
+  <text x="56" y="92" font-family="Arial, Helvetica, sans-serif" font-size="18" fill="#536171">Files become governed, versioned tables that Oracle AI Database can expose through SQL.</text>
+
+  <rect x="60" y="150" width="230" height="190" rx="8" fill="#f2f4f6" stroke="#ccd5df"/>
+  <text x="88" y="190" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="700" fill="#244b5a">Object Storage</text>
+  <text x="88" y="226" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#1f2933">Parquet / ORC / AVRO</text>
+  <text x="88" y="256" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#1f2933">Low-cost lake files</text>
+  <text x="88" y="286" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#1f2933">Open data layout</text>
+
+  <rect x="342" y="128" width="240" height="236" rx="8" fill="#fff8f6" stroke="#d86b5b"/>
+  <text x="372" y="168" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="700" fill="#c74634">Iceberg Metadata</text>
+  <text x="372" y="204" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#1f2933">metadata.json</text>
+  <text x="372" y="234" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#1f2933">Snapshots</text>
+  <text x="372" y="264" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#1f2933">Manifests</text>
+  <text x="372" y="294" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#1f2933">Schema evolution</text>
+  <text x="372" y="324" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#1f2933">Partition tracking</text>
+
+  <rect x="636" y="128" width="240" height="236" rx="8" fill="#f5f7f9" stroke="#8fa4b7"/>
+  <text x="666" y="168" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="700" fill="#1f2933">Oracle AI Database</text>
+  <text x="666" y="204" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#1f2933">External table / view</text>
+  <text x="666" y="234" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#1f2933">SQL optimizer</text>
+  <text x="666" y="264" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#1f2933">Security and governance</text>
+  <text x="666" y="294" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#1f2933">Lake cache / acceleration</text>
+
+  <rect x="928" y="168" width="140" height="156" rx="8" fill="#f2f4f6" stroke="#ccd5df"/>
+  <text x="954" y="208" font-family="Arial, Helvetica, sans-serif" font-size="20" font-weight="700" fill="#1f2933">Spring Boot</text>
+  <text x="958" y="246" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#1f2933">Oracle JDBC</text>
+  <text x="958" y="276" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#1f2933">UCP pool</text>
+
+  <path d="M290 245 L342 245" stroke="#c74634" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M582 245 L636 245" stroke="#c74634" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M876 245 L928 245" stroke="#c74634" stroke-width="3" marker-end="url(#arrow)"/>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#c74634"/>
+    </marker>
+  </defs>
+</svg>

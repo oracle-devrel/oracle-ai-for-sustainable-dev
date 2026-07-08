@@ -1,0 +1,94 @@
+{
+  "format-version": 2,
+  "table-uuid": "11111111-2222-3333-4444-555555555555",
+  "location": "https://objectstorage.<region>.oraclecloud.com/n/<namespace>/b/<bucket>/o/lakehouse/sales_iceberg",
+  "last-sequence-number": 1,
+  "last-updated-ms": 1773100800000,
+  "last-column-id": 5,
+  "current-schema-id": 0,
+  "schemas": [
+    {
+      "type": "struct",
+      "schema-id": 0,
+      "fields": [
+        {
+          "id": 1,
+          "name": "sale_id",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "id": 2,
+          "name": "customer_id",
+          "required": false,
+          "type": "long"
+        },
+        {
+          "id": 3,
+          "name": "sale_ts",
+          "required": false,
+          "type": "timestamp"
+        },
+        {
+          "id": 4,
+          "name": "channel",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 5,
+          "name": "amount",
+          "required": false,
+          "type": "decimal(12,2)"
+        }
+      ]
+    }
+  ],
+  "default-spec-id": 0,
+  "partition-specs": [
+    {
+      "spec-id": 0,
+      "fields": []
+    }
+  ],
+  "last-partition-id": 999,
+  "default-sort-order-id": 0,
+  "sort-orders": [
+    {
+      "order-id": 0,
+      "fields": []
+    }
+  ],
+  "properties": {
+    "owner": "lakehouse-demo",
+    "write.format.default": "parquet"
+  },
+  "current-snapshot-id": 1001,
+  "refs": {
+    "main": {
+      "snapshot-id": 1001,
+      "type": "branch"
+    }
+  },
+  "snapshots": [
+    {
+      "sequence-number": 1,
+      "snapshot-id": 1001,
+      "timestamp-ms": 1773100800000,
+      "summary": {
+        "operation": "append",
+        "added-data-files": "1",
+        "added-records": "3"
+      },
+      "manifest-list": "https://objectstorage.<region>.oraclecloud.com/n/<namespace>/b/<bucket>/o/lakehouse/sales_iceberg/metadata/snap-1001.avro",
+      "schema-id": 0
+    }
+  ],
+  "snapshot-log": [
+    {
+      "timestamp-ms": 1773100800000,
+      "snapshot-id": 1001
+    }
+  ],
+  "metadata-log": []
+}

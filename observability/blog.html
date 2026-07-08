@@ -442,9 +442,7 @@ end;
     Prometheus/OpenTelemetry formats. Oracle's exporter project includes
     default metrics, custom metrics defined in YAML or TOML, support for single
     instance, clustered, Autonomous, cloud, on-premises, Kubernetes, and
-    container-based databases, plus sample Grafana dashboards. It also supports
-    database authentication patterns such as plaintext, TLS, and Oracle Wallet,
-    and can use vault integrations for credentials.
+    container-based databases, plus sample Grafana dashboards.
   </p>
 
   <table>
@@ -474,18 +472,6 @@ end;
   <pre><code>Spring Boot + Oracle JDBC provider -> OTLP traces -> collector/backend
 Oracle AI Database server-side exporter -> HTTPS OTLP traces -> collector/backend
 Oracle AI Database Metrics Exporter -> Prometheus/OpenTelemetry metrics -> collector/backend</code></pre>
-
-  <p>
-    In a Kubernetes deployment, run the metrics exporter as a Deployment or
-    sidecar-style supporting service, store database credentials in Kubernetes
-    Secrets or a vault integration, mount the wallet when required, and point
-    Prometheus or an OpenTelemetry Collector at the exporter's scrape endpoint.
-    For a VM or local Linux setup, run the exporter container or binary with a
-    small config file that names the database connection, metrics file, scrape
-    interval, and query timeout. The external exporter should use a
-    least-privileged database user with only the catalog/performance views and
-    custom metric objects it needs.
-  </p>
 
   <p>
     Used together, traces and metrics give a stronger agentic AI operations

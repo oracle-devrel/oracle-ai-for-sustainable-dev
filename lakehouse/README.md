@@ -13,6 +13,7 @@ table or view is available in Oracle AI Database.
 - `src/main/resources/application.yaml` - environment-driven Oracle UCP/JDBC and demo settings.
 - `.env_example` - local configuration template.
 - `sql/show_lakehouse_metadata.sql` - helper queries for checking visible SQL objects.
+- `sample-iceberg/metadata.json` - illustrative Iceberg metadata file shape for the direct metadata setup path.
 - `blog.html` - draft blog post explaining the example and the lakehouse context.
 
 ## Prerequisites
@@ -104,6 +105,12 @@ not parse Iceberg metadata itself and does not read Parquet files directly.
 That is the important application pattern for Oracle JDBC Iceberg table support:
 after the database exposes the Iceberg table as a SQL object, the Java service
 uses normal JDBC APIs, normal SQL, and normal result-set handling.
+
+The included `sample-iceberg/metadata.json` is a readable example of the
+Iceberg metadata file referenced by the direct metadata setup path. A real
+external table requires a complete Iceberg table in object storage, including
+the metadata file, manifest list, manifests, and data files referenced by that
+metadata.
 
 ## Notes
 

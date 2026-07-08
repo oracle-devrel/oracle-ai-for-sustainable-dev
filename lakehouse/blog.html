@@ -57,6 +57,10 @@
     and operational patterns people expect from a warehouse. In the Oracle world, Oracle AI Database can be the SQL
     engine and governance point for lakehouse data, while applications still connect through the familiar Oracle JDBC path.
   </p>
+  <figure>
+    <img src="images/iceberg-lakehouse-concept.svg" alt="Diagram showing object storage files, Iceberg metadata, Oracle AI Database SQL and governance, and a Spring Boot JDBC application.">
+    <figcaption>Iceberg metadata turns lake files into table snapshots that Oracle AI Database can expose through SQL.</figcaption>
+  </figure>
 
   <h2>Where Oracle Autonomous AI Lakehouse Fits</h2>
   <p>
@@ -94,6 +98,10 @@
       <td>Connects through UCP and queries the configured SQL object without parsing Iceberg metadata in Java.</td>
     </tr>
   </table>
+  <figure>
+    <img src="images/iceberg-access-models.svg" alt="Diagram comparing catalog-managed Iceberg access with direct metadata access for Oracle AI Database lakehouse queries.">
+    <figcaption>Catalog-managed access is usually the production path; direct metadata is useful when a specific Iceberg metadata file is the table boundary.</figcaption>
+  </figure>
 
   <h2>What the Spring Boot App Demonstrates</h2>
   <p>
@@ -164,14 +172,23 @@ curl http://localhost:8080/api/lakehouse/summary</code></pre>
 
   <h2>How to Set Up Oracle AI Lakehouse for This App</h2>
   <p>
-    The exact SQL depends on your Iceberg source and catalog. Oracle's Iceberg documentation lists the supported
-    configurations, including AWS Glue with Amazon S3, Snowflake Polaris/Horizon with Amazon S3 or Azure ADLS Gen2,
-    Databricks Unity Catalog with UniForm on Amazon S3 or Azure ADLS Gen2, Hadoop-style metadata on OCI Object
-    Storage, and direct <code>metadata.json</code> pointers for Amazon S3, Azure ADLS Gen2, or OCI Object Storage.
-    Oracle's broader Autonomous AI Lakehouse positioning spans multiple clouds, including Google Cloud, but the
-    current Iceberg setup matrix should be treated as the source of truth for which object stores and catalogs are
-    supported for this particular external-table path. The common setup pattern is:
+    The exact SQL depends on your Iceberg source and catalog. Oracle's
+    <a href="https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/query-external-data-apache-iceberg.html">Apache Iceberg external table documentation</a>
+    is the source of truth for supported configurations. At a high level, it documents:
   </p>
+  <ul>
+    <li>Catalog-managed access with AWS Glue and Amazon S3.</li>
+    <li>Catalog-managed access with Snowflake Polaris or Horizon and Amazon S3 or Azure ADLS Gen2.</li>
+    <li>Catalog-managed access with Databricks Unity Catalog / UniForm and Amazon S3 or Azure ADLS Gen2.</li>
+    <li>Non-catalog access with Hadoop-style metadata on OCI Object Storage.</li>
+    <li>Direct <code>metadata.json</code> access on Amazon S3, Azure ADLS Gen2, or OCI Object Storage.</li>
+  </ul>
+  <p>
+    Oracle's broader <a href="https://www.oracle.com/autonomous-database/autonomous-ai-lakehouse/">Autonomous AI Lakehouse</a>
+    positioning spans cloud and lakehouse data, but the Iceberg documentation's setup matrix should be used when
+    choosing the object store and catalog combination for this external-table path.
+  </p>
+  <p>The common setup pattern is:</p>
   <ol>
     <li>Provision or use an Autonomous AI Database or Autonomous AI Lakehouse instance.</li>
     <li>Choose the Iceberg access model: catalog-managed for governed production data products, or direct metadata for fixed-snapshot tests and audits.</li>
@@ -183,8 +200,12 @@ curl http://localhost:8080/api/lakehouse/summary</code></pre>
     <li>Point this Spring Boot app at that SQL object with <code>ICEBERG_TABLE_NAME</code>.</li>
   </ol>
   <p>
-    The following sketch is intentionally generic. Replace the placeholders with the specific provider values from
-    the Oracle documentation for your catalog and object store.
+    This direct-metadata example matches Oracle's documented Iceberg access pattern: the
+    <code>file_uri_list</code> points to an Iceberg <code>metadata.json</code> file, and the
+    <code>format</code> JSON declares the Iceberg access protocol. The repository includes a
+    sample shape at <code>lakehouse/sample-iceberg/metadata.json</code>. To run this against a real object store,
+    upload a complete Iceberg table, including the metadata file, manifest list, manifests, and data files that
+    the metadata references, then replace the URI with that real metadata file location.
   </p>
   <pre><code>-- 1. Allow the schema to reach the required HTTPS endpoint.
 BEGIN
@@ -216,7 +237,7 @@ BEGIN
   DBMS_CLOUD.CREATE_EXTERNAL_TABLE(
     table_name      =&gt; 'SALES_ICEBERG',
     credential_name =&gt; 'OBJECT_STORE_CRED',
-    file_uri_list   =&gt; 'https://objectstorage.&lt;region&gt;.oraclecloud.com/n/&lt;namespace&gt;/b/&lt;bucket&gt;/o/&lt;path&gt;/metadata.json',
+    file_uri_list   =&gt; 'https://objectstorage.&lt;region&gt;.oraclecloud.com/n/&lt;namespace&gt;/b/&lt;bucket&gt;/o/lakehouse/sales_iceberg/metadata.json',
     format          =&gt; '{"access_protocol":{"protocol_type":"iceberg"}}');
 END;
 /

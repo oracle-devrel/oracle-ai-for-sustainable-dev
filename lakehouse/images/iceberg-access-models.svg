@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="560" viewBox="0 0 1120 560" role="img" aria-labelledby="title desc">
+  <title id="title">Catalog managed and direct metadata Iceberg access models</title>
+  <desc id="desc">Diagram comparing catalog managed Iceberg access for production data products with direct metadata access for fixed snapshots and test cases.</desc>
+  <rect width="1120" height="560" fill="#ffffff"/>
+  <text x="56" y="58" font-family="Arial, Helvetica, sans-serif" font-size="34" font-weight="700" fill="#1f2933">Choose the Iceberg Access Model</text>
+  <text x="56" y="92" font-family="Arial, Helvetica, sans-serif" font-size="18" fill="#536171">Oracle AI Database queries Iceberg data through supported catalog-managed or direct-metadata paths.</text>
+
+  <rect x="70" y="140" width="455" height="320" rx="8" fill="#f5f7f9" stroke="#8fa4b7"/>
+  <text x="105" y="184" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700" fill="#1f2933">Catalog-managed</text>
+  <text x="105" y="222" font-family="Arial, Helvetica, sans-serif" font-size="17" fill="#1f2933">Best for governed production data products</text>
+  <line x1="105" y1="244" x2="490" y2="244" stroke="#ccd5df"/>
+  <text x="105" y="282" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#1f2933">Supported examples in Oracle docs:</text>
+  <text x="125" y="316" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#1f2933">AWS Glue + Amazon S3</text>
+  <text x="125" y="346" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#1f2933">Snowflake Polaris/Horizon + S3 or ADLS Gen2</text>
+  <text x="125" y="376" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#1f2933">Databricks Unity/UniForm + S3 or ADLS Gen2</text>
+  <text x="105" y="422" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#536171">Use when catalog governance, discovery, and refresh workflows matter.</text>
+
+  <rect x="595" y="140" width="455" height="320" rx="8" fill="#fff8f6" stroke="#d86b5b"/>
+  <text x="630" y="184" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700" fill="#c74634">Direct metadata</text>
+  <text x="630" y="222" font-family="Arial, Helvetica, sans-serif" font-size="17" fill="#1f2933">Best for fixed snapshots, tests, and audits</text>
+  <line x1="630" y1="244" x2="1015" y2="244" stroke="#e5b1a9"/>
+  <text x="630" y="282" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#1f2933">Supported examples in Oracle docs:</text>
+  <text x="650" y="316" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#1f2933">metadata.json on Amazon S3</text>
+  <text x="650" y="346" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#1f2933">metadata.json on Azure ADLS Gen2</text>
+  <text x="650" y="376" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#1f2933">metadata.json or Hadoop metadata on OCI Object Storage</text>
+  <text x="630" y="422" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#536171">Use when a specific metadata file is the desired table boundary.</text>
+</svg>
