@@ -426,6 +426,75 @@ end;
   ]
 }</code></pre>
 
+  <h2>Oracle Database Metrics Exporter (External)</h2>
+  <p>
+    Server-side OpenTelemetry spans answer request-scoped questions: which
+    agent request reached the database, how long that database work took, which
+    SQL ID was involved, and how the database span fits into the same trace as
+    the Java service. For fleet-level and time-series questions, pair that with
+    the external Oracle AI Database Metrics Exporter from
+    <a href="https://github.com/oracle/oracle-db-appdev-monitoring">oracle/oracle-db-appdev-monitoring</a>.
+  </p>
+
+  <p>
+    The exporter is a separate process or container that connects to one or
+    more Oracle AI Database instances and exposes database metrics in standard
+    Prometheus/OpenTelemetry formats. Oracle's exporter project includes
+    default metrics, custom metrics defined in YAML or TOML, support for single
+    instance, clustered, Autonomous, cloud, on-premises, Kubernetes, and
+    container-based databases, plus sample Grafana dashboards. It also supports
+    database authentication patterns such as plaintext, TLS, and Oracle Wallet,
+    and can use vault integrations for credentials.
+  </p>
+
+  <table>
+    <tr>
+      <th>Signal</th>
+      <th>Best question</th>
+      <th>How it complements this demo</th>
+    </tr>
+    <tr>
+      <td>Server-side OpenTelemetry trace export</td>
+      <td>What happened during this specific agent request?</td>
+      <td>Shows the database span in the same trace as Spring Boot, JDBC, SQL ID, module/action, and agent metadata.</td>
+    </tr>
+    <tr>
+      <td>Oracle AI Database Metrics Exporter</td>
+      <td>What is happening across the database over time?</td>
+      <td>Adds dashboards and alerts for resource use, sessions, waits, workload health, and custom business or security metrics.</td>
+    </tr>
+  </table>
+
+  <p>
+    A practical setup is to run both signals into the same observability
+    platform. Keep this demo's OTLP trace path for request-level causality, and
+    deploy the exporter beside the database environment for database metrics:
+  </p>
+
+  <pre><code>Spring Boot + Oracle JDBC provider -> OTLP traces -> collector/backend
+Oracle AI Database server-side exporter -> HTTPS OTLP traces -> collector/backend
+Oracle AI Database Metrics Exporter -> Prometheus/OpenTelemetry metrics -> collector/backend</code></pre>
+
+  <p>
+    In a Kubernetes deployment, run the metrics exporter as a Deployment or
+    sidecar-style supporting service, store database credentials in Kubernetes
+    Secrets or a vault integration, mount the wallet when required, and point
+    Prometheus or an OpenTelemetry Collector at the exporter's scrape endpoint.
+    For a VM or local Linux setup, run the exporter container or binary with a
+    small config file that names the database connection, metrics file, scrape
+    interval, and query timeout. The external exporter should use a
+    least-privileged database user with only the catalog/performance views and
+    custom metric objects it needs.
+  </p>
+
+  <p>
+    Used together, traces and metrics give a stronger agentic AI operations
+    story: the trace explains one request all the way into Oracle AI Database,
+    while the metrics exporter shows whether that request happened during
+    broader database pressure, session growth, wait spikes, alert-log events,
+    or workload-specific metric changes.
+  </p>
+
   <h2>How Can This Connect to Security and Auditing?</h2>
   <p>
     The observability solution can be further extended to correlate with Oracle
@@ -525,6 +594,8 @@ end;
     <li>Oracle <code>DBMS_OBSERVABILITY</code>: <a href="https://docs.oracle.com/en/database/oracle/oracle-database/26/arpls/dbms_observability.html">https://docs.oracle.com/en/database/oracle/oracle-database/26/arpls/dbms_observability.html</a></li>
     <li>Oracle SQL monitoring and tracing: <a href="https://docs.oracle.com/en/database/oracle/oracle-database/26/tgsql/monitoring-and-tracing-sql.html">https://docs.oracle.com/en/database/oracle/oracle-database/26/tgsql/monitoring-and-tracing-sql.html</a></li>
     <li>Oracle AI Database application tracing: <a href="https://docs.oracle.com/en/database/oracle/oracle-database/26/tgsql/performing-application-tracing.html">https://docs.oracle.com/en/database/oracle/oracle-database/26/tgsql/performing-application-tracing.html</a></li>
+    <li>Oracle AI Database Metrics Exporter project: <a href="https://github.com/oracle/oracle-db-appdev-monitoring">https://github.com/oracle/oracle-db-appdev-monitoring</a></li>
+    <li>Oracle Database Metrics Exporter: <a href="https://www.oracle.com/database/database-exporter/">https://www.oracle.com/database/database-exporter/</a></li>
     <li>OpenTelemetry Java agent: <a href="https://opentelemetry.io/docs/zero-code/java/agent/">https://opentelemetry.io/docs/zero-code/java/agent/</a></li>
     <li>OpenTelemetry protocol exporters: <a href="https://opentelemetry.io/docs/specs/otel/protocol/exporter/">https://opentelemetry.io/docs/specs/otel/protocol/exporter/</a></li>
     <li>Spring Boot tracing: <a href="https://docs.spring.io/spring-boot/reference/actuator/tracing.html">https://docs.spring.io/spring-boot/reference/actuator/tracing.html</a></li>
