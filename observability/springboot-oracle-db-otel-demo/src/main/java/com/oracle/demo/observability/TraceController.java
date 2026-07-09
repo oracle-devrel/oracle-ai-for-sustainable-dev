@@ -98,10 +98,10 @@ public class TraceController {
       oracleConnection.beginRequest();
       try {
         configureTraceContext(oracleConnection, trace);
-        configureDatabaseSession(connection, trace, "springboot-oracle-db-otel-demo", "roundtrip-start");
+        configureDatabaseSession(oracleConnection, trace, "springboot-oracle-db-otel-demo", "roundtrip-start");
         toggleServerTelemetry(oracleConnection);
 
-        configureDatabaseAction(connection, "context-query");
+        configureDatabaseAction(oracleConnection, "context-query");
         Map<String, Object> databaseContext = queryForMap(connection, """
             select
               sys_context('USERENV', 'CURRENT_SCHEMA') as schema_name,
@@ -114,7 +114,7 @@ public class TraceController {
             from dual
             """);
 
-        configureDatabaseAction(connection, "metadata-query");
+        configureDatabaseAction(oracleConnection, "metadata-query");
         Number tableCount = queryForNumber(connection, "select count(*) from user_tables");
         Map<String, Object> workload = runEnrichedWorkload(connection);
 
@@ -131,7 +131,7 @@ public class TraceController {
         response.put("message", "Check Jaeger for the HTTP span, Micrometer observation, Oracle JDBC roundtrips, and the oracle-db DB Server span with module/action/session metadata.");
         return response;
       } finally {
-        clearDatabaseSession(connection);
+        clearDatabaseSession(oracleConnection);
         oracleConnection.endRequest();
       }
     } catch (SQLException e) {
@@ -149,17 +149,17 @@ public class TraceController {
       oracleConnection.beginRequest();
       try {
         configureTraceContext(oracleConnection, trace);
-        configureDatabaseSession(connection, trace, "agent:" + agentId, "agent-task-start");
+        configureDatabaseSession(oracleConnection, trace, "agent:" + agentId, "agent-task-start");
         toggleServerTelemetry(oracleConnection);
         ensureAgentEventTable(connection);
         operationExecutionId = beginMonitoredOperation(connection, operationName, agentId, task, trace);
 
-        configureDatabaseAction(connection, "agent-workload-query");
+        configureDatabaseAction(oracleConnection, "agent-workload-query");
         AgentWorkloadResult agentResult = runAgentWorkload(connection, agentId);
 
         List<String> executionPlan = tryDisplayCursorPlan(connection);
         String sqlId = extractSqlId(executionPlan);
-        configureDatabaseAction(connection, "agent-plan-report");
+        configureDatabaseAction(oracleConnection, "agent-plan-report");
         Map<String, Object> sqlStats = sqlId.isBlank()
             ? Map.of("available", false, "reason", "SQL_ID was not present in DBMS_XPLAN output")
             : trySqlStats(connection, sqlId);
@@ -167,12 +167,12 @@ public class TraceController {
             ? Map.of("available", false, "reason", "SQL_ID was not present in DBMS_XPLAN output")
             : trySqlDetails(connection, sqlId);
 
-        configureDatabaseAction(connection, "agent-sql-monitor");
+        configureDatabaseAction(oracleConnection, "agent-sql-monitor");
         Map<String, Object> sqlMonitor = sqlId.isBlank()
             ? Map.of("available", false, "reason", "SQL_ID was not present in DBMS_XPLAN output")
             : trySqlMonitorReport(connection, sqlId);
 
-        configureDatabaseAction(connection, "agent-session-summary");
+        configureDatabaseAction(oracleConnection, "agent-session-summary");
         Map<String, Object> databaseContext = queryForMap(connection, """
             select
               sys_context('USERENV', 'CURRENT_SCHEMA') as schema_name,
@@ -220,7 +220,7 @@ public class TraceController {
         if (operationExecutionId != null) {
           endMonitoredOperation(connection, operationName, operationExecutionId);
         }
-        clearDatabaseSession(connection);
+        clearDatabaseSession(oracleConnection);
         oracleConnection.endRequest();
       }
     } catch (SQLException e) {
@@ -242,19 +242,14 @@ public class TraceController {
   }
 
   private void configureDatabaseSession(
-      Connection connection, Map<String, String> trace, String module, String action)
+      OracleConnection oracleConnection, Map<String, String> trace, String module, String action)
       throws SQLException {
-    try (CallableStatement statement = connection.prepareCall("""
-        begin
-          dbms_application_info.set_module(?, ?);
-          dbms_session.set_identifier(?);
-        end;
-        """)) {
-      statement.setString(1, shortValue(module, 48));
-      statement.setString(2, action);
-      statement.setString(3, "traceId=" + shortValue(trace.get("traceId")));
-      statement.execute();
-    }
+    String[] metrics = new String[OracleConnection.END_TO_END_STATE_INDEX_MAX];
+    metrics[OracleConnection.END_TO_END_MODULE_INDEX] = shortValue(module, 48);
+    metrics[OracleConnection.END_TO_END_ACTION_INDEX] = shortValue(action, 32);
+    metrics[OracleConnection.END_TO_END_CLIENTID_INDEX] = "traceId=" + shortValue(trace.get("traceId"));
+    metrics[OracleConnection.END_TO_END_ECID_INDEX] = shortValue(trace.get("traceId"));
+    oracleConnection.setEndToEndMetrics(metrics, (short) 0);
   }
 
   private Long beginMonitoredOperation(
@@ -294,22 +289,21 @@ public class TraceController {
   }
 
   private void configureDatabaseAction(Connection connection, String action) throws SQLException {
-    try (CallableStatement statement =
-        connection.prepareCall("begin dbms_application_info.set_action(?); end;")) {
-      statement.setString(1, action);
-      statement.execute();
-    }
+    configureDatabaseAction(connection.unwrap(OracleConnection.class), action);
   }
 
-  private void clearDatabaseSession(Connection connection) throws SQLException {
-    try (Statement statement = connection.createStatement()) {
-      statement.execute("""
-          begin
-            dbms_application_info.set_module(null, null);
-            dbms_session.clear_identifier;
-          end;
-          """);
+  private void configureDatabaseAction(OracleConnection oracleConnection, String action) throws SQLException {
+    String[] metrics = oracleConnection.getEndToEndMetrics();
+    if (metrics == null || metrics.length < OracleConnection.END_TO_END_STATE_INDEX_MAX) {
+      metrics = new String[OracleConnection.END_TO_END_STATE_INDEX_MAX];
     }
+    metrics[OracleConnection.END_TO_END_ACTION_INDEX] = shortValue(action, 32);
+    oracleConnection.setEndToEndMetrics(metrics, (short) 0);
+  }
+
+  private void clearDatabaseSession(OracleConnection oracleConnection) throws SQLException {
+    oracleConnection.setEndToEndMetrics(
+        new String[OracleConnection.END_TO_END_STATE_INDEX_MAX], (short) 0);
   }
 
   private Map<String, Object> runEnrichedWorkload(Connection connection) throws SQLException {

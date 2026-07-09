@@ -328,14 +328,17 @@ oracleConnection.setServerTelemetry(requestedTelemetry);</code></pre>
   <p>
     A generic <code>DB Server</code> span proves that the trace crossed into the
     database, but the demo makes it more useful by setting database session
-    fields before the SQL runs.
+    fields before the SQL runs. The app uses the Oracle JDBC end-to-end metrics
+    API for this metadata, so it does not need a separate PL/SQL round trip just
+    to set <code>MODULE</code>, <code>ACTION</code>, and
+    <code>CLIENT_IDENTIFIER</code>.
   </p>
-  <pre><code>begin
-  dbms_application_info.set_module('agent:claims-investigator-agent',
-                                   'agent-workload-query');
-  dbms_session.set_identifier('traceId=&lt;trace-id&gt;');
-end;
-/</code></pre>
+  <pre><code>String[] metrics = new String[OracleConnection.END_TO_END_STATE_INDEX_MAX];
+metrics[OracleConnection.END_TO_END_MODULE_INDEX] = "agent:claims-investigator-agent";
+metrics[OracleConnection.END_TO_END_ACTION_INDEX] = "agent-workload-query";
+metrics[OracleConnection.END_TO_END_CLIENTID_INDEX] = "traceId=&lt;trace-id&gt;";
+metrics[OracleConnection.END_TO_END_ECID_INDEX] = "&lt;trace-id&gt;";
+oracleConnection.setEndToEndMetrics(metrics, (short) 0);</code></pre>
 
   <p>
     In Jaeger, the orange <code>oracle-db / DB Server</code> span then carries
@@ -343,12 +346,24 @@ end;
     <code>oracle.db.action</code>, <code>oracle.db.session.id</code>,
     <code>oracle.db.pdb</code>, and <code>oracle.db.query.sql.id</code>.
   </p>
+  <p>
+    Some of these names can also appear in client-side JDBC spans because the
+    driver can receive database metadata and the application deliberately sets
+    <code>MODULE</code>, <code>ACTION</code>, and
+    <code>CLIENT_IDENTIFIER</code>. The important difference is provenance and
+    timing: the <code>oracle-db / DB Server</code> span is emitted by Oracle AI
+    Database itself, with database-side duration, response status, session
+    context, and SQL identity attached to the server's view of the work. A
+    client span can time the Java round trip, but it cannot by itself prove the
+    database server's own span timing in the same trace.
+  </p>
 
   <h2>How Do We Link the Trace to SQL Diagnostics?</h2>
   <p>
     The demo also captures <code>oracle.db.query.sql.id</code>. This is a
-    practical detail rather than the whole story: it gives you a direct bridge
-    from the visual trace to Oracle SQL diagnostics when you need to drill down.
+    database-originated value that may be surfaced by the JDBC provider and by
+    the database-exported span. It gives you a direct bridge from the visual
+    trace to Oracle SQL diagnostics when you need to drill down.
   </p>
   <table>
     <tr>
@@ -376,6 +391,18 @@ end;
       <td><code>DBMS_SQL_MONITOR.REPORT_SQL_MONITOR</code></td>
     </tr>
   </table>
+  <p>
+    The demo also calls <code>DBMS_SQL_MONITOR.BEGIN_OPERATION</code> around the
+    agent task. That call is different from setting JDBC end-to-end metrics: it
+    creates a named database operation for SQL Monitor so the agent task has a
+    database-side operation id and attributes. The trace and SQL-ID bridge still
+    work without it, because the workload SQL uses the <code>MONITOR</code> hint
+    and the app queries <code>V$SQL</code>, <code>V$SQL_BIND_CAPTURE</code>,
+    SQL Monitor, and <code>DBMS_XPLAN</code> by SQL ID. Keeping
+    <code>BEGIN_OPERATION</code> makes the demo stronger by giving SQL Monitor a
+    named server-side operation for the agent task; removing it would simplify
+    privileges and code, but would lose that named database-operation evidence.
+  </p>
 
   <figure>
     <img src="images/sql-text-bind-samples-monitor.png" alt="Demo page showing full SQL text from SQL_ID to V$SQL.SQL_FULLTEXT, captured bind sample explanation, and SQL Monitor report preview.">

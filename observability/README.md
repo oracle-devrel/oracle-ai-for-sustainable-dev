@@ -28,13 +28,16 @@ database can reach the collector endpoint.
 
 - `springboot-oracle-db-otel-demo/`: Spring Boot demo app.
 - `blog.html`: publishable blog walkthrough for GitHub Pages.
-- `docker-compose.yaml`: local Jaeger backend with OTLP ports enabled.
+- `start-jaeger.sh` / `stop-jaeger.sh`: local Jaeger backend with OTLP ports enabled.
+- `build.sh`, `run-app.sh`, `smoke-test.sh`: build, run, and verification helpers.
+- `.env_example`: template for local database and OTLP settings. Copy to `.env`
+  and keep credentials local.
 - `sql/`: database-side setup scripts based on the attached Oracle notes.
 - `RUNBOOK.md`: step-by-step setup, run, verification, and troubleshooting.
-- `docs/BLOG.md`: working blog draft.
-- `docs/OCI_VM_BLOG.md`: verified single-VM OCI Linux walkthrough with
-  database-internal spans in Jaeger.
-- `docs/RESEARCH.md`: source notes and links.
+- `docs/`: supplemental material. `OCI_VM_BLOG.md` is the detailed verified
+  single-VM OCI Linux transcript, `RESEARCH.md` captures source notes and
+  links, and `testcase_podman_otel_local_failure.md` records the local Podman
+  failure analysis.
 
 ## Trace Modes
 
@@ -49,46 +52,38 @@ collector is reachable from the database.
 
 ## Quick Start
 
+The public blog page is:
+
+```text
+https://paulparkinson.github.io/oracle-ai-for-sustainable-dev/observability/blog.html
+```
+
 Start a local Jaeger backend with Podman:
 
 ```bash
 cd observability
-podman run -d --name oracle-db-otel-jaeger \
-  -p 16686:16686 \
-  -p 4317:4317 \
-  -p 4318:4318 \
-  cr.jaegertracing.io/jaegertracing/jaeger:2.19.0
-```
-
-Or use Docker Compose:
-
-```bash
-cd observability
-docker compose up -d
+./start-jaeger.sh
 ```
 
 Configure the Spring Boot application:
 
 ```bash
-export DB_URL='jdbc:oracle:thin:@financialdb_high?TNS_ADMIN=/path/to/Wallet_financialdb'
-export DB_USERNAME='financial'
-export DB_PASSWORD='<database-password>'
-export OTLP_TRACES_ENDPOINT='http://localhost:4318/v1/traces'
-unset DEBUG
+cp .env_example .env
+# Edit .env with DB_URL, DB_USERNAME, and DB_PASSWORD.
 ```
 
-Run the application:
+Build and run the application:
 
 ```bash
-cd observability/springboot-oracle-db-otel-demo
-export OTEL_SEMCONV_STABILITY_OPT_IN=database/dup
-mvn spring-boot:run
+./build.sh
+./run-app.sh
 ```
 
-Generate a traced database roundtrip:
+In another terminal, generate traces:
 
 ```bash
-curl http://localhost:8080/trace/roundtrip
+cd observability
+./smoke-test.sh
 ```
 
 Generate the agentic AI trace bridge demo:

@@ -512,10 +512,11 @@ bottom. The embedded trace loads after a short delay so the Spring Boot HTTP,
 Micrometer, JDBC, and database spans have time to flush to Jaeger. The button at
 the top still opens Jaeger in a separate tab if your browser blocks embedding.
 
-For the agent endpoint, the app sets Oracle `MODULE` to `agent:<agent-id>` and
-sets `ACTION` to the current phase, such as `agent-workload-query`. The
-application remains visible as the `springboot-oracle-db-otel-demo` service in Jaeger, but
-the database-exported span now carries the agent identity in
+For the agent endpoint, the app uses Oracle JDBC `setEndToEndMetrics(...)` to
+set Oracle `MODULE` to `agent:<agent-id>`, set `ACTION` to the current phase
+such as `agent-workload-query`, and set `CLIENT_IDENTIFIER` to the trace id.
+The application remains visible as the `springboot-oracle-db-otel-demo` service
+in Jaeger, but the database-exported span now carries the agent identity in
 `oracle.db.module`. That is the field we will reuse when we correlate traces
 with database security policy and audit evidence.
 
@@ -659,7 +660,7 @@ Useful failures:
   `dbms_observability.enable_service(dbms_observability.all_services)` is set in
   the PDB.
 - generic `oracle.db.module` such as `JarLauncher`: make sure the app calls
-  `DBMS_APPLICATION_INFO.SET_MODULE` and `SET_ACTION` before the traced SQL.
+  Oracle JDBC `setEndToEndMetrics(...)` before the traced SQL.
 - missing richer database tags: enable
   `dbms_observability.enable_service_option(dbms_observability.show_extra_metadata)`
   where the database version supports it.
@@ -692,8 +693,8 @@ The trace now carries the right join keys for the security story:
 The security correlation path should build on the Deep Data Security work:
 
 1. Add a security-aware agent endpoint that authenticates as a real application
-   principal, then sets `MODULE`, `ACTION`, and `CLIENT_IDENTIFIER` before every
-   database call.
+   principal, then uses Oracle JDBC end-to-end metrics to set `MODULE`,
+   `ACTION`, and `CLIENT_IDENTIFIER` before every database call.
 2. Run a query against a table protected by database security policy, such as
    grants, roles, VPD/OLS-style predicates, or Deep Data Security token-based
    authorization.

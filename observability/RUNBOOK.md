@@ -36,7 +36,7 @@ Boot/Micrometer approach is wrong.
 
 - JDK 25.
 - Maven 3.9 or newer.
-- Docker Compose, Podman Compose, or another OTLP-compatible tracing backend.
+- Podman or another OTLP-compatible tracing backend.
 - An Oracle Database reachable from the Spring Boot app.
 - For DB-side spans, an Oracle Database version with `DBMS_OBSERVABILITY` and
   server-side OpenTelemetry support.
@@ -55,21 +55,11 @@ podman run --rm \
 
 ## 1. Start A Local Trace Backend
 
-For local app/JDBC traces, Jaeger all-in-one is enough. With Podman:
-
-```bash
-podman run -d --name oracle-db-otel-jaeger \
-  -p 16686:16686 \
-  -p 4317:4317 \
-  -p 4318:4318 \
-  cr.jaegertracing.io/jaegertracing/jaeger:2.19.0
-```
-
-With Docker Compose:
+For local app/JDBC traces, Jaeger all-in-one is enough:
 
 ```bash
 cd observability
-docker compose up -d
+./start-jaeger.sh
 ```
 
 Open the UI after the app emits traces:
@@ -78,22 +68,18 @@ Open the UI after the app emits traces:
 http://localhost:16686
 ```
 
-The compose file exposes OTLP HTTP on `4318` and OTLP gRPC on `4317`.
+The helper script exposes OTLP HTTP on `4318`, OTLP gRPC on `4317`, and the
+Jaeger UI on `16686`.
 
 ## 2. Configure The Spring Boot App
 
-Set the JDBC URL and credentials. For Autonomous Database with a wallet, include
-`TNS_ADMIN` in the JDBC URL:
+Copy the local template and set the JDBC URL and credentials. For Autonomous
+Database with a wallet, include `TNS_ADMIN` in the JDBC URL:
 
 ```bash
-export DB_URL='jdbc:oracle:thin:@financialdb_high?TNS_ADMIN=/path/to/Wallet_financialdb'
-export DB_USERNAME='financial'
-export DB_PASSWORD='<database-password>'
-export OTLP_TRACES_ENDPOINT='http://localhost:4318/v1/traces'
-export OTEL_SEMCONV_STABILITY_OPT_IN='database/dup'
-
-# Optional: avoid Spring Boot treating a generic DEBUG env var as debug=true.
-unset DEBUG
+cd observability
+cp .env_example .env
+vi .env
 ```
 
 For app/JDBC-only tracing, it is fine for the collector endpoint to be on
@@ -102,8 +88,9 @@ localhost because the Spring Boot process is exporting the spans.
 ## 3. Build And Run
 
 ```bash
-cd observability/springboot-oracle-db-otel-demo
-mvn spring-boot:run
+cd observability
+./build.sh
+./run-app.sh
 ```
 
 If you want a packaged build instead:
@@ -119,10 +106,13 @@ java -jar target/springboot-oracle-db-otel-demo-0.0.1-SNAPSHOT.jar
 In another terminal:
 
 ```bash
-curl http://localhost:8080/trace/roundtrip
+cd observability
+./smoke-test.sh
 ```
 
-The response includes the current trace id and span id from the Spring request.
+The smoke test calls health, `/trace/roundtrip`, and `/trace/agent-task`.
+The trace responses include the current trace id and span id from the Spring
+request.
 
 In Jaeger, select the `springboot-oracle-db-otel-demo` service and search for recent
 traces. In app/JDBC mode, expect the HTTP span, the
@@ -172,9 +162,11 @@ JDBC, and database spans have time to flush. Oracle captures bind samples rather
 than every bind value for every execution, so the app bind values and
 `V$SQL_BIND_CAPTURE` samples are shown separately.
 
-The agent endpoint sets Oracle `MODULE` to `agent:<agent-id>` and `ACTION` to
-the current phase. The app still appears as `springboot-oracle-db-otel-demo` in Jaeger, but
-the database-exported span carries the agent identity in `oracle.db.module`.
+The agent endpoint uses Oracle JDBC `setEndToEndMetrics(...)` to set Oracle
+`MODULE` to `agent:<agent-id>`, `ACTION` to the current phase, and
+`CLIENT_IDENTIFIER` to the trace id. The app still appears as
+`springboot-oracle-db-otel-demo` in Jaeger, but the database-exported span
+carries the agent identity in `oracle.db.module`.
 
 This creates an `oracle.demo.agent-database-investigation` span and a named
 database operation for the agent task. The response includes the agent id, task,
@@ -201,6 +193,13 @@ Use those broad grants only in a contained demo environment. For a shared
 environment, replace them with a reviewed diagnostic role and confirm the
 Diagnostics Pack / Tuning Pack licensing posture before using SQL Monitor.
 
+`DBMS_SQL_MONITOR.BEGIN_OPERATION` is used only to give the agent task a named
+database operation in SQL Monitor. The trace, JDBC spans, database `DB Server`
+spans, and SQL-ID bridge still work without that call, because the workload SQL
+itself is monitored and the app can query SQL diagnostics by SQL ID. Removing
+the call would reduce privileges and one database round trip, but it would also
+remove the explicit database-operation id and attributes for the agent task.
+
 ## 4A. Fully Local Podman Path
 
 This path runs Jaeger, Oracle Database Free, and the Spring Boot app locally.
@@ -213,7 +212,8 @@ Create a shared Podman network:
 podman network create oracle-db-otel
 ```
 
-Start Jaeger on that network:
+Start Jaeger on that network. If you want this script-free and attached to the
+Podman network, use:
 
 ```bash
 podman run -d --name oracle-db-otel-jaeger \
