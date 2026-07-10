@@ -189,7 +189,7 @@ public class InventorySystemService {
         if (matcher.find()) {
             return matcher.group(1);
         }
-        return "SKU-500";
+        return DemoInventoryData.DEFAULT_PRODUCT_ID;
     }
 
     private static String actionPrompt(String userInput) {
@@ -201,7 +201,8 @@ public class InventorySystemService {
         if (containsProductId(prompt)) {
             return prompt + "\n" + guidance;
         }
-        return prompt + "\nUse SKU-500 as the default product id. " + guidance;
+        return prompt + "\nUse " + DemoInventoryData.DEFAULT_PRODUCT_ID
+                + " as the default product id. " + guidance;
     }
 
     private static boolean containsProductId(String userInput) {

@@ -27,7 +27,7 @@ public class InventoryActionTools {
             description = "Look up Oracle supply-chain dependency evidence for a product and summarize the supplier path, alert, and warehouse involved."
     )
     public Map<String, Object> getGraphEvidence(
-            @Schema(name = "productId", description = "The product identifier, such as SKU-500.", optional = false)
+            @Schema(name = "productId", description = "The product identifier from the inventory-risk dataset.", optional = false)
             String productId
     ) {
         String normalizedProductId = normalizeProductId(productId);
@@ -64,7 +64,7 @@ public class InventoryActionTools {
             description = "Return a seeded hotspot summary for a product, including suggested source and destination warehouses for a balancing move."
     )
     public Map<String, Object> getSpatialEvidence(
-            @Schema(name = "productId", description = "The product identifier, such as SKU-500.", optional = false)
+            @Schema(name = "productId", description = "The product identifier from the inventory-risk dataset.", optional = false)
             String productId
     ) {
         String normalizedProductId = normalizeProductId(productId);
@@ -76,7 +76,7 @@ public class InventoryActionTools {
             description = "Return a seeded external-signals summary, such as weather or geopolitical risk, for a product's supply lane."
     )
     public Map<String, Object> getExternalSignals(
-            @Schema(name = "productId", description = "The product identifier, such as SKU-500.", optional = false)
+            @Schema(name = "productId", description = "The product identifier from the inventory-risk dataset.", optional = false)
             String productId
     ) {
         String normalizedProductId = normalizeProductId(productId);
@@ -98,7 +98,7 @@ public class InventoryActionTools {
             description = "Check whether a proposed inventory move is allowed immediately or requires approval based on unit volume and route choice."
     )
     public Map<String, Object> checkTransferPolicy(
-            @Schema(name = "productId", description = "The product identifier, such as SKU-500.", optional = false)
+            @Schema(name = "productId", description = "The product identifier from the inventory-risk dataset.", optional = false)
             String productId,
             @Schema(name = "sourceWarehouse", description = "Warehouse shipping inventory out.", optional = false)
             String sourceWarehouse,
@@ -135,7 +135,7 @@ public class InventoryActionTools {
             description = "Create a draft inventory-transfer action recommendation. This does not execute the move."
     )
     public Map<String, Object> draftInventoryTransferAction(
-            @Schema(name = "productId", description = "The product identifier, such as SKU-500.", optional = false)
+            @Schema(name = "productId", description = "The product identifier from the inventory-risk dataset.", optional = false)
             String productId,
             @Schema(name = "sourceWarehouse", description = "Warehouse shipping inventory out.", optional = false)
             String sourceWarehouse,
@@ -178,8 +178,8 @@ public class InventoryActionTools {
     }
 
     private static String normalizeProductId(String productId) {
-        String normalized = valueOrDefault(productId, "SKU-500").trim().toUpperCase();
-        return normalized.isBlank() ? "SKU-500" : normalized;
+        String normalized = valueOrDefault(productId, DemoInventoryData.DEFAULT_PRODUCT_ID).trim().toUpperCase();
+        return normalized.isBlank() ? DemoInventoryData.DEFAULT_PRODUCT_ID : normalized;
     }
 
     private static String normalizeLabel(String value) {

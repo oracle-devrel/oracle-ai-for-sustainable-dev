@@ -89,19 +89,19 @@ Which products are at risk of stockouts next quarter, and which regions are driv
 Spatial:
 
 ```text
-Show that on a map for SKU-500 and highlight the warehouse hotspots plus the best relief route.
+Show that on a map for a product and highlight the warehouse hotspots plus the best relief route.
 ```
 
 Graph:
 
 ```text
-Use the Oracle Database property graph to show supply chain dependencies for SKU-500 and render the graph as an image.
+Use the Oracle Database property graph to show supply chain dependencies for a product and render the graph as an image.
 ```
 
 Inventory action:
 
 ```text
-What inventory action should we take for SKU-500 given the current supply risk? Gather graph, spatial, and external evidence first, then recommend the safest next move and say whether approval is required.
+What inventory action should we take for a product with current supply risk? Gather graph, spatial, and external evidence first, then recommend the safest next move and say whether approval is required.
 ```
 
 ## Configuration

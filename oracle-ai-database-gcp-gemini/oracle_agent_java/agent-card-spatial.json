@@ -37,7 +37,7 @@
     {
       "id": "oracle_spatial_agent-renderHotspotMap",
       "name": "renderHotspotMap",
-      "description": "Render a PNG hotspot map for a product such as SKU-500, using Oracle-backed warehouse risk data when available.",
+      "description": "Render a PNG hotspot map for a product, using Oracle-backed warehouse risk data when available.",
       "tags": [
         "llm",
         "tools",

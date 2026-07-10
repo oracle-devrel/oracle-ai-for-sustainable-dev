@@ -59,9 +59,9 @@ final class InventorySystemCardFactory {
                                 List.of(
                                         "Which products are at risk of stockouts next quarter, and which regions are driving that risk?",
                                         "Create a chart of projected revenue impact by region for the current quarter.",
-                                        "Show the supply chain dependency graph for SKU-500 and explain the active alert.",
-                                        "Show that on a map for SKU-500 and highlight the warehouse hotspots.",
-                                        "Suggest actions to take for SKU-500."
+                                        "Show the supply chain dependency graph for a product and explain the active alert.",
+                                        "Show warehouse hotspots on a map for a product.",
+                                        "Suggest inventory actions to take for a product."
                                 ),
                                 List.of("text/plain"),
                                 List.of("image/png", "application/json", "text/html", "text/plain"),

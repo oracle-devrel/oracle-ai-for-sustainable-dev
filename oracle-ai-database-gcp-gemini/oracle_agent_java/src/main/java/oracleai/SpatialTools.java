@@ -267,7 +267,7 @@ public class SpatialTools {
         if (matcher.find()) {
             return matcher.group(1);
         }
-        return "SKU-500";
+        return DemoInventoryData.DEFAULT_PRODUCT_ID;
     }
 
     private static String buildSummaryText(RiskSummary summary, List<WarehouseHotspot> hotspots) {

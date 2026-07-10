@@ -1,6 +1,6 @@
 {
   "name": "Oracle Database Property Graph Agent",
-  "description": "Oracle Database property graph specialist for product SKUs such as SKU-500. Generates Oracle-backed supply chain dependency graphs, supplier-to-warehouse paths, upstream and downstream relationship analysis, and active disruption alerts as a text summary plus PNG image.",
+  "description": "Oracle Database property graph specialist for product-level supply chain analysis. Generates Oracle-backed dependency graphs, supplier-to-warehouse paths, upstream and downstream relationship analysis, and active disruption alerts as a text summary plus PNG image.",
   "url": "https://YOUR_PUBLIC_AGENT_HOST/graph",
   "version": "0.1.0",
   "capabilities": {
@@ -20,7 +20,7 @@
     {
       "id": "oracle_graph_agent",
       "name": "supply-chain-dependency-graph-specialist",
-      "description": "Specialist in Oracle Graph dependency analysis for product SKUs such as SKU-500. Use this when a user asks for a supply chain dependency graph, supplier-to-warehouse path, upstream or downstream relationships, or active disruption alerts for a product.",
+      "description": "Specialist in Oracle Graph dependency analysis for product-level supply chains. Use this when a user asks for a dependency graph, supplier-to-warehouse path, upstream or downstream relationships, or active disruption alerts for a product.",
       "tags": [
         "llm",
         "oracle",
@@ -32,11 +32,11 @@
         "image"
       ],
       "examples": [
-        "Show the supply chain dependency graph for SKU-500 and explain the active alert.",
-        "Use the Oracle Database property graph to show supply chain dependencies for SKU-500 and render the graph as an image.",
-        "For SKU-500, show the supplier-to-warehouse dependency graph and explain the current disruption.",
-        "Visualize the upstream supplier path for SKU-500 and highlight the risky node.",
-        "For SKU-500, map the dependency relationships from supplier to warehouse to retailer."
+        "Show the supply chain dependency graph for a product and explain the active alert.",
+        "Use the Oracle Database property graph to show supply chain dependencies and render the graph as an image.",
+        "Show the supplier-to-warehouse dependency graph and explain the current disruption.",
+        "Visualize the upstream supplier path and highlight the risky node.",
+        "Map the dependency relationships from supplier to warehouse to retailer."
       ],
       "inputModes": [
         "text/plain"
@@ -49,7 +49,7 @@
     {
       "id": "oracle_graph_agent-getSupplyChainDependencies",
       "name": "getSupplyChainDependencies",
-      "description": "Fetches Oracle Property Graph supply chain dependencies and active alert context for a specific product ID such as SKU-500.",
+      "description": "Fetches Oracle Property Graph supply chain dependencies and active alert context for a specific product ID.",
       "tags": [
         "llm",
         "tools",
@@ -60,10 +60,10 @@
         "dependencies"
       ],
       "examples": [
-        "Get the dependency graph for SKU-500.",
-        "Use Oracle Database property graph data for SKU-500.",
-        "Show the Oracle graph path for SKU-500.",
-        "Find the supply chain dependencies for SKU-500."
+        "Get the dependency graph for a product.",
+        "Use Oracle Database property graph data for a product.",
+        "Show the Oracle graph path for a product.",
+        "Find the supply chain dependencies for a product."
       ],
       "inputModes": [
         "text/plain"
