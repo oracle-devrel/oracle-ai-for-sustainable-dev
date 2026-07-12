@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.sql.DataSource;
+import jakarta.servlet.http.HttpServletRequest;
 import oracle.jdbc.OracleConnection;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -85,9 +86,10 @@ public class TraceController {
   public String agentTaskView(
       @RequestParam(defaultValue = "claims-investigator-agent") String agentId,
       @RequestParam(defaultValue = "investigate_payment_anomalies") String task,
-      @RequestParam(defaultValue = "http://localhost:16686") String jaegerUrl) {
+      @RequestParam(defaultValue = "") String jaegerUrl,
+      HttpServletRequest request) {
     Map<String, Object> result = agentTask(agentId, task);
-    return renderAgentTask(result, jaegerUrl);
+    return renderAgentTask(result, jaegerUrl.isBlank() ? inferredJaegerUrl(request) : jaegerUrl);
   }
 
   private Map<String, Object> queryDatabase() {
@@ -270,6 +272,11 @@ public class TraceController {
       statement.execute();
       Number executionId = (Number) statement.getObject(1);
       return executionId == null ? null : executionId.longValue();
+    } catch (SQLException e) {
+      if (e.getErrorCode() == 13811) {
+        return null;
+      }
+      throw e;
     }
   }
 
@@ -801,6 +808,13 @@ public class TraceController {
       return "";
     }
     return value.endsWith("/") ? value.substring(0, value.length() - 1) : value;
+  }
+
+  private String inferredJaegerUrl(HttpServletRequest request) {
+    String scheme = request.getScheme() == null || request.getScheme().isBlank()
+        ? "http"
+        : request.getScheme();
+    return scheme + "://" + request.getServerName() + ":16686";
   }
 
   private String formatRows(List<Map<String, Object>> rows) {
