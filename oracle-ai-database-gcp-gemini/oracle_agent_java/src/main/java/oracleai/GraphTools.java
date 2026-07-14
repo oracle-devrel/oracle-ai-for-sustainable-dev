@@ -19,7 +19,7 @@ import org.springframework.core.env.Environment;
 @Configuration
 public class GraphTools {
 
-    private static final String DEFAULT_PRODUCT_ID = "SKU-500";
+    private static final String DEFAULT_PRODUCT_ID = DemoInventoryData.DEFAULT_PRODUCT_ID;
     private static final String PAYLOAD_SCHEMA_VERSION = "1.0";
     private static final Set<String> ALLOWED_NODE_TYPES = Set.of(
             "SUPPLIER",

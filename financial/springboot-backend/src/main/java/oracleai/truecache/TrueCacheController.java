@@ -18,7 +18,8 @@ import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 @RestController
-@RequestMapping({"/financial/truecache", "/financial/api/truecache"})
+@RequestMapping("/financial/truecache")
+//@CrossOrigin(origins = "https://oracledatabase-financial.org")
 @CrossOrigin(origins = "*")
 //@CrossOrigin(origins = "http://158.180.20.119")
 public class TrueCacheController {

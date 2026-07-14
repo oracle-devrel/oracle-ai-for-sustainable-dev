@@ -89,19 +89,19 @@ Which products are at risk of stockouts next quarter, and which regions are driv
 Spatial:
 
 ```text
-Show that on a map for SKU-500 and highlight the warehouse hotspots plus the best relief route.
+Show that on a map for a product and highlight the warehouse hotspots plus the best relief route.
 ```
 
 Graph:
 
 ```text
-Use the Oracle Database property graph to show supply chain dependencies for SKU-500 and render the graph as an image.
+Use the Oracle Database property graph to show supply chain dependencies for a product and render the graph as an image.
 ```
 
 Inventory action:
 
 ```text
-What inventory action should we take for SKU-500 given the current supply risk? Gather graph, spatial, and external evidence first, then recommend the safest next move and say whether approval is required.
+What inventory action should we take for a product with current supply risk? Gather graph, spatial, and external evidence first, then recommend the safest next move and say whether approval is required.
 ```
 
 ## Configuration
@@ -118,6 +118,8 @@ PUBLIC_HOST="YOUR_PUBLIC_AGENT_HOST"
 PUBLIC_PROTOCOL="https"
 GRAPH_AGENT_PORT="443"
 MODEL_NAME="gemini-2.0-flash"
+VISUAL_RENDERER="deterministic"
+GEMINI_IMAGE_MODEL="gemini-3.1-flash-image"
 ```
 
 If you use Vertex AI credentials, authenticate Application Default Credentials with:
@@ -132,7 +134,7 @@ If you use a Gemini API key instead, set:
 GOOGLE_API_KEY="your-api-key"
 ```
 
-The graph and spatial paths are deterministic and image-first. Select AI depends on a database-side `DBMS_CLOUD_AI` profile. The inventory-action coordinator uses Google ADK Java when credentials are available and falls back to deterministic recommendations when the model path is unavailable.
+The graph and spatial paths are deterministic and image-first by default. Set `VISUAL_RENDERER=both` to keep the deterministic Oracle data image as the source of truth and add a second Gemini-generated illustrative PNG. Set `VISUAL_RENDERER=gemini` only when you deliberately want generated images without the deterministic image artifact. `GEMINI_IMAGE_MODEL` defaults to `gemini-3.1-flash-image`, the current Nano Banana 2 general-purpose image model in the Gemini API; use `gemini-3-pro-image` when you want the premium image model and accept the extra cost/latency. Select AI depends on a database-side `DBMS_CLOUD_AI` profile. The inventory-action coordinator uses Google ADK Java when credentials are available and falls back to deterministic recommendations when the model path is unavailable.
 
 ## Documentation Index
 

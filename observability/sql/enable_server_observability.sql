@@ -4,16 +4,9 @@
 -- OTLP endpoint. For Autonomous Database, that generally means a reachable HTTPS
 -- collector endpoint rather than localhost.
 
-define otlp_traces_endpoint = 'http://collector.example.com:4318/v1/traces'
+define otlp_traces_endpoint = 'https://oracledev.ai/financial/otel/v1/traces'
 
 set serveroutput on
-
--- Enable the DBMS_OBSERVABILITY service in the current container.
--- In a CDB, enable at CDB$ROOT first, then in the target PDB.
-begin
-  dbms_observability.enable_service;
-end;
-/
 
 -- Add the traces endpoint. If your endpoint requires authentication, create a
 -- DBMS_OBSERVABILITY credential and pass its name as credential_name.
@@ -26,14 +19,22 @@ begin
 end;
 /
 
+-- Registering is not enough; enable the endpoint and service explicitly.
+begin
+  dbms_observability.enable_endpoint('&otlp_traces_endpoint');
+  dbms_observability.enable_service_option(dbms_observability.show_extra_metadata);
+  dbms_observability.enable_service(dbms_observability.all_services);
+end;
+/
+
 -- Enable server-side tracing for the current session. The attached 23.9 notes
--- describe SQL_TRACE as the switch for server-side OpenTelemetry trace export.
+-- describe SQL_TRACE as the session switch for server-side trace export.
 alter session set sql_trace = true;
 
 declare
   config clob;
 begin
-  select dbms_observability.show_service_status(dbms_observability.all_info)
+  select dbms_observability.show_service_status
     into config;
   dbms_output.put_line(config);
 end;

@@ -1,0 +1,80 @@
+{
+  "name": "Oracle Database Property Graph Agent",
+  "description": "Oracle Database property graph specialist for product-level supply chain analysis. Generates Oracle-backed dependency graphs, supplier-to-warehouse paths, upstream and downstream relationship analysis, and active disruption alerts as a text summary plus PNG image.",
+  "url": "https://YOUR_PUBLIC_AGENT_HOST/graph",
+  "version": "0.1.0",
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false,
+    "stateTransitionHistory": false,
+    "extensions": []
+  },
+  "defaultInputModes": [
+    "text/plain"
+  ],
+  "defaultOutputModes": [
+    "image/png",
+    "text/plain"
+  ],
+  "skills": [
+    {
+      "id": "oracle_graph_agent",
+      "name": "supply-chain-dependency-graph-specialist",
+      "description": "Specialist in Oracle Graph dependency analysis for product-level supply chains. Use this when a user asks for a dependency graph, supplier-to-warehouse path, upstream or downstream relationships, or active disruption alerts for a product.",
+      "tags": [
+        "llm",
+        "oracle",
+        "database",
+        "property-graph",
+        "supply-chain",
+        "dependencies",
+        "sku",
+        "image"
+      ],
+      "examples": [
+        "Show the supply chain dependency graph for a product and explain the active alert.",
+        "Use the Oracle Database property graph to show supply chain dependencies and render the graph as an image.",
+        "Show the supplier-to-warehouse dependency graph and explain the current disruption.",
+        "Visualize the upstream supplier path and highlight the risky node.",
+        "Map the dependency relationships from supplier to warehouse to retailer."
+      ],
+      "inputModes": [
+        "text/plain"
+      ],
+      "outputModes": [
+        "image/png",
+        "text/plain"
+      ]
+    },
+    {
+      "id": "oracle_graph_agent-getSupplyChainDependencies",
+      "name": "getSupplyChainDependencies",
+      "description": "Fetches Oracle Property Graph supply chain dependencies and active alert context for a specific product ID.",
+      "tags": [
+        "llm",
+        "tools",
+        "oracle",
+        "database",
+        "property-graph",
+        "sku",
+        "dependencies"
+      ],
+      "examples": [
+        "Get the dependency graph for a product.",
+        "Use Oracle Database property graph data for a product.",
+        "Show the Oracle graph path for a product.",
+        "Find the supply chain dependencies for a product."
+      ],
+      "inputModes": [
+        "text/plain"
+      ],
+      "outputModes": [
+        "image/png"
+      ]
+    }
+  ],
+  "supportsAuthenticatedExtendedCard": false,
+  "additionalInterfaces": [],
+  "preferredTransport": "JSONRPC",
+  "protocolVersion": "0.3.0"
+}

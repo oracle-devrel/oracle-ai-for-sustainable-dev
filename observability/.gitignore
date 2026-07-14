@@ -1,4 +1,13 @@
-oracle-db-otel-demo/target/
+springboot-oracle-db-otel-demo/target/
+local-logs/
 db-observability-scenarios/
+testcase_podman_otel/
+ojdbc11-withfix.jar
 .env
 *.log
+.DS_Store
+*.pdf
+image.png
+notes-dontcheckthisin.md
+DBMS_OBSERVABILITY+testcase+on+Podman.doc
+agentic-ai-observability-walkthrough.mp4

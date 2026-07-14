@@ -1,0 +1,78 @@
+{
+  "name": "oracle_inventory_system_agent",
+  "description": "Inventory-system gateway agent. Routes general inventory questions to the Oracle AI Database Agent, while routing dependency-graph requests to the Oracle property graph service, map or hotspot requests to the Oracle spatial service, and action prompts to the inventory action coordinator.",
+  "url": "https://YOUR_PUBLIC_AGENT_HOST/inventory-system",
+  "version": "0.0.5",
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false,
+    "stateTransitionHistory": false,
+    "extensions": []
+  },
+  "defaultInputModes": [
+    "text/plain"
+  ],
+  "defaultOutputModes": [
+    "image/png",
+    "application/json",
+    "text/html",
+    "text/plain"
+  ],
+  "skills": [
+    {
+      "id": "oracle_inventory_system_agent",
+      "name": "inventory-system-router",
+      "description": "Routes inventory questions to the best specialist: Oracle AI Database Agent for general data analysis, Oracle property graph for dependency views, Oracle spatial for geospatial and hotspot rendering, and the inventory action coordinator for transfer recommendations.",
+      "tags": [
+        "llm",
+        "router",
+        "inventory",
+        "action",
+        "graph",
+        "spatial",
+        "database",
+        "a2a"
+      ],
+      "examples": [
+        "Which products are at risk of stockouts next quarter, and which regions are driving that risk?",
+        "Create a chart of projected revenue impact by region for the current quarter.",
+        "Show the supply chain dependency graph for a product and explain the active alert.",
+        "Show warehouse hotspots on a map for a product.",
+        "Suggest inventory actions to take for a product."
+      ],
+      "inputModes": [
+        "text/plain"
+      ],
+      "outputModes": [
+        "image/png",
+        "application/json",
+        "text/html",
+        "text/plain"
+      ]
+    }
+  ],
+  "supportsAuthenticatedExtendedCard": false,
+  "securitySchemes": {
+    "oauth2": {
+      "flows": {
+        "authorizationCode": {
+          "authorizationUrl": "https://dataaccess.adb.us-ashburn-1.oraclecloudapps.com/adb/auth/v1/connect/authorize",
+          "refreshUrl": "https://dataaccess.adb.us-ashburn-1.oraclecloudapps.com/adb/auth/v1/connect/token",
+          "scopes": {
+            "openid": "This is a mandatory scope."
+          },
+          "tokenUrl": "https://dataaccess.adb.us-ashburn-1.oraclecloudapps.com/adb/auth/v1/connect/token"
+        }
+      },
+      "type": "oauth2"
+    }
+  },
+  "security": [
+    {
+      "oauth2": []
+    }
+  ],
+  "additionalInterfaces": [],
+  "preferredTransport": "JSONRPC",
+  "protocolVersion": "0.3.0"
+}

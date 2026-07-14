@@ -32,7 +32,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
-            <version>2.13.2</version>
+            <version>2.15.0</version>
         </dependency>
         <dependency>
             <groupId>javax.json.bind</groupId>
@@ -42,7 +42,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.13.2.2</version>
+            <version>2.13.4.2</version>
         </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
@@ -80,4 +80,3 @@
         </plugins>
     </build>
 </project>
-

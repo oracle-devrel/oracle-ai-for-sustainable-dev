@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
@@ -18,7 +18,7 @@ const LoginContainer = styled.div`
   background-color: ${bankerBg};
 `;
 
-const LoginPanel = styled.div`
+const LoginForm = styled.form`
   background: ${bankerPanel};
   padding: 24px 28px 20px 28px;
   border-radius: 10px;
@@ -26,6 +26,21 @@ const LoginPanel = styled.div`
   width: 340px;
   color: ${bankerText};
   border: 1px solid ${bankerAccent};
+`;
+
+const Input = styled.input`
+  width: 100%;
+  padding: 10px;
+  margin: 12px 0;
+  border: 1px solid ${bankerAccent};
+  border-radius: 4px;
+  background: #406080;
+  color: ${bankerText};
+  font-size: 1rem;
+  &:focus {
+    border-color: ${bankerAccent};
+    outline: 1px solid ${bankerAccent};
+  }
 `;
 
 const Button = styled.button`
@@ -45,20 +60,40 @@ const Button = styled.button`
 `;
 
 const Login = () => {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleEnter = () => {
-    login();
-    navigate('/financialstoryboard');
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Add authentication logic here
+    if (username === 'DEVELOPER' && password === 'Welcome123456#') {
+      login();
+      navigate('/financialstoryboard');
+    } else {
+      alert('Invalid credentials');
+    }
   };
 
   return (
     <LoginContainer>
-      <LoginPanel>
-        <h2 style={{ color: bankerAccent, textAlign: 'center', marginBottom: '18px' }}>Financial</h2>
-        <Button type="button" onClick={handleEnter}>Enter</Button>
-      </LoginPanel>
+      <LoginForm onSubmit={handleSubmit}>
+        <h2 style={{ color: bankerAccent, textAlign: 'center', marginBottom: '18px' }}>Login</h2>
+        <Input
+          type="text"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
+        <Input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <Button type="submit">Login</Button>
+      </LoginForm>
     </LoginContainer>
   );
 };

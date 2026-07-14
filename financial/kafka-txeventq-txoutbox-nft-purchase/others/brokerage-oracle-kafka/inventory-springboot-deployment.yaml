@@ -41,15 +41,9 @@ spec:
         - name: VAULT_SECRET_OCID
           value: "${VAULT_SECRET_OCID-}"
         - name: db_password
-          valueFrom:
-            secretKeyRef:
-              name: financialdb-credentials
-              key: password
+          value: Welcome123456
         - name: spring.datasource.password
-          valueFrom:
-            secretKeyRef:
-              name: financialdb-credentials
-              key: password
+          value: Welcome123456
         volumeMounts:
         - name: creds
           mountPath: /msdataworkshop/creds
@@ -134,10 +128,7 @@ spec:
             - name: spring.datasource.username
               value: account2
             - name: spring.datasource.password
-              valueFrom:
-                secretKeyRef:
-                  name: financialdb-credentials
-                  key: password
+              value: Welcome123456
             - name: DB_SERVICE
               valueFrom:
                 secretKeyRef:
@@ -147,7 +138,7 @@ spec:
               value: jdbc:oracle:thin:@$(DB_SERVICE)?TNS_ADMIN=/oracle/tnsadmin
             - name: CONNECT_STRING
               value: jdbc:oracle:thin:@$(DB_SERVICE)?TNS_ADMIN=/oracle/tnsadmin
-          image: fra.ocir.io/<tenancy-namespace>/lemming/application-account:0.0.1
+          image: fra.ocir.io/oradbclouducm/lemming/application-account:0.0.1
           imagePullPolicy: Always
           name: account
           ports:

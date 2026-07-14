@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { GRAFANA_URL } from '../config';
 
 // Banker blue theme colors
 const bankerBg = "#354F64";
@@ -100,7 +99,7 @@ const DashBoard = () => {
         {showCollapsible && (
           <CollapsibleContent>
             <a
-              href={GRAFANA_URL}
+              href="https://oracleai-financial.org/grafana"
               target="_blank"
               rel="noopener noreferrer"
               style={{ color: bankerAccent, textDecoration: 'underline' }}

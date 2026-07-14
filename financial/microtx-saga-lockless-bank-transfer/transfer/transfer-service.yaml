@@ -4,7 +4,7 @@ metadata:
   name: bank-transfer
   namespace: financial
   annotations:
-    external-dns.alpha.kubernetes.io/hostname: oracledev.ai
+    external-dns.alpha.kubernetes.io/hostname: oracledatabase-financial.org
 spec:
   selector:
     app: backend

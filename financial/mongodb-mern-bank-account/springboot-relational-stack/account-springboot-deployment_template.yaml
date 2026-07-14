@@ -29,19 +29,13 @@ spec:
             - name: DB_URL
               value: jdbc:oracle:thin:@financialdb_high?TNS_ADMIN=/oraclefinancial/creds
             - name: DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: financialdb-credentials
-                  key: password
+              value: Welcome12345
             - name: spring.datasource.username
               value: financial
             - name: spring.datasource.url
               value: jdbc:oracle:thin:@financialdb_high?TNS_ADMIN=/oraclefinancial/creds
             - name: spring.datasource.password
-              valueFrom:
-                secretKeyRef:
-                  name: financialdb-credentials
-                  key: password
+              value: Welcome12345
           resources: {}
           volumeMounts:
             - name: creds

@@ -16,8 +16,7 @@
 
 	<properties>
 		<oci.sdk.version>3.52.1</oci.sdk.version>
-		<oracle.jdbc.version>23.26.2.0.0</oracle.jdbc.version>
-		<oracle.osdt.version>21.21.0.0</oracle.osdt.version>
+		<oracle.jdbc.version>21.7.0.0</oracle.jdbc.version>
 	</properties>
 
 
@@ -184,12 +183,12 @@
 		<dependency>
 			<groupId>com.oracle.database.security</groupId>
 			<artifactId>osdt_core</artifactId>
-			<version>${oracle.osdt.version}</version>
+			<version>${oracle.jdbc.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.oracle.database.security</groupId>
 			<artifactId>osdt_cert</artifactId>
-			<version>${oracle.osdt.version}</version>
+			<version>${oracle.jdbc.version}</version>
 		</dependency>
 
     <dependency>

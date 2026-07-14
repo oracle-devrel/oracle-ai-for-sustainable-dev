@@ -1,7 +1,4 @@
 
 
 
-HOSTNAME="${PUBLIC_HOSTNAME:-oracledev.ai}"
-TLS_SECRET_NAME="${TLS_SECRET_NAME:-oracledev-ai-tls}"
-
-kubectl create secret tls "${TLS_SECRET_NAME}" --cert="${HOSTNAME}.cert" --key="${HOSTNAME}.key" -n financial
+kubectl create secret tls react-frontend-tls --cert=oracleai-financial.org.cert  --key=oracleai-financial.org.key  -n financial

@@ -4,7 +4,7 @@ declare
   config clob;
   endpoints clob;
 begin
-  select dbms_observability.show_service_status(dbms_observability.all_info)
+  select dbms_observability.show_service_status
     into config;
   dbms_output.put_line('Service status:');
   dbms_output.put_line(config);

@@ -5,8 +5,8 @@ set -e
 IMAGE_NAME=podsofkon
 #IMAGE_VERSION=latest
 IMAGE_VERSION=sustainableaijava
-#DOCKER_REGISTRY=us-ashburn-1.ocir.io/<tenancy-namespace>/gd74087885
-DOCKER_REGISTRY=us-ashburn-1.ocir.io/<tenancy-namespace>/podsofkon
+#DOCKER_REGISTRY=us-ashburn-1.ocir.io/oradbclouducm/gd74087885
+DOCKER_REGISTRY=us-ashburn-1.ocir.io/oradbclouducm/podsofkon
 
 export IMAGE=${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_VERSION}
 export IMAGE_VERSION=$IMAGE_VERSION

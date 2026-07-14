@@ -7,6 +7,8 @@ import java.util.Map;
 
 final class DemoInventoryData {
 
+    static final String DEFAULT_PRODUCT_ID = "SKU-500";
+
     private static final Map<String, InventoryRiskSummary> SUMMARIES = Map.of(
             "SKU-500",
             new InventoryRiskSummary(
@@ -242,7 +244,7 @@ final class DemoInventoryData {
     }
 
     static InventoryRiskSummary summaryFor(String productId) {
-        return SUMMARIES.getOrDefault(productId, SUMMARIES.get("SKU-500"));
+        return SUMMARIES.getOrDefault(productId, SUMMARIES.get(DEFAULT_PRODUCT_ID));
     }
 
     static List<InventoryRiskSummary> topSummaries() {
@@ -252,7 +254,7 @@ final class DemoInventoryData {
     }
 
     static List<WarehouseHotspot> hotspotsFor(String productId) {
-        return HOTSPOTS.getOrDefault(productId, HOTSPOTS.get("SKU-500"));
+        return HOTSPOTS.getOrDefault(productId, HOTSPOTS.get(DEFAULT_PRODUCT_ID));
     }
 
     static Map<String, Object> spatialEvidenceFor(String productId) {

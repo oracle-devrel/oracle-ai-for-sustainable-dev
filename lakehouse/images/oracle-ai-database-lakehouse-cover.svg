@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">Oracle AI Database Lakehouse and Iceberg tables</title>
+  <desc id="desc">Technical diagram showing Spring Boot and Oracle JDBC querying Oracle AI Database, which connects SQL analytics to Apache Iceberg tables in object storage.</desc>
+  <rect width="1200" height="630" fill="#f7f7f5"/>
+  <rect x="0" y="0" width="1200" height="14" fill="#c74634"/>
+  <text x="72" y="82" font-family="Arial, Helvetica, sans-serif" font-size="24" fill="#5f6470" font-weight="700">Oracle AI Database</text>
+  <text x="72" y="142" font-family="Arial, Helvetica, sans-serif" font-size="48" fill="#1f2933" font-weight="700">Lakehouse + Iceberg</text>
+  <text x="72" y="184" font-family="Arial, Helvetica, sans-serif" font-size="24" fill="#3f4a56">Query open table data from Spring Boot through Oracle JDBC</text>
+
+  <g transform="translate(92 280)">
+    <rect x="0" y="0" width="220" height="105" rx="8" fill="#ffffff" stroke="#cfd7df"/>
+    <text x="28" y="45" font-family="Arial, Helvetica, sans-serif" font-size="22" fill="#1f2933" font-weight="700">Spring Boot</text>
+    <text x="28" y="76" font-family="Arial, Helvetica, sans-serif" font-size="18" fill="#5f6470">REST + JDBC</text>
+  </g>
+
+  <g transform="translate(398 270)">
+    <rect x="0" y="0" width="280" height="125" rx="8" fill="#ffffff" stroke="#cfd7df"/>
+    <text x="30" y="48" font-family="Arial, Helvetica, sans-serif" font-size="22" fill="#1f2933" font-weight="700">Oracle JDBC</text>
+    <text x="30" y="80" font-family="Arial, Helvetica, sans-serif" font-size="18" fill="#5f6470">ojdbc17-production</text>
+  </g>
+
+  <g transform="translate(764 236)">
+    <rect x="0" y="0" width="300" height="194" rx="8" fill="#ffffff" stroke="#cfd7df"/>
+    <text x="30" y="48" font-family="Arial, Helvetica, sans-serif" font-size="22" fill="#c74634" font-weight="700">Oracle AI Database</text>
+    <text x="30" y="82" font-family="Arial, Helvetica, sans-serif" font-size="18" fill="#1f2933">SQL engine</text>
+    <text x="30" y="112" font-family="Arial, Helvetica, sans-serif" font-size="18" fill="#1f2933">Governance</text>
+    <text x="30" y="142" font-family="Arial, Helvetica, sans-serif" font-size="18" fill="#1f2933">Lakehouse access</text>
+  </g>
+
+  <g transform="translate(820 485)">
+    <path d="M0 55 C45 10, 115 10, 160 55 C205 100, 275 100, 320 55" fill="none" stroke="#5f6470" stroke-width="3"/>
+    <rect x="34" y="0" width="94" height="72" rx="8" fill="#ffffff" stroke="#cfd7df"/>
+    <rect x="156" y="0" width="94" height="72" rx="8" fill="#ffffff" stroke="#cfd7df"/>
+    <text x="53" y="44" font-family="Arial, Helvetica, sans-serif" font-size="18" fill="#1f2933" font-weight="700">Parquet</text>
+    <text x="181" y="44" font-family="Arial, Helvetica, sans-serif" font-size="18" fill="#1f2933" font-weight="700">Iceberg</text>
+  </g>
+
+  <path d="M312 333 H396" stroke="#c74634" stroke-width="4" marker-end="url(#arrow)"/>
+  <path d="M678 333 H760" stroke="#c74634" stroke-width="4" marker-end="url(#arrow)"/>
+  <path d="M915 430 V485" stroke="#c74634" stroke-width="4" marker-end="url(#arrow)"/>
+
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#c74634"/>
+    </marker>
+  </defs>
+</svg>

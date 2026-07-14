@@ -14,7 +14,7 @@ Today, the same Java process serves five agent surfaces:
 
 The legacy root `/` graph surface still exists for backward compatibility, but `/graph` is now the canonical graph route.
 
-The graph renderer still uses deterministic application logic plus custom Java2D image generation. The spatial agent now uses JTS for geometry work and Java2D for the rendered PNG. The inventory-system gateway keeps graph and spatial routing local, while delegating general inventory and SQL-style questions to the Oracle-hosted Oracle AI Database Agent. Local Select AI fallback is disabled by default and should only be enabled deliberately for an offline demo path. The action agent uses Google ADK Java when credentials are available and falls back cleanly when they are not.
+The graph renderer still uses deterministic application logic plus custom Java2D image generation. The spatial agent now uses JTS for geometry work and Java2D for the rendered PNG. You can also set `VISUAL_RENDERER=both` to return the deterministic PNG plus a second Gemini-generated illustrative PNG. The inventory-system gateway keeps graph and spatial routing local, while delegating general inventory and SQL-style questions to the Oracle-hosted Oracle AI Database Agent. Local Select AI fallback is disabled by default and should only be enabled deliberately for an offline demo path. The action agent uses Google ADK Java when credentials are available and falls back cleanly when they are not.
 
 ## Related Files
 
@@ -30,13 +30,13 @@ The graph renderer still uses deterministic application logic plus custom Java2D
 - [`GRAPH_DATA_MODES.md`](/path/to/repo-root/oracle-ai-database-gcp-gemini/oracle_agent_java/GRAPH_DATA_MODES.md): how `GRAPH_DATA_MODE=database|payload|auto` works, the supported JSON contract, and the validation rules for multi-agent flows.
 - [`MULTI_AGENT_GRAPH_FLOW.md`](/path/to/repo-root/oracle-ai-database-gcp-gemini/oracle_agent_java/MULTI_AGENT_GRAPH_FLOW.md): architecture notes for direct DB lookup vs upstream-agent payload handoff, including provenance, validation, and recommended `auto` behavior.
 - [`HTTPS_SETUP.md`](/path/to/repo-root/oracle-ai-database-gcp-gemini/oracle_agent_java/HTTPS_SETUP.md): step-by-step Let's Encrypt and public HTTPS setup for Gemini Enterprise.
-- [`agent-card-graph.json`](/path/to/repo-root/oracle-ai-database-gcp-gemini/oracle_agent_java/agent-card-graph.json): saved snapshot of the primary graph card.
-- [`agent-card-spatial.json`](/path/to/repo-root/oracle-ai-database-gcp-gemini/oracle_agent_java/agent-card-spatial.json): saved snapshot of the spatial hotspot card served by the same Java process.
-- [`agent-card-select-ai.json`](/path/to/repo-root/oracle-ai-database-gcp-gemini/oracle_agent_java/agent-card-select-ai.json): saved snapshot of the Select AI-style inventory analyst card.
-- [`agent-card-oracle-ai-database.json`](/path/to/repo-root/oracle-ai-database-gcp-gemini/oracle_agent_java/agent-card-oracle-ai-database.json): checked-in snapshot of the Oracle-hosted Oracle AI Database agent card used by the inventory-system router.
-- [`agent-card-inventory-system.json`](/path/to/repo-root/oracle-ai-database-gcp-gemini/oracle_agent_java/agent-card-inventory-system.json): saved snapshot of the inventory-system gateway card.
+- [`agent-card-graph.json`](/path/to/repo-root/oracle-ai-database-gcp-gemini/oracle_agent_java/agent-cards/agent-card-graph.json): saved snapshot of the primary graph card.
+- [`agent-card-spatial.json`](/path/to/repo-root/oracle-ai-database-gcp-gemini/oracle_agent_java/agent-cards/agent-card-spatial.json): saved snapshot of the spatial hotspot card served by the same Java process.
+- [`agent-card-select-ai.json`](/path/to/repo-root/oracle-ai-database-gcp-gemini/oracle_agent_java/agent-cards/agent-card-select-ai.json): saved snapshot of the Select AI-style inventory analyst card.
+- [`agent-card-oracle-ai-database.json`](/path/to/repo-root/oracle-ai-database-gcp-gemini/oracle_agent_java/agent-cards/agent-card-oracle-ai-database.json): checked-in snapshot of the Oracle-hosted Oracle AI Database agent card used by the inventory-system router.
+- [`agent-card-inventory-system.json`](/path/to/repo-root/oracle-ai-database-gcp-gemini/oracle_agent_java/agent-cards/agent-card-inventory-system.json): saved snapshot of the inventory-system gateway card.
 - [`ORACLE_AI_DATABASE_DOWNSTREAM_AGENT.md`](/path/to/repo-root/oracle-ai-database-gcp-gemini/oracle_agent_java/ORACLE_AI_DATABASE_DOWNSTREAM_AGENT.md): concise setup notes for using the Oracle AI Database agent behind another agent such as `oracle_inventory_system_agent`.
-- [`agent-card-action.json`](/path/to/repo-root/oracle-ai-database-gcp-gemini/oracle_agent_java/agent-card-action.json): saved snapshot of the inventory-action coordinator card.
+- [`agent-card-action.json`](/path/to/repo-root/oracle-ai-database-gcp-gemini/oracle_agent_java/agent-cards/agent-card-action.json): saved snapshot of the inventory-action coordinator card.
 - [`test_inventory_system.sh`](/path/to/repo-root/oracle-ai-database-gcp-gemini/oracle_agent_java/test_inventory_system.sh): helper for exercising the inventory-system gateway over A2A JSON-RPC.
 
 ## Setup Instructions
@@ -56,7 +56,21 @@ The graph renderer still uses deterministic application logic plus custom Java2D
    ./test.sh
    ```
 
-4. **Run with Public HTTPS for Gemini Enterprise:**
+4. **Optionally add Gemini-generated visuals:**
+   ```bash
+   export VISUAL_RENDERER=both
+   export GEMINI_IMAGE_MODEL=gemini-3.1-flash-image
+   export GOOGLE_API_KEY="your-gemini-api-key"
+   ./run.sh
+   ```
+
+   `VISUAL_RENDERER=deterministic` is the default and returns only the Java2D source-of-truth PNG.
+   `VISUAL_RENDERER=both` returns that same PNG plus a Gemini-generated illustrative PNG. `VISUAL_RENDERER=gemini`
+   returns only the Gemini-generated image when the API call succeeds. The default model is
+   `gemini-3.1-flash-image`, the current Nano Banana 2 general-purpose image model in the Gemini API.
+   Use `gemini-3-pro-image` only when you want the premium model for more complex visual styling.
+
+5. **Run with Public HTTPS for Gemini Enterprise:**
    Gemini Enterprise rejects `http://` agent URLs and expects `https://`.
 
    For a VM that only has a public IP address, use a publicly trusted IP certificate rather

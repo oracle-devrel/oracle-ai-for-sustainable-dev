@@ -1,7 +1,4 @@
 
 
-HOSTNAME="${PUBLIC_HOSTNAME:-oracledev.ai}"
-P12_NAME="${P12_NAME:-oracledev-ai.p12}"
-
-openssl pkcs12 -export -in "${HOSTNAME}.cert" -inkey "${HOSTNAME}.key" -out "${P12_NAME}" -name "${HOSTNAME}"
+ openssl pkcs12 -export -in oracledatabase-financial.org.cert  -inkey  oracledatabase-financial.key  -out oracledatabasefinancialorg.p12 -name oracledatabasefinancialorg
  cp oracledatabasefinancialorg.p12 src/main/resources/

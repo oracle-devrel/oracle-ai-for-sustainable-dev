@@ -31,12 +31,12 @@ print(f"compartment_id: {compartment_id}")
 # (client can be downloaded from https://www.oracle.com/database/technologies/instant-client/winx64-64-downloads.html)
 # oracledb.init_oracle_client(lib_dir=r"C:\[path_to_instant_client]\instantclient_23_7")
 connection = oracledb.connect(
-    user=os.environ.get("DB_USER", "moviestream"),
-    password=os.environ["DB_PASSWORD"],
-    dsn=os.environ.get("DB_DSN", "selectaidb_high"),
-    config_dir=os.environ.get("TNS_ADMIN", "/path/to/Wallet_SelectAIDB"),
-    wallet_location=os.environ.get("TNS_ADMIN", "/path/to/Wallet_SelectAIDB"),
-    wallet_password=os.environ["DB_PASSWORD"]
+    user="moviestream",
+    password="Welcome12345",
+    dsn="selectaidb_high",
+    config_dir="/Users/pparkins/Downloads/Wallet_SelectAIDB",
+    wallet_location="/Users/pparkins/Downloads/Wallet_SelectAIDB",
+    wallet_password="Welcome12345"
 )
 print(f"Successfully connected to Oracle Database Connection: {connection}")
 

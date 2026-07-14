@@ -9,7 +9,8 @@ if [[ $# -ne 1 ]]; then
 fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-OUTPUT_DIR="$SCRIPT_DIR/demo-import"
+CARD_DIR="$SCRIPT_DIR/agent-cards"
+OUTPUT_DIR="$CARD_DIR/demo-import"
 PUBLIC_AGENT_HOST="$1"
 
 PUBLIC_AGENT_HOST="${PUBLIC_AGENT_HOST#http://}"
@@ -19,12 +20,12 @@ PUBLIC_AGENT_HOST="${PUBLIC_AGENT_HOST%/}"
 mkdir -p "$OUTPUT_DIR"
 
 	for template in \
-	  "$SCRIPT_DIR/agent-card-graph.json" \
-	  "$SCRIPT_DIR/agent-card-spatial.json" \
-	  "$SCRIPT_DIR/agent-card-select-ai.json" \
-	  "$SCRIPT_DIR/agent-card-action.json" \
-	  "$SCRIPT_DIR/agent-card-inventory-system.json"; do
-	  output_file="$OUTPUT_DIR/$(basename "$template")"
+	  "$CARD_DIR/agent-card-graph.json" \
+	  "$CARD_DIR/agent-card-spatial.json" \
+	  "$CARD_DIR/agent-card-select-ai.json" \
+	  "$CARD_DIR/agent-card-action.json" \
+	  "$CARD_DIR/agent-card-inventory-system.json"; do
+	  output_file="$OUTPUT_DIR/$(basename "$template" .json).local.json"
 	  sed "s|YOUR_PUBLIC_AGENT_HOST|$PUBLIC_AGENT_HOST|g" "$template" >"$output_file"
 	done
 

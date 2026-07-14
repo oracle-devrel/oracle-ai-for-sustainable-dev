@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">Oracle AI Database OpenTelemetry trace cover</title>
+  <desc id="desc">Technical cover diagram showing an AI agent request flowing through Spring Boot, Oracle JDBC, Oracle AI Database internals, and an OpenTelemetry backend.</desc>
+  <rect width="1200" height="675" fill="#fbfaf8"/>
+  <text x="600" y="58" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="34" font-weight="700" fill="#20242a">Advanced End-to-End Agentic AI Observability</text>
+  <text x="600" y="98" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="21" font-weight="600" fill="#4f5965">Tracing from the agent into Oracle AI Database</text>
+  <text x="600" y="126" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="600" fill="#c74634">Java observability provider + server-side OTel exporter</text>
+
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M2,2 L10,6 L2,10" fill="none" stroke="#4f5965" stroke-width="2"/>
+    </marker>
+  </defs>
+
+  <g transform="translate(75 205)">
+    <rect x="0" y="0" width="230" height="104" rx="8" fill="#ffffff" stroke="#d6d6d6" stroke-width="2"/>
+    <circle cx="51" cy="43" r="22" fill="none" stroke="#c74634" stroke-width="4"/>
+    <path d="M51 19 v48 M29 43 h44" stroke="#c74634" stroke-width="4" stroke-linecap="round"/>
+    <text x="95" y="42" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="700" fill="#20242a">AI Agent</text>
+    <text x="95" y="70" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#5c6673">task + user</text>
+  </g>
+
+  <line x1="325" y1="257" x2="425" y2="257" stroke="#4f5965" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <g transform="translate(450 205)">
+    <rect x="0" y="0" width="245" height="104" rx="8" fill="#ffffff" stroke="#d6d6d6" stroke-width="2"/>
+    <rect x="32" y="28" width="44" height="36" rx="4" fill="none" stroke="#4f5965" stroke-width="3"/>
+    <path d="M36 39 h36 M36 51 h26" stroke="#4f5965" stroke-width="3" stroke-linecap="round"/>
+    <text x="91" y="42" font-family="Arial, Helvetica, sans-serif" font-size="21" font-weight="700" fill="#20242a">Spring Boot</text>
+    <text x="91" y="70" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#5c6673">Micrometer</text>
+  </g>
+
+  <line x1="715" y1="257" x2="790" y2="257" stroke="#4f5965" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <g transform="translate(815 205)">
+    <rect x="0" y="0" width="310" height="104" rx="8" fill="#ffffff" stroke="#d6d6d6" stroke-width="2"/>
+    <ellipse cx="48" cy="32" rx="28" ry="11" fill="none" stroke="#c74634" stroke-width="3"/>
+    <path d="M20 32 v35 c0 6 13 11 28 11s28-5 28-11 V32" fill="none" stroke="#c74634" stroke-width="3"/>
+    <path d="M20 50 c0 6 13 11 28 11s28-5 28-11" fill="none" stroke="#c74634" stroke-width="3"/>
+    <text x="94" y="38" font-family="Arial, Helvetica, sans-serif" font-size="20" font-weight="700" fill="#20242a">Oracle AI Database</text>
+    <text x="94" y="66" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#5c6673">server-side span</text>
+  </g>
+
+  <g transform="translate(205 385)">
+    <rect x="0" y="0" width="790" height="88" rx="44" fill="#ffffff" stroke="#d6d6d6" stroke-width="2"/>
+    <text x="395" y="36" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="700" fill="#20242a">Continuous OpenTelemetry Timeline</text>
+    <text x="395" y="65" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="17" fill="#5c6673">HTTP span -> JDBC round trips -> database server-side execution -> SQL diagnostics</text>
+  </g>
+
+  <line x1="930" y1="319" x2="930" y2="370" stroke="#4f5965" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <g transform="translate(435 535)">
+    <path d="M0 0 H330" stroke="#c74634" stroke-width="7" stroke-linecap="round"/>
+    <text x="165" y="42" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="20" font-weight="700" fill="#c74634">Oracle AI Database</text>
+  </g>
+</svg>

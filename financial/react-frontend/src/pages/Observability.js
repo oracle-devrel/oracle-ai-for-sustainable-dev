@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-import { assetPath } from '../config';
 
 // Banker blue theme colors
 const bankerBg = "#354F64";
@@ -76,7 +75,7 @@ const Observability = () => {
 
       {/* Uncomment the iframe if needed */}
       {/* <Iframe src="http://localhost:8088/grafana" title="Kubernetes and OpenTelemetry Observability" /> */}
-      <Image src={assetPath('/images/grafanatrace.png')} alt="Grafana Trace Visualization" />
+      <Image src="/images/grafanatrace.png" alt="Grafana Trace Visualization" />
     </PageContainer>
   );
 };

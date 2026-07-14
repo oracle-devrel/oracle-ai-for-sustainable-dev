@@ -1,6 +1,7 @@
 package com.oracle.demo.deepsecurity;
 
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManagerResolver;
@@ -36,9 +37,14 @@ public class SecurityConfiguration {
     @Bean
     AuthenticationManagerResolver<HttpServletRequest> jwtAuthenticationManagerResolver(
             DeepDataSecurityProperties properties) {
-        String tenantId = properties.getBrowser().getTenantId();
-        return JwtIssuerAuthenticationManagerResolver.fromTrustedIssuers(
-                "https://sts.windows.net/" + tenantId + "/",
-                "https://login.microsoftonline.com/" + tenantId + "/v2.0");
+        String[] trustedIssuers = Arrays.stream(properties.getJwt().getTrustedIssuers().split(","))
+                .map(String::trim)
+                .filter(value -> !value.isBlank())
+                .toArray(String[]::new);
+        if (trustedIssuers.length == 0) {
+            throw new IllegalStateException(
+                    "Configure at least one trusted JWT issuer with deepsec.jwt.trusted-issuers.");
+        }
+        return JwtIssuerAuthenticationManagerResolver.fromTrustedIssuers(trustedIssuers);
     }
 }

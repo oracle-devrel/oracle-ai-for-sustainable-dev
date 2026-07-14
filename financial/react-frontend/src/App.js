@@ -17,7 +17,6 @@ import CreditCardPurchase from './pages/CreditCardPurchase';
 import ProtectedRoute from './ProtectedRoute';
 import styled from 'styled-components';
 import GlobalStyle from './globalStyles';
-import { APP_BASE_PATH } from './config';
 
 const MainContent = styled.div`
   margin-left: 350px; /* Match the sidebar width */
@@ -28,7 +27,7 @@ function App() {
   return (
     <>
       <GlobalStyle />
-      <Router basename={APP_BASE_PATH || undefined}>
+      <Router>
         <Sidebar />
         <MainContent>
           <Routes>

@@ -171,14 +171,14 @@
 <!--        <dependency>-->
 <!--            <groupId>com.oracle.database.jdbc</groupId>-->
 <!--            <artifactId>ojdbc8-production</artifactId>-->
-<!--            <version>23.26.2.0.0</version>-->
+<!--            <version>19.8.0.0</version>-->
 <!--            <type>pom</type>-->
 <!--        </dependency>-->
         <!-- Use full Oracle JDBC driver instead of production bundle for SSL support -->
         <dependency>
             <groupId>com.oracle.database.jdbc</groupId>
             <artifactId>ojdbc8</artifactId>
-            <version>23.26.2.0.0</version>
+            <version>23.9.0.25.07</version>
             <exclusions>
                 <exclusion>
                     <groupId>javax.json</groupId>
@@ -190,13 +190,13 @@
         <dependency>
             <groupId>com.oracle.database.jdbc</groupId>
             <artifactId>ucp</artifactId>
-            <version>23.26.2.0.0</version>
+            <version>23.9.0.25.07</version>
         </dependency>
         <!-- Oracle Security SDK for SSL/crypto support -->
         <dependency>
             <groupId>com.oracle.database.security</groupId>
             <artifactId>oraclepki</artifactId>
-            <version>23.26.2.0.0</version>
+            <version>23.9.0.25.07</version>
         </dependency>
         <dependency>
             <groupId>jakarta.json</groupId>

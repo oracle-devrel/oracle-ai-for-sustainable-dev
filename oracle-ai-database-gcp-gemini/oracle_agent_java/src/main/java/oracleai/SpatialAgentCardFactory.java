@@ -50,7 +50,7 @@ final class SpatialAgentCardFactory {
                         new AgentSkill(
                                 "oracle_spatial_agent-renderHotspotMap",
                                 "renderHotspotMap",
-                                "Render a PNG hotspot map for a product such as SKU-500, using Oracle-backed warehouse risk data when available.",
+                                "Render a PNG hotspot map for a product, using Oracle-backed warehouse risk data when available.",
                                 List.of("llm", "tools", "map"),
                                 List.of(),
                                 List.of("text/plain"),

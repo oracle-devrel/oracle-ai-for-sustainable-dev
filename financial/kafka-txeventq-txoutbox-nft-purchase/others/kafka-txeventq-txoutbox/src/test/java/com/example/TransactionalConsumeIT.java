@@ -29,7 +29,7 @@ public class TransactionalConsumeIT {
     // Oracle Databse 23ai Free container image
     private static final String oracleImage = "gvenzl/oracle-free:23.5-slim-faststart";
     private static final String testUser = "testuser";
-    private static final String testPassword = System.getenv().getOrDefault("DB_PASSWORD", "");
+    private static final String testPassword = "Welcome123#";
     private final String topicName = "TEST";
 
     private static OracleDataSource dataSource;

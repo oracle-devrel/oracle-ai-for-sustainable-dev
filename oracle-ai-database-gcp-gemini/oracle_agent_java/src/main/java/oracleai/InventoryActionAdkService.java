@@ -119,11 +119,12 @@ public class InventoryActionAdkService {
 
     public InventoryActionResult run(String userInput, String contextId) {
         String normalizedInput = userInput == null || userInput.isBlank()
-                ? "Recommend an inventory action for SKU-500."
+                ? "Recommend an inventory action for " + DemoInventoryData.DEFAULT_PRODUCT_ID + "."
                 : userInput.trim();
         if (!containsProductId(normalizedInput)) {
             normalizedInput = normalizedInput
-                    + "\nUse SKU-500 as the default product id when the request does not specify one.";
+                    + "\nUse " + DemoInventoryData.DEFAULT_PRODUCT_ID
+                    + " as the default product id when the request does not specify one.";
         }
         try {
             return runAdk(normalizedInput, contextId);
@@ -264,7 +265,7 @@ public class InventoryActionAdkService {
         if (matcher.find()) {
             return matcher.group(1);
         }
-        return "SKU-500";
+        return DemoInventoryData.DEFAULT_PRODUCT_ID;
     }
 
     private static boolean containsProductId(String userInput) {

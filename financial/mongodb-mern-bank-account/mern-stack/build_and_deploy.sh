@@ -5,7 +5,7 @@ echo TAG = $TAG
 
 export IMAGE_NAME=mern-backend
 export IMAGE_VERSION=$TAG
-export DOCKER_REGISTRY=eu-frankfurt-1.ocir.io/<tenancy-namespace>/financial
+export DOCKER_REGISTRY=eu-frankfurt-1.ocir.io/oradbclouducm/financial
 if [ -z "$DOCKER_REGISTRY" ]; then
     echo "Error: DOCKER_REGISTRY env variable needs to be set!"
     exit 1

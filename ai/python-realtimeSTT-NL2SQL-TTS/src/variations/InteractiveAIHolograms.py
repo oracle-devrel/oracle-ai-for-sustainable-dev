@@ -29,12 +29,12 @@ compartment_id = os.getenv('COMPARTMENT_ID')
 print(f"compartment_id: {compartment_id}")
 
 connection = oracledb.connect(
-    user=os.environ.get("DB_USER", "moviestream"),
-    password=os.environ["DB_PASSWORD"],
-    dsn=os.environ.get("DB_DSN", "selectaidb_high"),
+    user="moviestream",
+    password="Welcome12345",
+    dsn="selectaidb_high",
     config_dir=r"C:\Users\paulp\Downloads\Wallet_SelectAIDB",
     wallet_location=r"C:\Users\paulp\Downloads\Wallet_SelectAIDB",
-    wallet_password=os.environ["DB_PASSWORD"]
+    wallet_password="Welcome12345"
 )
 print(f"Successfully connected to Oracle Database Connection: {connection}")
 

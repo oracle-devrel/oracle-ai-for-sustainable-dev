@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Build a Spring Boot Lakehouse App with Oracle AI Database, Oracle JDBC, and Iceberg Tables</title>
+  <style>
+    body { margin: 0; font-family: Arial, Helvetica, sans-serif; color: #1f2933; background: #f7f7f5; line-height: 1.55; }
+    article { max-width: 980px; margin: 0 auto; padding: 42px 24px 72px; background: #fff; }
+    h1 { font-size: 42px; line-height: 1.1; margin: 20px 0 12px; }
+    h2 { font-size: 28px; margin-top: 42px; border-top: 1px solid #d9dee3; padding-top: 26px; }
+    h3 { font-size: 21px; margin-top: 28px; }
+    .subtitle { font-size: 21px; color: #4b5563; margin-bottom: 28px; }
+    .eyebrow { color: #c74634; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
+    .takeaways, .faq { background: #f2f4f6; border-left: 5px solid #c74634; padding: 18px 24px; }
+    img { max-width: 100%; border: 1px solid #d9dee3; }
+    figcaption { color: #5f6470; font-size: 14px; margin-top: 8px; }
+    code { background: #eef1f4; padding: 2px 5px; border-radius: 4px; }
+    pre { background: #f5f7f9; border: 1px solid #dde3ea; padding: 12px; white-space: pre-wrap; overflow-x: auto; border-radius: 6px; }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    a { color: #1f6fb2; }
+  </style>
+</head>
+<body>
+<article>
+  <p class="eyebrow">Oracle AI Database Lakehouse</p>
+  <h1>Build a Spring Boot Lakehouse App with Oracle AI Database, Oracle JDBC, and Iceberg Tables</h1>
+  <p class="subtitle">A practical Spring Boot demo for querying Iceberg-backed lakehouse data through Oracle SQL and ordinary JDBC.</p>
+  <p>
+    All source code, configuration, SQL setup scripts, and the sample Spring Boot app are available in the
+    <a href="https://github.com/oracle-devrel/oracle-ai-for-sustainable-dev/tree/main/lakehouse">lakehouse folder on GitHub</a>.
+  </p>
+
+  <figure>
+    <img src="images/oracle-ai-database-lakehouse-cover.svg" alt="Diagram showing Spring Boot and Oracle JDBC querying Oracle AI Database, which connects SQL analytics to Apache Iceberg tables in object storage.">
+    <figcaption>Oracle AI Database acts as the SQL and governance layer while the application uses ordinary Oracle JDBC.</figcaption>
+  </figure>
+
+  <section class="takeaways">
+    <h2>Key Takeaways</h2>
+    <ul>
+      <li>Apache Iceberg gives object-store data table semantics: schema evolution, snapshots, partitioning, and multi-engine access.</li>
+      <li>A lakehouse combines data lake storage economics with data warehouse-style SQL, governance, and analytics.</li>
+      <li>Oracle Autonomous AI Lakehouse combines Autonomous AI Database with open lakehouse access for AI and analytics across cloud and lakehouse data.</li>
+      <li>The sample app uses Spring Boot, Oracle JDBC production dependencies, and Oracle UCP to query a configured Iceberg-backed Oracle table or view.</li>
+    </ul>
+  </section>
+
+  <h2>Why Iceberg Matters to a Lakehouse</h2>
+  <p>
+    A data lake is great for storing files cheaply, but files alone do not behave like governed database tables.
+    Apache Iceberg fills that gap by adding table metadata over files such as Parquet. That metadata tracks schema,
+    snapshots, manifests, partitions, and data files so multiple engines can safely work with the same analytical table.
+  </p>
+  <p>
+    A lakehouse builds on that idea. It keeps data in open lake storage while adding the SQL access, governance,
+    and operational patterns people expect from a warehouse. In the Oracle world, Oracle AI Database can be the SQL
+    engine and governance point for lakehouse data, while applications still connect through the familiar Oracle JDBC path.
+  </p>
+  <figure>
+    <img src="images/iceberg-lakehouse-concept.svg" alt="Diagram showing object storage files, Iceberg metadata, Oracle AI Database SQL and governance, and a Spring Boot JDBC application.">
+    <figcaption>Iceberg metadata turns lake files into table snapshots that Oracle AI Database can expose through SQL.</figcaption>
+  </figure>
+
+  <h2>Where Oracle Autonomous AI Lakehouse Fits</h2>
+  <p>
+    Oracle Autonomous AI Lakehouse is Oracle's managed lakehouse service shape for running AI and analytics across
+    database data, object-store data, and open lakehouse table formats. Oracle describes the service as combining
+    Autonomous AI Database with vendor-independent Apache Iceberg so teams can analyze data across OCI, AWS, Azure,
+    Google Cloud, and Exadata Cloud@Customer without forcing every application to learn a new data-access stack.
+  </p>
+  <p>
+    For developers, the important part is the boundary. Oracle AI Database handles the lakehouse integration:
+    credentials, object storage access, catalogs, external table metadata, optimization, security, and governance.
+    The Spring Boot service sees a normal Oracle SQL object and keeps using Oracle JDBC. That means the same app can
+    work first against a regular smoke-test table, then later against an Iceberg-backed external table simply by
+    changing <code>ICEBERG_TABLE_NAME</code>.
+  </p>
+  <table>
+    <tr>
+      <th>Layer</th>
+      <th>Responsibility</th>
+    </tr>
+    <tr>
+      <td>Object storage and Iceberg metadata</td>
+      <td>Stores Parquet/ORC/AVRO data files, Iceberg metadata, snapshots, and manifests.</td>
+    </tr>
+    <tr>
+      <td>Catalog or metadata pointer</td>
+      <td>Resolves table metadata through a supported catalog such as AWS Glue, Snowflake Polaris/Horizon, Databricks Unity/UniForm, Hadoop-style metadata, or a direct <code>metadata.json</code> pointer.</td>
+    </tr>
+    <tr>
+      <td>Oracle Autonomous AI Database</td>
+      <td>Creates the external table or view, applies database security, and exposes the lakehouse data through SQL.</td>
+    </tr>
+    <tr>
+      <td>Spring Boot and Oracle JDBC</td>
+      <td>Connects through UCP and queries the configured SQL object without parsing Iceberg metadata in Java.</td>
+    </tr>
+  </table>
+  <figure>
+    <img src="images/iceberg-access-models.svg" alt="Diagram comparing catalog-managed Iceberg access with direct metadata access for Oracle AI Database lakehouse queries.">
+    <figcaption>Catalog-managed access is usually the production path; direct metadata is useful when a specific Iceberg metadata file is the table boundary.</figcaption>
+  </figure>
+
+  <h2>What the Spring Boot App Demonstrates</h2>
+  <p>
+    The app in this folder does not parse Iceberg metadata or read Parquet files directly. Instead, it assumes Oracle
+    AI Database exposes an Iceberg-backed table or view. The app connects through Oracle JDBC and queries that object
+    using normal SQL.
+  </p>
+  <p>
+    That is the useful developer shape of Oracle JDBC Iceberg table support: the lakehouse integration is handled by
+    Oracle Database, and the Java application keeps using the same JDBC primitives it already knows: a datasource,
+    SQL statements, fetch size, query timeout, and result sets.
+  </p>
+  <pre><code>curl http://localhost:8080/api/database
+curl http://localhost:8080/api/lakehouse/summary
+curl 'http://localhost:8080/api/lakehouse/sample?tableName=LAKEHOUSE_DEMO.SALES_ICEBERG&amp;limit=10'</code></pre>
+
+  <h2>Maven Dependencies</h2>
+  <p>
+    The app uses the Oracle JDBC production dependency to keep the driver, wallet/security libraries, and related
+    runtime artifacts aligned. It also depends directly on <code>ucp17</code> because the code creates an Oracle UCP
+    pool explicitly.
+  </p>
+  <pre><code>&lt;properties&gt;
+  &lt;java.version&gt;25&lt;/java.version&gt;
+  &lt;oracle.jdbc.version&gt;23.26.2.0.0&lt;/oracle.jdbc.version&gt;
+  &lt;oracle-database.version&gt;${oracle.jdbc.version}&lt;/oracle-database.version&gt;
+&lt;/properties&gt;
+
+&lt;dependency&gt;
+  &lt;groupId&gt;com.oracle.database.jdbc&lt;/groupId&gt;
+  &lt;artifactId&gt;ojdbc17-production&lt;/artifactId&gt;
+  &lt;version&gt;${oracle.jdbc.version}&lt;/version&gt;
+  &lt;type&gt;pom&lt;/type&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+  &lt;groupId&gt;com.oracle.database.jdbc&lt;/groupId&gt;
+  &lt;artifactId&gt;ucp17&lt;/artifactId&gt;
+  &lt;version&gt;${oracle.jdbc.version}&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+
+  <h2>How to Run the Example</h2>
+  <ol>
+    <li>Create or identify an Oracle SQL object that exposes Iceberg-backed lakehouse data. The next section shows the Oracle AI Lakehouse setup shape.</li>
+    <li>Clone the repo and enter the <code>lakehouse</code> directory.</li>
+    <li>Copy <code>.env_example</code> to <code>.env</code> and set <code>DB_URL</code>, <code>DB_USERNAME</code>, <code>DB_PASSWORD</code>, and <code>ICEBERG_TABLE_NAME</code>.</li>
+    <li>Build with JDK 25 using <code>./build.sh</code>.</li>
+    <li>Start with <code>./run.sh</code>.</li>
+    <li>Open <code>/api/lakehouse/summary</code> to confirm the app can query the configured Iceberg table.</li>
+  </ol>
+  <p>
+    To smoke-test the app with the financial Autonomous Database before a real Iceberg-backed object is available,
+    run <code>lakehouse/sql/setup_financial_smoke_test.sql</code> as the <code>FINANCIAL</code> user and set
+    <code>ICEBERG_TABLE_NAME=LAKEHOUSE_JDBC_SMOKE_TEST</code>. This verifies the wallet, Oracle JDBC 17,
+    Oracle UCP, metadata endpoint, and sample-row endpoint. It is intentionally labeled as a smoke test because
+    the table is regular Oracle data, not an Iceberg table.
+  </p>
+  <pre><code>export DB_URL='jdbc:oracle:thin:@financialdb_high?TNS_ADMIN=/path/to/Wallet_financialdb'
+export DB_USERNAME=financial
+export DB_PASSWORD='&lt;financial-password&gt;'
+export ICEBERG_TABLE_NAME=LAKEHOUSE_JDBC_SMOKE_TEST
+
+./build.sh
+./run.sh
+
+curl http://localhost:8080/api/database
+curl 'http://localhost:8080/api/lakehouse/objects?nameLike=LAKEHOUSE'
+curl http://localhost:8080/api/lakehouse/summary</code></pre>
+
+  <h2>How to Set Up Oracle AI Lakehouse for This App</h2>
+  <p>
+    The exact SQL depends on your Iceberg source and catalog. Oracle's
+    <a href="https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/query-external-data-apache-iceberg.html">Apache Iceberg external table documentation</a>
+    is the source of truth for supported configurations. At a high level, it documents:
+  </p>
+  <ul>
+    <li>Catalog-managed access with AWS Glue and Amazon S3.</li>
+    <li>Catalog-managed access with Snowflake Polaris or Horizon and Amazon S3 or Azure ADLS Gen2.</li>
+    <li>Catalog-managed access with Databricks Unity Catalog / UniForm and Amazon S3 or Azure ADLS Gen2.</li>
+    <li>Non-catalog access with Hadoop-style metadata on OCI Object Storage.</li>
+    <li>Direct <code>metadata.json</code> access on Amazon S3, Azure ADLS Gen2, or OCI Object Storage.</li>
+  </ul>
+  <p>
+    Oracle's broader <a href="https://www.oracle.com/autonomous-database/autonomous-ai-lakehouse/">Autonomous AI Lakehouse</a>
+    positioning spans cloud and lakehouse data, but the Iceberg documentation's setup matrix should be used when
+    choosing the object store and catalog combination for this external-table path.
+  </p>
+  <p>The common setup pattern is:</p>
+  <ol>
+    <li>Provision or use an Autonomous AI Database or Autonomous AI Lakehouse instance.</li>
+    <li>Choose the Iceberg access model: catalog-managed for governed production data products, or direct metadata for fixed-snapshot tests and audits.</li>
+    <li>Grant the database schema outbound HTTPS ACL access to only the required hosts, such as object storage, catalog endpoints, token endpoints, or an HTTPS proxy.</li>
+    <li>Grant the schema the database role/privileges needed to create and manage external lakehouse tables, commonly including <code>DWROLE</code> for <code>DBMS_CLOUD</code> operations.</li>
+    <li>Create object-store and, when needed, REST catalog credentials with <code>DBMS_CLOUD.CREATE_CREDENTIAL</code>.</li>
+    <li>Create the external table with <code>DBMS_CLOUD.CREATE_EXTERNAL_TABLE</code> and an Iceberg-aware <code>format</code> JSON document.</li>
+    <li>Run a quick SQL check such as <code>select count(*)</code>.</li>
+    <li>Point this Spring Boot app at that SQL object with <code>ICEBERG_TABLE_NAME</code>.</li>
+  </ol>
+  <p>
+    This direct-metadata example matches Oracle's documented Iceberg access pattern: the
+    <code>file_uri_list</code> points to an Iceberg <code>metadata.json</code> file, and the
+    <code>format</code> JSON declares the Iceberg access protocol. The repository includes a
+    sample shape at <code>lakehouse/sample-iceberg/metadata.json</code>. To run this against a real object store,
+    upload a complete Iceberg table, including the metadata file, manifest list, manifests, and data files that
+    the metadata references, then replace the URI with that real metadata file location.
+  </p>
+  <pre><code>-- 1. Allow the schema to reach the required HTTPS endpoint.
+BEGIN
+  DBMS_NETWORK_ACL_ADMIN.APPEND_HOST_ACE(
+    host       =&gt; 'objectstorage.&lt;region&gt;.oraclecloud.com',
+    lower_port =&gt; 443,
+    upper_port =&gt; 443,
+    ace        =&gt; xs$ace_type(
+      privilege_list =&gt; xs$name_list('http'),
+      principal_name =&gt; 'LAKEHOUSE_DEMO',
+      principal_type =&gt; xs_acl.ptype_db));
+END;
+/
+
+-- 2. Grant the app/lakehouse schema the role needed for DBMS_CLOUD operations.
+GRANT DWROLE TO LAKEHOUSE_DEMO;
+
+-- 3. Create credentials for the object store, and catalog credentials if required.
+BEGIN
+  DBMS_CLOUD.CREATE_CREDENTIAL(
+    credential_name =&gt; 'OBJECT_STORE_CRED',
+    username        =&gt; '&lt;object-store-user-or-key-id&gt;',
+    password        =&gt; '&lt;object-store-secret&gt;');
+END;
+/
+
+-- 4. Create an Iceberg-backed external table.
+BEGIN
+  DBMS_CLOUD.CREATE_EXTERNAL_TABLE(
+    table_name      =&gt; 'SALES_ICEBERG',
+    credential_name =&gt; 'OBJECT_STORE_CRED',
+    file_uri_list   =&gt; 'https://objectstorage.&lt;region&gt;.oraclecloud.com/n/&lt;namespace&gt;/b/&lt;bucket&gt;/o/lakehouse/sales_iceberg/metadata.json',
+    format          =&gt; '{"access_protocol":{"protocol_type":"iceberg"}}');
+END;
+/
+
+SELECT COUNT(*) FROM SALES_ICEBERG;</code></pre>
+  <p>
+    Once that query works in SQL, the Java app does not need special Iceberg logic:
+  </p>
+  <pre><code>export ICEBERG_TABLE_NAME=LAKEHOUSE_DEMO.SALES_ICEBERG
+./run.sh
+curl http://localhost:8080/api/lakehouse/summary</code></pre>
+
+  <h2>Performance and Governance Options</h2>
+  <p>
+    For larger lakehouse workloads, Oracle documents Data Lake Accelerator and Lake Cache as database-side options.
+    Data Lake Accelerator can offload scans of external data stored in object stores, while Lake Cache can keep
+    frequently accessed external data local to Autonomous AI Database. Those are database-tier choices; the Spring
+    Boot code remains the same because the application still queries a SQL table or view.
+  </p>
+
+  <h2>Production Notes</h2>
+  <ul>
+    <li>Use a database wallet, vault, or secret manager for credentials.</li>
+    <li>Grant the application user only the lakehouse tables or views it needs.</li>
+    <li>Prefer views or synonyms when you want a stable application-facing name over evolving lakehouse objects.</li>
+    <li>Set JDBC fetch size based on expected row width and network latency.</li>
+  </ul>
+
+  <section class="faq">
+    <h2>FAQ</h2>
+    <h3>Does the Java app need to understand Iceberg files?</h3>
+    <p>No. Oracle AI Database exposes the lakehouse/Iceberg data as SQL objects. The Java app uses Oracle JDBC and SQL.</p>
+    <h3>Why use the Oracle JDBC production dependency?</h3>
+    <p>It keeps the driver, wallet/security libraries, and related runtime artifacts aligned, while <code>ucp17</code> supplies the explicit UCP pool used by this demo.</p>
+    <h3>Can this work with Autonomous Database?</h3>
+    <p>Yes, when the database environment is configured with the relevant lakehouse/Iceberg support and the app can connect to it.</p>
+    <h3>Does the app change when I move from the smoke-test table to an Iceberg-backed table?</h3>
+    <p>Usually no. After Oracle AI Database exposes the Iceberg-backed data as a SQL object, change <code>ICEBERG_TABLE_NAME</code> and keep the JDBC code the same.</p>
+    <h3>Where is the source code?</h3>
+    <p>The sample lives in the repository under <code>lakehouse</code>.</p>
+  </section>
+
+  <h2>References</h2>
+  <ul>
+    <li><a href="https://github.com/oracle-devrel/oracle-ai-for-sustainable-dev/tree/main/lakehouse">Lakehouse demo source code</a></li>
+    <li><a href="https://www.oracle.com/autonomous-database/autonomous-ai-lakehouse/">Oracle Autonomous AI Lakehouse</a></li>
+    <li><a href="https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/autonomous-lakehouse.html">Use Lakehouse with Autonomous AI Database</a></li>
+    <li><a href="https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/query-external-data-apache-iceberg.html">Query Apache Iceberg Tables with Autonomous AI Database</a></li>
+    <li><a href="https://docs.oracle.com/en-us/iaas/autonomous-database-serverless/doc/data-lake-accelerator.html">Data Lake Accelerator</a></li>
+    <li><a href="https://iceberg.apache.org/">Apache Iceberg project</a></li>
+    <li><a href="https://www.oracle.com/database/technologies/maven-central-guide.html">Oracle JDBC Maven Central Guide</a></li>
+    <li><a href="https://www.oracle.com/database/">Oracle AI Database</a></li>
+  </ul>
+</article>
+</body>
+</html>

@@ -59,7 +59,12 @@ public class DeepDataSecurityController {
     @GetMapping("/browser-config")
     public BrowserConfigResponse browserConfig() {
         DeepDataSecurityProperties.Browser browser = deepDataSecurityService.browserConfig();
-        return new BrowserConfigResponse(browser.getTenantId(), browser.getClientId(), browserScope(browser.getScope()));
+        return new BrowserConfigResponse(
+                browser.isEnabled(),
+                browser.getAuthProvider(),
+                browser.getTenantId(),
+                browser.getClientId(),
+                browserScope(browser.getScope()));
     }
 
     @GetMapping("/policies")
@@ -113,7 +118,7 @@ public class DeepDataSecurityController {
     record HealthResponse(String status) {
     }
 
-    record BrowserConfigResponse(String tenantId, String clientId, String scope) {
+    record BrowserConfigResponse(boolean enabled, String authProvider, String tenantId, String clientId, String scope) {
     }
 
     record PolicyDemoResponse(

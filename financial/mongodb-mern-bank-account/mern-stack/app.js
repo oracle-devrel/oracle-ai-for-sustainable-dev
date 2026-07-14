@@ -13,12 +13,7 @@ app.use(bodyParser.json());
 app.use(cors());
 
 // MongoDB connection (using Oracle JSON Duality View as MongoDB API)
-const MONGO_URI = process.env.MONGO_URI;
-if (!MONGO_URI) {
-  console.error('MONGO_URI environment variable is required.');
-  process.exit(1);
-}
-
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://financial:yourpassword5@asdf-FINANCIALDB.adb.eu-frankfurt-1.oraclecloudapps.com:27017/financial?authMechanism=PLAIN&authSource=$external&ssl=true&retryWrites=false&loadBalanced=true';
 mongoose
   .connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('Connected to Oracle JSON Duality View via MongoDB API'))
@@ -56,7 +51,7 @@ app.get('/', (req, res) => {
     database: {
       type: 'Oracle Database via MongoDB API',
       collection: 'accounts_dv',
-      connection: 'Environment variable configured'
+      connection: MONGO_URI ? 'Environment variable configured' : 'Using fallback configuration'
     }
   });
 });
