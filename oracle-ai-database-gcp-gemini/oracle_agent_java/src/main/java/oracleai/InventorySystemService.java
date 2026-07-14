@@ -24,6 +24,7 @@ public class InventorySystemService {
     private final InventoryActionAdkService inventoryActionAdkService;
     private final Function<GraphTools.GraphRequest, GraphTools.GraphResponse> getSupplyChainDependencies;
     private final SpatialTools spatialTools;
+    private final GeminiVisualRenderer geminiVisualRenderer;
 
     public InventorySystemService(
             Environment environment,
@@ -31,7 +32,8 @@ public class InventorySystemService {
             OracleAiDatabaseAgentClient oracleAiDatabaseAgentClient,
             InventoryActionAdkService inventoryActionAdkService,
             Function<GraphTools.GraphRequest, GraphTools.GraphResponse> getSupplyChainDependencies,
-            SpatialTools spatialTools
+            SpatialTools spatialTools,
+            GeminiVisualRenderer geminiVisualRenderer
     ) {
         this.environment = environment;
         this.selectAiService = selectAiService;
@@ -39,6 +41,7 @@ public class InventorySystemService {
         this.inventoryActionAdkService = inventoryActionAdkService;
         this.getSupplyChainDependencies = getSupplyChainDependencies;
         this.spatialTools = spatialTools;
+        this.geminiVisualRenderer = geminiVisualRenderer;
     }
 
     public InventorySystemResult answer(String userInput) {
@@ -122,64 +125,118 @@ public class InventorySystemService {
                 new GraphTools.GraphRequest(productId, null, false, null)
         );
         String responseText = GraphA2AConfiguration.formatResponse(response);
-        String imageBytes;
-        try {
-            imageBytes = GraphA2AConfiguration.renderGraphPng(response.productId(), response);
-        } catch (Exception exception) {
-            throw new IllegalStateException("Unable to render graph output: " + exception.getMessage(), exception);
-        }
 
-        Artifact artifact = new Artifact.Builder()
-                .artifactId(UUID.randomUUID().toString())
-                .name("supply_chain_graph_png")
-                .description("Oracle property graph visualization")
-                .parts(new FilePart(new FileWithBytes("image/png", "supply-chain-graph.png", imageBytes)))
-                .metadata(Map.of(
-                        "productId", response.productId(),
-                        "sourceMode", response.sourceMode(),
-                        "contentType", "image/png"
-                ))
-                .extensions(List.of())
-                .build();
+        List<Artifact> artifacts = new java.util.ArrayList<>();
+        if (geminiVisualRenderer.includeDeterministic()) {
+            String imageBytes;
+            try {
+                imageBytes = GraphA2AConfiguration.renderGraphPng(response.productId(), response);
+            } catch (Exception exception) {
+                throw new IllegalStateException("Unable to render graph output: " + exception.getMessage(), exception);
+            }
+            artifacts.add(new Artifact.Builder()
+                    .artifactId(UUID.randomUUID().toString())
+                    .name("supply_chain_graph_png")
+                    .description("Oracle property graph visualization")
+                    .parts(new FilePart(new FileWithBytes("image/png", "supply-chain-graph.png", imageBytes)))
+                    .metadata(Map.of(
+                            "productId", response.productId(),
+                            "sourceMode", response.sourceMode(),
+                            "contentType", "image/png",
+                            "renderMode", "deterministic",
+                            "sourceOfTruth", true
+                    ))
+                    .extensions(List.of())
+                    .build());
+        }
+        if (geminiVisualRenderer.includeGemini()) {
+            geminiVisualRenderer.renderGraph(response).ifPresent(geminiImageBytes ->
+                    artifacts.add(new Artifact.Builder()
+                            .artifactId(UUID.randomUUID().toString())
+                            .name("supply_chain_graph_gemini_png")
+                            .description("Gemini-generated illustrative supply chain visualization")
+                            .parts(new FilePart(new FileWithBytes(
+                                    "image/png",
+                                    "supply-chain-graph-gemini.png",
+                                    geminiImageBytes
+                            )))
+                            .metadata(Map.of(
+                                    "productId", response.productId(),
+                                    "sourceMode", response.sourceMode(),
+                                    "contentType", "image/png",
+                                    "renderMode", "gemini",
+                                    "sourceOfTruth", false
+                            ))
+                            .extensions(List.of())
+                            .build())
+            );
+        }
 
         return new InventorySystemResult(
                 responseText,
                 "graph",
                 response.sourceMode(),
                 response.sourceDetail(),
-                List.of(artifact),
+                artifacts,
                 "delegate-graph"
         );
     }
 
     private InventorySystemResult routeSpatial(String userInput) {
         SpatialTools.SpatialResponse response = spatialTools.resolveSpatialResponse(userInput);
-        String imageBytes;
-        try {
-            imageBytes = spatialTools.renderHotspotPng(response);
-        } catch (Exception exception) {
-            throw new IllegalStateException("Unable to render spatial output: " + exception.getMessage(), exception);
-        }
 
-        Artifact artifact = new Artifact.Builder()
-                .artifactId(UUID.randomUUID().toString())
-                .name("warehouse_hotspot_map_png")
-                .description("Oracle spatial hotspot visualization")
-                .parts(new FilePart(new FileWithBytes("image/png", "warehouse-hotspot-map.png", imageBytes)))
-                .metadata(Map.of(
-                        "productId", response.productId(),
-                        "sourceMode", response.sourceMode(),
-                        "contentType", "image/png"
-                ))
-                .extensions(List.of())
-                .build();
+        List<Artifact> artifacts = new java.util.ArrayList<>();
+        if (geminiVisualRenderer.includeDeterministic()) {
+            String imageBytes;
+            try {
+                imageBytes = spatialTools.renderHotspotPng(response);
+            } catch (Exception exception) {
+                throw new IllegalStateException("Unable to render spatial output: " + exception.getMessage(), exception);
+            }
+            artifacts.add(new Artifact.Builder()
+                    .artifactId(UUID.randomUUID().toString())
+                    .name("warehouse_hotspot_map_png")
+                    .description("Oracle spatial hotspot visualization")
+                    .parts(new FilePart(new FileWithBytes("image/png", "warehouse-hotspot-map.png", imageBytes)))
+                    .metadata(Map.of(
+                            "productId", response.productId(),
+                            "sourceMode", response.sourceMode(),
+                            "contentType", "image/png",
+                            "renderMode", "deterministic",
+                            "sourceOfTruth", true
+                    ))
+                    .extensions(List.of())
+                    .build());
+        }
+        if (geminiVisualRenderer.includeGemini()) {
+            geminiVisualRenderer.renderSpatial(response).ifPresent(geminiImageBytes ->
+                    artifacts.add(new Artifact.Builder()
+                            .artifactId(UUID.randomUUID().toString())
+                            .name("warehouse_hotspot_map_gemini_png")
+                            .description("Gemini-generated illustrative warehouse hotspot visualization")
+                            .parts(new FilePart(new FileWithBytes(
+                                    "image/png",
+                                    "warehouse-hotspot-map-gemini.png",
+                                    geminiImageBytes
+                            )))
+                            .metadata(Map.of(
+                                    "productId", response.productId(),
+                                    "sourceMode", response.sourceMode(),
+                                    "contentType", "image/png",
+                                    "renderMode", "gemini",
+                                    "sourceOfTruth", false
+                            ))
+                            .extensions(List.of())
+                            .build())
+            );
+        }
 
         return new InventorySystemResult(
                 response.summaryText(),
                 "spatial",
                 response.sourceMode(),
                 response.sourceDetail(),
-                List.of(artifact),
+                artifacts,
                 "delegate-spatial"
         );
     }

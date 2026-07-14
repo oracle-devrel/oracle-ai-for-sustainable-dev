@@ -11,7 +11,7 @@ oracle-ai-database-gcp-gemini/
 ├── run.sh                  # Main launcher script
 ├── notebooks/              # Jupyter notebooks for exploration and demos
 │   └── oracle_ai_database_gemini_rag.ipynb
-├── python/                 # Python applications and scripts
+├── mcp_python/             # Python MCP applications and scripts
 │   ├── requirements.txt    # Python package dependencies
 │   ├── .streamlit/         # Streamlit configuration
 │   ├── oracle_ai_database_langchain_streamlit.py
@@ -50,16 +50,16 @@ The menu will present options for:
 ## Adding New Files
 
 - **Jupyter notebooks** → `notebooks/`
-- **Python scripts/apps** → `python/`
+- **Python MCP scripts/apps** → `mcp_python/`
 - **Java applications** → `java/`
 - **Documentation** → `docs/`
 
 ## Dependencies
 
-Install Python dependencies from the python/ directory:
+Install Python dependencies from the mcp_python/ directory:
 
 ```bash
-pip install -r python/requirements.txt
+pip install -r mcp_python/requirements.txt
 ```
 
 Or use the virtual environment setup in `run.sh`.

@@ -45,6 +45,7 @@ public class SpatialA2AController {
     public SpatialA2AController(
             Environment environment,
             SpatialTools spatialTools,
+            GeminiVisualRenderer geminiVisualRenderer,
             TaskStore taskStore,
             QueueManager queueManager,
             PushNotificationConfigStore pushNotificationConfigStore,
@@ -52,7 +53,7 @@ public class SpatialA2AController {
     ) {
         AgentCard spatialCard = SpatialAgentCardFactory.buildSpatialAgentCard(environment);
         RequestHandler requestHandler = DefaultRequestHandler.create(
-                buildAgentExecutor(spatialTools),
+                buildAgentExecutor(spatialTools, geminiVisualRenderer),
                 taskStore,
                 queueManager,
                 pushNotificationConfigStore,
@@ -105,7 +106,10 @@ public class SpatialA2AController {
         return taskController.cancelTask(taskId);
     }
 
-    private static AgentExecutor buildAgentExecutor(SpatialTools spatialTools) {
+    private static AgentExecutor buildAgentExecutor(
+            SpatialTools spatialTools,
+            GeminiVisualRenderer geminiVisualRenderer
+    ) {
         return new AgentExecutor() {
             @Override
             public void execute(RequestContext context, EventQueue eventQueue) throws JSONRPCError {
@@ -119,33 +123,63 @@ public class SpatialA2AController {
                 try {
                     String userInput = context.getUserInput("");
                     SpatialTools.SpatialResponse response = spatialTools.resolveSpatialResponse(userInput);
-                    String imageBytes = spatialTools.renderHotspotPng(response);
+                    if (geminiVisualRenderer.includeDeterministic()) {
+                        String imageBytes = spatialTools.renderHotspotPng(response);
+                        updater.addArtifact(
+                                List.of(
+                                        new FilePart(
+                                                new FileWithBytes(
+                                                        "image/png",
+                                                        "warehouse-hotspot-map.png",
+                                                        imageBytes
+                                                )
+                                        )
+                                ),
+                                null,
+                                "warehouse_hotspot_map_png",
+                                Map.of(
+                                        "productId", response.productId(),
+                                        "sourceMode", response.sourceMode(),
+                                        "contentType", "image/png",
+                                        "renderMode", "deterministic",
+                                        "sourceOfTruth", true
+                                )
+                        );
+                    }
 
-                    updater.addArtifact(
-                            List.of(
-                                    new FilePart(
-                                            new FileWithBytes(
-                                                    "image/png",
-                                                    "warehouse-hotspot-map.png",
-                                                    imageBytes
-                                            )
-                                    )
-                            ),
-                            null,
-                            "warehouse_hotspot_map_png",
-                            Map.of(
-                                    "productId", response.productId(),
-                                    "sourceMode", response.sourceMode(),
-                                    "contentType", "image/png"
-                            )
-                    );
+                    if (geminiVisualRenderer.includeGemini()) {
+                        geminiVisualRenderer.renderSpatial(response).ifPresent(imageBytes ->
+                                updater.addArtifact(
+                                        List.of(
+                                                new FilePart(
+                                                        new FileWithBytes(
+                                                                "image/png",
+                                                                "warehouse-hotspot-map-gemini.png",
+                                                                imageBytes
+                                                        )
+                                                )
+                                        ),
+                                        null,
+                                        "warehouse_hotspot_map_gemini_png",
+                                        Map.of(
+                                                "productId", response.productId(),
+                                                "sourceMode", response.sourceMode(),
+                                                "contentType", "image/png",
+                                                "renderMode", "gemini",
+                                                "sourceOfTruth", false
+                                        )
+                                )
+                        );
+                    }
+
                     updater.complete(
                             updater.newAgentMessage(
                                     List.of(new TextPart(response.summaryText())),
                                     Map.of(
                                             "tool", "renderHotspotMap",
                                             "artifactName", "warehouse-hotspot-map.png",
-                                            "sourceMode", response.sourceMode()
+                                            "sourceMode", response.sourceMode(),
+                                            "visualRenderer", geminiVisualRenderer.renderMode().name().toLowerCase()
                                     )
                             )
                     );

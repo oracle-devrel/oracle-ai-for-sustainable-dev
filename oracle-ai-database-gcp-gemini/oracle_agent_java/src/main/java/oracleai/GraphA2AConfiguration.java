@@ -152,14 +152,16 @@ public class GraphA2AConfiguration {
     @Bean
     AgentExecutor agentExecutor(
             Function<GraphTools.GraphRequest, GraphTools.GraphResponse> getSupplyChainDependencies,
-            GraphRequestParser graphRequestParser
+            GraphRequestParser graphRequestParser,
+            GeminiVisualRenderer geminiVisualRenderer
     ) {
-        return buildAgentExecutor(getSupplyChainDependencies, graphRequestParser);
+        return buildAgentExecutor(getSupplyChainDependencies, graphRequestParser, geminiVisualRenderer);
     }
 
     static AgentExecutor buildAgentExecutor(
             Function<GraphTools.GraphRequest, GraphTools.GraphResponse> getSupplyChainDependencies,
-            GraphRequestParser graphRequestParser
+            GraphRequestParser graphRequestParser,
+            GeminiVisualRenderer geminiVisualRenderer
     ) {
         return new AgentExecutor() {
             @Override
@@ -177,31 +179,60 @@ public class GraphA2AConfiguration {
                     GraphTools.GraphResponse graphResponse =
                             getSupplyChainDependencies.apply(graphRequest);
                     String responseText = formatResponse(graphResponse);
-                    Part<?> imagePart = new FilePart(
-                            new FileWithBytes(
-                                    "image/png",
-                                    "supply-chain-graph.png",
-                                    renderGraphPng(graphResponse.productId(), graphResponse)
-                            )
-                    );
+                    if (geminiVisualRenderer.includeDeterministic()) {
+                        Part<?> imagePart = new FilePart(
+                                new FileWithBytes(
+                                        "image/png",
+                                        "supply-chain-graph.png",
+                                        renderGraphPng(graphResponse.productId(), graphResponse)
+                                )
+                        );
 
-                    updater.addArtifact(
-                            List.of(imagePart),
-                            null,
-                            "supply_chain_graph_png",
-                            Map.of(
-                                    "productId", graphResponse.productId(),
-                                    "contentType", "image/png",
-                                    "sourceMode", graphResponse.sourceMode()
-                            )
-                    );
+                        updater.addArtifact(
+                                List.of(imagePart),
+                                null,
+                                "supply_chain_graph_png",
+                                Map.of(
+                                        "productId", graphResponse.productId(),
+                                        "contentType", "image/png",
+                                        "sourceMode", graphResponse.sourceMode(),
+                                        "renderMode", "deterministic",
+                                        "sourceOfTruth", true
+                                )
+                        );
+                    }
+
+                    if (geminiVisualRenderer.includeGemini()) {
+                        geminiVisualRenderer.renderGraph(graphResponse).ifPresent(imageBytes ->
+                                updater.addArtifact(
+                                        List.of(new FilePart(
+                                                new FileWithBytes(
+                                                        "image/png",
+                                                        "supply-chain-graph-gemini.png",
+                                                        imageBytes
+                                                )
+                                        )),
+                                        null,
+                                        "supply_chain_graph_gemini_png",
+                                        Map.of(
+                                                "productId", graphResponse.productId(),
+                                                "contentType", "image/png",
+                                                "sourceMode", graphResponse.sourceMode(),
+                                                "renderMode", "gemini",
+                                                "sourceOfTruth", false
+                                        )
+                                )
+                        );
+                    }
+
                     updater.complete(
                             updater.newAgentMessage(
                                     List.of(new TextPart(responseText)),
                                     Map.of(
                                             "tool", "getSupplyChainDependencies",
                                             "artifactName", "supply-chain-graph.png",
-                                            "sourceMode", graphResponse.sourceMode()
+                                            "sourceMode", graphResponse.sourceMode(),
+                                            "visualRenderer", geminiVisualRenderer.renderMode().name().toLowerCase()
                                     )
                             )
                     );

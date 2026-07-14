@@ -1,0 +1,25 @@
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          oci-iam:
+            client-name: oci-iam
+            client-id: ${DEEPSEC_OCI_IAM_CLIENT_ID:}
+            client-secret: ${DEEPSEC_OCI_IAM_CLIENT_SECRET:}
+            client-authentication-method: client_secret_post
+            authorization-grant-type: client_credentials
+            scope: ${DEEPSEC_OCI_IAM_DATABASE_SCOPE:}
+        provider:
+          oci-iam:
+            authorization-uri: ${DEEPSEC_OCI_IAM_AUTHORIZATION_URI:${DEEPSEC_OCI_IAM_DOMAIN_URL:}/oauth2/v1/authorize}
+            token-uri: ${DEEPSEC_OCI_IAM_TOKEN_URI:${DEEPSEC_OCI_IAM_DOMAIN_URL:}/oauth2/v1/token}
+
+deepsec:
+  jdbc-provider:
+    registration-id: oci-iam
+  jwt:
+    trusted-issuers: ${DEEPSEC_OCI_IAM_JWT_TRUSTED_ISSUERS:${DEEPSEC_OCI_IAM_ISSUER_URI:${DEEPSEC_OCI_IAM_DOMAIN_URL:}}}
+  browser:
+    enabled: false
+    auth-provider: oci-iam

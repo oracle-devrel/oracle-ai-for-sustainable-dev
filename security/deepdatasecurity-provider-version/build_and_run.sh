@@ -19,6 +19,7 @@ source "${ENV_FILE}"
 set +a
 
 export DEEPSEC_PORT="${DEEPSEC_PORT:-18080}"
+export SPRING_PROFILES_ACTIVE="${SPRING_PROFILES_ACTIVE:-entraid}"
 export DEEPSEC_BROWSER_MODE="${DEEPSEC_BROWSER_MODE:-true}"
 
 if [[ "${DEEPSEC_ENTRA_DATABASE_SCOPE:-}" == */user_impersonation ]]; then
@@ -43,12 +44,14 @@ mvn test
 cat <<EOF
 
 Starting deepdatasecurity-provider-version on http://localhost:${DEEPSEC_PORT}
+Spring profile: ${SPRING_PROFILES_ACTIVE}
 
 Open this in a browser:
 
   http://localhost:${DEEPSEC_PORT}/
 
-The browser page signs in with Entra, obtains an access token, and calls the protected endpoints with Authorization: Bearer.
+The browser page signs in with Entra when SPRING_PROFILES_ACTIVE=entraid, obtains an access token, and calls the protected endpoints with Authorization: Bearer.
+For SPRING_PROFILES_ACTIVE=oci-iam, use curl or another client that can supply an OCI IAM bearer token.
 If sign-in fails with a redirect/client error, add http://localhost:${DEEPSEC_PORT} as a SPA redirect URI on the Entra app registration used by DEEPSEC_ENTRA_BROWSER_CLIENT_ID.
 
 Optional CLI bearer-token test:

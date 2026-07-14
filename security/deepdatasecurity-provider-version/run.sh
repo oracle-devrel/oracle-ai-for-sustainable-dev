@@ -8,4 +8,6 @@ set -a
 source .env
 set +a
 
+export SPRING_PROFILES_ACTIVE="${SPRING_PROFILES_ACTIVE:-entraid}"
+
 mvn spring-boot:run

@@ -117,6 +117,9 @@
       throw new Error("MSAL browser library did not load. Check browser network access to the configured script.");
     }
     config = await callJson("/deepsec/browser-config");
+    if (config.enabled === false || config.authProvider !== "entraid") {
+      throw new Error(`Browser sign-in is configured for ${config.authProvider || "a non-Entra provider"}. Use a bearer token with curl or add a matching browser sign-in implementation.`);
+    }
     if (!config.tenantId || !config.clientId || !config.scope) {
       throw new Error("Browser auth config is incomplete.");
     }

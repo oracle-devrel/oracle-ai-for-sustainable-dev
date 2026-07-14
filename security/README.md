@@ -2,12 +2,23 @@
 
 ## Oracle Deep Data Security
 
-The Deep Data Security demo is split into two Spring Boot versions:
+The Deep Data Security demo now includes Spring Boot, Micronaut, and Helidon
+variants:
 
 - `deepdatasecurity-api-version`: explicit JDBC API implementation that creates an `EndUserSecurityContext` and calls `OracleConnection.setEndUserSecurityContext(...)`.
 - `deepdatasecurity-provider-version`: provider/SPI implementation that uses `ojdbc-provider-spring` with Spring Security OAuth2 resource-server support.
+- `deepdatasecurity-micronaut`: Micronaut Security JWT protects the HTTP endpoints, then the application uses the explicit Oracle JDBC Deep Data Security API.
+- `deepdatasecurity-helidon`: Helidon MP Security and MP JWT protect the HTTP endpoints, then the application uses the explicit Oracle JDBC Deep Data Security API.
 
 Use the API version when you want to show every token and JDBC call in application code. Use the provider version when you want to show the configuration-driven approach for a Spring app whose protected endpoints require OAuth 2.0 bearer tokens.
+
+The provider/SPI module used here is Spring-specific. The Micronaut and Helidon
+examples therefore use each framework's native OAuth/JWT request security and
+the explicit Oracle JDBC Deep Data Security API for the database security
+context.
+
+All variants use Oracle UCP for connection pooling. Local secrets belong in each
+demo's `.env` file, which is ignored by Git.
 
 ## Provider Version Quick Start
 

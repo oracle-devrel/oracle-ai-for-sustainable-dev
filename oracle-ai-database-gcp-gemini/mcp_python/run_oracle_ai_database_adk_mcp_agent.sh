@@ -120,5 +120,5 @@ done
 
 # Run the ADK agent
 echo -e "${GREEN}Starting ADK Agent...${NC}"
-cd python
+cd mcp_python
 python oracle_ai_database_adk_mcp_agent.py "$@"

@@ -1,0 +1,28 @@
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          entra:
+            client-name: entra
+            client-id: ${DEEPSEC_ENTRA_CLIENT_ID:}
+            client-secret: ${DEEPSEC_ENTRA_CLIENT_SECRET:}
+            client-authentication-method: client_secret_post
+            authorization-grant-type: client_credentials
+            scope: ${DEEPSEC_ENTRA_DATABASE_SCOPE:}
+        provider:
+          entra:
+            authorization-uri: https://login.microsoftonline.com/${DEEPSEC_ENTRA_TENANT_ID:}/oauth2/v2.0/authorize
+            token-uri: https://login.microsoftonline.com/${DEEPSEC_ENTRA_TENANT_ID:}/oauth2/v2.0/token
+
+deepsec:
+  jdbc-provider:
+    registration-id: entra
+  jwt:
+    trusted-issuers: ${DEEPSEC_ENTRA_JWT_TRUSTED_ISSUERS:https://sts.windows.net/${DEEPSEC_ENTRA_TENANT_ID:}/,https://login.microsoftonline.com/${DEEPSEC_ENTRA_TENANT_ID:}/v2.0}
+  browser:
+    enabled: true
+    auth-provider: entraid
+    tenant-id: ${DEEPSEC_ENTRA_TENANT_ID:}
+    client-id: ${DEEPSEC_ENTRA_BROWSER_CLIENT_ID:${DEEPSEC_ENTRA_CLIENT_ID:}}
+    scope: ${DEEPSEC_ENTRA_APPLICATION_SCOPE:}

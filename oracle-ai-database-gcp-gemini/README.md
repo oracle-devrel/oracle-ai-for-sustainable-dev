@@ -118,6 +118,8 @@ PUBLIC_HOST="YOUR_PUBLIC_AGENT_HOST"
 PUBLIC_PROTOCOL="https"
 GRAPH_AGENT_PORT="443"
 MODEL_NAME="gemini-2.0-flash"
+VISUAL_RENDERER="deterministic"
+GEMINI_IMAGE_MODEL="gemini-3.1-flash-image"
 ```
 
 If you use Vertex AI credentials, authenticate Application Default Credentials with:
@@ -132,7 +134,7 @@ If you use a Gemini API key instead, set:
 GOOGLE_API_KEY="your-api-key"
 ```
 
-The graph and spatial paths are deterministic and image-first. Select AI depends on a database-side `DBMS_CLOUD_AI` profile. The inventory-action coordinator uses Google ADK Java when credentials are available and falls back to deterministic recommendations when the model path is unavailable.
+The graph and spatial paths are deterministic and image-first by default. Set `VISUAL_RENDERER=both` to keep the deterministic Oracle data image as the source of truth and add a second Gemini-generated illustrative PNG. Set `VISUAL_RENDERER=gemini` only when you deliberately want generated images without the deterministic image artifact. `GEMINI_IMAGE_MODEL` defaults to `gemini-3.1-flash-image`, the current Nano Banana 2 general-purpose image model in the Gemini API; use `gemini-3-pro-image` when you want the premium image model and accept the extra cost/latency. Select AI depends on a database-side `DBMS_CLOUD_AI` profile. The inventory-action coordinator uses Google ADK Java when credentials are available and falls back to deterministic recommendations when the model path is unavailable.
 
 ## Documentation Index
 

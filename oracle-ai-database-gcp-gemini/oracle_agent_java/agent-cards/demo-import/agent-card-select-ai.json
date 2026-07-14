@@ -1,0 +1,58 @@
+{
+  "name": "oracle_select_ai_agent",
+  "description": "Select AI-style inventory analysis agent. It can answer natural-language questions over the demo risk tables using DBMS_CLOUD_AI when a profile is configured, and otherwise falls back to direct Oracle SQL summaries.",
+  "url": "https://34.186.79.96/select-ai",
+  "version": "0.0.1",
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false,
+    "stateTransitionHistory": false,
+    "extensions": []
+  },
+  "defaultInputModes": [
+    "text/plain"
+  ],
+  "defaultOutputModes": [
+    "text/plain"
+  ],
+  "skills": [
+    {
+      "id": "oracle_select_ai_agent",
+      "name": "select-ai-analyst",
+      "description": "Natural-language analyst for Oracle inventory and warehouse risk data.",
+      "tags": [
+        "llm",
+        "sql",
+        "analytics"
+      ],
+      "examples": [],
+      "inputModes": [
+        "text/plain"
+      ],
+      "outputModes": [
+        "text/plain"
+      ]
+    },
+    {
+      "id": "oracle_select_ai_agent-answerInventoryQuestion",
+      "name": "answerInventoryQuestion",
+      "description": "Answer an inventory-risk question, optionally using DBMS_CLOUD_AI.GENERATE with a configured Select AI profile.",
+      "tags": [
+        "llm",
+        "tools",
+        "database"
+      ],
+      "examples": [],
+      "inputModes": [
+        "text/plain"
+      ],
+      "outputModes": [
+        "text/plain"
+      ]
+    }
+  ],
+  "supportsAuthenticatedExtendedCard": false,
+  "additionalInterfaces": [],
+  "preferredTransport": "JSONRPC",
+  "protocolVersion": "0.3.0"
+}

@@ -1,0 +1,59 @@
+{
+  "name": "oracle_spatial_agent",
+  "description": "Spatial hotspot specialist for Oracle inventory risk workflows. It renders a PNG map from warehouse hotspot data, highlighting the primary pressure point and suggested relief route.",
+  "url": "https://34.186.79.96/spatial",
+  "version": "0.0.1",
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false,
+    "stateTransitionHistory": false,
+    "extensions": []
+  },
+  "defaultInputModes": [
+    "text/plain"
+  ],
+  "defaultOutputModes": [
+    "image/png",
+    "text/plain"
+  ],
+  "skills": [
+    {
+      "id": "oracle_spatial_agent",
+      "name": "spatial-hotspot-renderer",
+      "description": "Specialist in Oracle spatial hotspot visualizations for warehouse and inventory pressure.",
+      "tags": [
+        "llm",
+        "spatial"
+      ],
+      "examples": [],
+      "inputModes": [
+        "text/plain"
+      ],
+      "outputModes": [
+        "image/png",
+        "text/plain"
+      ]
+    },
+    {
+      "id": "oracle_spatial_agent-renderHotspotMap",
+      "name": "renderHotspotMap",
+      "description": "Render a PNG hotspot map for a product such as SKU-500, using Oracle-backed warehouse risk data when available.",
+      "tags": [
+        "llm",
+        "tools",
+        "map"
+      ],
+      "examples": [],
+      "inputModes": [
+        "text/plain"
+      ],
+      "outputModes": [
+        "image/png"
+      ]
+    }
+  ],
+  "supportsAuthenticatedExtendedCard": false,
+  "additionalInterfaces": [],
+  "preferredTransport": "JSONRPC",
+  "protocolVersion": "0.3.0"
+}

@@ -38,6 +38,7 @@ public class GraphA2AController {
             Environment environment,
             Function<GraphTools.GraphRequest, GraphTools.GraphResponse> getSupplyChainDependencies,
             GraphRequestParser graphRequestParser,
+            GeminiVisualRenderer geminiVisualRenderer,
             TaskStore taskStore,
             QueueManager queueManager,
             PushNotificationConfigStore pushNotificationConfigStore,
@@ -46,7 +47,8 @@ public class GraphA2AController {
         AgentCard graphCard = GraphA2AConfiguration.buildGraphAgentCard(environment);
         AgentExecutor agentExecutor = GraphA2AConfiguration.buildAgentExecutor(
                 getSupplyChainDependencies,
-                graphRequestParser
+                graphRequestParser,
+                geminiVisualRenderer
         );
         RequestHandler requestHandler = DefaultRequestHandler.create(
                 agentExecutor,
