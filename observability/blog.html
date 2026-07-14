@@ -120,6 +120,14 @@
     database; the important requirements are JDBC connectivity and a database
     server-side exporter that can reach an HTTPS OTLP endpoint.
   </p>
+  <p>
+    A clean OCI Linux VM verification with Oracle Database Free 23.26.2.0
+    produced the expected Spring Boot, Oracle JDBC, and <code>oracle-db</code>
+    server-side spans without setting hidden KSTRC instance parameters. The
+    normal setup below uses documented <code>DBMS_OBSERVABILITY</code>
+    configuration, a reachable HTTPS OTLP endpoint, network ACLs, and the
+    database <code>disttrc</code> trust wallet.
+  </p>
   <ol>
     <li>Install Java 25, Maven, Git, Podman, curl, jq, and OpenSSL.</li>
     <li>Run Oracle Database Free on Linux, or provision an Autonomous Database in Oracle Cloud.</li>
