@@ -317,11 +317,15 @@ The required differences from the simple local path are:
   plain OTLP HTTP
 - enable HTTP/2 on that HTTPS front door
 - create the trusted Oracle wallet under `WALLET_ROOT/<PDB_GUID>/disttrc`
-- set `_kstrc_archiver='otel_traces://https://otel-tls-proxy:4318/v1/traces'`
-- set `_kstrc_service_mask=8`
 - enable `dbms_observability.show_extra_metadata` where supported
 - have the app set `MODULE`, `ACTION`, `CLIENT_IDENTIFIER`, `tracectx`, and
   `tracelevel`
+
+On a fresh Oracle Database Free 23.26.2.0 VM verification, database server-side
+spans exported successfully while `_kstrc_service_mask` remained `0` and
+`_kstrc_archiver` remained `disk://localhost`. Earlier troubleshooting used
+those hidden KSTRC parameters to diagnose a local export failure, but they are
+not part of the normal verified setup.
 
 The verified Jaeger trace contains both services:
 

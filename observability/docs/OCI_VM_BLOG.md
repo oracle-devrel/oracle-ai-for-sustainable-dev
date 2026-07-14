@@ -25,7 +25,10 @@ The important details are:
   export needs an HTTPS OTLP endpoint.
 - The database distributed trace exporter looks for its trust wallet under
   `WALLET_ROOT/<PDB_GUID>/disttrc`, not just `WALLET_ROOT/<PDB_GUID>/tls`.
-- Set `_kstrc_service_mask=8` and `_kstrc_archiver` for this demo path.
+- On Oracle Database Free 23.26.2.0, the verified setup did not require hidden
+  KSTRC parameters; leave `_kstrc_service_mask` and `_kstrc_archiver` at their
+  defaults unless Oracle Support or a specific diagnostic exercise asks you to
+  change them.
 - Set database `MODULE`, `ACTION`, and `CLIENT_IDENTIFIER` from the app so the
   DB span visibly carries database-session context, not just a generic
   `DB Server` label.
@@ -225,8 +228,8 @@ sudo podman restart oracledb-free
 Wait for the database to become healthy again.
 
 Create Oracle wallets for the PDB. The `disttrc` component is the critical one
-for KSTRC server-side trace export. The `tls` component is useful for UTL_HTTP
-tests.
+for database server-side trace export. The `tls` component is useful for
+UTL_HTTP tests.
 
 ```bash
 sudo podman cp /opt/observability-demo/local/tls-proxy/ca.crt \
@@ -261,14 +264,11 @@ for COMPONENT in disttrc tls; do
 done
 ```
 
-Register the HTTPS OTLP endpoint, enable tracing, and set the KSTRC archiver:
+Register the HTTPS OTLP endpoint and enable tracing:
 
 ```bash
 sudo podman exec -i oracledb-free bash -lc 'sqlplus -s / as sysdba' <<'SQL'
 set echo off feedback on serveroutput on size unlimited lines 240 pages 100
-
-alter system set "_kstrc_service_mask"=8 scope=both;
-alter system set "_kstrc_archiver"='otel_traces://https://otel-tls-proxy:4318/v1/traces' scope=both;
 
 alter session set container=FREEPDB1;
 
@@ -653,8 +653,10 @@ Useful failures:
 - `nzos_OpenWallet() failed ... /disttrc/`: create the trusted wallet under
   `WALLET_ROOT/<PDB_GUID>/disttrc`.
 - no `POST /v1/traces` in proxy logs: the database did not reach the collector.
-- only disk archive lines such as `archived to: ksu_ops_FREE.trc`: verify
-  `_kstrc_archiver`, `_kstrc_service_mask`, endpoint HTTPS, ACLs, and wallet.
+- only disk archive lines such as `archived to: ksu_ops_FREE.trc`: verify the
+  `DBMS_OBSERVABILITY` endpoint, endpoint HTTPS, ACLs, and the
+  `WALLET_ROOT/<PDB_GUID>/disttrc` trust wallet. Use KSTRC diagnostics only when
+  you are deliberately troubleshooting database trace export internals.
 - `DBMS_OBSERVABILITY runtime=Traces:0`: ensure the JDBC app toggles
   `OracleConnection.ServerTelemetry.Traces` and that
   `dbms_observability.enable_service(dbms_observability.all_services)` is set in

@@ -304,11 +304,13 @@ end;
 /</code></pre>
 
   <p>
-    The demo also sets the KSTRC archiver for this local Oracle Database Free
-    path:
+    A clean verification run on Oracle Database Free 23.26.2.0 showed that the
+    documented <code>DBMS_OBSERVABILITY</code> endpoint setup, the HTTPS OTLP
+    proxy, the network ACL, and the <code>WALLET_ROOT/&lt;PDB_GUID&gt;/disttrc</code>
+    trust wallet were sufficient for database server-side spans. Older local
+    diagnostic runs used hidden KSTRC parameters while debugging export
+    failures, but those settings are not part of the normal demo setup.
   </p>
-  <pre><code>alter system set "_kstrc_service_mask"=8 scope=both;
-alter system set "_kstrc_archiver"='otel_traces://https://otel-tls-proxy:4318/v1/traces' scope=both;</code></pre>
 
   <h2>How Does JDBC Propagate the Trace Context?</h2>
   <p>
@@ -609,6 +611,8 @@ Oracle AI Database Metrics Exporter -> Prometheus/OpenTelemetry metrics -> colle
     <li>Oracle AI Database application tracing: <a href="https://docs.oracle.com/en/database/oracle/oracle-database/26/tgsql/performing-application-tracing.html">https://docs.oracle.com/en/database/oracle/oracle-database/26/tgsql/performing-application-tracing.html</a></li>
     <li>Oracle AI Database Metrics Exporter project: <a href="https://github.com/oracle/oracle-db-appdev-monitoring">https://github.com/oracle/oracle-db-appdev-monitoring</a></li>
     <li>Oracle Database Metrics Exporter: <a href="https://www.oracle.com/database/database-exporter/">https://www.oracle.com/database/database-exporter/</a></li>
+    <li>Day One and Beyond - MultiCloud Observability &amp; Management for Oracle Database@X, Sonali Malik: <a href="https://www.youtube.com/watch?v=7vUaDdNzFmQ">https://www.youtube.com/watch?v=7vUaDdNzFmQ</a></li>
+    <li>AI Agent Observability: Understand How AI Agents Behave in Gen AI Applications and Ecosystems, Royce Fu and Alex Birzu: <a href="https://www.ateam-oracle.com/ai-agent-observability-understand-how-ai-agents-behave-in-gen-ai-applications-and-ecosystems">https://www.ateam-oracle.com/ai-agent-observability-understand-how-ai-agents-behave-in-gen-ai-applications-and-ecosystems</a></li>
     <li>OpenTelemetry Java agent: <a href="https://opentelemetry.io/docs/zero-code/java/agent/">https://opentelemetry.io/docs/zero-code/java/agent/</a></li>
     <li>OpenTelemetry protocol exporters: <a href="https://opentelemetry.io/docs/specs/otel/protocol/exporter/">https://opentelemetry.io/docs/specs/otel/protocol/exporter/</a></li>
     <li>Spring Boot tracing: <a href="https://docs.spring.io/spring-boot/reference/actuator/tracing.html">https://docs.spring.io/spring-boot/reference/actuator/tracing.html</a></li>
