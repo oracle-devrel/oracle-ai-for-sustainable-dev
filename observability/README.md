@@ -194,6 +194,15 @@ expand the `DB Server` span whose `oracle.db.action` is `agent-workload-query`.
 The app response then uses that span's `oracle.db.query.sql.id` as the bridge to
 SQL Monitor and `DBMS_XPLAN`.
 
+The browser view also includes a **Database Security Context** panel. It does
+not require Entra ID, OCI IAM, or Deep Data Security end-user context. Instead,
+it shows the concrete Oracle Database session principal, current schema,
+`MODULE`, `ACTION`, `CLIENT_IDENTIFIER`, enabled roles, effective session
+privileges, direct system privileges, owned demo objects, and visible object
+grants for the database session that executed the agent workload. This gives a
+useful grant/user correlation layer today, and leaves a clear path to add true
+Deep Data Security end-user token correlation later.
+
 ## References
 
 - Oracle JDBC Observability provider:

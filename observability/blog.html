@@ -84,7 +84,7 @@
     </tr>
     <tr>
       <td><code>GET /trace/agent-task/view</code></td>
-      <td>Browser-friendly agentic demo that returns the trace id, agent id, database session metadata, SQL ID, SQL text, bind values, SQL Monitor preview, <code>DBMS_XPLAN</code>, and an embedded Jaeger trace on one page. Jaeger is the demo viewer; the telemetry is OpenTelemetry-compatible.</td>
+      <td>Browser-friendly agentic demo that returns the trace id, agent id, database session metadata, database security context, SQL ID, SQL text, bind values, SQL Monitor preview, <code>DBMS_XPLAN</code>, and an embedded Jaeger trace on one page. Jaeger is the demo viewer; the telemetry is OpenTelemetry-compatible.</td>
     </tr>
   </table>
 
@@ -109,7 +109,7 @@
 
   <figure>
     <img src="images/agentic-ai-database-trace-dashboard.png" alt="Agentic AI database trace page showing agent task metadata, database session details, trace bridge, SQL runtime statistics, and SQL Monitor information.">
-    <figcaption>The demo page keeps the agent task, database session context, SQL diagnostics, and trace bridge together.</figcaption>
+    <figcaption>The demo page keeps the agent task, database session context, database security context, SQL diagnostics, and trace bridge together.</figcaption>
   </figure>
 
   <h2>How to setup and run the example?</h2>
@@ -533,6 +533,19 @@ Oracle AI Database Metrics Exporter -> Prometheus/OpenTelemetry metrics -> colle
     <li><code>CLIENT_IDENTIFIER=traceId=&lt;trace-id&gt;</code> gives database security and audit policy a compact correlation value.</li>
     <li><code>oracle.db.query.sql.id</code> bridges the trace to SQL text, SQL Monitor, <code>DBMS_XPLAN</code>, and later audit records.</li>
   </ul>
+
+  <p>
+    The sample app now includes a <strong>Database Security Context</strong>
+    panel that works even without Entra ID, OCI IAM, or a Deep Data Security
+    end-user token. It shows the concrete Oracle Database session principal,
+    current schema, authenticated identity fields, <code>MODULE</code>,
+    <code>ACTION</code>, <code>CLIENT_IDENTIFIER</code>, enabled roles,
+    effective session privileges, direct system privileges, owned demo objects,
+    and object privileges visible through direct grants or roles. This is not
+    a replacement for token-based Deep Data Security, but it is the first
+    correlation layer: the page can answer which database account, role set,
+    grants, SQL ID, and trace id were involved in this agent request.
+  </p>
 
   <p>
     A security-aware version can run the same agent workload against protected
