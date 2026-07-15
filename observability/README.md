@@ -169,6 +169,7 @@ Review and run:
 @sql/grant_observability_privileges.sql
 @sql/create_observability_acl.sql
 @sql/enable_server_observability.sql
+@sql/setup_local_deep_data_security.sql
 ```
 
 For a local Oracle Free container, use:
@@ -202,6 +203,20 @@ privileges, direct system privileges, owned demo objects, and visible object
 grants for the database session that executed the agent workload. This gives a
 useful grant/user correlation layer today, and leaves a clear path to add true
 Deep Data Security end-user token correlation later.
+
+The same panel also separates regular database roles from Deep Data Security
+data roles. For example, `SELECT_CATALOG_ROLE` is a normal database role visible
+in `SESSION_ROLES`, while `AGENT_CLAIMS_INVESTIGATOR` is a DDS data role visible
+through `DBA_DATA_ROLES` and `DBA_DATA_GRANTS`. Run
+`sql/setup_local_deep_data_security.sql` after `AGENT_EVENT_LOG` exists to add a
+local DDS data role and data grant without Entra ID or OCI IAM.
+
+The app also attempts to attach a local `EndUserSecurityContext` with that data
+role. On the current demo VM, the database rejects the placeholder local token,
+so the page reports the DDS role as configured but not active for an end-user
+context. That is still useful for showing the model; full activation requires a
+valid database-access token or the provider/API path used in the Deep Data
+Security demos.
 
 ## References
 

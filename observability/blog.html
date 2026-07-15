@@ -548,6 +548,32 @@ Oracle AI Database Metrics Exporter -> Prometheus/OpenTelemetry metrics -> colle
   </p>
 
   <p>
+    The panel deliberately separates regular Oracle Database roles from Oracle
+    AI Database Deep Data Security data roles. A role such as
+    <code>SELECT_CATALOG_ROLE</code> is a normal session role and appears in
+    <code>SESSION_ROLES</code>. A DDS data role such as
+    <code>AGENT_CLAIMS_INVESTIGATOR</code> appears in
+    <code>DBA_DATA_ROLES</code> and receives data grants in
+    <code>DBA_DATA_GRANTS</code>. The local setup script
+    <code>observability/sql/setup_local_deep_data_security.sql</code> creates
+    that data role and grants it SELECT access to the agent event log rows for
+    <code>claims-investigator-agent</code>, so the demo can show DDS metadata
+    even without an external identity provider.
+  </p>
+
+  <p>
+    The app also attempts to attach a local
+    <code>EndUserSecurityContext</code> with
+    <code>AGENT_CLAIMS_INVESTIGATOR</code>. On the verified demo VM, Oracle
+    Database correctly shows the data role and data grant as configured, but
+    rejects the placeholder local token as an invalid JWT, so no data role is
+    active in <code>V$END_USER_DATA_ROLE</code>. That distinction is useful:
+    local DDS metadata does not require Entra ID or OCI IAM, while runtime
+    activation through this JDBC path still needs a valid database-access token
+    or the same provider/API flow used by the Deep Data Security demos.
+  </p>
+
+  <p>
     A security-aware version can run the same agent workload against protected
     tables, then show effective database user, enabled roles, policy decisions,
     rows allowed or filtered, and a denied-operation example. After that, a
