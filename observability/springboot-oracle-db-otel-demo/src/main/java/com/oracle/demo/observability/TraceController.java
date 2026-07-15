@@ -106,6 +106,8 @@ public class TraceController {
         configureDatabaseAction(oracleConnection, "context-query");
         Map<String, Object> databaseContext = queryForMap(connection, """
             select
+              sys_context('USERENV', 'SESSION_USER') as session_user,
+              sys_context('USERENV', 'CURRENT_USER') as current_user,
               sys_context('USERENV', 'CURRENT_SCHEMA') as schema_name,
               sys_context('USERENV', 'SERVICE_NAME') as service_name,
               sys_context('USERENV', 'DB_NAME') as database_name,
@@ -153,7 +155,6 @@ public class TraceController {
         configureTraceContext(oracleConnection, trace);
         configureDatabaseSession(oracleConnection, trace, "agent:" + agentId, "agent-task-start");
         toggleServerTelemetry(oracleConnection);
-        ensureAgentEventTable(connection);
         operationExecutionId = beginMonitoredOperation(connection, operationName, agentId, task, trace);
 
         configureDatabaseAction(oracleConnection, "agent-workload-query");
@@ -188,6 +189,7 @@ public class TraceController {
               sys_context('USERENV', 'SERVER_HOST') as server_host
             from dual
             """);
+        Map<String, Object> securityContext = tryDatabaseSecurityContext(connection);
 
         Map<String, Object> response = new LinkedHashMap<>();
         response.put("agent", Map.of(
@@ -197,6 +199,7 @@ public class TraceController {
             "databaseOperationExecutionId", operationExecutionId == null ? "" : operationExecutionId));
         response.put("trace", trace);
         response.put("database", databaseContext);
+        response.put("databaseSecurity", securityContext);
         response.put("workload", agentResult.summary());
         response.put("bindValues", agentResult.bindValues());
         response.put("sqlBridge", Map.of(
@@ -345,66 +348,6 @@ public class TraceController {
         """));
 
     return workload;
-  }
-
-  private void ensureAgentEventTable(Connection connection) throws SQLException {
-    try (Statement statement = connection.createStatement()) {
-      statement.execute("""
-          create table agent_event_log (
-            event_id number generated always as identity primary key,
-            agent_id varchar2(128) not null,
-            event_type varchar2(40) not null,
-            customer_region varchar2(20) not null,
-            amount number(12,2) not null,
-            risk_score number(3) not null,
-            created_at timestamp default systimestamp not null
-          )
-          """);
-    } catch (SQLException e) {
-      if (e.getErrorCode() != 955) {
-        throw e;
-      }
-    }
-
-    Number rowCount = queryForNumber(connection, "select count(*) from agent_event_log");
-    if (rowCount != null && rowCount.longValue() > 0) {
-      return;
-    }
-
-    try (PreparedStatement statement = connection.prepareStatement("""
-        insert /*+ append */ into agent_event_log (
-          agent_id, event_type, customer_region, amount, risk_score, created_at)
-        select
-          case mod(level, 3)
-            when 0 then 'claims-investigator-agent'
-            when 1 then 'sustainability-risk-agent'
-            else 'payments-review-agent'
-          end,
-          case mod(level, 4)
-            when 0 then 'payment'
-            when 1 then 'claim'
-            when 2 then 'transfer'
-            else 'profile-update'
-          end,
-          case mod(level, 5)
-            when 0 then 'EMEA'
-            when 1 then 'NA'
-            when 2 then 'APAC'
-            when 3 then 'LATAM'
-            else 'GLOBAL'
-          end,
-          round(50 + mod(level * 37, 20000) / 3, 2),
-          mod(level * 17 + 23, 101),
-          systimestamp - numtodsinterval(mod(level, 720), 'minute')
-        from dual
-        connect by level <= ?
-        """)) {
-      statement.setInt(1, 25000);
-      statement.executeUpdate();
-    }
-    if (!connection.getAutoCommit()) {
-      connection.commit();
-    }
   }
 
   private AgentWorkloadResult runAgentWorkload(Connection connection, String agentId) throws SQLException {
@@ -588,6 +531,132 @@ public class TraceController {
     }
   }
 
+  private Map<String, Object> tryDatabaseSecurityContext(Connection connection) {
+    Map<String, Object> context = new LinkedHashMap<>();
+    context.put("note",
+        "This request connects directly as a password-authenticated local Oracle Deep Data Security end user. "
+            + "FINANCIAL remains the owning schema; the active data role and data grant determine which rows the agent can read. "
+            + "No Entra ID, OCI IAM, or JDBC EndUserSecurityContext API call is used.");
+    Map<String, Object> session = tryQueryForMap(connection, """
+        select
+          sys_context('USERENV', 'SESSION_USER') as session_user,
+          sys_context('USERENV', 'CURRENT_USER') as current_user,
+          sys_context('USERENV', 'CURRENT_SCHEMA') as current_schema,
+          sys_context('USERENV', 'AUTHENTICATED_IDENTITY') as authenticated_identity,
+          sys_context('USERENV', 'IDENTIFICATION_TYPE') as identification_type,
+          sys_context('USERENV', 'ENTERPRISE_IDENTITY') as enterprise_identity,
+          sys_context('USERENV', 'PROXY_USER') as proxy_user,
+          sys_context('USERENV', 'CLIENT_IDENTIFIER') as client_identifier,
+          sys_context('USERENV', 'MODULE') as module_name,
+          sys_context('USERENV', 'ACTION') as action_name,
+          sys_context('USERENV', 'SID') as session_id
+        from dual
+        """);
+    context.put("session", session);
+    context.put("deepDataSecurityAuthentication", Map.of(
+        "mode", "local END USER direct password login",
+        "externalIdentityProvider", "none",
+        "jdbcEndUserSecurityContextApi", "not used",
+        "owningSchema", String.valueOf(session.getOrDefault("CURRENT_SCHEMA", "FINANCIAL"))));
+    context.put("deepDataSecurityEndUser", tryQueryForMap(connection, """
+        select trim(both '"' from
+          json_serialize(ORA_END_USER_CONTEXT.username returning varchar2(128))) as end_user_name
+        from dual
+        """));
+    context.put("deepDataSecurityEnforcement", tryQueryForMap(connection, """
+        select
+          count(*) as rows_visible_through_data_grant,
+          sum(case when agent_id = 'claims-investigator-agent' then 1 else 0 end)
+            as matching_agent_rows_visible,
+          sum(case when agent_id <> 'claims-investigator-agent' then 1 else 0 end)
+            as other_agent_rows_visible
+        from agent_event_log
+        """));
+    context.put("enabledRoles", tryQueryRows(connection, """
+        select role
+        from session_roles
+        order by role
+        """));
+    context.put("effectiveSessionPrivileges", tryQueryRows(connection, """
+        select privilege
+        from session_privs
+        order by privilege
+        fetch first 40 rows only
+        """));
+    context.put("grantedRoles", tryQueryRows(connection, """
+        select granted_role, admin_option, delegate_option, default_role
+        from user_role_privs
+        order by granted_role
+        """));
+    context.put("directSystemPrivileges", tryQueryRows(connection, """
+        select privilege, admin_option
+        from user_sys_privs
+        order by privilege
+        """));
+    context.put("ownedDemoObjects", tryQueryRows(connection, """
+        select owner, object_name, object_type, status
+        from dba_objects
+        where owner = sys_context('USERENV', 'CURRENT_SCHEMA')
+          and object_name in ('AGENT_EVENT_LOG')
+        order by object_type, object_name
+        """));
+    context.put("objectPrivilegesReceived", tryQueryRows(connection, """
+        select owner, table_name, privilege, grantor, grantable
+        from user_tab_privs_recd
+        where table_name in ('AGENT_EVENT_LOG')
+           or owner <> sys_context('USERENV', 'CURRENT_SCHEMA')
+        order by owner, table_name, privilege
+        fetch first 40 rows only
+        """));
+    context.put("roleObjectPrivileges", tryQueryRows(connection, """
+        select role, owner, table_name, privilege, grantable
+        from role_tab_privs
+        where table_name in (
+          'AGENT_EVENT_LOG',
+          'DBMS_OBSERVABILITY',
+          'DBMS_SQL_MONITOR',
+          'DBMS_XPLAN',
+          'UTL_HTTP',
+          'V_$SQL',
+          'V_$SQL_BIND_CAPTURE',
+          'V_$SQL_MONITOR',
+          'V_$SESSION')
+           or owner = sys_context('USERENV', 'CURRENT_SCHEMA')
+        order by role, owner, table_name, privilege
+        fetch first 40 rows only
+        """));
+    context.put("configuredDataRoles", tryQueryRows(connection, """
+        select data_role, mapped_to, enabled_by_default
+        from dba_data_roles
+        where data_role in ('AGENT_CLAIMS_INVESTIGATOR', 'HRAPP_EMPLOYEES', 'HRAPP_MANAGERS')
+           or data_role like 'AGENT\\_%' escape '\\'
+        order by data_role
+        """));
+    context.put("dataRoleGrants", tryQueryRows(connection, """
+        select data_role, role_type, grantee, grantee_type, start_time, end_time
+        from dba_data_role_grants
+        where data_role in ('AGENT_CLAIMS_INVESTIGATOR', 'HRAPP_EMPLOYEES', 'HRAPP_MANAGERS')
+           or data_role like 'AGENT\\_%' escape '\\'
+        order by data_role, grantee
+        """));
+    context.put("dataGrants", tryQueryRows(connection, """
+        select grant_name, object_owner, object_name, privilege, column_name,
+               grantee, grantee_type, predicate
+        from dba_data_grants
+        where object_owner = sys_context('USERENV', 'CURRENT_SCHEMA')
+           or grantee in ('AGENT_CLAIMS_INVESTIGATOR', 'HRAPP_EMPLOYEES', 'HRAPP_MANAGERS')
+           or grantee like 'AGENT\\_%' escape '\\'
+        order by object_owner, object_name, grant_name, privilege, grantee
+        fetch first 40 rows only
+        """));
+    context.put("activeEndUserDataRoles", tryQueryRows(connection, """
+        select *
+        from v$end_user_data_role
+        fetch first 20 rows only
+        """));
+    return context;
+  }
+
   private record AgentWorkloadResult(Map<String, Object> summary, Map<String, Object> bindValues) {}
 
   private void toggleServerTelemetry(OracleConnection oracleConnection) {
@@ -620,6 +689,38 @@ public class TraceController {
         row.put(metaData.getColumnLabel(i), resultSet.getObject(i));
       }
       return row;
+    }
+  }
+
+  private Map<String, Object> tryQueryForMap(Connection connection, String sql) {
+    try {
+      return queryForMap(connection, sql);
+    } catch (SQLException e) {
+      return Map.of("available", false, "reason", summarizeSqlException(e));
+    }
+  }
+
+  private List<Map<String, Object>> tryQueryRows(Connection connection, String sql) {
+    try {
+      return queryRows(connection, sql);
+    } catch (SQLException e) {
+      return List.of(Map.of("available", false, "reason", summarizeSqlException(e)));
+    }
+  }
+
+  private List<Map<String, Object>> queryRows(Connection connection, String sql) throws SQLException {
+    try (Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery(sql)) {
+      List<Map<String, Object>> rows = new ArrayList<>();
+      ResultSetMetaData metaData = resultSet.getMetaData();
+      while (resultSet.next()) {
+        Map<String, Object> row = new LinkedHashMap<>();
+        for (int i = 1; i <= metaData.getColumnCount(); i++) {
+          row.put(metaData.getColumnLabel(i), resultSet.getObject(i));
+        }
+        rows.add(row);
+      }
+      return rows;
     }
   }
 
@@ -707,6 +808,8 @@ public class TraceController {
     Map<String, Object> agent = (Map<String, Object>) result.getOrDefault("agent", Map.of());
     Map<String, String> trace = (Map<String, String>) result.getOrDefault("trace", Map.of());
     Map<String, Object> database = (Map<String, Object>) result.getOrDefault("database", Map.of());
+    Map<String, Object> databaseSecurity =
+        (Map<String, Object>) result.getOrDefault("databaseSecurity", Map.of());
     Map<String, Object> workload = (Map<String, Object>) result.getOrDefault("workload", Map.of());
     Map<String, Object> bindValues = (Map<String, Object>) result.getOrDefault("bindValues", Map.of());
     Map<String, Object> sqlBridge = (Map<String, Object>) result.getOrDefault("sqlBridge", Map.of());
@@ -719,7 +822,7 @@ public class TraceController {
     String jaegerTraceUrl = trimTrailingSlash(jaegerUrl) + "/trace/" + traceId;
     String xplan = String.join("\n", (List<String>) dbmsXplan.getOrDefault("lines", List.of()));
     String sqlText = String.valueOf(sqlDetails.getOrDefault("sqlText", ""));
-    String bindSamples = formatRows((List<Map<String, Object>>) sqlDetails.getOrDefault("bindSamples", List.of()));
+    String bindSamples = formatBindRows((List<Map<String, Object>>) sqlDetails.getOrDefault("bindSamples", List.of()));
     String sqlMonitorPreview = String.valueOf(sqlMonitor.getOrDefault("reportPreview", "SQL Monitor report unavailable."));
 
     StringBuilder html = new StringBuilder();
@@ -753,7 +856,12 @@ public class TraceController {
             .flow { display:flex; flex-wrap:wrap; gap:8px; align-items:center; color:var(--muted); font-weight:700; }
             .flow span { padding:7px 9px; background:#eef3f7; border-radius:6px; }
             .flow b { color:var(--orange); }
+            .security-grid { display:grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap:14px; }
+            .security-block { border:1px solid var(--line); border-radius:6px; padding:12px; background:#fbfdff; }
+            .security-block h3 { margin:0 0 8px; font-size:15px; }
+            .security-block pre { max-height:260px; font-size:12px; }
             @media (max-width: 820px) { main { padding:16px; } header, .grid { display:block; } section { margin-bottom:14px; } dl { grid-template-columns:1fr; } }
+            @media (max-width: 820px) { .security-grid { display:block; } .security-block { margin-bottom:12px; } }
           </style>
         </head>
         <body>
@@ -773,6 +881,7 @@ public class TraceController {
         "canonicalSource", sqlBridge.getOrDefault("canonicalSource", "DBMS_XPLAN and SQL Monitor")));
     appendDetails(html, "Database Session", database);
     appendDetails(html, "Agent Workload", workload);
+    appendDatabaseSecurityContext(html, databaseSecurity);
     appendDetails(html, "Application Bind Values", bindValues);
     appendDetails(html, "SQL Runtime Stats", sqlStats);
     appendDetails(html, "SQL Monitor", Map.of(
@@ -803,6 +912,48 @@ public class TraceController {
     html.append("</dl></section>");
   }
 
+  @SuppressWarnings("unchecked")
+  private void appendDatabaseSecurityContext(StringBuilder html, Map<String, Object> security) {
+    Map<String, Object> session = (Map<String, Object>) security.getOrDefault("session", Map.of());
+    html.append("<section class=\"wide\"><h2>Database Security Context</h2><p class=\"sub\">")
+        .append(html(String.valueOf(security.getOrDefault("note", ""))))
+        .append("</p>");
+    html.append("<div class=\"security-grid\">");
+    appendSecurityBlock(html, "Session Principal and Trace Correlation", formatMap(session));
+    appendSecurityBlock(html, "Regular Database Roles Enabled in the Session", formatRows((List<Map<String, Object>>) security.getOrDefault("enabledRoles", List.of())));
+    appendSecurityBlock(html, "Effective Session Privileges", formatRows((List<Map<String, Object>>) security.getOrDefault("effectiveSessionPrivileges", List.of())));
+    appendSecurityBlock(html, "Granted Roles", formatRows((List<Map<String, Object>>) security.getOrDefault("grantedRoles", List.of())));
+    appendSecurityBlock(html, "Direct System Privileges", formatRows((List<Map<String, Object>>) security.getOrDefault("directSystemPrivileges", List.of())));
+    appendSecurityBlock(html, "Owned Demo Objects", formatRows((List<Map<String, Object>>) security.getOrDefault("ownedDemoObjects", List.of())));
+    appendSecurityBlock(html, "Object Privileges Received", formatRows((List<Map<String, Object>>) security.getOrDefault("objectPrivilegesReceived", List.of())));
+    appendSecurityBlock(html, "Object Privileges Through Roles", formatRows((List<Map<String, Object>>) security.getOrDefault("roleObjectPrivileges", List.of())));
+    appendSecurityBlock(html, "Deep Data Security Authentication Path", formatMap((Map<String, Object>) security.getOrDefault("deepDataSecurityAuthentication", Map.of())));
+    appendSecurityBlock(html, "Deep Data Security End User Active for This Request", formatMap((Map<String, Object>) security.getOrDefault("deepDataSecurityEndUser", Map.of())));
+    appendSecurityBlock(html, "Deep Data Security Row Filtering Proof", formatMap((Map<String, Object>) security.getOrDefault("deepDataSecurityEnforcement", Map.of())));
+    appendSecurityBlock(html, "Deep Data Security Data Roles Configured", formatRows((List<Map<String, Object>>) security.getOrDefault("configuredDataRoles", List.of())));
+    appendSecurityBlock(html, "Deep Data Security Data Role Grants", formatRows((List<Map<String, Object>>) security.getOrDefault("dataRoleGrants", List.of())));
+    appendSecurityBlock(html, "Deep Data Security Data Grants", formatRows((List<Map<String, Object>>) security.getOrDefault("dataGrants", List.of())));
+    appendSecurityBlock(html, "Deep Data Security Data Roles Active for End-User Context", formatRows((List<Map<String, Object>>) security.getOrDefault("activeEndUserDataRoles", List.of())));
+    html.append("</div></section>");
+  }
+
+  private void appendSecurityBlock(StringBuilder html, String title, String body) {
+    html.append("<div class=\"security-block\"><h3>").append(html(title)).append("</h3><pre>")
+        .append(html(body == null || body.isBlank() ? "No rows returned." : body))
+        .append("</pre></div>");
+  }
+
+  private String formatMap(Map<String, Object> values) {
+    if (values.isEmpty()) {
+      return "No rows returned.";
+    }
+    StringBuilder text = new StringBuilder();
+    for (Map.Entry<String, Object> entry : values.entrySet()) {
+      text.append(entry.getKey()).append(" = ").append(entry.getValue()).append("\n");
+    }
+    return text.toString().stripTrailing();
+  }
+
   private String trimTrailingSlash(String value) {
     if (value == null || value.isBlank()) {
       return "";
@@ -818,6 +969,20 @@ public class TraceController {
   }
 
   private String formatRows(List<Map<String, Object>> rows) {
+    if (rows.isEmpty()) {
+      return "No rows returned.";
+    }
+    StringBuilder text = new StringBuilder();
+    for (Map<String, Object> row : rows) {
+      if (!text.isEmpty()) {
+        text.append("\n");
+      }
+      text.append(row);
+    }
+    return text.toString();
+  }
+
+  private String formatBindRows(List<Map<String, Object>> rows) {
     if (rows.isEmpty()) {
       return "No bind samples captured for this SQL. Oracle samples bind values opportunistically, so use the Application Bind Values panel above for the exact values used by this request.";
     }

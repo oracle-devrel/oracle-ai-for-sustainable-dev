@@ -1,4 +1,14 @@
+server:
+  port: ${DEEPSEC_PORT:8080}
+
 spring:
+  application:
+    name: deep-data-security-provider-version
+  datasource:
+    url: ${DEEPSEC_JDBC_URL:}
+    username: ${DEEPSEC_USERNAME:}
+    password: ${DEEPSEC_PASSWORD:}
+    driver-class-name: oracle.jdbc.OracleDriver
   security:
     oauth2:
       client:
@@ -8,18 +18,36 @@ spring:
             client-id: ${DEEPSEC_OCI_IAM_CLIENT_ID:}
             client-secret: ${DEEPSEC_OCI_IAM_CLIENT_SECRET:}
             client-authentication-method: client_secret_post
-            authorization-grant-type: client_credentials
+            authorization-grant-type: ${DEEPSEC_OCI_IAM_DATABASE_GRANT_TYPE:client_credentials}
             scope: ${DEEPSEC_OCI_IAM_DATABASE_SCOPE:}
         provider:
           oci-iam:
             authorization-uri: ${DEEPSEC_OCI_IAM_AUTHORIZATION_URI:${DEEPSEC_OCI_IAM_DOMAIN_URL:}/oauth2/v1/authorize}
             token-uri: ${DEEPSEC_OCI_IAM_TOKEN_URI:${DEEPSEC_OCI_IAM_DOMAIN_URL:}/oauth2/v1/token}
 
+logging:
+  level:
+    root: INFO
+
 deepsec:
+  ucp:
+    connection-pool-name: ${DEEPSEC_UCP_POOL_NAME:DeepDataSecurityProviderUcpPool}
+    initial-pool-size: ${DEEPSEC_UCP_INITIAL_POOL_SIZE:1}
+    min-pool-size: ${DEEPSEC_UCP_MIN_POOL_SIZE:1}
+    max-pool-size: ${DEEPSEC_POOL_SIZE:4}
   jdbc-provider:
+    end-user-security-context: ojdbc-provider-spring-end-user-security-context
     registration-id: oci-iam
+    # Optional application-managed roles and attributes:
+    # data-roles: AGENT_READ_ONLY
+    # end-user-context-attributes: '{"agent.request":{"risk":"low"}}'
   jwt:
     trusted-issuers: ${DEEPSEC_OCI_IAM_JWT_TRUSTED_ISSUERS:${DEEPSEC_OCI_IAM_ISSUER_URI:${DEEPSEC_OCI_IAM_DOMAIN_URL:}}}
+  sql: ${DEEPSEC_SQL:select employee_id || ':' || first_name || ' ' || last_name from hr.employees fetch first 10 rows only}
+  session-init-sql: ${DEEPSEC_SESSION_INIT_SQL:alter session disable parallel query}
   browser:
-    enabled: false
+    enabled: ${DEEPSEC_BROWSER_ENABLED:false}
     auth-provider: oci-iam
+    tenant-id: ''
+    client-id: ''
+    scope: ''

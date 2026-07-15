@@ -84,7 +84,7 @@
     </tr>
     <tr>
       <td><code>GET /trace/agent-task/view</code></td>
-      <td>Browser-friendly agentic demo that returns the trace id, agent id, database session metadata, SQL ID, SQL text, bind values, SQL Monitor preview, <code>DBMS_XPLAN</code>, and an embedded Jaeger trace on one page. Jaeger is the demo viewer; the telemetry is OpenTelemetry-compatible.</td>
+      <td>Browser-friendly agentic demo that returns the trace id, agent id, database session metadata, database security context, SQL ID, SQL text, bind values, SQL Monitor preview, <code>DBMS_XPLAN</code>, and an embedded Jaeger trace on one page. Jaeger is the demo viewer; the telemetry is OpenTelemetry-compatible.</td>
     </tr>
   </table>
 
@@ -109,7 +109,7 @@
 
   <figure>
     <img src="images/agentic-ai-database-trace-dashboard.png" alt="Agentic AI database trace page showing agent task metadata, database session details, trace bridge, SQL runtime statistics, and SQL Monitor information.">
-    <figcaption>The demo page keeps the agent task, database session context, SQL diagnostics, and trace bridge together.</figcaption>
+    <figcaption>The demo page keeps the agent task, database session context, database security context, SQL diagnostics, and trace bridge together.</figcaption>
   </figure>
 
   <h2>How to setup and run the example?</h2>
@@ -119,6 +119,14 @@
     can also use an Autonomous Database in Oracle Cloud instead of a local
     database; the important requirements are JDBC connectivity and a database
     server-side exporter that can reach an HTTPS OTLP endpoint.
+  </p>
+  <p>
+    A clean OCI Linux VM verification with Oracle Database Free 23.26.2.0
+    produced the expected Spring Boot, Oracle JDBC, and <code>oracle-db</code>
+    server-side spans without setting hidden KSTRC instance parameters. The
+    normal setup below uses documented <code>DBMS_OBSERVABILITY</code>
+    configuration, a reachable HTTPS OTLP endpoint, network ACLs, and the
+    database <code>disttrc</code> trust wallet.
   </p>
   <ol>
     <li>Install Java 25, Maven, Git, Podman, curl, jq, and OpenSSL.</li>
@@ -304,11 +312,13 @@ end;
 /</code></pre>
 
   <p>
-    The demo also sets the KSTRC archiver for this local Oracle Database Free
-    path:
+    A clean verification run on Oracle Database Free 23.26.2.0 showed that the
+    documented <code>DBMS_OBSERVABILITY</code> endpoint setup, the HTTPS OTLP
+    proxy, the network ACL, and the <code>WALLET_ROOT/&lt;PDB_GUID&gt;/disttrc</code>
+    trust wallet were sufficient for database server-side spans. Older local
+    diagnostic runs used hidden KSTRC parameters while debugging export
+    failures, but those settings are not part of the normal demo setup.
   </p>
-  <pre><code>alter system set "_kstrc_service_mask"=8 scope=both;
-alter system set "_kstrc_archiver"='otel_traces://https://otel-tls-proxy:4318/v1/traces' scope=both;</code></pre>
 
   <h2>How Does JDBC Propagate the Trace Context?</h2>
   <p>
@@ -525,6 +535,46 @@ Oracle AI Database Metrics Exporter -> Prometheus/OpenTelemetry metrics -> colle
   </ul>
 
   <p>
+    The sample app now includes a <strong>Database Security Context</strong>
+    panel backed by a real password-authenticated local Deep Data Security end
+    user. It works without Entra ID, OCI IAM, OAuth tokens, or a JDBC
+    <code>EndUserSecurityContext</code> call. The page correlates the trace with
+    <code>ORA_END_USER_CONTEXT.username</code>, the associated schema,
+    <code>MODULE</code>, <code>ACTION</code>, <code>CLIENT_IDENTIFIER</code>,
+    enabled database roles, effective privileges, the granted data role, the
+    applicable data grant, and <code>V$END_USER_DATA_ROLE</code> for this request.
+    A row-filtering proof runs in that same traced session and shows both the
+    number of rows allowed by the data grant and zero visible rows for other
+    agents.
+  </p>
+
+  <p>
+    The panel deliberately separates regular Oracle Database roles from Oracle
+    AI Database Deep Data Security data roles. A role such as
+    <code>SELECT_CATALOG_ROLE</code> is a normal session role and appears in
+    <code>SESSION_ROLES</code>. A DDS data role such as
+    <code>AGENT_CLAIMS_INVESTIGATOR</code> appears in
+    <code>DBA_DATA_ROLES</code> and receives data grants in
+    <code>DBA_DATA_GRANTS</code>. The local setup script
+    <code>observability/sql/setup_local_deep_data_security.sql</code> creates
+    the local end user <code>claims-investigator-agent</code>, assigns
+    <code>AGENT_CLAIMS_INVESTIGATOR</code> with <code>GRANT DATA ROLE</code>, and
+    grants that role SELECT access to only the agent's event-log rows. The
+    <code>FINANCIAL</code> database user remains the owning schema rather than
+    the runtime principal.
+  </p>
+
+  <p>
+    A Deep Sec local end user is distinct from a conventional database user.
+    Data roles cannot be granted directly to the <code>FINANCIAL</code> schema
+    account. Direct password login as the local end user establishes the
+    end-user security context in Oracle AI Database and activates the assigned
+    data role without application-side token propagation. The Entra ID and OCI
+    IAM provider/API examples remain the right pattern when an application must
+    propagate externally managed end-user identities through a shared pool user.
+  </p>
+
+  <p>
     A security-aware version can run the same agent workload against protected
     tables, then show effective database user, enabled roles, policy decisions,
     rows allowed or filtered, and a denied-operation example. After that, a
@@ -609,6 +659,8 @@ Oracle AI Database Metrics Exporter -> Prometheus/OpenTelemetry metrics -> colle
     <li>Oracle AI Database application tracing: <a href="https://docs.oracle.com/en/database/oracle/oracle-database/26/tgsql/performing-application-tracing.html">https://docs.oracle.com/en/database/oracle/oracle-database/26/tgsql/performing-application-tracing.html</a></li>
     <li>Oracle AI Database Metrics Exporter project: <a href="https://github.com/oracle/oracle-db-appdev-monitoring">https://github.com/oracle/oracle-db-appdev-monitoring</a></li>
     <li>Oracle Database Metrics Exporter: <a href="https://www.oracle.com/database/database-exporter/">https://www.oracle.com/database/database-exporter/</a></li>
+    <li>Day One and Beyond - MultiCloud Observability &amp; Management for Oracle Database@X, Sonali Malik: <a href="https://www.youtube.com/watch?v=7vUaDdNzFmQ">https://www.youtube.com/watch?v=7vUaDdNzFmQ</a></li>
+    <li>AI Agent Observability: Understand How AI Agents Behave in Gen AI Applications and Ecosystems, Royce Fu and Alex Birzu: <a href="https://www.ateam-oracle.com/ai-agent-observability-understand-how-ai-agents-behave-in-gen-ai-applications-and-ecosystems">https://www.ateam-oracle.com/ai-agent-observability-understand-how-ai-agents-behave-in-gen-ai-applications-and-ecosystems</a></li>
     <li>OpenTelemetry Java agent: <a href="https://opentelemetry.io/docs/zero-code/java/agent/">https://opentelemetry.io/docs/zero-code/java/agent/</a></li>
     <li>OpenTelemetry protocol exporters: <a href="https://opentelemetry.io/docs/specs/otel/protocol/exporter/">https://opentelemetry.io/docs/specs/otel/protocol/exporter/</a></li>
     <li>Spring Boot tracing: <a href="https://docs.spring.io/spring-boot/reference/actuator/tracing.html">https://docs.spring.io/spring-boot/reference/actuator/tracing.html</a></li>

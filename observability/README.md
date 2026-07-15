@@ -169,13 +169,24 @@ Review and run:
 @sql/grant_observability_privileges.sql
 @sql/create_observability_acl.sql
 @sql/enable_server_observability.sql
+@sql/setup_local_deep_data_security.sql
 ```
 
 For a local Oracle Free container, use:
 
 ```sql
 @sql/setup_local_free_observability.sql
+@sql/setup_local_deep_data_security.sql
 ```
+
+The first script creates and seeds `FINANCIAL.AGENT_EVENT_LOG`. The second asks
+for a private password and creates a local Deep Sec end user named
+`"claims-investigator-agent"`, associates it with the `FINANCIAL` schema for
+name resolution, grants it `AGENT_CLAIMS_INVESTIGATOR`, and gives that data role
+the standard session/diagnostic role needed by this contained demo. Configure
+the Spring Boot datasource with `DB_USERNAME='"claims-investigator-agent"'`
+(the quotes preserve the case-sensitive Deep Sec end-user name) and its private
+password, not the `FINANCIAL` schema-owner credentials.
 
 For a local demo, set `SQL_TRACE` at the session level. Avoid instance-wide
 tracing in shared or production environments unless you have measured the cost.
@@ -193,6 +204,24 @@ For the agentic AI use case, open the `/trace/agent-task` trace in Jaeger and
 expand the `DB Server` span whose `oracle.db.action` is `agent-workload-query`.
 The app response then uses that span's `oracle.db.query.sql.id` as the bridge to
 SQL Monitor and `DBMS_XPLAN`.
+
+The browser view also includes a **Database Security Context** panel. It uses a
+real password-authenticated local Deep Sec end user, so it does not require
+Entra ID, OCI IAM, an OAuth token, or a JDBC `EndUserSecurityContext` call. The
+panel correlates the trace with `ORA_END_USER_CONTEXT.username`, the current
+schema, `MODULE`, `ACTION`, `CLIENT_IDENTIFIER`, enabled regular roles,
+effective privileges, the granted Deep Sec data role, its data grant, and the
+roles currently active in `V$END_USER_DATA_ROLE`. A row-filtering proof in the
+same traced session counts the permitted agent rows and confirms that rows owned
+by other agents are not visible.
+
+The same panel also separates regular database roles from Deep Data Security
+data roles. For example, `SELECT_CATALOG_ROLE` is a normal database role visible
+in `SESSION_ROLES`, while `AGENT_CLAIMS_INVESTIGATOR` is a DDS data role visible
+through `DBA_DATA_ROLES` and `DBA_DATA_GRANTS`. The local end user receives that
+role through `GRANT DATA ROLE`, and direct password login activates it without
+application-side security-context code. `FINANCIAL` remains only the owning
+schema; a conventional database user cannot be the grantee of `GRANT DATA ROLE`.
 
 ## References
 

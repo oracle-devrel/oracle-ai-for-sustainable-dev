@@ -23,8 +23,8 @@ Missing required database settings.
 Create observability/.env, or export these variables before running:
 
   DB_URL='jdbc:oracle:thin:@//host:1521/service'
-  DB_USERNAME='FINANCIAL'
-  DB_PASSWORD='<database-password>'
+  DB_USERNAME='"claims-investigator-agent"'
+  DB_PASSWORD='<local-deep-sec-end-user-password>'
   OTLP_TRACES_ENDPOINT='http://localhost:4318/v1/traces'
 
 EOF

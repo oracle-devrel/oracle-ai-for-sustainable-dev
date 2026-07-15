@@ -25,7 +25,10 @@ The important details are:
   export needs an HTTPS OTLP endpoint.
 - The database distributed trace exporter looks for its trust wallet under
   `WALLET_ROOT/<PDB_GUID>/disttrc`, not just `WALLET_ROOT/<PDB_GUID>/tls`.
-- Set `_kstrc_service_mask=8` and `_kstrc_archiver` for this demo path.
+- On Oracle Database Free 23.26.2.0, the verified setup did not require hidden
+  KSTRC parameters; leave `_kstrc_service_mask` and `_kstrc_archiver` at their
+  defaults unless Oracle Support or a specific diagnostic exercise asks you to
+  change them.
 - Set database `MODULE`, `ACTION`, and `CLIENT_IDENTIFIER` from the app so the
   DB span visibly carries database-session context, not just a generic
   `DB Server` label.
@@ -216,6 +219,20 @@ alter user ${APP_USER} quota unlimited on users;
 SQL
 ```
 
+Create the password-authenticated local Deep Sec end user and assign its data
+role after `FINANCIAL.AGENT_EVENT_LOG` has been created and seeded:
+
+```bash
+sudo podman cp observability/sql/setup_local_deep_data_security.sql \
+  oracledb-free:/tmp/setup_local_deep_data_security.sql
+sudo podman exec -it oracledb-free \
+  sqlplus / as sysdba @/tmp/setup_local_deep_data_security.sql
+```
+
+Use `FREEPDB1`, `FINANCIAL`, `claims-investigator-agent`, a private end-user
+password, and `otel-tls-proxy` at the prompts. The quoted end user is associated
+with the `FINANCIAL` schema for name resolution but does not own that schema.
+
 Restart the database container so `wallet_root` takes effect:
 
 ```bash
@@ -225,8 +242,8 @@ sudo podman restart oracledb-free
 Wait for the database to become healthy again.
 
 Create Oracle wallets for the PDB. The `disttrc` component is the critical one
-for KSTRC server-side trace export. The `tls` component is useful for UTL_HTTP
-tests.
+for database server-side trace export. The `tls` component is useful for
+UTL_HTTP tests.
 
 ```bash
 sudo podman cp /opt/observability-demo/local/tls-proxy/ca.crt \
@@ -261,14 +278,11 @@ for COMPONENT in disttrc tls; do
 done
 ```
 
-Register the HTTPS OTLP endpoint, enable tracing, and set the KSTRC archiver:
+Register the HTTPS OTLP endpoint and enable tracing:
 
 ```bash
 sudo podman exec -i oracledb-free bash -lc 'sqlplus -s / as sysdba' <<'SQL'
 set echo off feedback on serveroutput on size unlimited lines 240 pages 100
-
-alter system set "_kstrc_service_mask"=8 scope=both;
-alter system set "_kstrc_archiver"='otel_traces://https://otel-tls-proxy:4318/v1/traces' scope=both;
 
 alter session set container=FREEPDB1;
 
@@ -331,8 +345,8 @@ Create a VM-local environment file. Do not commit this file:
 ```bash
 cat > /opt/observability-demo/.env <<EOF
 DB_URL=jdbc:oracle:thin:@//127.0.0.1:1521/FREEPDB1
-DB_USERNAME=FINANCIAL
-DB_PASSWORD=<app-user-password>
+DB_USERNAME='"claims-investigator-agent"'
+DB_PASSWORD=<local-deep-sec-end-user-password>
 OTLP_TRACES_ENDPOINT=http://127.0.0.1:4318/v1/traces
 TRACE_SAMPLE_PROBABILITY=1.0
 ORACLE_JDBC_SERVER_TELEMETRY_TRACES_ENABLED=true
@@ -601,12 +615,14 @@ The endpoint also starts a named composite database operation with
 attributes. That gives the database a server-side name for the agent task, not
 just an anonymous SQL execution.
 
-The demo user needs extra diagnostic privileges for this endpoint:
+The local Deep Sec data role carries a standard database role with the extra
+diagnostic privileges required by this endpoint:
 
 ```sql
-grant execute on sys.dbms_sql_monitor to FINANCIAL;
-grant execute on sys.dbms_xplan to FINANCIAL;
-grant select_catalog_role to FINANCIAL;
+grant execute on sys.dbms_sql_monitor to agent_observability_session_role;
+grant execute on sys.dbms_xplan to agent_observability_session_role;
+grant select_catalog_role to agent_observability_session_role;
+grant agent_observability_session_role to agent_claims_investigator;
 ```
 
 These grants are intentionally broad for a contained demo VM. For a shared or
@@ -653,8 +669,10 @@ Useful failures:
 - `nzos_OpenWallet() failed ... /disttrc/`: create the trusted wallet under
   `WALLET_ROOT/<PDB_GUID>/disttrc`.
 - no `POST /v1/traces` in proxy logs: the database did not reach the collector.
-- only disk archive lines such as `archived to: ksu_ops_FREE.trc`: verify
-  `_kstrc_archiver`, `_kstrc_service_mask`, endpoint HTTPS, ACLs, and wallet.
+- only disk archive lines such as `archived to: ksu_ops_FREE.trc`: verify the
+  `DBMS_OBSERVABILITY` endpoint, endpoint HTTPS, ACLs, and the
+  `WALLET_ROOT/<PDB_GUID>/disttrc` trust wallet. Use KSTRC diagnostics only when
+  you are deliberately troubleshooting database trace export internals.
 - `DBMS_OBSERVABILITY runtime=Traces:0`: ensure the JDBC app toggles
   `OracleConnection.ServerTelemetry.Traces` and that
   `dbms_observability.enable_service(dbms_observability.all_services)` is set in
