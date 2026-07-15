@@ -22,7 +22,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.sql.DataSource;
 import jakarta.servlet.http.HttpServletRequest;
-import oracle.jdbc.EndUserSecurityContext;
 import oracle.jdbc.OracleConnection;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -152,16 +151,10 @@ public class TraceController {
     try (Connection connection = dataSource.getConnection()) {
       OracleConnection oracleConnection = connection.unwrap(OracleConnection.class);
       oracleConnection.beginRequest();
-      boolean localDeepDataSecurityContextSet = false;
       try {
         configureTraceContext(oracleConnection, trace);
         configureDatabaseSession(oracleConnection, trace, "agent:" + agentId, "agent-task-start");
         toggleServerTelemetry(oracleConnection);
-        ensureAgentEventTable(connection);
-        Map<String, Object> localDeepDataSecurityContext =
-            trySetLocalDeepDataSecurityContext(oracleConnection, agentId);
-        localDeepDataSecurityContextSet =
-            Boolean.TRUE.equals(localDeepDataSecurityContext.get("active"));
         operationExecutionId = beginMonitoredOperation(connection, operationName, agentId, task, trace);
 
         configureDatabaseAction(oracleConnection, "agent-workload-query");
@@ -197,7 +190,6 @@ public class TraceController {
             from dual
             """);
         Map<String, Object> securityContext = tryDatabaseSecurityContext(connection);
-        securityContext.put("localDeepDataSecurityContext", localDeepDataSecurityContext);
 
         Map<String, Object> response = new LinkedHashMap<>();
         response.put("agent", Map.of(
@@ -232,9 +224,6 @@ public class TraceController {
       } finally {
         if (operationExecutionId != null) {
           endMonitoredOperation(connection, operationName, operationExecutionId);
-        }
-        if (localDeepDataSecurityContextSet) {
-          clearLocalDeepDataSecurityContext(oracleConnection);
         }
         clearDatabaseSession(oracleConnection);
         oracleConnection.endRequest();
@@ -359,66 +348,6 @@ public class TraceController {
         """));
 
     return workload;
-  }
-
-  private void ensureAgentEventTable(Connection connection) throws SQLException {
-    try (Statement statement = connection.createStatement()) {
-      statement.execute("""
-          create table agent_event_log (
-            event_id number generated always as identity primary key,
-            agent_id varchar2(128) not null,
-            event_type varchar2(40) not null,
-            customer_region varchar2(20) not null,
-            amount number(12,2) not null,
-            risk_score number(3) not null,
-            created_at timestamp default systimestamp not null
-          )
-          """);
-    } catch (SQLException e) {
-      if (e.getErrorCode() != 955) {
-        throw e;
-      }
-    }
-
-    Number rowCount = queryForNumber(connection, "select count(*) from agent_event_log");
-    if (rowCount != null && rowCount.longValue() > 0) {
-      return;
-    }
-
-    try (PreparedStatement statement = connection.prepareStatement("""
-        insert /*+ append */ into agent_event_log (
-          agent_id, event_type, customer_region, amount, risk_score, created_at)
-        select
-          case mod(level, 3)
-            when 0 then 'claims-investigator-agent'
-            when 1 then 'sustainability-risk-agent'
-            else 'payments-review-agent'
-          end,
-          case mod(level, 4)
-            when 0 then 'payment'
-            when 1 then 'claim'
-            when 2 then 'transfer'
-            else 'profile-update'
-          end,
-          case mod(level, 5)
-            when 0 then 'EMEA'
-            when 1 then 'NA'
-            when 2 then 'APAC'
-            when 3 then 'LATAM'
-            else 'GLOBAL'
-          end,
-          round(50 + mod(level * 37, 20000) / 3, 2),
-          mod(level * 17 + 23, 101),
-          systimestamp - numtodsinterval(mod(level, 720), 'minute')
-        from dual
-        connect by level <= ?
-        """)) {
-      statement.setInt(1, 25000);
-      statement.executeUpdate();
-    }
-    if (!connection.getAutoCommit()) {
-      connection.commit();
-    }
   }
 
   private AgentWorkloadResult runAgentWorkload(Connection connection, String agentId) throws SQLException {
@@ -605,10 +534,10 @@ public class TraceController {
   private Map<String, Object> tryDatabaseSecurityContext(Connection connection) {
     Map<String, Object> context = new LinkedHashMap<>();
     context.put("note",
-        "This panel shows the Oracle Database security context for the agent's database session. "
-            + "It does not claim an Entra ID, OCI IAM, or Deep Data Security end-user token is active; "
-            + "it correlates the trace to the database user, enabled roles, effective privileges, and object grants used by this request.");
-    context.put("session", tryQueryForMap(connection, """
+        "This request connects directly as a password-authenticated local Oracle Deep Data Security end user. "
+            + "FINANCIAL remains the owning schema; the active data role and data grant determine which rows the agent can read. "
+            + "No Entra ID, OCI IAM, or JDBC EndUserSecurityContext API call is used.");
+    Map<String, Object> session = tryQueryForMap(connection, """
         select
           sys_context('USERENV', 'SESSION_USER') as session_user,
           sys_context('USERENV', 'CURRENT_USER') as current_user,
@@ -622,6 +551,26 @@ public class TraceController {
           sys_context('USERENV', 'ACTION') as action_name,
           sys_context('USERENV', 'SID') as session_id
         from dual
+        """);
+    context.put("session", session);
+    context.put("deepDataSecurityAuthentication", Map.of(
+        "mode", "local END USER direct password login",
+        "externalIdentityProvider", "none",
+        "jdbcEndUserSecurityContextApi", "not used",
+        "owningSchema", String.valueOf(session.getOrDefault("CURRENT_SCHEMA", "FINANCIAL"))));
+    context.put("deepDataSecurityEndUser", tryQueryForMap(connection, """
+        select trim(both '"' from
+          json_serialize(ORA_END_USER_CONTEXT.username returning varchar2(128))) as end_user_name
+        from dual
+        """));
+    context.put("deepDataSecurityEnforcement", tryQueryForMap(connection, """
+        select
+          count(*) as rows_visible_through_data_grant,
+          sum(case when agent_id = 'claims-investigator-agent' then 1 else 0 end)
+            as matching_agent_rows_visible,
+          sum(case when agent_id <> 'claims-investigator-agent' then 1 else 0 end)
+            as other_agent_rows_visible
+        from agent_event_log
         """));
     context.put("enabledRoles", tryQueryRows(connection, """
         select role
@@ -645,9 +594,10 @@ public class TraceController {
         order by privilege
         """));
     context.put("ownedDemoObjects", tryQueryRows(connection, """
-        select object_name, object_type, status
-        from user_objects
-        where object_name in ('AGENT_EVENT_LOG')
+        select owner, object_name, object_type, status
+        from dba_objects
+        where owner = sys_context('USERENV', 'CURRENT_SCHEMA')
+          and object_name in ('AGENT_EVENT_LOG')
         order by object_type, object_name
         """));
     context.put("objectPrivilegesReceived", tryQueryRows(connection, """
@@ -705,39 +655,6 @@ public class TraceController {
         fetch first 20 rows only
         """));
     return context;
-  }
-
-  private Map<String, Object> trySetLocalDeepDataSecurityContext(
-      OracleConnection oracleConnection, String agentId) {
-    if (!"claims-investigator-agent".equals(agentId)) {
-      return Map.of(
-          "active", false,
-          "reason", "The local DDS demo data role is configured for claims-investigator-agent only.");
-    }
-    try {
-      EndUserSecurityContext context = EndUserSecurityContext
-          .createWithName("local-observability-demo", agentId)
-          .withDataRoles("AGENT_CLAIMS_INVESTIGATOR");
-      oracleConnection.setEndUserSecurityContext(context);
-      return Map.of(
-          "active", true,
-          "endUserName", agentId,
-          "dataRoles", List.of("AGENT_CLAIMS_INVESTIGATOR"),
-          "note", "Local EndUserSecurityContext created by the app without Entra ID or OCI IAM.");
-    } catch (SQLException | RuntimeException e) {
-      return Map.of(
-          "active", false,
-          "dataRoles", List.of("AGENT_CLAIMS_INVESTIGATOR"),
-          "reason", summarizeSqlExceptionOrMessage(e));
-    }
-  }
-
-  private void clearLocalDeepDataSecurityContext(OracleConnection oracleConnection) {
-    try {
-      oracleConnection.clearEndUserSecurityContext();
-    } catch (SQLException ignored) {
-      // Keep request cleanup best-effort; the connection request boundary follows.
-    }
   }
 
   private record AgentWorkloadResult(Map<String, Object> summary, Map<String, Object> bindValues) {}
@@ -886,13 +803,6 @@ public class TraceController {
         : "ORA-" + String.format("%05d", e.getErrorCode()) + ": " + e.getMessage();
   }
 
-  private String summarizeSqlExceptionOrMessage(Exception e) {
-    if (e instanceof SQLException sqlException) {
-      return summarizeSqlException(sqlException);
-    }
-    return e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage();
-  }
-
   @SuppressWarnings("unchecked")
   private String renderAgentTask(Map<String, Object> result, String jaegerUrl) {
     Map<String, Object> agent = (Map<String, Object>) result.getOrDefault("agent", Map.of());
@@ -1017,7 +927,9 @@ public class TraceController {
     appendSecurityBlock(html, "Owned Demo Objects", formatRows((List<Map<String, Object>>) security.getOrDefault("ownedDemoObjects", List.of())));
     appendSecurityBlock(html, "Object Privileges Received", formatRows((List<Map<String, Object>>) security.getOrDefault("objectPrivilegesReceived", List.of())));
     appendSecurityBlock(html, "Object Privileges Through Roles", formatRows((List<Map<String, Object>>) security.getOrDefault("roleObjectPrivileges", List.of())));
-    appendSecurityBlock(html, "Local Deep Data Security Context Attempt", formatMap((Map<String, Object>) security.getOrDefault("localDeepDataSecurityContext", Map.of())));
+    appendSecurityBlock(html, "Deep Data Security Authentication Path", formatMap((Map<String, Object>) security.getOrDefault("deepDataSecurityAuthentication", Map.of())));
+    appendSecurityBlock(html, "Deep Data Security End User Active for This Request", formatMap((Map<String, Object>) security.getOrDefault("deepDataSecurityEndUser", Map.of())));
+    appendSecurityBlock(html, "Deep Data Security Row Filtering Proof", formatMap((Map<String, Object>) security.getOrDefault("deepDataSecurityEnforcement", Map.of())));
     appendSecurityBlock(html, "Deep Data Security Data Roles Configured", formatRows((List<Map<String, Object>>) security.getOrDefault("configuredDataRoles", List.of())));
     appendSecurityBlock(html, "Deep Data Security Data Role Grants", formatRows((List<Map<String, Object>>) security.getOrDefault("dataRoleGrants", List.of())));
     appendSecurityBlock(html, "Deep Data Security Data Grants", formatRows((List<Map<String, Object>>) security.getOrDefault("dataGrants", List.of())));

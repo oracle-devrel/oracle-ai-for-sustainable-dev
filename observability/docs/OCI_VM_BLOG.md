@@ -219,6 +219,20 @@ alter user ${APP_USER} quota unlimited on users;
 SQL
 ```
 
+Create the password-authenticated local Deep Sec end user and assign its data
+role after `FINANCIAL.AGENT_EVENT_LOG` has been created and seeded:
+
+```bash
+sudo podman cp observability/sql/setup_local_deep_data_security.sql \
+  oracledb-free:/tmp/setup_local_deep_data_security.sql
+sudo podman exec -it oracledb-free \
+  sqlplus / as sysdba @/tmp/setup_local_deep_data_security.sql
+```
+
+Use `FREEPDB1`, `FINANCIAL`, `claims-investigator-agent`, a private end-user
+password, and `otel-tls-proxy` at the prompts. The quoted end user is associated
+with the `FINANCIAL` schema for name resolution but does not own that schema.
+
 Restart the database container so `wallet_root` takes effect:
 
 ```bash
@@ -331,8 +345,8 @@ Create a VM-local environment file. Do not commit this file:
 ```bash
 cat > /opt/observability-demo/.env <<EOF
 DB_URL=jdbc:oracle:thin:@//127.0.0.1:1521/FREEPDB1
-DB_USERNAME=FINANCIAL
-DB_PASSWORD=<app-user-password>
+DB_USERNAME='"claims-investigator-agent"'
+DB_PASSWORD=<local-deep-sec-end-user-password>
 OTLP_TRACES_ENDPOINT=http://127.0.0.1:4318/v1/traces
 TRACE_SAMPLE_PROBABILITY=1.0
 ORACLE_JDBC_SERVER_TELEMETRY_TRACES_ENABLED=true
@@ -601,12 +615,14 @@ The endpoint also starts a named composite database operation with
 attributes. That gives the database a server-side name for the agent task, not
 just an anonymous SQL execution.
 
-The demo user needs extra diagnostic privileges for this endpoint:
+The local Deep Sec data role carries a standard database role with the extra
+diagnostic privileges required by this endpoint:
 
 ```sql
-grant execute on sys.dbms_sql_monitor to FINANCIAL;
-grant execute on sys.dbms_xplan to FINANCIAL;
-grant select_catalog_role to FINANCIAL;
+grant execute on sys.dbms_sql_monitor to agent_observability_session_role;
+grant execute on sys.dbms_xplan to agent_observability_session_role;
+grant select_catalog_role to agent_observability_session_role;
+grant agent_observability_session_role to agent_claims_investigator;
 ```
 
 These grants are intentionally broad for a contained demo VM. For a shared or

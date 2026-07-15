@@ -261,6 +261,21 @@ Collector host: oracle-db-otel-jaeger
 Collector OTLP HTTP port: 4318
 ```
 
+Copy and run the local Deep Sec direct-login setup. Supply a private password
+for the local end user when prompted:
+
+```bash
+podman cp observability/sql/setup_local_deep_data_security.sql \
+  oracledb-free:/tmp/setup_local_deep_data_security.sql
+
+podman exec -it oracledb-free \
+  sqlplus / as sysdba @/tmp/setup_local_deep_data_security.sql
+```
+
+Use `FREEPDB1`, `FINANCIAL`, `claims-investigator-agent`, and the collector host
+used above. This creates a local Deep Sec `END USER`; it does not create another
+schema and does not use Entra ID, OCI IAM, or a JDBC security-context callback.
+
 Build the app:
 
 ```bash
@@ -276,8 +291,8 @@ podman run -d --name springboot-oracle-db-otel-demo-app \
   -p 8080:8080 \
   -v "$PWD/target/springboot-oracle-db-otel-demo-0.0.1-SNAPSHOT.jar:/app/app.jar:ro" \
   -e DB_URL='jdbc:oracle:thin:@//oracledb-free:1521/FREEPDB1' \
-  -e DB_USERNAME='financial' \
-  -e DB_PASSWORD='<application-db-password>' \
+  -e DB_USERNAME='"claims-investigator-agent"' \
+  -e DB_PASSWORD='<local-deep-sec-end-user-password>' \
   -e OTLP_TRACES_ENDPOINT='http://oracle-db-otel-jaeger:4318/v1/traces' \
   -e OTEL_SEMCONV_STABILITY_OPT_IN='database/dup' \
   -e ORACLE_JDBC_SERVER_TELEMETRY_TRACES_ENABLED='true' \

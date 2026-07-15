@@ -27,7 +27,8 @@ The key message for this version: the app does not call the Deep Data Security J
 2. Configuration:
    ```bash
    sed -n '1,100p' .env_example
-   sed -n '1,120p' src/main/resources/application.yaml
+   sed -n '1,180p' src/main/resources/application-entraid.yaml
+   sed -n '1,180p' src/main/resources/application-oci-iam.yaml
    ```
 
 3. JDBC provider dependencies:
@@ -115,6 +116,18 @@ deepsec:
     end-user-security-context: ojdbc-provider-spring-end-user-security-context
     registration-id: entra
 ```
+
+Each identity-provider profile is self-contained; there is no partial
+`application.yaml`. The `entraid` and `oci-iam` files each include the complete
+datasource, UCP, JDBC provider, OAuth2 client, JWT validation, SQL, and browser
+configuration for that deployment.
+
+The provider name, matching OAuth2 `registration-id`, confidential-client ID and
+secret, token URI, database scope, database-token grant type, and an incoming
+authenticated bearer token are the Deep Data Security essentials. Fixed data
+roles/context attributes, UCP sizing, demo SQL, logging, and browser UI settings
+are optional. The authorization URI and redirect URI apply to interactive login;
+the provider's database-token acquisition uses the token URI.
 
 `UcpDataSourceConfiguration` creates an Oracle UCP `PoolDataSource` and sets the
 provider keys as UCP connection properties. HikariCP is excluded from the JDBC

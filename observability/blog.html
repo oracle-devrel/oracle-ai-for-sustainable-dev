@@ -536,15 +536,16 @@ Oracle AI Database Metrics Exporter -> Prometheus/OpenTelemetry metrics -> colle
 
   <p>
     The sample app now includes a <strong>Database Security Context</strong>
-    panel that works even without Entra ID, OCI IAM, or a Deep Data Security
-    end-user token. It shows the concrete Oracle Database session principal,
-    current schema, authenticated identity fields, <code>MODULE</code>,
-    <code>ACTION</code>, <code>CLIENT_IDENTIFIER</code>, enabled roles,
-    effective session privileges, direct system privileges, owned demo objects,
-    and object privileges visible through direct grants or roles. This is not
-    a replacement for token-based Deep Data Security, but it is the first
-    correlation layer: the page can answer which database account, role set,
-    grants, SQL ID, and trace id were involved in this agent request.
+    panel backed by a real password-authenticated local Deep Data Security end
+    user. It works without Entra ID, OCI IAM, OAuth tokens, or a JDBC
+    <code>EndUserSecurityContext</code> call. The page correlates the trace with
+    <code>ORA_END_USER_CONTEXT.username</code>, the associated schema,
+    <code>MODULE</code>, <code>ACTION</code>, <code>CLIENT_IDENTIFIER</code>,
+    enabled database roles, effective privileges, the granted data role, the
+    applicable data grant, and <code>V$END_USER_DATA_ROLE</code> for this request.
+    A row-filtering proof runs in that same traced session and shows both the
+    number of rows allowed by the data grant and zero visible rows for other
+    agents.
   </p>
 
   <p>
@@ -556,21 +557,21 @@ Oracle AI Database Metrics Exporter -> Prometheus/OpenTelemetry metrics -> colle
     <code>DBA_DATA_ROLES</code> and receives data grants in
     <code>DBA_DATA_GRANTS</code>. The local setup script
     <code>observability/sql/setup_local_deep_data_security.sql</code> creates
-    that data role and grants it SELECT access to the agent event log rows for
-    <code>claims-investigator-agent</code>, so the demo can show DDS metadata
-    even without an external identity provider.
+    the local end user <code>claims-investigator-agent</code>, assigns
+    <code>AGENT_CLAIMS_INVESTIGATOR</code> with <code>GRANT DATA ROLE</code>, and
+    grants that role SELECT access to only the agent's event-log rows. The
+    <code>FINANCIAL</code> database user remains the owning schema rather than
+    the runtime principal.
   </p>
 
   <p>
-    The app also attempts to attach a local
-    <code>EndUserSecurityContext</code> with
-    <code>AGENT_CLAIMS_INVESTIGATOR</code>. On the verified demo VM, Oracle
-    Database correctly shows the data role and data grant as configured, but
-    rejects the placeholder local token as an invalid JWT, so no data role is
-    active in <code>V$END_USER_DATA_ROLE</code>. That distinction is useful:
-    local DDS metadata does not require Entra ID or OCI IAM, while runtime
-    activation through this JDBC path still needs a valid database-access token
-    or the same provider/API flow used by the Deep Data Security demos.
+    A Deep Sec local end user is distinct from a conventional database user.
+    Data roles cannot be granted directly to the <code>FINANCIAL</code> schema
+    account. Direct password login as the local end user establishes the
+    end-user security context in Oracle AI Database and activates the assigned
+    data role without application-side token propagation. The Entra ID and OCI
+    IAM provider/API examples remain the right pattern when an application must
+    propagate externally managed end-user identities through a shared pool user.
   </p>
 
   <p>
