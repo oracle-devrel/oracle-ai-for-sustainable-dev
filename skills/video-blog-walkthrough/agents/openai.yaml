@@ -1,0 +1,4 @@
+interface:
+  display_name: "Video Blog Walkthrough"
+  short_description: "Build narrated technical blog walkthroughs"
+  default_prompt: "Use $video-blog-walkthrough to create a narrated video walkthrough and embed it in my technical blog."

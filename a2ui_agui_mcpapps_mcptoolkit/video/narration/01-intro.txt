@@ -1,0 +1,1 @@
+This walkthrough builds an interactive account-risk assistant with Oracle AI Database, AG-UI, A2UI, the Oracle Database MCP Java Toolkit, and a separate MCP App demonstration. The video is silent, with exact product names preserved in its subtitles.

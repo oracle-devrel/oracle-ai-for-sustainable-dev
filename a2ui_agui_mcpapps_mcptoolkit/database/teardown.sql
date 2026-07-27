@@ -1,0 +1,9 @@
+WHENEVER SQLERROR CONTINUE
+DROP PROCEDURE approve_inventory_transfer_mcp;
+DROP SEQUENCE inventory_transfer_mcp_seq;
+DROP VIEW stockout_transfer_recommendation_v;
+DROP TABLE inventory_transfers;
+DROP TABLE supply_lanes;
+DROP TABLE inventory_positions;
+DROP TABLE supply_products;
+DROP TABLE supply_locations;

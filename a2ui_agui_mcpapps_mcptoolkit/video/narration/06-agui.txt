@@ -1,0 +1,1 @@
+AG-UI streams standard run, text, tool-call, state, and error events from the Java service to the browser. A2UI envelopes travel inside an AG-UI custom event named a2ui.message, keeping transport and interface responsibilities distinct.

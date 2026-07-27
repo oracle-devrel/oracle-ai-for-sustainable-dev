@@ -1,0 +1,12 @@
+diff --git a/src/oracle-db-mcp-java-toolkit/src/main/java/com/oracle/database/mcptoolkit/OracleDatabaseMCPToolkit.java b/src/oracle-db-mcp-java-toolkit/src/main/java/com/oracle/database/mcptoolkit/OracleDatabaseMCPToolkit.java
+index 676bfb4..4103664 100644
+--- a/src/oracle-db-mcp-java-toolkit/src/main/java/com/oracle/database/mcptoolkit/OracleDatabaseMCPToolkit.java
++++ b/src/oracle-db-mcp-java-toolkit/src/main/java/com/oracle/database/mcptoolkit/OracleDatabaseMCPToolkit.java
+@@ -69,6 +69,6 @@ public class OracleDatabaseMCPToolkit {
+           .serverInfo("oracle-db-mcp-toolkit", "1.0.0")
+           .capabilities(McpSchema.ServerCapabilities.builder()
+-             .tools(true)
++             .tools(false)
+              .logging()
+              .build())
+           .immediateExecution(true)

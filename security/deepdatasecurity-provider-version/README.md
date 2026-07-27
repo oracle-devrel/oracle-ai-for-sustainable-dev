@@ -96,17 +96,20 @@ The settings fall into three groups.
 - Matching database-side IAM trust, application identity or mapped data roles,
   pool-user privileges, and data grants.
 
-This application sets the JDBC provider properties on Oracle UCP in
-`UcpDataSourceConfiguration`:
+Spring Boot creates and configures Oracle UCP directly from each profile's YAML:
 
 ```yaml
-deepsec:
-  ucp:
-    max-pool-size: ${DEEPSEC_POOL_SIZE:4}
-  jdbc-provider:
-    end-user-security-context: ojdbc-provider-spring-end-user-security-context
-    registration-id: entra # or oci-iam through SPRING_PROFILES_ACTIVE=oci-iam
+spring:
+  datasource:
+    type: oracle.ucp.jdbc.PoolDataSource
+    oracleucp:
+      max-pool-size: ${DEEPSEC_POOL_SIZE:4}
+      connection-properties:
+        "oracle.jdbc.provider.endUserSecurityContext": ojdbc-provider-spring-end-user-security-context
+        "oracle.jdbc.provider.endUserSecurityContext.registrationId": entra
 ```
+
+The OCI IAM profile uses `oci-iam` for the registration ID.
 
 ### Required by this HTTP demo, but not by the JDBC provider itself
 

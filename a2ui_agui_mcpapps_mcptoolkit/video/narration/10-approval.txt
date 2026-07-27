@@ -1,0 +1,1 @@
+Approval is bound to the actor, returned account set, and a short-lived single-use identifier. Approve invokes the bounded MCP tools and displays the committed action identifier. Cancel consumes the approval without creating a database action.

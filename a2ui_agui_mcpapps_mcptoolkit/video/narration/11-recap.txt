@@ -1,0 +1,1 @@
+Each component keeps one clear responsibility: MCP connects tools, A2A can connect independent agents, AG-UI streams frontend events and state, A2UI describes trusted controls, MCP Apps render rich sandboxed experiences, and Oracle AI Database governs data and transactions through the Toolkit.

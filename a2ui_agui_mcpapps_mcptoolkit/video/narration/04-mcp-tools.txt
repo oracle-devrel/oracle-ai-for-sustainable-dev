@@ -1,0 +1,1 @@
+The Toolkit configuration enables purpose-built reads, action identifier reservation, the procedure-backed write, and a verification count. All database values are binds. Broad query, write, table, and administration tools are not enabled.

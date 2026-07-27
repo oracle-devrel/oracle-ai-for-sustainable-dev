@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Supply-Chain Inventory Exchange</title>
+  <style>
+    :root { color-scheme: light dark; font-family: ui-sans-serif, system-ui, sans-serif; }
+    body { margin: 0; padding: 18px; background: Canvas; color: CanvasText; }
+    h1 { margin: 0 0 4px; font-size: 1.35rem; } p { color: GrayText; }
+    #source { padding: 8px 10px; border-left: 4px solid #c74634; background: color-mix(in srgb, #c74634 10%, Canvas); }
+    .metrics, .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .metric, .recommendation { padding: 12px; border: 1px solid color-mix(in srgb, CanvasText 18%, transparent); border-radius: 10px; }
+    .metric strong { display: block; font-size: 1.3rem; } .grid { margin-top: 12px; }
+    .bar { height: 8px; margin-top: 8px; border-radius: 4px; background: #d7d9dc; overflow: hidden; }
+    .bar span { display: block; height: 100%; background: #c74634; }
+    button { margin-top: 12px; padding: 8px 12px; border: 0; border-radius: 7px; background: #c74634; color: white; font: inherit; font-weight: 700; }
+    @media (max-width: 640px) { .metrics, .grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <h1>Supply-chain inventory exchange</h1>
+  <p>Structured, governed stockout and transfer data delivered by an MCP tool.</p>
+  <p id="source">Waiting for governed Toolkit results.</p>
+  <div id="metrics" class="metrics"></div>
+  <div id="recommendations" class="grid"></div>
+  <script type="module" src="/src/mcp-app.ts"></script>
+</body>
+</html>

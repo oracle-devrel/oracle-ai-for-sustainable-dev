@@ -1,0 +1,1 @@
+Oracle AI Database stores the accounts, risk evidence, and audited follow-up actions. The approved MCP tool calls an input-only procedure that validates inputs, locks the selected account, inserts one action, and updates its status atomically.

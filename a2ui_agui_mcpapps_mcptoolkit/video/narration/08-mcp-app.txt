@@ -1,0 +1,1 @@
+The separate MCP App now retrieves current account rows from the Java service, which invokes the Toolkit's governed find-at-risk-customers tool. The official basic host renders its dashboard in a sandboxed iframe. Toolkit-labeled structured content crosses the host bridge; database credentials do not.

@@ -1,0 +1,1 @@
+The default application now launches the pinned Oracle Database MCP Java Toolkit over standard input and output. It initializes the MCP session, verifies the server identity, and fails closed unless exactly five account-risk tools are available.

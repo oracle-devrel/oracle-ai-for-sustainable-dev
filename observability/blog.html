@@ -1,9 +1,10 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>End-to-End Agentic AI Observability: Tracing from the Agent INTO the Oracle AI Database (using the Java observability provider and server-side OTel exporter)</title>
-  <meta name="description" content="A developer how-to for continuous OpenTelemetry tracing from a Spring Boot AI agent workload through Oracle JDBC into Oracle AI Database server-side spans for observability, security correlation, and performance profiling.">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI Agent Observability with Oracle AI Database and OpenTelemetry</title>
+  <meta name="description" content="Learn AI agent observability with end-to-end OpenTelemetry agent context tracing from Spring Boot and Oracle JDBC into Oracle AI Database server-side spans.">
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; line-height: 1.55; color: #1f2933; }
     main { max-width: 980px; margin: 0 auto; padding: 32px 20px 56px; }
@@ -14,6 +15,8 @@
     figcaption { color: #5c6673; font-size: 0.95rem; margin-top: 8px; }
     img { max-width: 100%; height: auto; border: 1px solid #d6dce3; border-radius: 8px; }
     .cover img { border: 0; border-radius: 0; }
+    .video-embed { position: relative; aspect-ratio: 16 / 9; }
+    .video-embed iframe { width: 100%; height: 100%; border: 0; border-radius: 8px; }
     code, pre { font-family: "SFMono-Regular", Consolas, monospace; }
     pre { background: #f5f7f9; border: 1px solid #dde3ea; padding: 12px; white-space: pre-wrap; }
     table { border-collapse: collapse; width: 100%; }
@@ -23,13 +26,15 @@
 </head>
 <body>
 <main>
-  <h1>End-to-End Agentic AI Observability: Tracing from the Agent INTO the Oracle AI Database (using the Java observability provider and server-side OTel exporter)</h1>
-  <p class="subtitle">A developer how-to for one continuous OpenTelemetry trace across a Spring Boot agent workload, Oracle JDBC, and Oracle AI Database server-side execution.</p>
+  <h1>End-to-End Agentic AI Observability: Tracing from Agents INTO the Oracle AI Database (using the Java observability provider and server-side OTel exporter)</h1>
+  <p class="subtitle">Build one continuous AI agent observability trace across a Spring Boot workload, Oracle JDBC, and Oracle AI Database server-side execution.</p>
 
   <p>
-    This walkthrough answers a practical question for agentic applications:
+    This walkthrough answers a practical AI agent observability question:
     can you see one trace that starts with an AI agent request, crosses the
     Spring Boot and JDBC layers, and continues inside Oracle AI Database? Yes.
+    This end-to-end agent context tracing pattern follows the request from the
+    agent workflow to the SQL and database execution that contributed to its answer.
     With Spring Boot, Micrometer, Oracle JDBC observability providers, and
     <code>DBMS_OBSERVABILITY</code>, the same request can appear in any
     OpenTelemetry-compatible observability backend as application spans, JDBC
@@ -45,8 +50,9 @@
     investigate inside the database. Oracle AI Database keeps the trace
     continuous. Developers, DevOps teams, and security reviewers can see how
     long the database actually took, correlate it to database-side evidence,
-    and use the same trace for performance profiling, troubleshooting, and
-    security context.
+    and use the same trace for production monitoring, performance profiling,
+    troubleshooting, security context, and evidence that helps make AI agent
+    answers auditable.
   </p>
 
   <p>
@@ -54,6 +60,22 @@
     are available in the
     <a href="https://github.com/oracle-devrel/oracle-ai-for-sustainable-dev/tree/main/observability">observability folder on GitHub</a>.
   </p>
+
+  <figure>
+    <div class="video-embed">
+      <iframe
+        src="https://www.youtube.com/embed/Frus_Bw8Qqw?enablejsapi=1&amp;origin=https%3A%2F%2Fpaulparkinson.github.io&amp;widget_referrer=https%3A%2F%2Fpaulparkinson.github.io%2Foracle-ai-for-sustainable-dev%2Fobservability%2Fblog.html"
+        title="Tracing from Agents into the Oracle AI Database video walkthrough"
+        loading="lazy"
+        referrerpolicy="origin"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen>
+      </iframe>
+    </div>
+    <figcaption>
+      Video walkthrough and summary: <a href="https://www.youtube.com/watch?v=Frus_Bw8Qqw">Tracing from Agents into the Oracle AI Database</a>.
+    </figcaption>
+  </figure>
 
   <figure class="cover">
     <img src="images/oracle-ai-database-otel-trace-cover.svg" alt="Oracle AI Database branded technical diagram showing an AI agent request flowing through Spring Boot, Micrometer, Oracle JDBC OpenTelemetry spans, an Oracle AI Database DB Server span, SQL diagnostics, and an OpenTelemetry-compatible observability backend.">
@@ -65,7 +87,7 @@
     <li>Oracle AI Database lets the trace continue into database server-side execution instead of stopping at the database edge.</li>
     <li>Spring Boot and Micrometer create the application trace context, while Oracle JDBC adds database client spans.</li>
     <li><code>DBMS_OBSERVABILITY</code> exports Oracle AI Database server-side spans to OpenTelemetry-compatible observability tools; this demo uses Jaeger.</li>
-    <li>Agent metadata, <code>MODULE</code>, <code>ACTION</code>, and <code>CLIENT_IDENTIFIER</code> create a foundation for security and audit correlation.</li>
+    <li>Agent context tracing with <code>MODULE</code>, <code>ACTION</code>, and <code>CLIENT_IDENTIFIER</code> creates a foundation for production monitoring and auditable AI agent answers.</li>
   </ul>
 
   <h2>What We Are Building</h2>
@@ -104,7 +126,7 @@
 
   <figure>
     <img src="images/jaeger-database-server-span.png" alt="Jaeger trace timeline showing Spring Boot and Oracle JDBC spans with an Oracle AI Database DB Server span selected and database-side tags visible.">
-    <figcaption>The selected database server-side span shows database timing and database-side tags in the same trace as the application request.</figcaption>
+    <figcaption>The selected database server-side span shows database timing and database-side identity tags in the same trace as the application request.</figcaption>
   </figure>
 
   <figure>
@@ -112,7 +134,7 @@
     <figcaption>The demo page keeps the agent task, database session context, database security context, SQL diagnostics, and trace bridge together.</figcaption>
   </figure>
 
-  <h2>How to setup and run the example?</h2>
+  <h2>How Do You Set Up and Run the Example?</h2>
   <p>
     The demo can run on any Linux environment or VM with enough memory for
     Oracle Database Free, Jaeger, an HTTPS proxy, and the Spring Boot app. You
@@ -172,7 +194,7 @@ curl -sS \
 
   <h2>Maven Dependencies and the Oracle JDBC Observability Provider</h2>
   <p>
-    The app uses Java 25, the latest Oracle JDBC 23.26 line available from Maven Central,
+    The app uses Java 25, the Oracle JDBC 23.26 line from Maven Central,
     the published Maven Central <code>ojdbc-provider-observability</code>
     artifact, and the Oracle JDBC 17 production dependency.
   </p>
@@ -370,10 +392,21 @@ oracleConnection.setEndToEndMetrics(metrics, (short) 0);</code></pre>
 
   <h2>How Do We Link the Trace to SQL Diagnostics?</h2>
   <p>
-    The demo also captures <code>oracle.db.query.sql.id</code>. This is a
-    database-originated value that may be surfaced by the JDBC provider and by
-    the database-exported span. It gives you a direct bridge from the visual
-    trace to Oracle SQL diagnostics when you need to drill down.
+    The demo returns a canonical SQL ID from the cursor used for its
+    <code>DBMS_XPLAN</code> and SQL Monitor lookups. Oracle JDBC spans and
+    database-exported spans can also expose
+    <code>oracle.db.query.sql.id</code>, but do not assume that every layer will
+    report the same cursor. A verified run for the screenshots in this article
+    returned one canonical SQL ID on the demo page and a different SQL ID on
+    the selected <code>oracle-db / DB Server</code> span.
+  </p>
+  <p>
+    Keep the correlation intact with the trace id, database ECID,
+    <code>MODULE</code>, <code>ACTION</code>, and session id. Then use the
+    canonical SQL ID returned by the page for its <code>V$SQL</code>, bind
+    capture, SQL Monitor, and <code>DBMS_XPLAN</code> drill-down. A SQL ID on a
+    particular span remains useful evidence, but it identifies that span's
+    database cursor rather than a guaranteed cross-layer identifier.
   </p>
   <table>
     <tr>
@@ -381,12 +414,12 @@ oracleConnection.setEndToEndMetrics(metrics, (short) 0);</code></pre>
       <th>Where it comes from</th>
     </tr>
     <tr>
-      <td>Visual database server span</td>
-      <td>Span attribute <code>oracle.db.query.sql.id</code> in the OpenTelemetry trace</td>
+      <td>Visual trace and database server evidence</td>
+      <td>Trace id, ECID, module, action, session id, and any layer-specific <code>oracle.db.query.sql.id</code> attribute</td>
     </tr>
     <tr>
       <td>Full SQL text</td>
-      <td><code>SQL_ID -&gt; V$SQL.SQL_FULLTEXT</code></td>
+      <td>Canonical <code>SQL_ID -&gt; V$SQL.SQL_FULLTEXT</code></td>
     </tr>
     <tr>
       <td>Captured bind samples</td>
@@ -518,12 +551,12 @@ Oracle AI Database Metrics Exporter -> Prometheus/OpenTelemetry metrics -> colle
     or workload-specific metric changes.
   </p>
 
-  <h2>How Can This Connect to Security and Auditing?</h2>
+  <h2>How Does the Trace Connect to Security and Auditing?</h2>
   <p>
-    The observability solution can be further extended to correlate with Oracle
-    AI Database Deep Data Security. Observability shows what the agent did; database security
-    explains why Oracle AI Database allowed or denied it. The trace already
-    carries the join keys we need:
+    The demo correlates its trace with Oracle AI Database Deep Data Security.
+    Observability shows what the agent did; database security explains why
+    Oracle AI Database allowed or denied it. The trace already carries the join
+    keys needed for that correlation:
   </p>
   <ul>
     <li><code>trace.traceId</code> identifies the distributed request.</li>
@@ -597,7 +630,7 @@ Oracle AI Database Metrics Exporter -> Prometheus/OpenTelemetry metrics -> colle
     <a href="agent-security-observability.md">Agent Security Observability With Oracle AI Database</a>.
   </p>
 
-  <h2>How Can This Connect to Model Observability?</h2>
+  <h2>How Can Agent Context Tracing Support Model Observability and Auditable AI Agent Answers?</h2>
   <p>
     Agent observability should not stop at infrastructure traces. The same task
     can also be correlated with model-level telemetry: prompt, model, tool
@@ -616,6 +649,23 @@ Oracle AI Database Metrics Exporter -> Prometheus/OpenTelemetry metrics -> colle
     model observability, application observability, database observability, and
     security review into one storyline.
   </p>
+
+  <h2>References</h2>
+  <ul>
+    <li>Source code for this demo: <a href="https://github.com/oracle-devrel/oracle-ai-for-sustainable-dev/tree/main/observability">https://github.com/oracle-devrel/oracle-ai-for-sustainable-dev/tree/main/observability</a></li>
+    <li>Oracle JDBC Observability provider: <a href="https://github.com/oracle/ojdbc-extensions/tree/main/ojdbc-provider-observability">https://github.com/oracle/ojdbc-extensions/tree/main/ojdbc-provider-observability</a></li>
+    <li>Oracle JDBC OpenTelemetry provider: <a href="https://github.com/oracle/ojdbc-extensions/tree/main/ojdbc-provider-opentelemetry">https://github.com/oracle/ojdbc-extensions/tree/main/ojdbc-provider-opentelemetry</a></li>
+    <li>Oracle <code>DBMS_OBSERVABILITY</code>: <a href="https://docs.oracle.com/en/database/oracle/oracle-database/26/arpls/dbms_observability.html">https://docs.oracle.com/en/database/oracle/oracle-database/26/arpls/dbms_observability.html</a></li>
+    <li>Oracle SQL monitoring and tracing: <a href="https://docs.oracle.com/en/database/oracle/oracle-database/26/tgsql/monitoring-and-tracing-sql.html">https://docs.oracle.com/en/database/oracle/oracle-database/26/tgsql/monitoring-and-tracing-sql.html</a></li>
+    <li>Oracle AI Database application tracing: <a href="https://docs.oracle.com/en/database/oracle/oracle-database/26/tgsql/performing-application-tracing.html">https://docs.oracle.com/en/database/oracle/oracle-database/26/tgsql/performing-application-tracing.html</a></li>
+    <li>Oracle AI Database Metrics Exporter project: <a href="https://github.com/oracle/oracle-db-appdev-monitoring">https://github.com/oracle/oracle-db-appdev-monitoring</a></li>
+    <li>Oracle Database Metrics Exporter: <a href="https://www.oracle.com/database/database-exporter/">https://www.oracle.com/database/database-exporter/</a></li>
+    <li>Day One and Beyond - MultiCloud Observability &amp; Management for Oracle Database@X, Sonali Malik: <a href="https://www.youtube.com/watch?v=7vUaDdNzFmQ">https://www.youtube.com/watch?v=7vUaDdNzFmQ</a></li>
+    <li>AI Agent Observability: Understand How AI Agents Behave in Gen AI Applications and Ecosystems, Royce Fu and Alex Birzu: <a href="https://www.ateam-oracle.com/ai-agent-observability-understand-how-ai-agents-behave-in-gen-ai-applications-and-ecosystems">https://www.ateam-oracle.com/ai-agent-observability-understand-how-ai-agents-behave-in-gen-ai-applications-and-ecosystems</a></li>
+    <li>OpenTelemetry Java agent: <a href="https://opentelemetry.io/docs/zero-code/java/agent/">https://opentelemetry.io/docs/zero-code/java/agent/</a></li>
+    <li>OpenTelemetry protocol exporters: <a href="https://opentelemetry.io/docs/specs/otel/protocol/exporter/">https://opentelemetry.io/docs/specs/otel/protocol/exporter/</a></li>
+    <li>Spring Boot tracing: <a href="https://docs.spring.io/spring-boot/reference/actuator/tracing.html">https://docs.spring.io/spring-boot/reference/actuator/tracing.html</a></li>
+  </ul>
 
   <h2>FAQ</h2>
   <h3>Does this replace database auditing?</h3>
@@ -641,30 +691,14 @@ Oracle AI Database Metrics Exporter -> Prometheus/OpenTelemetry metrics -> colle
     immediately to a separate diagnostic workflow.
   </p>
 
-  <h3>Why frame this as an AI agent workload?</h3>
+  <h3>How does this help make AI agent answers auditable?</h3>
   <p>
-    Agentic applications need explainability across application and database
-    boundaries. Adding agent id, task, module, action, client identifier, and
-    SQL_ID makes the trace useful for operations, security review, and future
-    audit correlation.
+    It records execution evidence across application and database boundaries.
+    Adding agent id, task, module, action, client identifier, and SQL_ID lets a
+    reviewer correlate an answer with its database work. A complete audit still
+    needs durable prompt, model, tool, identity, and policy records in addition
+    to the observability trace.
   </p>
-
-  <h2>References</h2>
-  <ul>
-    <li>Source code for this demo: <a href="https://github.com/oracle-devrel/oracle-ai-for-sustainable-dev/tree/main/observability">https://github.com/oracle-devrel/oracle-ai-for-sustainable-dev/tree/main/observability</a></li>
-    <li>Oracle JDBC Observability provider: <a href="https://github.com/oracle/ojdbc-extensions/tree/main/ojdbc-provider-observability">https://github.com/oracle/ojdbc-extensions/tree/main/ojdbc-provider-observability</a></li>
-    <li>Oracle JDBC OpenTelemetry provider: <a href="https://github.com/oracle/ojdbc-extensions/tree/main/ojdbc-provider-opentelemetry">https://github.com/oracle/ojdbc-extensions/tree/main/ojdbc-provider-opentelemetry</a></li>
-    <li>Oracle <code>DBMS_OBSERVABILITY</code>: <a href="https://docs.oracle.com/en/database/oracle/oracle-database/26/arpls/dbms_observability.html">https://docs.oracle.com/en/database/oracle/oracle-database/26/arpls/dbms_observability.html</a></li>
-    <li>Oracle SQL monitoring and tracing: <a href="https://docs.oracle.com/en/database/oracle/oracle-database/26/tgsql/monitoring-and-tracing-sql.html">https://docs.oracle.com/en/database/oracle/oracle-database/26/tgsql/monitoring-and-tracing-sql.html</a></li>
-    <li>Oracle AI Database application tracing: <a href="https://docs.oracle.com/en/database/oracle/oracle-database/26/tgsql/performing-application-tracing.html">https://docs.oracle.com/en/database/oracle/oracle-database/26/tgsql/performing-application-tracing.html</a></li>
-    <li>Oracle AI Database Metrics Exporter project: <a href="https://github.com/oracle/oracle-db-appdev-monitoring">https://github.com/oracle/oracle-db-appdev-monitoring</a></li>
-    <li>Oracle Database Metrics Exporter: <a href="https://www.oracle.com/database/database-exporter/">https://www.oracle.com/database/database-exporter/</a></li>
-    <li>Day One and Beyond - MultiCloud Observability &amp; Management for Oracle Database@X, Sonali Malik: <a href="https://www.youtube.com/watch?v=7vUaDdNzFmQ">https://www.youtube.com/watch?v=7vUaDdNzFmQ</a></li>
-    <li>AI Agent Observability: Understand How AI Agents Behave in Gen AI Applications and Ecosystems, Royce Fu and Alex Birzu: <a href="https://www.ateam-oracle.com/ai-agent-observability-understand-how-ai-agents-behave-in-gen-ai-applications-and-ecosystems">https://www.ateam-oracle.com/ai-agent-observability-understand-how-ai-agents-behave-in-gen-ai-applications-and-ecosystems</a></li>
-    <li>OpenTelemetry Java agent: <a href="https://opentelemetry.io/docs/zero-code/java/agent/">https://opentelemetry.io/docs/zero-code/java/agent/</a></li>
-    <li>OpenTelemetry protocol exporters: <a href="https://opentelemetry.io/docs/specs/otel/protocol/exporter/">https://opentelemetry.io/docs/specs/otel/protocol/exporter/</a></li>
-    <li>Spring Boot tracing: <a href="https://docs.spring.io/spring-boot/reference/actuator/tracing.html">https://docs.spring.io/spring-boot/reference/actuator/tracing.html</a></li>
-  </ul>
 </main>
 </body>
 </html>

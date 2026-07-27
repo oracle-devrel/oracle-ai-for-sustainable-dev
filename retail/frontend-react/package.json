@@ -17,6 +17,9 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
+  "overrides": {
+    "tar": "7.5.19"
+  },
   "eslintConfig": {
     "extends": [
       "react-app",

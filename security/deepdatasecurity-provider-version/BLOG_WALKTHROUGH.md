@@ -106,15 +106,18 @@ The protected endpoint therefore satisfies the provider requirement: it requires
 Provider configuration with UCP:
 
 ```yaml
-deepsec:
-  ucp:
-    connection-pool-name: ${DEEPSEC_UCP_POOL_NAME:DeepDataSecurityProviderUcpPool}
-    initial-pool-size: ${DEEPSEC_UCP_INITIAL_POOL_SIZE:1}
-    min-pool-size: ${DEEPSEC_UCP_MIN_POOL_SIZE:1}
-    max-pool-size: ${DEEPSEC_POOL_SIZE:4}
-  jdbc-provider:
-    end-user-security-context: ojdbc-provider-spring-end-user-security-context
-    registration-id: entra
+spring:
+  datasource:
+    type: oracle.ucp.jdbc.PoolDataSource
+    oracleucp:
+      connection-factory-class-name: oracle.jdbc.datasource.impl.OracleDataSource
+      connection-pool-name: ${DEEPSEC_UCP_POOL_NAME:DeepDataSecurityProviderUcpPool}
+      initial-pool-size: ${DEEPSEC_UCP_INITIAL_POOL_SIZE:1}
+      min-pool-size: ${DEEPSEC_UCP_MIN_POOL_SIZE:1}
+      max-pool-size: ${DEEPSEC_POOL_SIZE:4}
+      connection-properties:
+        "oracle.jdbc.provider.endUserSecurityContext": ojdbc-provider-spring-end-user-security-context
+        "oracle.jdbc.provider.endUserSecurityContext.registrationId": entra
 ```
 
 Each identity-provider profile is self-contained; there is no partial
@@ -129,9 +132,10 @@ roles/context attributes, UCP sizing, demo SQL, logging, and browser UI settings
 are optional. The authorization URI and redirect URI apply to interactive login;
 the provider's database-token acquisition uses the token URI.
 
-`UcpDataSourceConfiguration` creates an Oracle UCP `PoolDataSource` and sets the
-provider keys as UCP connection properties. HikariCP is excluded from the JDBC
-starter so both Deep Data Security demos use UCP.
+Spring Boot auto-configures the Oracle UCP `PoolDataSource` and binds the provider
+keys as UCP connection properties, so no dedicated datasource configuration class
+is needed. HikariCP is excluded from the JDBC starter so both Deep Data Security
+demos use UCP.
 
 For Entra-mapped data roles, Oracle AI Database reads the Entra `roles` claim and activates matching mappings such as `HRAPP_EMPLOYEES -> AZURE_ROLE=EMPLOYEES` and `HRAPP_MANAGERS -> AZURE_ROLE=MANAGERS`.
 

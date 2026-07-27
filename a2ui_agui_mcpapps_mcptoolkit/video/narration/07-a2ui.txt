@@ -1,0 +1,1 @@
+The browser accepts only A2UI version zero point nine point one, the expected surface and catalog, and a small component allowlist. Generated values enter the page as text, so the agent cannot inject executable HTML or JavaScript.

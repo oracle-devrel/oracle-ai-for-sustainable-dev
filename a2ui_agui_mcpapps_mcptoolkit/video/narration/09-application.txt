@@ -1,0 +1,1 @@
+In the application, the user sets a risk threshold and row limit. The AG-UI event rail shows run and MCP tool activity, while A2UI renders selectable account cards, risk explanations, and approval controls.

@@ -5,10 +5,23 @@ spring:
   application:
     name: deep-data-security-provider-version
   datasource:
+    type: oracle.ucp.jdbc.PoolDataSource
     url: ${DEEPSEC_JDBC_URL:}
     username: ${DEEPSEC_USERNAME:}
     password: ${DEEPSEC_PASSWORD:}
     driver-class-name: oracle.jdbc.OracleDriver
+    oracleucp:
+      connection-factory-class-name: oracle.jdbc.datasource.impl.OracleDataSource
+      connection-pool-name: ${DEEPSEC_UCP_POOL_NAME:DeepDataSecurityProviderUcpPool}
+      initial-pool-size: ${DEEPSEC_UCP_INITIAL_POOL_SIZE:1}
+      min-pool-size: ${DEEPSEC_UCP_MIN_POOL_SIZE:1}
+      max-pool-size: ${DEEPSEC_POOL_SIZE:4}
+      connection-properties:
+        "oracle.jdbc.provider.endUserSecurityContext": ojdbc-provider-spring-end-user-security-context
+        "oracle.jdbc.provider.endUserSecurityContext.registrationId": entra
+        # Optional application-managed roles and attributes:
+        # "oracle.jdbc.provider.endUserSecurityContext.dataRoles": HRAPP_EMPLOYEES
+        # "oracle.jdbc.provider.endUserSecurityContext.endUserContextAttributes": '{"hr.emp_ctx":{"id":100}}'
   security:
     oauth2:
       client:
@@ -30,17 +43,6 @@ logging:
     root: INFO
 
 deepsec:
-  ucp:
-    connection-pool-name: ${DEEPSEC_UCP_POOL_NAME:DeepDataSecurityProviderUcpPool}
-    initial-pool-size: ${DEEPSEC_UCP_INITIAL_POOL_SIZE:1}
-    min-pool-size: ${DEEPSEC_UCP_MIN_POOL_SIZE:1}
-    max-pool-size: ${DEEPSEC_POOL_SIZE:4}
-  jdbc-provider:
-    end-user-security-context: ojdbc-provider-spring-end-user-security-context
-    registration-id: entra
-    # Optional application-managed roles and attributes:
-    # data-roles: HRAPP_EMPLOYEES
-    # end-user-context-attributes: '{"hr.emp_ctx":{"id":100}}'
   jwt:
     trusted-issuers: ${DEEPSEC_ENTRA_JWT_TRUSTED_ISSUERS:https://sts.windows.net/${DEEPSEC_ENTRA_TENANT_ID:}/,https://login.microsoftonline.com/${DEEPSEC_ENTRA_TENANT_ID:}/v2.0}
   sql: ${DEEPSEC_SQL:select employee_id || ':' || first_name || ' ' || last_name from hr.employees fetch first 10 rows only}

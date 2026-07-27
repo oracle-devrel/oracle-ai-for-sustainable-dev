@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">Interactive AI architecture with AG-UI, A2UI, MCP Apps, and Oracle AI Database</title>
+  <desc id="desc">A browser uses AG-UI and A2UI with a Java agent service. An optional sandboxed MCP App connects through its host. The agent calls narrow Oracle Database MCP Java Toolkit tools backed by Oracle AI Database governed data and transactions.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#101820"/>
+      <stop offset="1" stop-color="#252f3a"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-opacity=".25"/>
+    </filter>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#f5b8ae"/>
+    </marker>
+    <style>
+      .label { font: 700 18px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; fill: #fff; }
+      .small { font: 500 14px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; fill: #d8dee6; }
+      .micro { font: 700 12px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; fill: #f5b8ae; letter-spacing: 1.2px; }
+      .box { fill: #202b35; stroke: #556473; stroke-width: 1.5; }
+      .accent { fill: #c74634; stroke: #eb8a7c; stroke-width: 1.5; }
+      .flow { fill: none; stroke: #f5b8ae; stroke-width: 3; marker-end: url(#arrow); }
+    </style>
+  </defs>
+  <rect width="1200" height="675" fill="url(#background)"/>
+  <circle cx="1080" cy="80" r="220" fill="#c74634" opacity=".08"/>
+  <circle cx="95" cy="650" r="250" fill="#58a6ff" opacity=".06"/>
+  <text x="56" y="58" class="micro">INTERACTIVE, GOVERNED AI</text>
+  <text x="56" y="96" class="label" style="font-size:30px">One workflow. Four complementary interface layers.</text>
+
+  <g filter="url(#shadow)">
+    <rect x="55" y="150" width="260" height="185" rx="18" class="box"/>
+    <rect x="78" y="174" width="214" height="34" rx="8" fill="#111820" stroke="#556473"/>
+    <circle cx="96" cy="191" r="5" fill="#c74634"/><circle cx="112" cy="191" r="5" fill="#e1a23a"/><circle cx="128" cy="191" r="5" fill="#4cae75"/>
+    <text x="78" y="242" class="label">Browser application</text>
+    <text x="78" y="273" class="small">AG-UI event stream</text>
+    <text x="78" y="299" class="small">A2UI native renderer</text>
+    <text x="78" y="321" class="micro">ALLOWLISTED CONTROLS</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="55" y="386" width="260" height="160" rx="18" class="box"/>
+    <text x="78" y="424" class="label">MCP-compatible host</text>
+    <text x="78" y="455" class="small">Sandboxed MCP App</text>
+    <text x="78" y="481" class="small">Dashboard + selection</text>
+    <text x="78" y="514" class="micro">OPTIONAL RICH UI</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="420" y="208" width="310" height="275" rx="22" class="accent"/>
+    <text x="451" y="252" class="micro" style="fill:#fff">JAVA</text>
+    <text x="451" y="286" class="label" style="font-size:24px">Agent service</text>
+    <line x1="451" y1="307" x2="699" y2="307" stroke="#f5b8ae"/>
+    <text x="451" y="342" class="small" style="fill:#fff">Agent/model orchestration</text>
+    <text x="451" y="372" class="small" style="fill:#fff">AG-UI event adapter</text>
+    <text x="451" y="402" class="small" style="fill:#fff">A2UI response builder</text>
+    <text x="451" y="432" class="small" style="fill:#fff">MCP client + approval policy</text>
+    <text x="451" y="462" class="micro" style="fill:#fff">NO DATABASE CREDENTIALS IN UI</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="825" y="148" width="320" height="190" rx="18" class="box"/>
+    <text x="854" y="187" class="micro">MODEL CONTEXT PROTOCOL</text>
+    <text x="854" y="222" class="label">Oracle DB MCP Toolkit</text>
+    <text x="854" y="254" class="small">YAML-defined read tools</text>
+    <text x="854" y="280" class="small">Narrow transactional write tool</text>
+    <text x="854" y="306" class="small">TLS · OAuth 2.0 · JDBC/UCP</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <path d="M842 417 h286 v115 c0 25-64 45-143 45s-143-20-143-45z" class="box"/>
+    <ellipse cx="985" cy="417" rx="143" ry="42" fill="#313f4d" stroke="#778796" stroke-width="1.5"/>
+    <text x="885" y="427" class="label" style="font-size:22px">Oracle AI Database</text>
+    <text x="883" y="474" class="small">Governed inventory + demand data</text>
+    <text x="883" y="500" class="small">Views · procedures · transactions</text>
+    <text x="883" y="526" class="small">Authorization · auditing</text>
+  </g>
+
+  <path d="M315 245 C360 245 370 285 420 285" class="flow"/>
+  <path d="M420 330 C370 330 360 295 315 295" class="flow"/>
+  <text x="329" y="232" class="micro">AG-UI</text>
+  <text x="329" y="327" class="micro">A2UI</text>
+  <path d="M315 465 C355 465 377 430 420 430" class="flow"/>
+  <text x="328" y="452" class="micro">HOST BRIDGE</text>
+  <path d="M730 285 C773 285 782 244 825 244" class="flow"/>
+  <text x="747" y="267" class="micro">NARROW MCP TOOLS</text>
+  <path d="M985 338 L985 373" class="flow"/>
+  <text x="1001" y="361" class="micro">JDBC/UCP</text>
+
+  <text x="56" y="632" class="small">Oracle AI Database remains the authoritative data and transaction layer.</text>
+</svg>

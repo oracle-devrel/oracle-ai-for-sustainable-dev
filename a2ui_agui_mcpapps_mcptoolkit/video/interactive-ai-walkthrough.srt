@@ -1,0 +1,220 @@
+1
+00:00:00,200 --> 00:00:04,386
+This walkthrough builds an interactive
+account-risk assistant with Oracle AI
+
+2
+00:00:04,386 --> 00:00:10,433
+Database, AG-UI, A2UI, the Oracle Database
+MCP Java Toolkit, and a separate MCP App
+
+3
+00:00:10,433 --> 00:00:10,898
+demonstration.
+
+4
+00:00:10,898 --> 00:00:16,014
+The video is silent, with exact product
+names preserved in its subtitles.
+
+5
+00:00:16,414 --> 00:00:18,680
+The protocol map separates three
+relationships.
+
+6
+00:00:18,680 --> 00:00:21,398
+MCP connects an agent to tools.
+
+7
+00:00:21,398 --> 00:00:25,929
+A2A connects independent agents, although
+this single-agent demo does not implement
+
+8
+00:00:25,929 --> 00:00:26,382
+A2A.
+
+9
+00:00:26,382 --> 00:00:31,818
+AG-UI streams events and state between the
+Java agent backend and its frontend.
+
+10
+00:00:31,818 --> 00:00:35,443
+A2UI and MCP Apps provide different user
+interface models.
+
+11
+00:00:35,843 --> 00:00:40,995
+The default application now launches the
+pinned Oracle Database MCP Java Toolkit
+
+12
+00:00:40,995 --> 00:00:43,337
+over standard input and output.
+
+13
+00:00:43,337 --> 00:00:48,490
+It initializes the MCP session, verifies
+the server identity, and fails closed
+
+14
+00:00:48,490 --> 00:00:51,300
+unless exactly five account-risk tools are
+available.
+
+15
+00:00:51,700 --> 00:00:55,118
+The Toolkit configuration enables
+purpose-built reads, action identifier
+
+16
+00:00:55,118 --> 00:00:58,536
+reservation, the procedure-backed write,
+and a verification count.
+
+17
+00:00:58,536 --> 00:01:00,977
+All database values are binds.
+
+18
+00:01:00,977 --> 00:01:05,371
+Broad query, write, table, and
+administration tools are not enabled.
+
+19
+00:01:05,771 --> 00:01:10,490
+Oracle AI Database stores the accounts,
+risk evidence, and audited follow-up
+
+20
+00:01:10,490 --> 00:01:10,962
+actions.
+
+21
+00:01:10,962 --> 00:01:16,625
+The approved MCP tool calls an input-only
+procedure that validates inputs, locks the
+
+22
+00:01:16,625 --> 00:01:20,871
+selected account, inserts one action, and
+updates its status atomically.
+
+23
+00:01:21,271 --> 00:01:26,067
+AG-UI streams standard run, text,
+tool-call, state, and error events from
+
+24
+00:01:26,067 --> 00:01:28,944
+the Java service to the browser.
+
+25
+00:01:28,944 --> 00:01:33,739
+A2UI envelopes travel inside an AG-UI
+custom event named a2ui.message, keeping
+
+26
+00:01:33,739 --> 00:01:35,657
+transport and interface responsibilities
+distinct.
+
+27
+00:01:36,057 --> 00:01:42,104
+The browser accepts only A2UI version zero
+point nine point one, the expected surface
+
+28
+00:01:42,104 --> 00:01:44,895
+and catalog, and a small component
+allowlist.
+
+29
+00:01:44,895 --> 00:01:50,941
+Generated values enter the page as text,
+so the agent cannot inject executable HTML
+
+30
+00:01:50,941 --> 00:01:51,871
+or JavaScript.
+
+31
+00:01:52,271 --> 00:01:58,292
+The separate MCP App now retrieves current
+account rows from the Java service, which
+
+32
+00:01:58,292 --> 00:02:00,608
+invokes the Toolkit's governed
+find-at-risk-customers tool.
+
+33
+00:02:00,608 --> 00:02:05,240
+The official basic host renders its
+dashboard in a sandboxed iframe.
+
+34
+00:02:05,240 --> 00:02:09,408
+Toolkit-labeled structured content crosses
+the host bridge; database credentials do
+
+35
+00:02:09,408 --> 00:02:09,871
+not.
+
+36
+00:02:10,271 --> 00:02:15,546
+In the application, the user sets a risk
+threshold and row limit.
+
+37
+00:02:15,546 --> 00:02:21,300
+The AG-UI event rail shows run and MCP
+tool activity, while A2UI renders
+
+38
+00:02:21,300 --> 00:02:24,657
+selectable account cards, risk
+explanations, and approval controls.
+
+39
+00:02:25,057 --> 00:02:30,720
+Approval is bound to the actor, returned
+account set, and a short-lived single-use
+
+40
+00:02:30,720 --> 00:02:31,192
+identifier.
+
+41
+00:02:31,192 --> 00:02:36,382
+Approve invokes the bounded MCP tools and
+displays the committed action identifier.
+
+42
+00:02:36,382 --> 00:02:40,157
+Cancel consumes the approval without
+creating a database action.
+
+43
+00:02:40,557 --> 00:02:44,751
+Each component keeps one clear
+responsibility: MCP connects tools, A2A
+
+44
+00:02:44,751 --> 00:02:49,412
+can connect independent agents, AG-UI
+streams frontend events and state, A2UI
+
+45
+00:02:49,412 --> 00:02:53,606
+describes trusted controls, MCP Apps
+render rich sandboxed experiences, and
+
+46
+00:02:53,606 --> 00:02:57,800
+Oracle AI Database governs data and
+transactions through the Toolkit.
+

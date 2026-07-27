@@ -1,0 +1,30 @@
+{
+  "tool": "approve-inventory-transfer",
+  "description": "Revalidates and audits one human-approved inventory transfer recommendation.",
+  "inputSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "transferId",
+      "productId",
+      "sourceLocationId",
+      "targetLocationId",
+      "transferQuantity",
+      "approvalNotes",
+      "requestedBy"
+    ],
+    "properties": {
+      "transferId": {
+        "type": "integer",
+        "minimum": 1,
+        "description": "Identifier reserved by the preceding bounded MCP sequence tool."
+      },
+      "productId": { "type": "integer", "minimum": 1 },
+      "sourceLocationId": { "type": "integer", "minimum": 1 },
+      "targetLocationId": { "type": "integer", "minimum": 1 },
+      "transferQuantity": { "type": "integer", "minimum": 1 },
+      "approvalNotes": { "type": "string", "minLength": 3, "maxLength": 2000 },
+      "requestedBy": { "type": "string", "minLength": 3, "maxLength": 200 }
+    }
+  }
+}

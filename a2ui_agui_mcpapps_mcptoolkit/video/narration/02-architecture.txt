@@ -1,0 +1,1 @@
+The protocol map separates three relationships. MCP connects an agent to tools. A2A connects independent agents, although this single-agent demo does not implement A2A. AG-UI streams events and state between the Java agent backend and its frontend. A2UI and MCP Apps provide different user interface models.

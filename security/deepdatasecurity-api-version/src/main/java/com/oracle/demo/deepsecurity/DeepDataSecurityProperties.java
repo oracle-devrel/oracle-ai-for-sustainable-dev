@@ -5,37 +5,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "deepsec")
 public class DeepDataSecurityProperties {
 
-    private String jdbcUrl;
-    private String username;
-    private String password;
     private String sql = "select employee_id || ':' || first_name || ' ' || last_name from hr.employees fetch first 10 rows only";
     private String sessionInitSql = "alter session disable parallel query";
     private String attributesJson = "";
     private EntraId entraId = new EntraId();
-
-    public String getJdbcUrl() {
-        return jdbcUrl;
-    }
-
-    public void setJdbcUrl(String jdbcUrl) {
-        this.jdbcUrl = jdbcUrl;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 
     public String getSql() {
         return sql;
