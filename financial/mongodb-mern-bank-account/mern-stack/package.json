@@ -16,7 +16,7 @@
     "body-parser": "^2.2.0",
     "cors": "^2.8.5",
     "express": "^5.1.0",
-    "mongoose": "^8.14.1",
+    "mongoose": "^8.24.1",
     "node-fetch": "^3.3.2",
     "react-scripts": "^5.0.1"
   }
