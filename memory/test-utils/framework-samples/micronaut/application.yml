@@ -1,0 +1,28 @@
+# Manual Micronaut sample configuration.
+# This file is illustrative only; it is not used by the current Maven examples.
+#
+# Micronaut creates the DataSource from these standard properties.
+datasources:
+  default:
+    url: jdbc:oracle:thin:@localhost:1521/freepdb1
+    username: scott
+    password: tiger
+    driver-class-name: oracle.jdbc.OracleDriver
+    dialect: ORACLE
+
+# Application-level properties consumed by AgentMemoryMicronautFactory.
+ojdbc:
+  agentmemory:
+    schema:
+      auto-create: true
+      table-prefix: OAMJ_
+    embedding:
+      provider: database
+      model: allminilm
+    llm:
+      provider: ollama
+      base-url: http://localhost:11434
+      model: llama3.2:latest
+      temperature: 0.0
+    memory:
+      extract-memories: true

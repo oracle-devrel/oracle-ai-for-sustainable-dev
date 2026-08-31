@@ -1,0 +1,26 @@
+diff --git a/src/oracle-db-mcp-java-toolkit/src/main/java/com/oracle/database/mcptoolkit/OracleDatabaseMCPToolkit.java b/src/oracle-db-mcp-java-toolkit/src/main/java/com/oracle/database/mcptoolkit/OracleDatabaseMCPToolkit.java
+index 676bfb4..3d7c19d 100644
+--- a/src/oracle-db-mcp-java-toolkit/src/main/java/com/oracle/database/mcptoolkit/OracleDatabaseMCPToolkit.java
++++ b/src/oracle-db-mcp-java-toolkit/src/main/java/com/oracle/database/mcptoolkit/OracleDatabaseMCPToolkit.java
+@@ -25,7 +25,10 @@ import org.apache.catalina.connector.Connector;
+ import org.apache.tomcat.util.net.SSLHostConfig;
+ import org.apache.tomcat.util.net.SSLHostConfigCertificate;
+ 
++import oracle.security.pki.OraclePKIProvider;
++
+ import java.io.File;
++import java.security.Security;
+ import java.time.Duration;
+ import java.util.concurrent.TimeUnit;
+ import java.nio.file.FileSystems;
+@@ -53,6 +55,10 @@ public class OracleDatabaseMCPToolkit {
+   }
+ 
+   public static void main(String[] args) {
++    if (Security.getProvider("OraclePKI") == null) {
++      Security.addProvider(new OraclePKIProvider());
++    }
++
+     installExternalExtensionsFromDir();
+ 
+     switch (LoadedConstants.TRANSPORT_KIND) {

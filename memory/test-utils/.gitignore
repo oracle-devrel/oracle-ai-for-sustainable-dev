@@ -1,0 +1,5 @@
+.idea/
+.oca/
+target/
+.DS_Store
+ojdbc-agent-memory.local.properties

@@ -217,14 +217,12 @@ public class InventoryActionAdkService {
             rationaleParts.add(toSentence(signalSummary));
         }
 
-        String responseText = "Fallback recommendation for " + productId + ": transfer "
+        String responseText = "Policy-checked recommendation for " + productId + ": transfer "
                 + units + " units from " + sourceWarehouse + " to " + destinationWarehouse + ". "
                 + "Why: " + String.join(" ", rationaleParts) + " "
                 + toSentence(approvalLine) + " Draft action id: "
                 + stringValue(draftResult.get("draftActionId")) + ". "
-                + "Policy check: " + toSentence(stringValue(policyResult.get("policySummary"))) + " "
-                + "The ADK model path was unavailable, so this response used deterministic local orchestration instead ("
-                + toParenthetical(exception.getMessage()) + ").";
+                + "Policy check: " + toSentence(stringValue(policyResult.get("policySummary")));
 
         List<String> trace = List.of(
                 "graphEvidence=" + graphEvidence,

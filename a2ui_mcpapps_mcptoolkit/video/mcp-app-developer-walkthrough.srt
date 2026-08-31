@@ -1,0 +1,115 @@
+1
+00:00:00,200 --> 00:00:06,800
+Open the Gemini Enterprise Inventory System and confirm the Oracle Supply Chain MCP App connector is active.
+
+2
+00:00:07,200 --> 00:00:13,800
+The connector registration points Gemini Enterprise at the MCP server endpoint running in Cloud Run.
+
+3
+00:00:14,200 --> 00:00:20,800
+server.ts registers show-inventory-transfer-dashboard as the model-visible tool.
+
+4
+00:00:21,200 --> 00:00:27,800
+The tool definition includes _meta.ui.resourceUri so the host knows which MCP App iframe to load.
+
+5
+00:00:28,200 --> 00:00:34,800
+registerAppResource serves the compiled HTML for the ui:// resource requested by the host.
+
+6
+00:00:35,200 --> 00:00:41,800
+The MCP App resource declares CSP domains for host-enforced resource and network boundaries.
+
+7
+00:00:42,200 --> 00:00:48,800
+mcp-app.ts connects to the MCP Apps host bridge and waits for the tool result.
+
+8
+00:00:49,200 --> 00:00:55,800
+The user authorizes the MCP connector before Gemini Enterprise can call the remote MCP server.
+
+9
+00:00:56,200 --> 00:01:02,800
+After discovery, Gemini Enterprise shows the MCP connector in the prompt control menu.
+
+10
+00:01:03,200 --> 00:01:09,800
+The prompt mentions an inventory transfer dashboard, stockout risk, and a row limit, so the host selects the dashboard tool.
+
+11
+00:01:10,200 --> 00:01:16,800
+Gemini Enterprise calls show-inventory-transfer-dashboard with parsed arguments.
+
+12
+00:01:17,200 --> 00:01:23,800
+The MCP server posts form data to the Spring Boot agent service for governed review data.
+
+13
+00:01:24,200 --> 00:01:30,800
+AgentController accepts the request and delegates to the runtime.
+
+14
+00:01:31,200 --> 00:01:37,800
+AgentRuntime creates the approval context and asks the supply-chain gateway for recommendations.
+
+15
+00:01:38,200 --> 00:01:44,800
+McpToolkitSupplyChainGateway calls the standalone Oracle Database MCP Java Toolkit over HTTP.
+
+16
+00:01:45,200 --> 00:01:51,800
+The Oracle Database MCP Java Toolkit runs as its own process and owns the database tool contract.
+
+17
+00:01:52,200 --> 00:01:58,800
+tools.yaml binds the tool name to a bounded SQL statement rather than arbitrary model-generated SQL.
+
+18
+00:01:59,200 --> 00:02:05,800
+The Toolkit uses JDBC/UCP credentials server-side and returns governed rows to the agent service.
+
+19
+00:02:06,200 --> 00:02:12,800
+The database rows return through Toolkit, gateway, agent service, and MCP server as structuredContent.
+
+20
+00:02:13,200 --> 00:02:19,800
+The host uses the tool's ui:// association and reads the MCP App HTML resource.
+
+21
+00:02:20,200 --> 00:02:26,800
+Gemini Enterprise renders the MCP App in a host-controlled sandbox and passes the tool result through the bridge.
+
+22
+00:02:27,200 --> 00:02:33,800
+mcp-app.ts computes recommendation count, critical count, and units to rebalance from structuredContent.
+
+23
+00:02:34,200 --> 00:02:40,800
+The MCP App turns each governed recommendation into a review card with route, risk, rationale, and action state.
+
+24
+00:02:41,200 --> 00:02:47,800
+Without an approval handle, the Gemini Enterprise MCP App shows read-only preview and does not expose write buttons.
+
+25
+00:02:48,200 --> 00:02:54,800
+If writes are enabled, the MCP server also registers app-only approval and rejection tools.
+
+26
+00:02:55,200 --> 00:03:01,800
+The iframe uses app.callServerTool so ChatGPT, Claude, or Gemini makes the MCP call on its behalf.
+
+27
+00:03:02,200 --> 00:03:08,800
+ApprovalService verifies the approval ID, recommendation ID, notes, and expiration before any write.
+
+28
+00:03:09,200 --> 00:03:15,800
+The Toolkit write tool executes only the approved transfer and Oracle AI Database records the audited result.
+
+29
+00:03:16,200 --> 00:03:22,800
+The host presents the experience, the MCP App renders the dashboard, and Oracle AI Database retains transaction authority.

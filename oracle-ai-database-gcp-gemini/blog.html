@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Build Governed A2A Agents with Oracle AI Database and Gemini Enterprise</title>
+  <meta name="description" content="A concise guide to building governed supply-chain A2A agents with Oracle AI Database, Select AI, graph and spatial analysis, and Gemini Enterprise.">
+  <meta name="author" content="Paul Parkinson">
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #202a33;
+      --muted: #5c6975;
+      --oracle: #c74634;
+      --blue: #1769aa;
+      --paper: #fff;
+      --soft: #f5f7f8;
+      --line: #d8dde1;
+      --ok: #347a52;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; color: var(--ink); background: var(--paper); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; line-height: 1.65; }
+    main { max-width: 1040px; margin: 0 auto; padding: 42px 24px 80px; }
+    h1 { max-width: 980px; margin: 0 0 16px; font-size: clamp(2.2rem, 5vw, 4.3rem); line-height: 1.04; letter-spacing: -.04em; }
+    h2 { margin-top: 50px; font-size: clamp(1.55rem, 3vw, 2.25rem); line-height: 1.18; letter-spacing: -.02em; }
+    h3 { margin-top: 28px; line-height: 1.3; }
+    p, li { max-width: 900px; }
+    a { color: var(--blue); }
+    code, pre { font-family: "SFMono-Regular", Consolas, monospace; }
+    code { overflow-wrap: anywhere; }
+    pre { padding: 17px; overflow-x: auto; color: #eaf0f0; background: #17272c; border-radius: 9px; line-height: 1.48; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 12px 13px; border: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { background: #edf2f4; }
+    figure { margin: 32px 0; }
+    figure img { display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: 11px; background: var(--soft); }
+    .video-wrap { position: relative; overflow: hidden; border-radius: 11px; background: #111; }
+    .video-wrap video { display: block; width: 100%; height: auto; }
+    figcaption { margin-top: 9px; color: var(--muted); font-size: .94rem; }
+    .eyebrow { margin: 0 0 10px; color: var(--oracle); font-weight: 850; letter-spacing: .07em; text-transform: uppercase; }
+    .subtitle { margin: 0 0 24px; color: var(--muted); font-size: 1.3rem; line-height: 1.45; }
+    .updated { color: var(--muted); font-size: .92rem; }
+    .lead { font-size: 1.13rem; }
+    .callout, .note { margin: 24px 0; padding: 17px 19px; border-left: 4px solid var(--oracle); background: #fff4f0; }
+    .note { border-color: #54738f; background: #f2f7fa; }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 17px; }
+    .card { padding: 19px 21px; border: 1px solid var(--line); border-radius: 11px; background: #fff; box-shadow: 0 7px 22px rgba(26, 38, 46, .05); }
+    .card h3 { margin: 0 0 8px; }
+    .card p { margin: 6px 0; }
+    .pill { display: inline-block; padding: 3px 8px; border-radius: 999px; color: #fff; background: var(--ok); font-size: .72rem; font-weight: 800; }
+    .pill.partial { background: #8a6418; }
+    .pill.planned { background: #68747e; }
+    .flow { margin: 23px 0; padding: 20px 23px; border-radius: 10px; color: #eef4f4; background: #17272c; font: .92rem/1.7 "SFMono-Regular", Consolas, monospace; white-space: pre-wrap; }
+    li + li { margin-top: 7px; }
+    @media (max-width: 740px) {
+      main { padding-inline: 17px; }
+      .grid { grid-template-columns: 1fr; }
+      table { display: block; overflow-x: auto; font-size: .88rem; }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <p class="eyebrow">Oracle AI Database &middot; Gemini Enterprise &middot; A2A &middot; Select AI</p>
+  <h1>Build Governed A2A Agents with Oracle AI Database and Gemini Enterprise</h1>
+  <p class="subtitle">Use one database for relational, graph, spatial, and AI-assisted analysis, then expose focused agents to Gemini Enterprise through the Agent2Agent protocol.</p>
+  <p class="updated">By Paul Parkinson &middot; Updated August 2026</p>
+
+  <p class="lead">A useful enterprise agent does more than answer a prompt. It must locate trusted data, apply domain logic, explain its evidence, and keep consequential actions under human control. This reference implementation demonstrates that pattern with a synthetic supply-chain scenario.</p>
+  <p>Oracle AI Database remains the system of record. A small Java service exposes several task-oriented A2A agents, while Gemini Enterprise provides discovery, conversation, and orchestration. The language model can reason over results, but it does not become the data store or bypass database authorization.</p>
+  <p>The source, schema scripts, agent cards, and deployment templates are available in the <a href="https://github.com/paulparkinson/oracle-ai-for-sustainable-dev/tree/main/oracle-ai-database-gcp-gemini">project directory</a>. All names and values in the demo data are synthetic.</p>
+
+  <section id="takeaways">
+    <h2>Key Takeaways</h2>
+    <ul>
+      <li>Gemini Enterprise discovers focused agents through A2A; it does not replace their domain logic or database authorization.</li>
+      <li>Oracle AI Database answers relational, property-graph, spatial, and Select AI questions from one governed data foundation.</li>
+      <li>Each specialist is opened explicitly in this demonstration, so the presenter can show which agent and database capability produced each result.</li>
+      <li>A2UI adds native review controls, while a separate MCP App can provide a portable sandboxed dashboard in compatible hosts.</li>
+      <li>Human approval, database revalidation, and least-privileged identities remain required before a recommendation becomes a write.</li>
+    </ul>
+  </section>
+
+  <figure>
+    <img src="images/gemini-a2a-architecture.svg" alt="Gemini Enterprise invokes A2A agents that use Oracle AI Database for inventory, graph, spatial, Select AI, and governed action analysis.">
+    <figcaption>Gemini Enterprise is the conversational host; A2A is the interoperability layer; Oracle AI Database is the governed data and execution layer.</figcaption>
+  </figure>
+
+  <section id="background">
+    <h2>The Technologies and Their Boundaries</h2>
+    <div class="grid">
+      <article class="card">
+        <h3>Agent2Agent protocol</h3>
+        <p>A2A lets a host discover an agent through an agent card and exchange typed messages, structured data, and artifacts. It is useful when agents are independently deployed and should remain portable across orchestration products.</p>
+      </article>
+      <article class="card">
+        <h3>Gemini Enterprise</h3>
+        <p>Gemini Enterprise supplies the user experience, agent catalog, access assignment, and orchestration. A custom A2A agent remains responsible for its own domain behavior and backend authorization.</p>
+      </article>
+      <article class="card">
+        <h3>Oracle AI Database</h3>
+        <p>One database supports ordinary SQL, SQL property graphs, spatial data, vector capabilities, and Select AI. The application can combine these models without maintaining separate copies in specialist databases.</p>
+      </article>
+      <article class="card">
+        <h3>Select AI</h3>
+        <p>Select AI translates natural-language questions into SQL using an allowlisted set of database objects. Credentials and profiles are database objects, so model access and data scope remain centrally governed.</p>
+      </article>
+    </div>
+    <p class="callout"><strong>Key design principle:</strong> the protocol transports requests and results; it does not grant database privileges. Normal Oracle users, roles, object grants, network ACLs, and narrowly scoped AI profiles still define what can happen.</p>
+  </section>
+
+  <section id="flow">
+    <h2>The Core Supply-Chain Analysis</h2>
+    <p>The demo uses four questions to show how specialist agents can share a governed data foundation:</p>
+    <ol>
+      <li>Identify products with elevated stockout risk and the regions driving that risk.</li>
+      <li>Trace upstream suppliers and downstream warehouses for a selected product.</li>
+      <li>Render warehouse hotspots on a map.</li>
+      <li>Draft an inventory-transfer recommendation for human review.</li>
+    </ol>
+    <div class="flow">User in Gemini Enterprise
+  -&gt; inventory router
+      -&gt; relational risk specialist
+      -&gt; property-graph specialist
+      -&gt; spatial specialist
+      -&gt; governed action coordinator
+  -&gt; explanation + structured result + optional image artifact</div>
+    <p>The final step deliberately produces a recommendation rather than an automatic write. The proposed transfer includes its supporting evidence and an explicit approval state. This makes the demo useful for discussing human-in-the-loop design instead of presenting autonomy as an all-or-nothing choice.</p>
+  </section>
+
+  <section id="agents">
+    <h2>Small Agents with Clear Responsibilities</h2>
+    <table>
+      <tr><th>Agent</th><th>Responsibility</th><th>Typical output</th></tr>
+      <tr><td>Inventory router</td><td>Classify intent and delegate to the appropriate specialist.</td><td>Text and structured routing context</td></tr>
+      <tr><td>Risk specialist</td><td>Query product, inventory, demand, and regional risk summaries.</td><td>Ranked risks with evidence</td></tr>
+      <tr><td>Graph specialist</td><td>Traverse supplier, plant, port, warehouse, and product relationships.</td><td>Dependency path and diagram</td></tr>
+      <tr><td>Spatial specialist</td><td>Combine warehouse coordinates with product-level risk snapshots.</td><td>Hotspot explanation and map</td></tr>
+      <tr><td>Action coordinator</td><td>Combine evidence into an approval-gated transfer proposal.</td><td>Draft action; never an implicit write</td></tr>
+    </table>
+
+    <h3>A2A discovery and request shape</h3>
+    <p>Each public agent publishes a card at a conventional discovery path such as:</p>
+    <pre><code>https://&lt;agent-host&gt;/&lt;agent-name&gt;/.well-known/agent-card.json</code></pre>
+    <p>A minimal request uses JSON-RPC and an A2A message:</p>
+    <pre><code>{
+  "jsonrpc": "2.0",
+  "method": "message/send",
+  "params": {
+    "message": {
+      "kind": "message",
+      "messageId": "demo-request-001",
+      "role": "user",
+      "parts": [{
+        "kind": "text",
+        "text": "Which products have the greatest stockout risk?"
+      }]
+    }
+  },
+  "id": 1
+}</code></pre>
+    <p>Agent cards declare supported input and output modes. Graph and spatial specialists can advertise image output so the host can render deterministic database-backed artifacts alongside the explanation.</p>
+  </section>
+
+  <section id="data-model">
+    <h2>Model the Domain Once</h2>
+    <p>The schema separates business entities, relationships, locations, and time-based risk measurements. Oracle can then project the same governed tables into the model best suited to each question.</p>
+    <figure>
+      <img src="images/supply-chain-entity-model.svg" alt="Entity model for products, warehouses, suppliers, plants, ports, alerts, geographic coordinates, risk summaries, and graph edges.">
+      <figcaption>Relational tables support risk analysis; edge tables form a SQL property graph; warehouse coordinates support spatial visualization.</figcaption>
+    </figure>
+    <ul>
+      <li><strong>Relational:</strong> products, warehouses, inventory, quarterly forecasts, and risk summaries.</li>
+      <li><strong>Graph:</strong> supplier-to-plant, plant-to-port, port-to-warehouse, and warehouse-to-product edges.</li>
+      <li><strong>Spatial:</strong> warehouse coordinates and regional attributes joined to product risk snapshots.</li>
+      <li><strong>Governed action:</strong> recommendations carry evidence and approval status separately from execution.</li>
+    </ul>
+
+    <h3>Property graph projection</h3>
+    <pre><code>CREATE PROPERTY GRAPH supply_chain_graph
+  VERTEX TABLES (
+    suppliers  KEY (supplier_id),
+    plants     KEY (plant_id),
+    ports      KEY (port_id),
+    warehouses KEY (warehouse_id),
+    products   KEY (product_id)
+  )
+  EDGE TABLES (
+    supplier_plant,
+    plant_port,
+    port_warehouse,
+    warehouse_product
+  );</code></pre>
+    <p>The production DDL names source and destination keys explicitly. The abbreviated example emphasizes the pattern: graph analysis is a governed projection over existing tables, not an untracked copy of operational data.</p>
+  </section>
+
+  <section id="select-ai">
+    <h2>Use a Narrow Select AI Profile</h2>
+    <p>Select AI connects a model provider to database metadata. The profile should include only the views and tables required for its job. Provider credentials are stored through Oracle credential APIs and must never appear in committed SQL or client-side code.</p>
+    <pre><code>BEGIN
+  DBMS_CLOUD_AI.CREATE_PROFILE(
+    profile_name =&gt; 'SUPPLY_CHAIN_PROFILE',
+    attributes   =&gt; JSON_OBJECT(
+      'provider'        VALUE '&lt;supported-provider&gt;',
+      'credential_name' VALUE 'MODEL_PROVIDER_CREDENTIAL',
+      'model'           VALUE '&lt;approved-model&gt;',
+      'object_list'     VALUE JSON_ARRAY(
+        JSON_OBJECT('owner' VALUE 'APP_SCHEMA', 'name' VALUE 'PRODUCTS'),
+        JSON_OBJECT('owner' VALUE 'APP_SCHEMA', 'name' VALUE 'WAREHOUSES'),
+        JSON_OBJECT('owner' VALUE 'APP_SCHEMA', 'name' VALUE 'INVENTORY_RISK_VIEW')
+      )
+    )
+  );
+END;
+/</code></pre>
+    <p>The application schema owns the AI credential and profile. A database administrator performs only the prerequisites: package grants and a network ACL for the selected provider endpoint. This separation keeps daily agent execution away from the administrator account.</p>
+    <p class="note"><strong>Provider portability:</strong> the A2A surface does not need to change when the Select AI provider changes. Create a separate profile for each approved provider, test generated SQL, and select the desired profile through protected runtime configuration.</p>
+    <p>In the verified OpenAI path, the database-owned profile generated SQL against the allowlisted supply-chain objects, and the public A2A agent reported <code>executionMode=select-ai</code> with <code>DBMS_CLOUD_AI.GENERATE</code> as its source. The application VM did not retain a direct OpenAI API key; model credentials remained inside Oracle AI Database.</p>
+    <p>One Oracle AI Database 26ai detail is worth capturing for repeatable automation: the public <code>DBMS_CLOUD</code> synonym can target a patch-versioned package object. The setup therefore discovers the synonym target before granting <code>EXECUTE</code>, instead of hard-coding a package suffix that will change with database updates.</p>
+  </section>
+
+  <section id="managed-agent">
+    <h2>Custom A2A Agents and the Managed Database Agent</h2>
+    <p>The two integration styles complement each other:</p>
+    <ul>
+      <li><strong>Custom A2A agents</strong> are a good fit for deterministic routing, graph and spatial artifacts, application-specific response formats, and approval workflows.</li>
+      <li><strong>Oracle AI Database Agent for Gemini Enterprise</strong> provides a managed route to database-hosted Select AI agent teams and individual database identity.</li>
+    </ul>
+    <p>The managed agent is the intended primary inventory-analysis entry point when its cross-cloud private-network allowlist is complete. The <code>ORACLE_AI_DATABASE_AGENT</code> team is installed in the application schema and bound to the same narrow supply-chain Select AI profile used for the verified SQL path. Its database-native tools perform SQL generation and execution, distinct-value checks, range checks, and chart generation. The custom Select AI A2A agent provides an explicitly labeled fallback and comparison without changing the graph, spatial, action, or UI specialists.</p>
+    <p>The managed path requires the database A2A capability, Oracle OAuth, the Oracle Marketplace integration, and assigned users. Each user authorizes with an Oracle database identity, so Oracle Database privileges and policies remain the data-access boundary; Gemini Enterprise does not inherit unrestricted database access.</p>
+    <p>The property-graph specialist can now return both the deterministic PNG artifact and native A2UI <code>DataPart</code> messages. The A2UI version is a portable graph explorer built from cards, text, and buttons: a planner can inspect supplier, plant, port, warehouse, product, and alert nodes without requiring the host to execute custom graph JavaScript. Dragging and free-form node movement are intentionally left to MCP Apps or a host-specific custom A2UI catalog, because they are not baseline components in the public A2UI standard catalog.</p>
+  </section>
+
+  <section id="deployment">
+    <h2>Deployment Pattern</h2>
+    <ol>
+      <li>Provision an Oracle AI Database reachable from the application runtime through an approved network path.</li>
+      <li>Create a least-privileged application schema and install the synthetic demo objects.</li>
+      <li>Deploy the Java A2A service behind publicly trusted TLS.</li>
+      <li>Expose only the required HTTPS listener and publish an agent card for each specialist.</li>
+      <li>Register the agent cards in Gemini Enterprise and grant access to a test group.</li>
+      <li>Verify discovery, message exchange, database execution mode, artifacts, and approval behavior.</li>
+    </ol>
+    <p>No environment-specific hostnames, addresses, project identifiers, database identifiers, wallet locations, usernames, or credential values are required in this article. Those belong in protected configuration and an internal deployment runbook.</p>
+  </section>
+
+  <section id="walkthrough">
+    <h2>Demo Walkthrough: Stockout Risk, Graph, Spatial, and Governed Action</h2>
+    <p>Open each named specialist explicitly. Do not enter these prompts in <em>Core Assistant</em>: listing or pinning an agent does not make Core Assistant delegate to it automatically. Open a new conversation for each specialist because this demonstration does not pass prior chat state between agents.</p>
+    <ol start="0">
+      <li><strong>Step 0: Open the managed database agent.</strong> Open the <em>Inventory System</em> application and select <em>Oracle AI Database Agent</em>. The following two sessions use the same <code>FINANCIAL</code>-owned Select AI profile, team, and protected view. Only the password-authenticated local Deep Sec end user changes.</li>
+      <li><strong>Step 1a: Find APAC stockout risks.</strong> Start a new session, authorize as <code>SUPPLYCHAIN_APAC_MGR</code>, and ask: <code>Using only the Oracle inventory risk demo tables, list the top products at risk of stockouts next quarter, including stockout probability, projected revenue impact, and primary region.</code> Its APAC data role and data grant restrict the shared <code>FINANCIAL.SC_INVENTORY_RISK_DEMO_V</code> results to APAC rows.</li>
+      <li><strong>Step 1b: Compare NA stockout risks.</strong> Sign out of the Oracle database authorization session, start a new agent session, authorize as <code>SUPPLYCHAIN_NA_MGR</code>, and submit the same prompt. Its NA data role and data grant return only NA rows, demonstrating database-side authorization without OCI IAM or Microsoft Entra ID propagation.</li>
+      <li><strong>Step 2: Drill into SKU-500.</strong> In the same conversation, ask: <code>For SKU-500, summarize in business language which warehouses are driving the risk and why.</code> The warehouse-risk view explains Newark pressure, coverage, and revenue impact.</li>
+      <li><strong>Step 3: Visualize dependencies.</strong> <span class="pill">Verified</span> Select <code>oracle_graph_agent</code> and ask: <code>Use the Oracle Database property graph to show supply-chain dependencies for SKU-500 and render the graph as an image.</code> The response includes a deterministic PNG plus native A2UI graph-explorer controls for inspecting the supplier, plant, port, warehouse, product, and active weather alert nodes.</li>
+      <li><strong>Step 4: Visualize the relief route.</strong> <span class="pill">Verified</span> Select <code>oracle_spatial_agent</code> and ask: <code>Show warehouse hotspots on a map for SKU-500 and highlight the best relief route.</code> The map identifies Newark as the primary pressure node and DFW as the best relief source.</li>
+      <li><strong>Step 5: Draft the governed response.</strong> <span class="pill">Verified</span> Select <code>oracle_inventory_action_agent</code> and ask: <code>What inventory action should we take for SKU-500 given the current supply risk? Gather graph, spatial, and external evidence first, then recommend the safest next move and say whether approval is required.</code> The coordinator proposes a 500-unit DFW-to-Newark transfer, creates a draft ID, and requires approval without executing the move.</li>
+      <li><strong>Step 6: Render the native approval UI.</strong> <span class="pill">Verified</span> Select <em>Oracle Supply-Chain A2UI</em> and ask: <code>Show inventory transfers with a minimum stockout risk of 70, limited to 3 recommendations.</code> Gemini Enterprise renders a native A2UI card, notes field, approval button, and cancel button. This starts a separate governed recommendation query; passing the exact Step 5 draft remains future work.</li>
+      <li><strong>Step 7: Compare the MCP App.</strong> Enable the <em>Oracle Supply-Chain MCP App</em> connector and submit the same bounded dashboard prompt. The MCP path should call <code>show-inventory-transfer-dashboard</code> and load its sandboxed <code>ui://</code> resource rather than native A2UI. Connector OAuth and active status are verified; confirm tool discovery before presenting this step as complete.</li>
+      <li><strong>Step 8: Close with governance.</strong> Explain that database identities and Deep Data Security can restrict rows before any host or model sees them. BigQuery or Oracle Lakehouse enrichment is a separate next stage, not part of the demonstrated execution path.</li>
+    </ol>
+    <p class="note"><strong>Presentation privacy:</strong> crop browser chrome and mask account names, endpoints, project numbers, agent identifiers, database identifiers, tokens, and credentials. The checked-in video uses sanitized captures and animated interaction markers instead of an unedited screen recording.</p>
+  </section>
+
+  <section id="security">
+    <h2>Security and Governance Checklist</h2>
+    <ul>
+      <li>Keep API keys, database passwords, wallets, OAuth secrets, and private endpoints outside source control.</li>
+      <li>Use separate administrator and application identities; do not run the agent as the database administrator.</li>
+      <li>Allowlist Select AI objects instead of exposing an entire schema.</li>
+      <li>Restrict outbound database ACLs to the approved model-provider host.</li>
+      <li>Expose only the required TLS endpoint and scope firewall rules to the intended workload.</li>
+      <li>Return execution-mode metadata so operators can distinguish graph, relational fallback, Select AI, and deterministic paths.</li>
+      <li>Require explicit approval before any recommendation becomes a database write.</li>
+      <li>Use synthetic data for public demonstrations and remove infrastructure identifiers from screenshots and articles.</li>
+    </ul>
+  </section>
+
+  <section id="lessons">
+    <h2>What This Demonstrates</h2>
+    <p>The most valuable result is not a single chatbot response. It is a reusable division of responsibilities:</p>
+    <ul>
+      <li>Gemini Enterprise handles discovery, conversation, and orchestration.</li>
+      <li>A2A provides a portable contract between the host and independently deployed agents.</li>
+      <li>Oracle AI Database performs governed relational, graph, spatial, and Select AI work close to the data.</li>
+      <li>Application code packages evidence into useful responses and artifacts.</li>
+      <li>Human approval remains an explicit boundary for consequential actions.</li>
+    </ul>
+    <p>This structure combines a managed Oracle AI Database Agent for identity-aware relational analysis with deterministic custom specialists for graph, spatial, visual, and approval behavior. The narrow Select AI profile and Oracle authorization boundary remain consistent across the flow.</p>
+  </section>
+
+  <section id="references">
+    <h2>References</h2>
+    <ul>
+      <li><a href="https://blogs.oracle.com/developers/unlocking-data-insights-with-the-oracle-ai-database-agent-in-gemini-enterprise-part-1">Oracle: Unlocking Data Insights with the Oracle AI Database Agent in Gemini Enterprise, Part 1</a></li>
+      <li><a href="https://blogs.oracle.com/developers/unlocking-data-insights-with-the-oracle-ai-database-agent-in-gemini-enterprise-part-2">Oracle: extending the managed agent with ADK and A2A, Part 2</a></li>
+      <li><a href="https://docs.oracle.com/en-us/iaas/autonomous-database-serverless/doc/use-oracle-ai-database-agent-google-gemini-enterprise-application.html">Oracle: Use Oracle AI Database Agent with Gemini Enterprise</a></li>
+      <li><a href="https://docs.oracle.com/en-us/iaas/autonomous-database-serverless/doc/expose-database-ai-agents-agent2agent-protocol.html">Oracle: Expose database AI agents through A2A</a></li>
+      <li><a href="https://docs.oracle.com/en-us/iaas/autonomous-database-serverless/doc/select-ai-manage-profiles.html">Oracle: Manage Select AI profiles</a></li>
+      <li><a href="https://docs.oracle.com/en/database/oracle/oracle-database/26/ddscg/configure-oracle-deep-data-security-direct-logon-local-end-users.html">Oracle: Configure Deep Data Security for direct logon with local end users</a></li>
+      <li><a href="https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/deep-data-security.html">Oracle: Use Deep Data Security with Select AI</a></li>
+      <li><a href="https://docs.oracle.com/en/database/oracle/property-graph/23.1/spgdg/sql-ddl-statements-property-graphs.html">Oracle: SQL property graph DDL</a></li>
+      <li><a href="https://a2ui.org/reference/components/">A2UI component gallery and catalog reference</a></li>
+      <li><a href="https://docs.cloud.google.com/gemini/enterprise/docs/register-and-manage-an-a2a-agent">Google Cloud: Register and manage an A2A agent</a></li>
+      <li><a href="https://github.com/a2aproject/A2A">Agent2Agent protocol</a></li>
+    </ul>
+  </section>
+
+  <section id="faq">
+    <h2>Frequently Asked Questions</h2>
+    <h3>Does Core Assistant automatically call every registered agent?</h3>
+    <p>No. This demonstration opens each specialist directly. Registration and pinning make an agent available; they do not guarantee automatic delegation from Core Assistant.</p>
+    <h3>What if the managed Oracle AI Database Agent is unavailable?</h3>
+    <p>Use the custom Select AI A2A agent for the relational steps and label it clearly as the fallback. Graph, spatial, action, and A2UI specialists remain independent.</p>
+    <h3>Are A2UI and MCP Apps the same interface path?</h3>
+    <p>No. A2UI sends declarative component descriptions for native host rendering. MCP Apps send a <code>ui://</code> web resource for sandboxed host rendering.</p>
+    <h3>Does an A2A or MCP connection grant database access?</h3>
+    <p>No. Oracle users, roles, Deep Data Security policies, allowlisted Select AI objects, and transaction procedures still determine the accessible data and actions.</p>
+  </section>
+
+  <p class="note"><strong>Demo-data note:</strong> all products, organizations, locations, risks, and proposed actions in this reference implementation are synthetic and are not production planning recommendations.</p>
+</main>
+</body>
+</html>

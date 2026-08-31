@@ -4,6 +4,8 @@ This project contains the Oracle AI Database and Google Gemini A2A demo shown in
 
 The Java agent runtime is the implementation used in the live demo. The Python and Go agents are included as work in progress and reference implementations while they continue to evolve.
 
+[Read the implementation blog](https://paulparkinson.github.io/oracle-ai-for-sustainable-dev/oracle-ai-database-gcp-gemini/blog.html), including the deployment architecture, database entity model, SQL setup, A2A agents, Gemini Enterprise registration, verification results, and remaining prerequisites.
+
 ## Watch The Demo
 
 [![Oracle AI Database Agent in Gemini Enterprise demo](https://img.youtube.com/vi/lU8UAwmBMeQ/hqdefault.jpg)](https://www.youtube.com/watch?v=lU8UAwmBMeQ)
@@ -28,11 +30,11 @@ This repo is set up for multiple A2A-style agents. The common pattern is:
 
 The current demo flow is:
 
-1. Gemini Enterprise asks an Oracle inventory analyst which products are at risk of stockouts.
-2. The Oracle AI Database-backed flow identifies risk drivers by product, warehouse, county, and region.
+1. Gemini Enterprise calls the Marketplace-delivered Oracle AI Database Agent to ask which products are at risk of stockouts.
+2. The managed agent invokes the in-database `ORACLE_AI_DATABASE_AGENT` team and its narrow Select AI profile to identify risk drivers by product, warehouse, county, and region under the signed-in database user's identity.
 3. A spatial specialist renders hotspot maps for warehouse and regional risk.
 4. A graph specialist renders Oracle Database property graph supply-chain dependencies.
-5. The Oracle AI Database Agent can be used from Gemini Enterprise for database-grounded answers.
+5. The custom Select AI agent remains a development and fallback surface, but the presented Gemini Enterprise flow uses the managed Oracle AI Database Agent for database-grounded analysis.
 6. An inventory-action coordinator gathers the graph, spatial, and inventory evidence and recommends the safest next move.
 
 ## Agent Implementations
@@ -42,6 +44,9 @@ The current demo flow is:
 - [oracle_agent_golang](./oracle_agent_golang/README.md): Go agent work in progress.
 
 Use the Java runtime when recreating the Google Next demo.
+
+For the active `adb-pm-prod` / `paulparkdb` reconciliation, follow
+[docs/ADB_PM_PROD_REDEPLOYMENT.md](./docs/ADB_PM_PROD_REDEPLOYMENT.md). It keeps the existing shared VM and database, starts with a read-only audit, and uses Oracle's pinned official in-database agent installer.
 
 ## Java Runtime Quick Start
 
@@ -80,11 +85,15 @@ The inventory-system gateway can delegate general inventory and database-style q
 
 ## Suggested Gemini Enterprise Prompts
 
-Select AI:
+Oracle AI Database Agent in Gemini Enterprise:
 
 ```text
 Which products are at risk of stockouts next quarter, and which regions are driving that risk?
 ```
+
+Use `oracle_select_ai_agent` only as an explicitly identified fallback or
+comparison. It should not replace the managed Marketplace agent in the primary
+demo.
 
 Spatial:
 
@@ -113,7 +122,7 @@ The repo-level `.env` file holds shared settings used by the agent scripts:
 ```bash
 GOOGLE_GENAI_USE_VERTEXAI=true
 GOOGLE_CLOUD_PROJECT="your-gcp-project"
-GOOGLE_CLOUD_LOCATION="us-central1"
+GOOGLE_CLOUD_LOCATION="us-east4"
 PUBLIC_HOST="YOUR_PUBLIC_AGENT_HOST"
 PUBLIC_PROTOCOL="https"
 GRAPH_AGENT_PORT="443"
@@ -134,6 +143,13 @@ If you use a Gemini API key instead, set:
 GOOGLE_API_KEY="your-api-key"
 ```
 
+For database-managed Select AI, the repository keeps the Google and OpenAI
+profiles independent. The current OpenAI path uses credential `OPENAI_CRED`,
+profile `PAULPARK_SUPPLY_CHAIN_OPENAI`, and the same narrow `FINANCIAL.SC_*`
+object allowlist as the Google profile. See [sql/README.md](./sql/README.md) for
+the controlled installation sequence. A provider profile does not change the
+A2A cards or Gemini Enterprise topology.
+
 The graph and spatial paths are deterministic and image-first by default. Set `VISUAL_RENDERER=both` to keep the deterministic Oracle data image as the source of truth and add a second Gemini-generated illustrative PNG. Set `VISUAL_RENDERER=gemini` only when you deliberately want generated images without the deterministic image artifact. `GEMINI_IMAGE_MODEL` defaults to `gemini-3.1-flash-image`, the current Nano Banana 2 general-purpose image model in the Gemini API; use `gemini-3-pro-image` when you want the premium image model and accept the extra cost/latency. Select AI depends on a database-side `DBMS_CLOUD_AI` profile. The inventory-action coordinator uses Google ADK Java when credentials are available and falls back to deterministic recommendations when the model path is unavailable.
 
 ## Documentation Index
@@ -141,6 +157,7 @@ The graph and spatial paths are deterministic and image-first by default. Set `V
 Start here:
 
 - [docs/GEMINI_ENTERPRISE_AGENT_SETUP.md](./docs/GEMINI_ENTERPRISE_AGENT_SETUP.md): Gemini Enterprise import URLs, tested prompts, caveats, and expected behavior.
+- [docs/ADB_PM_PROD_REDEPLOYMENT.md](./docs/ADB_PM_PROD_REDEPLOYMENT.md): exact shared-VM and `paulparkdb` reconciliation runbook, including the managed Oracle AI Database Agent.
 - [oracle_agent_java/README.md](./oracle_agent_java/README.md): Java runtime, local build/run commands, HTTPS deployment, and agent card URLs.
 - [docs/DEMO_NOW_AND_NEXT.md](./docs/DEMO_NOW_AND_NEXT.md): current demo status and next steps.
 - [docs/GCP_INFRA_SETUP.md](./docs/GCP_INFRA_SETUP.md): GCP setup and migration guide.

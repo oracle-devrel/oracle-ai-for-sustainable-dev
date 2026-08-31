@@ -1,0 +1,2 @@
+oracleagentmemory==26.6.0
+litellm==1.84.10

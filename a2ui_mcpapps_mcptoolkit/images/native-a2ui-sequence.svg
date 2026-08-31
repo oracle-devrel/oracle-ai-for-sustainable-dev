@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1360" viewBox="0 0 1600 1360" role="img" aria-labelledby="title desc">
+  <title id="title">Native A2UI request and approval sequence</title>
+  <desc id="desc">A human supply-chain planner requests transfer recommendations in an A2UI-capable host process. The host calls a Python A2A adapter process, which calls a Java service JVM, a Toolkit JVM, and Oracle AI Database. The adapter returns A2UI DataParts for native rendering. Approval returns as a userAction and reaches the governed database transaction.</desc>
+  <defs>
+    <marker id="arrowBlue" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#167da6"/></marker>
+    <marker id="arrowGreen" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#008f83"/></marker>
+    <style>
+      .title{font:700 40px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#193653}.subtitle{font:24px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#43596d}.actor{fill:#eef5f8;stroke:#a9c4d2;stroke-width:2}.actorText{font:700 22px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#193653;text-anchor:middle}.processBadge{fill:#193653}.processText{font:700 12px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#fff;text-anchor:middle;letter-spacing:.5px}.lane{stroke:#a9bcc7;stroke-width:2}.call{stroke:#167da6;stroke-width:3;marker-end:url(#arrowBlue)}.return{stroke:#008f83;stroke-width:3;stroke-dasharray:8 7;marker-end:url(#arrowGreen)}.label{font:600 18px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#20313f;text-anchor:middle}.note{fill:#fff5ef;stroke:#efad80;stroke-width:2}.noteText{font:600 18px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#9d4521;text-anchor:middle}
+    </style>
+  </defs>
+  <rect width="1600" height="1360" fill="#ffffff"/>
+  <text x="70" y="70" class="title">Native A2UI sequence</text>
+  <text x="70" y="110" class="subtitle">The agent sends declarative UI; an A2UI-capable host owns native rendering.</text>
+
+  <g>
+    <rect x="105" y="120" width="110" height="22" rx="11" class="processBadge"/><text x="160" y="136" class="processText">HUMAN</text>
+    <rect x="370" y="120" width="200" height="22" rx="11" class="processBadge"/><text x="470" y="136" class="processText">HOST CLIENT PROCESS</text>
+    <rect x="690" y="120" width="220" height="22" rx="11" class="processBadge"/><text x="800" y="136" class="processText">PYTHON ADAPTER PROCESS</text>
+    <rect x="1025" y="120" width="200" height="22" rx="11" class="processBadge"/><text x="1125" y="136" class="processText">JAVA SERVICE JVM</text>
+    <rect x="1315" y="120" width="240" height="22" rx="11" class="processBadge"/><text x="1435" y="136" class="processText">TOOLKIT JVM + DB SERVICE</text>
+    <circle cx="160" cy="154" r="13" fill="none" stroke="#193653" stroke-width="3"/>
+    <line x1="160" y1="167" x2="160" y2="195" stroke="#193653" stroke-width="3"/>
+    <line x1="141" y1="177" x2="179" y2="177" stroke="#193653" stroke-width="3"/>
+    <line x1="160" y1="195" x2="144" y2="214" stroke="#193653" stroke-width="3"/>
+    <line x1="160" y1="195" x2="176" y2="214" stroke="#193653" stroke-width="3"/>
+    <text x="160" y="240" class="actorText">Supply-chain planner</text>
+    <rect x="350" y="145" width="240" height="68" rx="10" class="actor"/><text x="470" y="176" class="actorText">A2UI-capable</text><text x="470" y="201" class="actorText">host</text>
+    <rect x="675" y="145" width="250" height="68" rx="10" class="actor"/><text x="800" y="176" class="actorText">A2A adapter +</text><text x="800" y="201" class="actorText">A2UI builder</text>
+    <rect x="1010" y="145" width="230" height="68" rx="10" class="actor"/><text x="1125" y="187" class="actorText">Agent service</text>
+    <rect x="1310" y="145" width="250" height="68" rx="10" class="actor"/><text x="1435" y="176" class="actorText">MCP Toolkit +</text><text x="1435" y="201" class="actorText">Oracle AI Database</text>
+    <line x1="160" y1="250" x2="160" y2="1320" class="lane"/><line x1="470" y1="213" x2="470" y2="1320" class="lane"/><line x1="800" y1="213" x2="800" y2="1320" class="lane"/><line x1="1125" y1="213" x2="1125" y2="1320" class="lane"/><line x1="1435" y1="213" x2="1435" y2="1320" class="lane"/>
+  </g>
+
+  <line x1="160" y1="270" x2="470" y2="270" class="call"/><text x="315" y="255" class="label">Request transfers at risk</text>
+  <line x1="470" y1="345" x2="800" y2="345" class="call"/><text x="635" y="330" class="label">A2A message/send with prompt</text>
+  <line x1="800" y1="420" x2="1125" y2="420" class="call"/><text x="962" y="405" class="label">POST /api/reviews</text>
+  <line x1="1125" y1="495" x2="1435" y2="495" class="call"/><text x="1280" y="480" class="label">MCP tool: find recommendations</text>
+  <line x1="1435" y1="560" x2="1125" y2="560" class="return"/><text x="1280" y="545" class="label">Governed recommendation rows</text>
+  <line x1="1125" y1="625" x2="800" y2="625" class="return"/><text x="962" y="610" class="label">Rows + actor-bound approval ID</text>
+  <line x1="800" y1="700" x2="470" y2="700" class="return"/><text x="635" y="685" class="label">A2A response containing A2UI DataParts</text>
+  <rect x="325" y="730" width="290" height="55" rx="9" class="note"/><text x="470" y="764" class="noteText">Render native cards and controls</text>
+  <line x1="470" y1="830" x2="160" y2="830" class="return"/><text x="315" y="815" class="label">Display review surface</text>
+  <line x1="160" y1="890" x2="470" y2="890" class="call"/><text x="315" y="875" class="label">Click Approve exact transfer</text>
+  <line x1="470" y1="950" x2="800" y2="950" class="call"/><text x="635" y="935" class="label">A2A message/send with userAction</text>
+  <line x1="800" y1="1010" x2="1125" y2="1010" class="call"/><text x="962" y="995" class="label">POST /api/approve</text>
+  <line x1="1125" y1="1070" x2="1435" y2="1070" class="call"/><text x="1280" y="1055" class="label">Revalidate, audit, and commit</text>
+  <line x1="1435" y1="1130" x2="1125" y2="1130" class="return"/><text x="1280" y="1115" class="label">Committed audited transfer result</text>
+  <line x1="1125" y1="1190" x2="800" y2="1190" class="return"/><text x="962" y="1175" class="label">Transfer ID, quantity, and APPROVED</text>
+  <line x1="800" y1="1250" x2="470" y2="1250" class="return"/><text x="635" y="1235" class="label">Replacement A2UI result surface</text>
+  <line x1="470" y1="1310" x2="160" y2="1310" class="return"/><text x="315" y="1295" class="label">Display confirmed audited transfer</text>
+</svg>

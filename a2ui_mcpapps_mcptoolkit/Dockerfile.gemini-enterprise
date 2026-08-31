@@ -1,0 +1,75 @@
+FROM maven:3.9.11-eclipse-temurin-21 AS java-build
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends git patch \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /workspace
+COPY agent-service ./agent-service
+COPY oracle-db-mcp-toolkit ./oracle-db-mcp-toolkit
+
+RUN find agent-service oracle-db-mcp-toolkit \
+        -type f \( -name "*.sh" -o -name "*.patch" \) \
+        -exec sed -i 's/\r$//' {} + \
+    && chmod +x agent-service/prepare-mcp-toolkit.sh \
+    && mkdir -p /out \
+    && cd agent-service \
+    && toolkit_jar="$(./prepare-mcp-toolkit.sh)" \
+    && cp "${toolkit_jar}" /out/oracle-db-mcp-toolkit.jar \
+    && mvn -q -DskipTests package \
+    && cp target/interactive-ai-agent-service-0.1.0-SNAPSHOT.jar \
+        /out/interactive-ai-agent-service.jar
+
+FROM eclipse-temurin:21-jre-jammy
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        ca-certificates curl python3 python3-pip python3-venv unzip \
+    && rm -rf /var/lib/apt/lists/* \
+    && groupadd --system app \
+    && useradd --system --gid app --home-dir /opt/app app
+
+WORKDIR /opt/app
+
+COPY gemini-enterprise-a2a/requirements.txt ./gemini-enterprise-a2a/
+RUN python3 -m venv /opt/venv \
+    && /opt/venv/bin/pip install --disable-pip-version-check \
+        --no-cache-dir -r gemini-enterprise-a2a/requirements.txt \
+    && /opt/venv/bin/python -c \
+        "from a2ui.a2a.extension import get_a2ui_agent_extension; from a2ui.a2a.parts import create_a2ui_part"
+
+COPY --from=java-build /out/interactive-ai-agent-service.jar ./
+COPY --from=java-build /out/oracle-db-mcp-toolkit.jar ./
+COPY oracle-db-mcp-toolkit/config/tools.yaml ./oracle-db-mcp-toolkit/config/tools.yaml
+COPY database ./database
+COPY web-client ./web-client
+COPY gemini-enterprise-a2a/main.py gemini-enterprise-a2a/a2ui_payloads.py \
+    ./gemini-enterprise-a2a/
+COPY deploy/gcp/container-entrypoint.sh /usr/local/bin/container-entrypoint
+COPY deploy/gcp/start-toolkit-runtime.sh /usr/local/bin/start-toolkit-runtime
+COPY deploy/gcp/database-job-entrypoint.sh /usr/local/bin/database-job-entrypoint
+
+RUN sed -i 's/\r$//' /usr/local/bin/container-entrypoint \
+        /usr/local/bin/start-toolkit-runtime \
+        /usr/local/bin/database-job-entrypoint \
+    && chmod 0555 /usr/local/bin/container-entrypoint \
+        /usr/local/bin/start-toolkit-runtime \
+        /usr/local/bin/database-job-entrypoint \
+    && chown -R app:app /opt/app
+
+ENV AGENT_PORT=8081 \
+    AGENT_SERVICE_URL=http://127.0.0.1:8081 \
+    BIND_HOST=0.0.0.0 \
+    DB_POOL_NAME=InteractiveAiGcpUcpPool \
+    DB_SERVICE_NAME=paulparkdb_tp \
+    DB_USERNAME=FINANCIAL \
+    ORACLE_MCP_CONFIG_FILE=/opt/app/oracle-db-mcp-toolkit/config/tools.yaml \
+    ORACLE_MCP_TOOLKIT_JAR=/opt/app/oracle-db-mcp-toolkit.jar \
+    PORT=8080 \
+    REQUESTED_BY=gemini.enterprise@oracle.com \
+    TNS_ADMIN=/tmp/oracle-wallet \
+    WALLET_ZIP_FILE=/var/run/secrets/oracle-wallet/wallet.zip
+
+USER app
+EXPOSE 8080
+ENTRYPOINT ["/usr/local/bin/container-entrypoint"]

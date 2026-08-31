@@ -1,0 +1,42 @@
+:root { color-scheme: light; --ink: #15181c; --muted: #5d6672; --line: #d9dde2; --oracle: #c74634; --soft: #f7f4ef; --navy: #17202a; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #fcfcfb; color: var(--ink); font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; line-height: 1.5; }
+main { max-width: 1240px; margin: 0 auto; padding: 40px 24px 72px; }
+header { max-width: 800px; }
+.eyebrow, .kicker { margin: 0 0 6px; color: var(--oracle); font-size: .78rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(2.4rem, 7vw, 5rem); line-height: .98; letter-spacing: -.04em; }
+h2 { margin: 0; line-height: 1.15; }
+.lede { max-width: 680px; color: var(--muted); font-size: 1.15rem; }
+.request-panel { display: flex; justify-content: space-between; gap: 28px; align-items: end; margin: 36px 0; padding: 22px; border: 1px solid var(--line); border-radius: 18px; background: var(--soft); }
+.request-panel p { margin-bottom: 0; }
+form { display: flex; align-items: end; gap: 12px; flex-wrap: wrap; }
+label { display: grid; gap: 6px; color: var(--muted); font-size: .85rem; font-weight: 700; }
+input, select, textarea { min-height: 42px; padding: 9px 11px; border: 1px solid #aeb5bd; border-radius: 8px; background: white; color: var(--ink); font: inherit; }
+textarea { width: 100%; min-height: 90px; resize: vertical; }
+button { min-height: 42px; padding: 9px 16px; border: 1px solid var(--oracle); border-radius: 8px; background: var(--oracle); color: white; cursor: pointer; font: inherit; font-weight: 800; }
+button.secondary { border-color: #7d8792; background: transparent; color: var(--ink); }
+button:disabled { cursor: wait; opacity: .55; }
+.layout { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 28px; }
+.layout > section, aside { padding: 22px; border: 1px solid var(--line); border-radius: 18px; background: white; }
+.section-title { display: flex; justify-content: space-between; gap: 18px; align-items: center; }
+.status { padding: 5px 10px; border-radius: 999px; background: #edf1f4; color: #39424c; font-size: .8rem; font-weight: 800; }
+.assistant { min-height: 48px; color: var(--muted); }
+.recommendation-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+.recommendation { display: grid; gap: 7px; padding: 16px; border: 2px solid transparent; border-radius: 12px; background: var(--soft); cursor: pointer; }
+.recommendation:has(input:checked) { border-color: var(--oracle); }
+.recommendation input { min-height: auto; }
+.recommendation-top { display: flex; justify-content: space-between; gap: 10px; align-items: start; }
+.badge { padding: 3px 7px; border-radius: 999px; background: #f3d6d1; color: #7b2116; font-size: .72rem; font-weight: 900; }
+.recommendation p { margin: 0; color: var(--muted); font-size: .9rem; }
+.recommendation p.route { color: var(--ink); font-weight: 900; }
+.recommendation dl { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 4px 0 0; }
+.recommendation dt { color: var(--muted); font-size: .7rem; text-transform: uppercase; }
+.recommendation dd { margin: 0; font-weight: 800; }
+.approval { display: grid; gap: 12px; margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--line); }
+.approval-actions { display: flex; gap: 10px; }
+.events { display: grid; gap: 9px; max-height: 680px; margin: 18px 0 0; padding: 0; overflow: auto; list-style: none; }
+.events li { padding: 10px; border-left: 3px solid var(--line); background: #f7f8f9; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .72rem; overflow-wrap: anywhere; }
+.events li.tool { border-left-color: var(--oracle); }
+.result { padding: 14px; border-radius: 10px; background: #e9f7ef; color: #195c35; font-weight: 800; }
+.error { padding: 12px; border-radius: 8px; background: #fff0ee; color: #8b2116; }
+@media (max-width: 840px) { .request-panel { align-items: stretch; flex-direction: column; } .layout { grid-template-columns: 1fr; } aside { order: -1; } }

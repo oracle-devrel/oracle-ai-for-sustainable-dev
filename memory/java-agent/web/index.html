@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A presenter-ready Oracle AI Database demo of scoped agent memory, recall, correction, TTL, traces, and approved reusable skills.">
+  <title>Memories Are the Magic · Oracle AI Database Demo</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="hero">
+    <nav>
+      <a class="brand" href="https://paulparkinson.github.io/oracle-ai-for-sustainable-dev/memory/blog.html">MEMORIES <span>ARE THE MAGIC</span></a>
+      <div class="db-status" id="db-status"><i></i><span>Connecting to Oracle AI Database…</span></div>
+    </nav>
+    <div class="hero-grid">
+      <div>
+        <p class="eyebrow">Presenter mode · Flynn's Theme Park concierge</p>
+        <h1>An agent that remembers and learns safely.</h1>
+        <p class="lede">Walk through Retain, Recall, Reuse, and Refine. Then turn audited traces into a human-approved shared skill without exposing private guest memory.</p>
+      </div>
+      <div class="loop" aria-label="Agent memory loop">
+        <div class="loop-agent">AGENT</div>
+        <div class="loop-memory">ORACLE AI<br>DATABASE</div>
+        <span class="arrow read">READ BEFORE</span>
+        <span class="arrow write">WRITE AFTER</span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="taxonomy" aria-labelledby="taxonomy-title">
+      <div>
+        <p class="section-label">The four memory types</p>
+        <h2 id="taxonomy-title">Keep each kind in its proper place.</h2>
+      </div>
+      <div class="taxonomy-grid">
+        <article><span>01</span><h3>Working</h3><p>Current ask, intermediate plan, active turn. Kept in the live context.</p></article>
+        <article><span>02</span><h3>Episodic</h3><p>What happened, what was tried, and the observed outcome.</p></article>
+        <article><span>03</span><h3>Semantic</h3><p>Durable facts and preferences, scoped to the correct identity.</p></article>
+        <article><span>04</span><h3>Procedural</h3><p>An approved reusable workflow induced from successful traces.</p></article>
+      </div>
+    </section>
+
+    <section class="library-lab" aria-labelledby="library-title">
+      <div class="library-heading">
+        <div>
+          <p class="section-label">Live memory library path</p>
+          <h2 id="library-title">Watch a conversation become scoped vector memory.</h2>
+          <p>The controls below invoke the actual <code>ojdbc-agent-memory</code> API. Ollama extracts durable records, Oracle AI Database embeds them with <code>ALLMINILM</code>, and scoped search assembles the context used by the concierge.</p>
+        </div>
+        <div class="library-model">
+          <b id="library-dimensions">-</b>
+          <span>embedding dimensions<br><code>FINANCIAL.ALLMINILM</code></span>
+        </div>
+      </div>
+
+      <div class="pipeline" aria-label="Agent memory library pipeline">
+        <article><span>1</span><b>addMessages()</b><small>Persist the guest conversation</small></article>
+        <i>→</i>
+        <article><span>2</span><b>Ollama extraction</b><small>Produce typed durable records</small></article>
+        <i>→</i>
+        <article><span>3</span><b>VECTOR_EMBEDDING</b><small>Generate vectors inside Oracle</small></article>
+        <i>→</i>
+        <article><span>4</span><b>search()</b><small>Apply identity scope and rank</small></article>
+      </div>
+
+      <div class="library-controls">
+        <button data-library-action="reset">Reset library lane</button>
+        <button data-library-action="retain">1 · Retain Ava's conversation</button>
+        <label>
+          <span>2 · Semantic recall request</span>
+          <input id="library-query" value="Plan an accessible quiet morning and rainy evening">
+        </label>
+        <button class="primary" data-library-action="recall">Recall and build context</button>
+      </div>
+      <div class="result-banner library-result" id="library-result" role="status">
+        Reset the library lane, retain Ava's conversation, then run semantic recall.
+      </div>
+
+      <div class="library-grid">
+        <section class="panel">
+          <div class="panel-heading">
+            <div><p class="section-label">Conversation</p><h3>Messages</h3></div>
+            <span id="library-message-count">0 messages</span>
+          </div>
+          <div id="library-messages" class="chat-list"><p class="empty">No messages yet.</p></div>
+        </section>
+        <section class="panel">
+          <div class="panel-heading">
+            <div><p class="section-label">Write after</p><h3>Extracted memory</h3></div>
+            <span id="library-record-count">0 records</span>
+          </div>
+          <div id="library-records" class="library-records"><p class="empty">No records yet.</p></div>
+        </section>
+        <section class="panel">
+          <div class="panel-heading">
+            <div><p class="section-label">Read before</p><h3>Semantic ranking</h3></div>
+            <span class="scope private">AVA · EXACT SCOPE</span>
+          </div>
+          <div id="library-search" class="ranking-list"><p class="empty">Run recall to see vector-distance ranking.</p></div>
+        </section>
+        <section class="panel">
+          <div class="panel-heading">
+            <div><p class="section-label">Reusable context</p><h3>Context card</h3></div>
+            <span class="scope shared">LEO RESULTS: <b id="library-leo-results">-</b></span>
+          </div>
+          <pre id="library-context">No context card yet.</pre>
+        </section>
+      </div>
+    </section>
+
+    <section class="demo-shell">
+      <aside class="stage-rail" aria-label="Demo steps">
+        <p class="section-label">Live demo</p>
+        <h2>Seven proof points</h2>
+        <button data-action="reset" data-step="0"><b>Reset</b><span>Cold start</span></button>
+        <button data-action="retain" data-step="1"><b>1 · Retain</b><span>Write durable memory</span></button>
+        <button data-action="recall" data-step="2"><b>2 · Recall + Reuse</b><span>Build a context card</span></button>
+        <button data-action="correct" data-step="3"><b>3 · Refine</b><span>Version a correction</span></button>
+        <button data-action="expire" data-step="4"><b>4 · Expire</b><span>Enforce lifecycle</span></button>
+        <button data-action="dream" data-step="5"><b>5 · Dream</b><span>Induce a skill</span></button>
+        <button data-action="approve" data-step="6"><b>6 · Approve</b><span>Human governance</span></button>
+        <button data-action="next-day" data-step="7"><b>7 · Next guest</b><span>Reuse without leakage</span></button>
+      </aside>
+
+      <div class="workspace">
+        <div class="presenter-card">
+          <div>
+            <p class="section-label">What to say now</p>
+            <h2 id="cue-title">Begin at a cold start</h2>
+            <p id="cue-text">An agent without external memory re-onboards the user every time. Reset proves there is no hidden browser state carrying this demo.</p>
+          </div>
+          <div class="step-number" id="step-number">00</div>
+        </div>
+
+        <div class="result-banner" id="result" role="status">
+          Choose <strong>Reset</strong>, then advance through the numbered steps.
+        </div>
+
+        <div class="workspace-grid">
+          <section class="panel context-panel">
+            <div class="panel-heading">
+              <div><p class="section-label">Read path</p><h3>Context card</h3></div>
+              <span class="scope private">AVA · PRIVATE</span>
+            </div>
+            <p class="context-summary" id="context-summary">No recall has run yet.</p>
+            <ul id="context-memories" class="context-list">
+              <li class="empty">Active, unexpired, correctly scoped memories will appear here.</li>
+            </ul>
+            <div class="response" id="proposed-response">The response is assembled only after the read step.</div>
+          </section>
+
+          <section class="panel proof-panel">
+            <div class="panel-heading">
+              <div><p class="section-label">Isolation proof</p><h3>Private memory vs shared skill</h3></div>
+              <span class="scope shared">APPROVAL GATED</span>
+            </div>
+            <div class="proof-metric"><strong id="leak-count">-</strong><span>private Ava memories visible to Leo</span></div>
+            <div id="shared-skill" class="shared-skill">No approved shared skill yet.</div>
+          </section>
+        </div>
+
+        <section class="panel ledger">
+          <div class="panel-heading">
+            <div><p class="section-label">Write path</p><h3>Memory ledger</h3></div>
+            <span id="memory-count">0 records</span>
+          </div>
+          <div class="ledger-list" id="memory-ledger">
+            <p class="empty">The durable ledger is empty.</p>
+          </div>
+        </section>
+
+        <div class="workspace-grid lower">
+          <section class="panel">
+            <div class="panel-heading">
+              <div><p class="section-label">Learning material</p><h3>Experience traces</h3></div>
+              <span id="trace-count">0 traces</span>
+            </div>
+            <div id="trace-list" class="trace-list"><p class="empty">No traces yet.</p></div>
+          </section>
+          <section class="panel">
+            <div class="panel-heading">
+              <div><p class="section-label">Token-space learning</p><h3>Induced skill</h3></div>
+              <span id="skill-status" class="status-pill">NONE</span>
+            </div>
+            <pre id="skill-card">No skill has been proposed.</pre>
+          </section>
+        </div>
+      </div>
+    </section>
+
+    <section class="quest-lab" aria-labelledby="quest-title">
+      <div class="quest-heading">
+        <div>
+          <p class="section-label">Memory Quest lab</p>
+          <h2 id="quest-title">Turn remembered needs into a safe, playable park experience.</h2>
+          <p>This lane combines SQL Property Graph relationships, Oracle Spatial distance, AI Vector Search, and transactional rewards. It uses Ava's accessibility and quiet-morning preferences without turning private memory into a public game rule.</p>
+        </div>
+        <div class="quest-score">
+          <strong id="quest-points">0</strong><span>audited points</span>
+          <b id="quest-badge">No badge yet</b>
+        </div>
+      </div>
+
+      <div class="quest-controls">
+        <button data-park-action="reset">Reset quest lane</button>
+        <button data-park-action="plan">1 · Plan accessible route</button>
+        <button data-park-action="start">2 · Start quest</button>
+        <button class="primary" data-park-action="complete-step">3 · Complete next checkpoint</button>
+        <label>
+          <span>4 · GraphRAG request</span>
+          <input id="park-query" value="Find a quiet accessible rainy route with founder stories">
+        </label>
+        <button data-park-action="graphrag">Retrieve + expand graph</button>
+      </div>
+      <div class="result-banner" id="park-result" role="status">
+        Plan the route, start the quest, complete its checkpoints, then run GraphRAG.
+      </div>
+
+      <div class="quest-grid">
+        <section class="park-map-panel panel">
+          <div class="panel-heading">
+            <div><p class="section-label">Graph + Spatial</p><h3>Interactive 2D park map</h3></div>
+            <span class="scope shared">LIVE DATABASE MODEL</span>
+          </div>
+          <svg id="park-map" viewBox="0 0 760 720" role="img" aria-label="Park graph with spatially positioned places and paths"></svg>
+          <div class="map-legend"><span class="accessible">Accessible</span><span class="covered">Covered</span><span class="route">Planned route</span><span class="checkpoint">Quest checkpoint</span></div>
+          <p id="route-explanation" class="map-note">The graph supplies connected edges. Spatial coordinates place the same nodes on the map.</p>
+        </section>
+
+        <div class="quest-side">
+          <section class="panel">
+            <div class="panel-heading"><div><p class="section-label">Social graph</p><h3>Consent-bounded party</h3></div></div>
+            <div id="park-party" class="party-list"><p class="empty">Loading party relationships…</p></div>
+          </section>
+          <section class="panel">
+            <div class="panel-heading"><div><p class="section-label">Gamification</p><h3>Covered Constellations</h3></div><span id="quest-status" class="status-pill">NOT STARTED</span></div>
+            <ol id="quest-steps" class="quest-steps"></ol>
+          </section>
+          <section class="panel">
+            <div class="panel-heading"><div><p class="section-label">Transaction evidence</p><h3>Reward audit</h3></div></div>
+            <div id="quest-audit" class="quest-audit"><p class="empty">No reward events yet.</p></div>
+          </section>
+        </div>
+      </div>
+
+      <section class="panel graphrag-panel">
+        <div class="panel-heading">
+          <div><p class="section-label">Vector retrieval + graph expansion</p><h3>GraphRAG evidence</h3></div>
+          <span class="scope shared">GROUNDED PARK KNOWLEDGE</span>
+        </div>
+        <p id="graphrag-answer" class="context-summary">Run GraphRAG to see vector-ranked knowledge expanded with connected places and quest relationships.</p>
+        <div id="graphrag-hits" class="graphrag-hits"></div>
+      </section>
+    </section>
+
+    <section class="database-inspector" aria-labelledby="database-inspector-title">
+      <div class="database-inspector-heading">
+        <div>
+          <p class="section-label">Database evidence</p>
+          <h2 id="database-inspector-title">See exactly what every action changed.</h2>
+          <p>The <code>OAMJ_CONCIERGE_*</code> tables are written by Oracle Agent Memory.
+            The <code>AIM_DEMO_*</code> tables are owned by the application:
+            fixed application and SQL actions make correction, TTL, trace induction, and
+            approval repeatable and visible for teaching. The <code>AIM_PARK_*</code>
+            tables back the graph, spatial, GraphRAG, quest, and reward lane. They are
+            real database transactions, but they are not hidden library tables.</p>
+        </div>
+        <button id="refresh-database" type="button">Refresh table contents</button>
+      </div>
+      <div class="database-change-legend" aria-label="Database change legend">
+        <span class="added">Added row</span>
+        <span class="changed">Changed row</span>
+        <span class="removed">Removed row</span>
+      </div>
+      <div id="database-refresh-status" class="result-banner" role="status">
+        Loading Oracle AI Database table contents…
+      </div>
+      <div id="database-tables" class="database-tables"></div>
+    </section>
+  </main>
+
+  <footer>
+    <p>The live library path uses isolated <code>OAMJ_CONCIERGE_*</code> tables. The presenter flow uses fixed application and SQL actions against isolated <code>AIM_DEMO_*</code> tables so correction, TTL, trace induction, and human approval remain repeatable and easy to inspect.</p>
+  </footer>
+  <script src="app.js"></script>
+</body>
+</html>

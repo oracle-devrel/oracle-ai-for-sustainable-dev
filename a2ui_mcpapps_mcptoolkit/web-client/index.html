@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Oracle Supply-Chain Inventory Exchange</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<main>
+  <header>
+    <p class="eyebrow">Oracle AI Database · AG-UI · A2UI</p>
+    <h1>Supply-Chain Inventory Exchange</h1>
+    <p class="lede">Find stockout exposure, review database-calculated inventory transfers, and explicitly approve one governed transaction.</p>
+  </header>
+
+  <section class="request-panel" aria-labelledby="request-heading">
+    <div>
+      <h2 id="request-heading">Find stockout risk</h2>
+      <p>“Show inventory at risk of stockout, explain why, recommend a safe transfer, and let me approve it.”</p>
+    </div>
+    <form id="run-form">
+      <label>Database identity
+        <select id="access-profile" name="accessProfile">
+          <option value="full">Supply-chain planner: all product categories</option>
+          <option value="environmental">Environmental planner: Environmental Monitoring only</option>
+        </select>
+      </label>
+      <label>Minimum stockout risk <input id="minimum-stockout-risk" name="minimumStockoutRisk" type="number" min="0" max="100" value="70" required></label>
+      <label>Maximum recommendations <input id="maximum-rows" name="maximumRows" type="number" min="1" max="50" value="10" required></label>
+      <button type="submit">Analyze inventory</button>
+    </form>
+  </section>
+
+  <div class="layout">
+    <section aria-labelledby="results-heading">
+      <div class="section-title">
+        <div><p class="kicker">A2UI surface</p><h2 id="results-heading">Governed transfer recommendations</h2></div>
+        <span id="status" class="status">Ready</span>
+      </div>
+      <p id="assistant-message" class="assistant" aria-live="polite">Submit the request to begin.</p>
+      <div id="a2ui-surface" aria-live="polite"></div>
+    </section>
+
+    <aside aria-labelledby="events-heading">
+      <p class="kicker">AG-UI stream</p>
+      <h2 id="events-heading">Run events</h2>
+      <ol id="events" class="events"></ol>
+    </aside>
+  </div>
+</main>
+<script type="module" src="app.js"></script>
+</body>
+</html>

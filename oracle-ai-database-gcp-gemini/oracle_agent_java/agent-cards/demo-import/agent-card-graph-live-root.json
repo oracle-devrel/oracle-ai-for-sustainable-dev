@@ -4,17 +4,30 @@
   "url": "https://34.186.79.96",
   "version": "0.1.0-live-root",
   "capabilities": {
-    "streaming": false,
+    "streaming": true,
     "pushNotifications": false,
     "stateTransitionHistory": false,
-    "extensions": []
+    "extensions": [
+      {
+        "uri": "https://a2ui.org/a2a-extension/a2ui/v0.8",
+        "description": "Provides agent driven UI using the A2UI JSON format.",
+        "required": false,
+        "params": {
+          "supportedCatalogIds": [
+            "https://a2ui.org/specification/v0_8/standard_catalog_definition.json"
+          ]
+        }
+      }
+    ]
   },
   "defaultInputModes": [
-    "text/plain"
+    "text/plain",
+    "application/json+a2ui"
   ],
   "defaultOutputModes": [
     "image/png",
-    "text/plain"
+    "text/plain",
+    "application/json+a2ui"
   ],
   "skills": [
     {
@@ -39,11 +52,13 @@
         "For SKU-500, map the dependency relationships from supplier to warehouse to retailer."
       ],
       "inputModes": [
-        "text/plain"
+        "text/plain",
+        "application/json+a2ui"
       ],
       "outputModes": [
         "image/png",
-        "text/plain"
+        "text/plain",
+        "application/json+a2ui"
       ]
     },
     {
@@ -66,10 +81,12 @@
         "Find the supply chain dependencies for SKU-500."
       ],
       "inputModes": [
-        "text/plain"
+        "text/plain",
+        "application/json+a2ui"
       ],
       "outputModes": [
-        "image/png"
+        "image/png",
+        "application/json+a2ui"
       ]
     }
   ],

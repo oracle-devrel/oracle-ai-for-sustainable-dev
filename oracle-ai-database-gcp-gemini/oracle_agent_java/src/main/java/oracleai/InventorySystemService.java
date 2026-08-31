@@ -266,7 +266,7 @@ public class InventorySystemService {
         return PRODUCT_ID_PATTERN.matcher(userInput == null ? "" : userInput.toUpperCase()).find();
     }
 
-    private static String databasePrompt(String userInput) {
+    private String databasePrompt(String userInput) {
         String prompt = userInput == null || userInput.isBlank()
                 ? "Which products are at risk of stockouts next quarter, and which regions are driving that risk?"
                 : userInput.trim();
@@ -274,11 +274,12 @@ public class InventorySystemService {
             return prompt;
         }
 
+        String schemaOwner = inventorySchemaOwner();
         String productId = extractProductId(prompt);
         return """
                 You are answering for the supply-chain inventory-risk demo. Use only these Oracle objects:
-                - SALES_USER.SC_INVENTORY_RISK_SUMMARY(product_id, quarter_label, risk_level, stockout_probability, at_risk_units, projected_revenue_impact_usd, primary_region, recommendation_summary, active_flag)
-                - SALES_USER.SC_INVENTORY_RISK_DEMO_V(product_id, product_name, quarter_label, overall_risk_level, stockout_probability, product_at_risk_units, projected_revenue_impact_usd, primary_region, recommendation_summary, warehouse_name, county_name, state_code, region_name, hotspot_rank, hotspot_score, coverage_days, backlog_units, service_level_pct, at_risk_units, revenue_impact_usd, recommended_role, active_flag)
+                - %s.SC_INVENTORY_RISK_SUMMARY(product_id, quarter_label, risk_level, stockout_probability, at_risk_units, projected_revenue_impact_usd, primary_region, recommendation_summary, active_flag)
+                - %s.SC_INVENTORY_RISK_DEMO_V(product_id, product_name, quarter_label, overall_risk_level, stockout_probability, product_at_risk_units, projected_revenue_impact_usd, primary_region, recommendation_summary, warehouse_name, county_name, state_code, region_name, hotspot_rank, hotspot_score, coverage_days, backlog_units, service_level_pct, at_risk_units, revenue_impact_usd, recommended_role, active_flag)
 
                 Run this SQL exactly. It intentionally reads the small active demo view without a string-literal
                 WHERE predicate:
@@ -288,7 +289,7 @@ public class InventorySystemService {
                        RECOMMENDATION_SUMMARY, REGION_NAME, SUM(AT_RISK_UNITS) AS REGION_AT_RISK_UNITS,
                        SUM(REVENUE_IMPACT_USD) AS REGION_REVENUE_IMPACT_USD,
                        MIN(COVERAGE_DAYS) AS MIN_COVERAGE_DAYS
-                FROM SALES_USER.SC_INVENTORY_RISK_DEMO_V
+                FROM %s.SC_INVENTORY_RISK_DEMO_V
                 GROUP BY PRODUCT_ID, PRODUCT_NAME, QUARTER_LABEL, OVERALL_RISK_LEVEL, STOCKOUT_PROBABILITY,
                          PRODUCT_AT_RISK_UNITS, PROJECTED_REVENUE_IMPACT_USD, PRIMARY_REGION,
                          RECOMMENDATION_SUMMARY, REGION_NAME
@@ -305,16 +306,17 @@ public class InventorySystemService {
                 missing values.
 
                 User question: %s
-                """.formatted(productId, productId, prompt);
+                """.formatted(schemaOwner, schemaOwner, schemaOwner, productId, productId, prompt);
     }
 
-    private static String databaseDelegateErrorText(String userInput, Exception exception) {
+    private String databaseDelegateErrorText(String userInput, Exception exception) {
         if (isInventoryRiskDatabasePrompt(userInput)) {
             String productId = extractProductId(userInput);
+            String schemaOwner = inventorySchemaOwner();
             return "Oracle AI Database agent could not query the inventory-risk demo objects for "
                     + productId
-                    + ". I asked it to use SALES_USER.SC_INVENTORY_RISK_SUMMARY and "
-                    + "SALES_USER.SC_INVENTORY_RISK_DEMO_V, but the delegate failed.\n\n"
+                    + ". I asked it to use " + schemaOwner + ".SC_INVENTORY_RISK_SUMMARY and "
+                    + schemaOwner + ".SC_INVENTORY_RISK_DEMO_V, but the delegate failed.\n\n"
                     + "Delegate error: " + exception.getMessage()
                     + "\n\nNo local Select AI fallback was used. This usually means the Oracle AI Database "
                     + "agent is not currently registered against, profiled for, or permitted to access the "
@@ -322,6 +324,22 @@ public class InventorySystemService {
         }
         return "Oracle AI Database agent handoff failed and local fallback is disabled for this gateway.\n\n"
                 + "Delegate error: " + exception.getMessage();
+    }
+
+    private String inventorySchemaOwner() {
+        String configured = firstNonBlank(
+                environment.getProperty("INVENTORY_SCHEMA_OWNER"),
+                environment.getProperty("SELECT_AI_OBJECT_OWNER"),
+                environment.getProperty("DB_SCHEMA_OWNER"),
+                environment.getProperty("DB_USERNAME"),
+                "SALES_USER"
+        ).toUpperCase();
+        if (!configured.matches("[A-Z][A-Z0-9_$#]{0,127}")) {
+            throw new IllegalArgumentException(
+                    "INVENTORY_SCHEMA_OWNER must be an unquoted Oracle identifier."
+            );
+        }
+        return configured;
     }
 
     private static boolean isInventoryRiskDatabasePrompt(String userInput) {
@@ -429,6 +447,17 @@ public class InventorySystemService {
             }
         }
         return false;
+    }
+
+    private static String firstNonBlank(String... values) {
+        if (values != null) {
+            for (String value : values) {
+                if (value != null && !value.isBlank()) {
+                    return value.trim();
+                }
+            }
+        }
+        return "";
     }
 
     private boolean allowsLocalFallback() {

@@ -1,0 +1,11 @@
+diff --git a/examples/basic-host/serve.ts b/examples/basic-host/serve.ts
+index 0e0e1b3..52c09aa 100644
+--- a/examples/basic-host/serve.ts
++++ b/examples/basic-host/serve.ts
+@@ -11,0 +12 @@ import cors from "cors";
++import { readFileSync } from "node:fs";
+@@ -127 +128,3 @@ sandboxApp.get(["/", "/sandbox.html"], (req, res) => {
+-  res.sendFile(join(DIRECTORY, "sandbox.html"));
++  // Express sendFile returns NotFoundError for this generated file in some
++  // local macOS runtime combinations; serving the same pinned asset is stable.
++  res.type("html").send(readFileSync(join(DIRECTORY, "sandbox.html"), "utf8"));

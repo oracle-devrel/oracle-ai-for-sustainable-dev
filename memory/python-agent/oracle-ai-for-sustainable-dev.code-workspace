@@ -1,0 +1,31 @@
+{
+	"folders": [
+		{
+			"path": "../.."
+		},
+		{
+			"path": "../../../../../orahub/ora-jdbc-dev/ojdbc-agent-memory"
+		}
+	],
+	"settings": {
+		"java.configuration.updateBuildConfiguration": "automatic",
+		"java.compile.nullAnalysis.mode": "automatic",
+		"java.errors.incompleteClasspath.severity": "warning",
+		"java.saveActions.organizeImports": false,
+		"java.completion.enabled": true,
+		"java.signatureHelp.enabled": true,
+		"java.contentProvider.preferred": "fernflower",
+		"java.import.maven.enabled": true,
+		"java.maven.downloadSources": true,
+		"java.debug.settings.enableRunDebugCodeLens": true,
+		"java.debug.logLevel": "warn",
+		"java.completion.favoriteStaticMembers": [
+			"com.oracle.bmc.auth.Region.*"
+		],
+		"java.sources.organizeImports.starThreshold": 99,
+		"java.sources.organizeImports.staticStarThreshold": 99,
+		"java.completion.filteredTypes": [
+			"javax.swing.plaf.synth.Region"
+		]
+	}
+}

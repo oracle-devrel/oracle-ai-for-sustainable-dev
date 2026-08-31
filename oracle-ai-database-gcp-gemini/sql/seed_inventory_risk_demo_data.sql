@@ -3,11 +3,11 @@ set define off
 prompt [1/3] seed sc_inventory_risk_summary
 merge into sc_inventory_risk_summary target
 using (
-    select 'SKU-500' as product_id, '2026-Q3' as quarter_label, 'HIGH' as risk_level, 0.72 as stockout_probability, 1240 as at_risk_units, 185000 as projected_revenue_impact_usd, 'Northeast corridor' as primary_region, 'Rebalance inventory into Newark before the next delayed inbound cycle.' as recommendation_summary, 'Y' as active_flag from dual
+    select 'SKU-500' as product_id, to_char(add_months(trunc(sysdate, 'Q'), 3), 'YYYY-"Q"Q') as quarter_label, 'HIGH' as risk_level, 0.72 as stockout_probability, 1240 as at_risk_units, 185000 as projected_revenue_impact_usd, 'Northeast corridor' as primary_region, 'Rebalance inventory into Newark before the next delayed inbound cycle.' as recommendation_summary, 'Y' as active_flag from dual
     union all
-    select 'SKU-700', '2026-Q3', 'MEDIUM', 0.49, 780, 96000, 'Upper Midwest', 'Pre-stage buffer inventory in Chicago before demand spikes.', 'Y' from dual
+    select 'SKU-700', to_char(add_months(trunc(sysdate, 'Q'), 3), 'YYYY-"Q"Q'), 'MEDIUM', 0.49, 780, 96000, 'Upper Midwest', 'Pre-stage buffer inventory in Chicago before demand spikes.', 'Y' from dual
     union all
-    select 'SKU-900', '2026-Q3', 'MEDIUM', 0.41, 620, 87000, 'Southeast', 'Maintain current buffers but watch Gulf-port capacity.', 'Y' from dual
+    select 'SKU-900', to_char(add_months(trunc(sysdate, 'Q'), 3), 'YYYY-"Q"Q'), 'MEDIUM', 0.41, 620, 87000, 'Southeast', 'Maintain current buffers but watch Gulf-port capacity.', 'Y' from dual
 ) source
 on (target.product_id = source.product_id)
 when matched then update set

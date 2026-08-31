@@ -1,0 +1,5 @@
+# Oracle support was merged after the latest PyPI release. Keep this immutable
+# commit pin until a published Mem0 release includes the oracledb provider.
+mem0ai @ git+https://github.com/mem0ai/mem0.git@d6d89c987bddf580870db14c69db974edfc5263c
+oracledb>=2.2.0
+python-dotenv>=1.0,<2

@@ -6,6 +6,18 @@ logging:
     root: INFO
 
 spring:
+  datasource:
+    type: oracle.ucp.jdbc.PoolDataSource
+    url: ${DEEPSEC_JDBC_URL:}
+    username: ${DEEPSEC_USERNAME:}
+    password: ${DEEPSEC_PASSWORD:}
+    driver-class-name: oracle.jdbc.OracleDriver
+    oracleucp:
+      connection-factory-class-name: oracle.jdbc.datasource.impl.OracleDataSource
+      connection-pool-name: ${DEEPSEC_UCP_POOL_NAME:DeepDataSecurityApiUcpPool}
+      initial-pool-size: ${DEEPSEC_UCP_INITIAL_POOL_SIZE:1}
+      min-pool-size: ${DEEPSEC_UCP_MIN_POOL_SIZE:1}
+      max-pool-size: ${DEEPSEC_POOL_SIZE:10}
   security:
     oauth2:
       client:
@@ -25,14 +37,6 @@ spring:
             user-name-attribute: sub
 
 deepsec:
-  jdbc-url: ${DEEPSEC_JDBC_URL:}
-  username: ${DEEPSEC_USERNAME:}
-  password: ${DEEPSEC_PASSWORD:}
-  ucp:
-    connection-pool-name: ${DEEPSEC_UCP_POOL_NAME:DeepDataSecurityApiUcpPool}
-    initial-pool-size: ${DEEPSEC_UCP_INITIAL_POOL_SIZE:1}
-    min-pool-size: ${DEEPSEC_UCP_MIN_POOL_SIZE:1}
-    max-pool-size: ${DEEPSEC_POOL_SIZE:10}
   sql: ${DEEPSEC_SQL:select employee_id || ':' || first_name || ' ' || last_name from hr.employees fetch first 10 rows only}
   session-init-sql: ${DEEPSEC_SESSION_INIT_SQL:alter session disable parallel query}
   attributes-json: ${DEEPSEC_ATTRIBUTES_JSON:}

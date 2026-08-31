@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">A2UI host and Oracle AI Database process boundaries</title>
+  <desc id="desc">The human types a request and sees native A2UI components inside one A2UI-capable host process. The request flows through a Python A2A adapter, Java service, standalone Oracle Database MCP Java Toolkit process, and Oracle AI Database. The governed result returns through each of those layers before the host renders it.</desc>
+  <defs>
+    <marker id="arrowBlue" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#167da6"/></marker>
+    <marker id="arrowGreen" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#008f83"/></marker>
+    <style>
+      .title{font:700 40px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#193653}.subtitle{font:24px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#43596d}.boundary{fill:#f2f8fb;stroke:#167da6;stroke-width:3}.box{fill:#fff;stroke:#a9c4d2;stroke-width:2}.db{fill:#fff5ef;stroke:#c74634;stroke-width:3}.heading{font:700 24px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#193653;text-anchor:middle}.body{font:18px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#43596d;text-anchor:middle}.badge{fill:#193653}.badgeText{font:700 13px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#fff;text-anchor:middle;letter-spacing:.5px}.call{stroke:#167da6;stroke-width:4;fill:none;marker-end:url(#arrowBlue)}.return{stroke:#008f83;stroke-width:4;fill:none;stroke-dasharray:9 7;marker-end:url(#arrowGreen)}.label{font:600 17px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#20313f;text-anchor:middle}.small{font:16px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#5c6f80;text-anchor:middle}
+    </style>
+  </defs>
+  <rect width="1600" height="900" fill="#fff"/>
+  <text x="60" y="70" class="title">Where input and A2UI rendering run</text>
+  <text x="60" y="110" class="subtitle">The prompt surface and rendered native UI share the capable host; governed data and execution remain server-side.</text>
+
+  <rect x="45" y="150" width="560" height="690" rx="24" class="boundary"/>
+  <rect x="185" y="130" width="280" height="34" rx="17" class="badge"/><text x="325" y="153" class="badgeText">A2UI-CAPABLE HOST PROCESS</text>
+  <text x="325" y="202" class="heading">Conversation host or custom web app</text>
+  <text x="325" y="230" class="small">Custom browser, or an enterprise host that supports A2UI</text>
+
+  <circle cx="125" cy="292" r="15" fill="none" stroke="#193653" stroke-width="3"/>
+  <line x1="125" y1="307" x2="125" y2="342" stroke="#193653" stroke-width="3"/>
+  <line x1="102" y1="321" x2="148" y2="321" stroke="#193653" stroke-width="3"/>
+  <line x1="125" y1="342" x2="106" y2="368" stroke="#193653" stroke-width="3"/>
+  <line x1="125" y1="342" x2="144" y2="368" stroke="#193653" stroke-width="3"/>
+  <text x="125" y="400" class="heading">Planner</text>
+
+  <rect x="215" y="275" width="340" height="115" rx="14" class="box"/>
+  <text x="385" y="318" class="heading">Prompt input</text>
+  <text x="385" y="352" class="body">You type a message here</text>
+  <line x1="150" y1="332" x2="215" y2="332" class="call"/>
+
+  <rect x="95" y="475" width="460" height="285" rx="18" class="box"/>
+  <text x="325" y="522" class="heading">Host A2UI renderer</text>
+  <text x="325" y="556" class="body">Validates version, catalog, components,</text>
+  <text x="325" y="584" class="body">actions, properties, and image origins</text>
+  <rect x="145" y="625" width="360" height="92" rx="12" fill="#e8f5ef" stroke="#66aa83" stroke-width="2"/>
+  <text x="325" y="663" class="heading">Your native UI</text>
+  <text x="325" y="696" class="body">Cards, fields, and approval controls</text>
+
+  <rect x="665" y="220" width="290" height="150" rx="18" class="box"/>
+  <rect x="700" y="202" width="220" height="30" rx="15" class="badge"/><text x="810" y="223" class="badgeText">PYTHON ADAPTER PROCESS</text>
+  <text x="810" y="278" class="heading">A2A adapter</text>
+  <text x="810" y="313" class="body">Request executor +</text>
+  <text x="810" y="341" class="body">deterministic A2UI builder</text>
+
+  <rect x="1035" y="220" width="250" height="150" rx="18" class="box"/>
+  <rect x="1060" y="202" width="200" height="30" rx="15" class="badge"/><text x="1160" y="223" class="badgeText">JAVA SERVICE JVM</text>
+  <text x="1160" y="286" class="heading">Agent service</text>
+  <text x="1160" y="321" class="body">Approval policy and</text>
+  <text x="1160" y="349" class="body">MCP client</text>
+
+  <rect x="1035" y="520" width="250" height="150" rx="18" class="box"/>
+  <rect x="1050" y="502" width="220" height="30" rx="15" class="badge"/><text x="1160" y="523" class="badgeText">STANDALONE TOOLKIT JVM</text>
+  <text x="1160" y="578" class="heading">Oracle Database</text>
+  <text x="1160" y="610" class="heading">MCP Java Toolkit</text>
+  <text x="1160" y="644" class="body">Allowlisted business tools</text>
+
+  <rect x="1350" y="520" width="210" height="150" rx="18" class="db"/>
+  <rect x="1370" y="502" width="170" height="30" rx="15" class="badge"/><text x="1455" y="523" class="badgeText">DATABASE SERVICE</text>
+  <text x="1455" y="580" class="heading">Oracle AI</text>
+  <text x="1455" y="612" class="heading">Database</text>
+  <text x="1455" y="646" class="body">Data + transaction</text>
+
+  <line x1="555" y1="332" x2="665" y2="300" class="call"/><text x="610" y="286" class="label">A2A request</text>
+  <line x1="955" y1="295" x2="1035" y2="295" class="call"/><text x="995" y="278" class="label">REST</text>
+  <path d="M1160 370 L1160 520" class="call"/><text x="1240" y="452" class="label">MCP tools/call</text>
+  <line x1="1285" y1="595" x2="1350" y2="595" class="call"/><text x="1318" y="579" class="label">JDBC</text>
+
+  <line x1="1350" y1="635" x2="1285" y2="635" class="return"/>
+  <text x="1318" y="666" class="label">Rows</text>
+  <path d="M1100 520 L1100 370" class="return"/>
+  <text x="1025" y="452" class="label">Tool result</text>
+  <line x1="1035" y1="345" x2="955" y2="345" class="return"/>
+  <text x="995" y="397" class="label">Review result</text>
+  <path d="M665 345 L630 345 L630 615 L555 615" class="return"/>
+  <text x="705" y="590" class="label">A2UI DataParts</text>
+  <text x="325" y="794" class="small">The host renders approved native components.</text>
+  <text x="325" y="820" class="small">No agent-generated frontend code executes.</text>
+</svg>

@@ -1,0 +1,18 @@
+[Unit]
+Description=Oracle supply-chain A2A agents for Gemini Enterprise
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/opt/oracle-gemini-supply-chain-a2a/oracle_agent_java
+ExecStart=/opt/oracle-gemini-supply-chain-a2a/oracle_agent_java/run.sh
+Restart=on-failure
+RestartSec=5s
+MemoryMax=1400M
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

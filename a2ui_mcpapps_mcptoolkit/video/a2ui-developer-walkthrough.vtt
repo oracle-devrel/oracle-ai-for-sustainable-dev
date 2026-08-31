@@ -1,0 +1,88 @@
+WEBVTT
+
+00:00:00.200 --> 00:00:05.800
+A2UI lets an agent return a declarative UI recipe that the host renders with approved native components.
+
+00:00:06.200 --> 00:00:11.800
+This project uses A2UI v0.9.1 over AG-UI locally and A2UI v0.8 DataParts over A2A in Gemini Enterprise.
+
+00:00:12.200 --> 00:00:17.800
+The local browser demonstrates A2UI beside AG-UI event streaming.
+
+00:00:18.200 --> 00:00:23.800
+The Oracle Database MCP Java Toolkit runs separately and exposes governed database tools.
+
+00:00:24.200 --> 00:00:29.800
+The Spring Boot service orchestrates UI protocols, approval state, and database tools.
+
+00:00:30.200 --> 00:00:35.800
+The browser asks for stockout transfer recommendations and opens a streaming run.
+
+00:00:36.200 --> 00:00:41.800
+The browser receives AG-UI events and watches for custom A2UI messages.
+
+00:00:42.200 --> 00:00:47.800
+The service streams the run from /api/runs/stream.
+
+00:00:48.200 --> 00:00:53.800
+The service emits run, text, tool-call, state, and custom events.
+
+00:00:54.200 --> 00:00:59.800
+A2UI messages are carried in AG-UI CUSTOM events named a2ui.message.
+
+00:01:00.200 --> 00:01:05.800
+The standalone path creates an A2UI v0.9.1 surface with a catalog and theme.
+
+00:01:06.200 --> 00:01:11.800
+The service declares Image, Text, List, Card, TextField, Row, and Button components.
+
+00:01:12.200 --> 00:01:17.800
+Recommendation values from Oracle AI Database are bound into the A2UI data model.
+
+00:01:18.200 --> 00:01:23.800
+The service asks the Toolkit for bounded transfer recommendations.
+
+00:01:24.200 --> 00:01:29.800
+The Toolkit maps find-stockout-transfer-recommendations to bounded SQL.
+
+00:01:30.200 --> 00:01:35.800
+Oracle AI Database calculates feasible source-to-target transfer candidates.
+
+00:01:36.200 --> 00:01:41.800
+The host renders a native review form from the recipe rather than executing generated frontend code.
+
+00:01:42.200 --> 00:01:47.800
+The data model carries the approval ID, selected recommendation, permissions, and notes.
+
+00:01:48.200 --> 00:01:53.800
+The user explicitly approves one exact transfer from the rendered controls.
+
+00:01:54.200 --> 00:01:59.800
+The service receives approval and validates it before any database write.
+
+00:02:00.200 --> 00:02:05.800
+The approval service prevents arbitrary transfer substitution after review.
+
+00:02:06.200 --> 00:02:11.800
+The Toolkit executes the approved write through a stored procedure.
+
+00:02:12.200 --> 00:02:17.800
+Gemini Enterprise receives A2UI as DataParts instead of AG-UI custom events.
+
+00:02:18.200 --> 00:02:23.800
+The A2A agent card advertises the A2UI extension and supported catalog.
+
+00:02:24.200 --> 00:02:29.800
+The adapter wraps each A2UI message with create_a2ui_part.
+
+00:02:30.200 --> 00:02:35.800
+The Gemini path builds beginRendering, surfaceUpdate, and dataModelUpdate messages.
+
+00:02:36.200 --> 00:02:41.800
+Gemini Enterprise renders the review surface from the A2UI DataParts.
+
+00:02:42.200 --> 00:02:47.800
+The graph agent now returns portable A2UI cards and inspect buttons plus its deterministic PNG.
+
+00:02:48.200 --> 00:02:53.800
+A2UI gives controlled native UI while Oracle AI Database remains the governed data and transaction layer.

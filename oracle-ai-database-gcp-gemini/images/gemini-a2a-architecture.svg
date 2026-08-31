@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="900" viewBox="0 0 1400 900" role="img" aria-labelledby="title desc">
+  <title id="title">Oracle AI Database and Gemini Enterprise A2A architecture</title>
+  <desc id="desc">Gemini Enterprise calls a public TLS A2A gateway. A Java service routes inventory, graph, spatial, and action requests to Oracle AI Database. An optional managed database-agent path uses Select AI and per-user database identity.</desc>
+  <defs>
+    <linearGradient id="header" x1="0" x2="1"><stop stop-color="#2b3440"/><stop offset="1" stop-color="#17232c"/></linearGradient>
+    <linearGradient id="oracle" x1="0" x2="1"><stop stop-color="#fff5f1"/><stop offset="1" stop-color="#ffe7df"/></linearGradient>
+    <linearGradient id="google" x1="0" x2="1"><stop stop-color="#eef5ff"/><stop offset="1" stop-color="#e8f7f4"/></linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="8" stdDeviation="10" flood-opacity=".14"/></filter>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#516372"/></marker>
+    <style>
+      .title{font:700 30px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#fff}.sub{font:500 16px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#dce5eb}.h{font:700 21px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#1d2730}.b{font:500 16px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#34434f}.s{font:500 14px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#526572}.label{font:700 14px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#c74634}.accent{font:700 14px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#8a5c00}.box{stroke:#cfd8df;stroke-width:2}.agent{fill:#fff;stroke:#c8d3dc;stroke-width:2}.line{stroke:#516372;stroke-width:3;fill:none;marker-end:url(#arrow)}.dash{stroke:#a47315;stroke-width:3;stroke-dasharray:10 8;fill:none;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect width="1400" height="900" fill="#f5f7f8"/>
+  <rect width="1400" height="105" fill="url(#header)"/>
+  <text x="55" y="49" class="title">Gemini Enterprise + Oracle AI Database over A2A</text>
+  <text x="55" y="78" class="sub">Portable specialist agents over a governed, multimodel data plane</text>
+
+  <g filter="url(#shadow)">
+    <rect x="55" y="145" width="310" height="620" rx="20" fill="url(#google)" class="box"/>
+    <text x="85" y="185" class="label">CONVERSATIONAL HOST</text>
+    <text x="85" y="220" class="h">Gemini Enterprise</text>
+    <rect x="85" y="255" width="250" height="115" rx="14" class="agent"/>
+    <text x="105" y="286" class="h">Custom A2A agents</text>
+    <text x="105" y="316" class="b">Discovery + messages</text>
+    <text x="105" y="343" class="s">Text, data, and artifacts</text>
+    <rect x="85" y="405" width="250" height="145" rx="14" fill="#fffaf0" stroke="#deb76c" stroke-width="2"/>
+    <text x="105" y="438" class="h">Managed DB agent</text>
+    <text x="105" y="466" class="b">Optional integration</text>
+    <text x="105" y="495" class="accent">PER-USER IDENTITY</text>
+    <text x="105" y="520" class="s">Select AI + database OAuth</text>
+    <rect x="85" y="585" width="250" height="140" rx="14" fill="#fff" stroke="#c8d3dc" stroke-width="2"/>
+    <text x="105" y="618" class="h">User experience</text>
+    <text x="105" y="650" class="b">Natural-language prompts</text>
+    <text x="105" y="678" class="b">Inline image artifacts</text>
+    <text x="105" y="706" class="b">Approval-gated actions</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="455" y="145" width="500" height="620" rx="20" fill="#fff" class="box"/>
+    <text x="485" y="185" class="label">GOOGLE CLOUD RUNTIME</text>
+    <text x="485" y="220" class="h">Application compute service</text>
+    <rect x="485" y="248" width="440" height="92" rx="14" fill="#eef6f0" stroke="#91b69a" stroke-width="2"/>
+    <text x="510" y="280" class="h">Public TLS A2A gateway</text>
+    <text x="510" y="310" class="s">Scoped firewall &#183; trusted certificate &#183; least exposure</text>
+    <rect x="485" y="370" width="440" height="345" rx="16" fill="#f8fafb" stroke="#c8d3dc" stroke-width="2"/>
+    <text x="510" y="405" class="h">Java A2A runtime</text>
+    <rect x="510" y="432" width="185" height="92" rx="12" class="agent"/>
+    <text x="530" y="464" class="h">Risk router</text>
+    <text x="530" y="492" class="s">Delegates by intent</text>
+    <rect x="715" y="432" width="185" height="92" rx="12" class="agent"/>
+    <text x="735" y="464" class="h">Graph agent</text>
+    <text x="735" y="492" class="s">Dependency artifact</text>
+    <rect x="510" y="548" width="185" height="92" rx="12" class="agent"/>
+    <text x="530" y="580" class="h">Spatial agent</text>
+    <text x="530" y="608" class="s">Hotspot map</text>
+    <rect x="715" y="548" width="185" height="92" rx="12" class="agent"/>
+    <text x="735" y="580" class="h">Action agent</text>
+    <text x="735" y="608" class="s">Draft, never auto-write</text>
+    <text x="510" y="681" class="s">Independent runtime, configuration, and service lifecycle</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="1045" y="145" width="300" height="620" rx="20" fill="url(#oracle)" stroke="#e5b5a9" stroke-width="2"/>
+    <text x="1075" y="185" class="label">GOVERNED DATA PLANE</text>
+    <text x="1075" y="220" class="h">Oracle AI Database</text>
+    <text x="1075" y="247" class="s">Private system of record</text>
+    <rect x="1075" y="278" width="240" height="105" rx="13" class="agent"/>
+    <text x="1095" y="310" class="h">Inventory risk</text>
+    <text x="1095" y="339" class="b">Products &#183; warehouses</text>
+    <text x="1095" y="365" class="s">Forecasts + snapshots</text>
+    <rect x="1075" y="410" width="240" height="105" rx="13" class="agent"/>
+    <text x="1095" y="442" class="h">Converged data</text>
+    <text x="1095" y="471" class="b">Property graph &#183; spatial</text>
+    <text x="1095" y="497" class="s">One governed foundation</text>
+    <rect x="1075" y="542" width="240" height="145" rx="13" fill="#fffaf0" stroke="#deb76c" stroke-width="2"/>
+    <text x="1095" y="574" class="h">Select AI</text>
+    <text x="1095" y="603" class="b">Narrow object profile</text>
+    <text x="1095" y="632" class="accent">ALLOWLISTED DATA</text>
+    <text x="1095" y="658" class="s">Provider key stored as</text>
+    <text x="1095" y="678" class="s">an Oracle credential</text>
+    <text x="1075" y="723" class="s">Least-privileged application schema</text>
+  </g>
+
+  <path d="M365 306 C405 306 420 294 455 294" class="line"/>
+  <text x="378" y="281" class="s">HTTPS / JSON-RPC</text>
+  <path d="M955 475 C995 475 1010 346 1045 346" class="line"/>
+  <text x="963" y="410" class="s">Secure DB connection</text>
+  <path d="M365 478 C690 90 940 95 1045 615" class="dash"/>
+  <text x="650" y="132" class="accent">Optional managed Oracle A2A/OAuth path</text>
+
+  <rect x="55" y="805" width="1290" height="58" rx="12" fill="#17272c"/>
+  <circle cx="82" cy="834" r="8" fill="#4caf73"/>
+  <text x="101" y="840" class="sub">Database-backed evidence, portable agents, multimodel analysis, and approval-gated actions</text>
+</svg>

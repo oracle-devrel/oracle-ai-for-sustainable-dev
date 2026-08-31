@@ -1,0 +1,13 @@
+.gcloudignore
+.git
+.gitignore
+.env
+.runtime
+agent-service/target
+gemini-enterprise-a2a/.venv
+gemini-enterprise-a2a/__pycache__
+gemini-enterprise-a2a/tests/__pycache__
+mcp-app/dist
+mcp-app/node_modules
+video
+*.log

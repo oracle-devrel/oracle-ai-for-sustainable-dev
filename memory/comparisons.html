@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Top AI Agent Memory Platforms in 2026: A Technical Comparison</title>
+  <meta name="description" content="Compare Mem0, Zep, Letta, LangMem, Amazon Bedrock AgentCore Memory, and Oracle AI Agent Memory by open-source status, databases, Oracle integration, continual learning, strengths, and limitations.">
+  <style>
+    :root { color-scheme: light; }
+    body { margin: 0; color: #1f2933; background: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; line-height: 1.65; }
+    main { max-width: 1120px; margin: 0 auto; padding: 38px 22px 72px; }
+    h1 { margin: 0 0 12px; max-width: 1050px; font-size: clamp(2.15rem, 5vw, 3.7rem); line-height: 1.04; letter-spacing: -.035em; }
+    h2 { margin-top: 46px; line-height: 1.2; }
+    h3 { margin-top: 30px; line-height: 1.25; }
+    .eyebrow { margin: 0 0 10px; color: #c74634; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+    .subtitle { margin: 0 0 28px; max-width: 970px; color: #4b5563; font-size: 1.3rem; }
+    .callout { padding: 15px 17px; border-left: 4px solid #c74634; background: #fff6f2; }
+    .note { padding: 15px 17px; border-left: 4px solid #54738f; background: #f3f7fa; }
+    figure { margin: 32px 0; }
+    figure img { display: block; max-width: 100%; height: auto; border-radius: 8px; }
+    figcaption { margin-top: 8px; color: #5c6673; font-size: .95rem; }
+    code { font-family: "SFMono-Regular", Consolas, monospace; overflow-wrap: anywhere; }
+    .table-wrap { width: 100%; overflow-x: auto; }
+    table { width: 100%; min-width: 1600px; border-collapse: collapse; font-size: .86rem; line-height: 1.4; }
+    th, td { padding: 10px; border: 1px solid #d6dce3; text-align: left; vertical-align: top; }
+    th { background: #eef2f6; }
+    tbody tr:nth-child(even) { background: #fafbfc; }
+    tr.oracle { background: #fff2ee !important; }
+    tr.oracle td:first-child { border-left: 4px solid #c74634; }
+    li + li { margin-top: 7px; }
+    a { color: #075eaa; }
+    .updated { color: #5c6673; font-size: .92rem; }
+  </style>
+</head>
+<body>
+<main>
+  <p class="note"><strong>Looking for the runnable demo?</strong> See <a href="blog.html">Memories Are the Magic</a> for a presenter-ready Oracle AI Database walkthrough of scoped recall, correction, TTL, traces, and approved procedural learning.</p>
+  <p class="eyebrow">Oracle AI Database · Agent memory · Technical comparison</p>
+  <h1>Top AI Agent Memory Platforms in 2026: How Oracle AI Agent Memory Compares</h1>
+  <p class="subtitle">A practical matrix for comparing persistent memory, retrieval, storage choices, client languages, lifecycle controls, and enterprise governance.</p>
+
+  <p>Which AI agent memory platform should you use? The answer depends less on whether a product can perform semantic search and more on where memory is stored, how it is scoped, whether facts can be corrected or deleted, which client languages are supported, and how the memory layer fits your governance model.</p>
+  <p>This article compares five commonly evaluated agent-memory choices, Mem0, Zep, Letta, LangMem with LangGraph, and Amazon Bedrock AgentCore Memory, with <a href="https://www.oracle.com/database/ai-agent-memory/">Oracle AI Agent Memory</a> and its <code>oracleagentmemory</code> library. “Top five” here means representative, widely documented options with active developer ecosystems and distinct architectures; it is not a market-share ranking, for which no independently verified six-product order is publicly available. The closest reproducible public-adoption proxy is GitHub stars, which is the following:</p>
+  <ol>
+    <li><a href="https://github.com/mem0ai/mem0">Mem0 OSS</a>: approximately 61,900 stars</li>
+    <li><a href="https://github.com/getzep/graphiti">Zep Graphiti</a>: approximately 29,300 stars</li>
+    <li><a href="https://github.com/letta-ai/letta">Letta</a>: approximately 24,000 stars</li>
+    <li><a href="https://github.com/langchain-ai/langmem">LangMem</a>: approximately 1,600 stars</li>
+  </ol>
+  <p>Amazon Bedrock AgentCore Memory and Oracle AI Agent Memory do not expose directly comparable product repositories, so they cannot be placed in that proxy ranking. Stars indicate developer interest, not revenue, production deployments, or market share. Counts were checked on July 28, 2026; product capabilities will continue to evolve.</p>
+
+  <figure>
+    <img src="images/agent-memory-platforms.svg" alt="Technical diagram showing the agent-memory lifecycle: remember, retrieve, update or delete, and govern, backed by persistent database, vector, graph, or managed storage.">
+    <figcaption>Evaluate the complete memory lifecycle. Fast retrieval is valuable, but scoping, correction, expiration, deletion, authorization, and auditability determine whether memory is production-ready.</figcaption>
+  </figure>
+
+  <section id="key-takeaways">
+    <h2>Key Takeaways</h2>
+    <ul>
+      <li>Mem0, Zep, Letta, LangMem, and AgentCore address different layers: memory service, temporal graph, stateful-agent platform, framework utilities, and managed cloud infrastructure.</li>
+      <li>Open-source availability does not automatically mean the managed service or its storage engine is open source; several products use a mixed model.</li>
+      <li>All six choices can evolve stored memory, but “continual learning” here does not mean automatically retraining the foundation model.</li>
+      <li>Oracle AI Agent Memory keeps short- and long-term memory on Oracle AI Database and adds explicit scope, hybrid retrieval, lifecycle management, and a dual-licensed library.</li>
+    </ul>
+  </section>
+
+  <section id="comparison">
+    <h2>Agent Memory Platform Comparison Matrix</h2>
+    <p>The matrix uses the product's documented production path. Where a project has both open-source and managed editions, the distinction is stated explicitly.</p>
+    <p class="note"><strong>How this article uses “continual learning”:</strong> the system extracts, adds, consolidates, corrects, invalidates, or retrieves memory as interactions accumulate. It may also refine prompts or agent state. This is inference-time adaptation through external state, not automatic training of the underlying foundation model's weights.</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Company</th>
+            <th>Product</th>
+            <th>Is open source?</th>
+            <th>Database supported</th>
+            <th>Client languages supported</th>
+            <th>Oracle Database backend possible?</th>
+            <th>Continual learning</th>
+            <th>Strengths</th>
+            <th>Limitations</th>
+            <th>Short description of main features/characteristics</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Mem0</td>
+            <td><a href="https://docs.mem0.ai/">Mem0 Platform and Mem0 OSS</a></td>
+            <td><strong>Mixed.</strong> <a href="https://github.com/mem0ai/mem0">Mem0 OSS</a> is Apache 2.0; Platform is managed.</td>
+            <td>Many vector stores. The new Oracle provider stores embeddings in native <code>VECTOR</code> and memory payloads in <code>JSON</code>.</td>
+            <td>Python, JavaScript/TypeScript, REST, and CLIs.</td>
+            <td><strong>Yes, for the vector store.</strong> Mem0 OSS <code>main</code> includes a native <code>oracledb</code> provider with pooled connections, metadata filters, CRUD, and HNSW or IVF indexing. Pin the <a href="https://github.com/mem0ai/mem0/commit/d6d89c987bddf580870db14c69db974edfc5263c">July 23, 2026 merge commit</a> until it reaches PyPI. See the <a href="Mem0-OracleAIDatabase/README.md">starter implementation</a>.</td>
+            <td><strong>Yes.</strong> Extracts facts and handles conflicts; current Platform preserves linked history. No model-weight training.</td>
+            <td>Simple API, broad integrations, managed or self-hosted, useful scopes.</td>
+            <td>The latest PyPI release predates Oracle support. Oracle backs vectors and JSON payloads, while Mem0 operation history remains in SQLite and optional graph memory needs a separate provider.</td>
+            <td>General-purpose extraction, search, metadata, and memory CRUD.</td>
+          </tr>
+          <tr>
+            <td>Zep AI</td>
+            <td><a href="https://help.getzep.com/zep-vs-graphiti">Zep and Graphiti</a></td>
+            <td><strong>Mixed.</strong> <a href="https://github.com/getzep/graphiti">Graphiti</a> is open source; managed Zep is proprietary.</td>
+            <td>Zep-managed storage; Graphiti supports Neo4j, FalkorDB, and Amazon Neptune.</td>
+            <td>Zep: Python, JavaScript/TypeScript, Go. Graphiti: primarily Python.</td>
+            <td><strong>Custom only.</strong> Build a Graphiti graph/search driver for Oracle; managed Zep storage is not selectable.</td>
+            <td><strong>Yes.</strong> Incrementally adds facts and invalidates superseded facts while retaining history.</td>
+            <td>Temporal reasoning, provenance, contradiction handling, hybrid graph retrieval.</td>
+            <td>Graph complexity; Graphiti needs production tooling; managed Zep is proprietary.</td>
+            <td>Temporal context graph for current and historical facts.</td>
+          </tr>
+          <tr>
+            <td>Letta</td>
+            <td><a href="https://docs.letta.com/">Letta Cloud and open-source Letta server</a></td>
+            <td><strong>Mixed.</strong> The <a href="https://github.com/letta-ai/letta">Letta server/API</a> is Apache 2.0; Cloud is managed.</td>
+            <td>PostgreSQL with <code>pgvector</code> when self-hosted; managed in Cloud.</td>
+            <td>Python, JavaScript/TypeScript, and REST.</td>
+            <td><strong>Not natively.</strong> Oracle can be an external tool/source; replacing PostgreSQL requires a persistence-layer implementation.</td>
+            <td><strong>Yes.</strong> Agents autonomously edit memory blocks and persistent behavior state.</td>
+            <td>Complete stateful runtime, persistent identity, shared and always-visible blocks.</td>
+            <td>Opinionated full platform; self-hosting and autonomous writes require controls.</td>
+            <td>Stateful agents with editable core and archival memory.</td>
+          </tr>
+          <tr>
+            <td>LangChain</td>
+            <td><a href="https://langchain-ai.github.io/langmem/">LangMem, LangGraph stores, and LangGraph Platform</a></td>
+            <td><strong>Mixed.</strong> <a href="https://github.com/langchain-ai/langmem">LangMem</a> and <a href="https://github.com/langchain-ai/langgraph">LangGraph</a> are MIT; Platform is commercial.</td>
+            <td>Storage-neutral core plus LangGraph <code>BaseStore</code> adapters, including PostgreSQL and Oracle.</td>
+            <td>LangMem: Python. LangGraph: Python and JavaScript/TypeScript.</td>
+            <td><strong>Yes, natively.</strong> Use <a href="https://langchain-ai.github.io/langgraph/how-tos/persistence-functional/">OracleStore and OracleSaver</a> from <code>langgraph-oracledb</code>.</td>
+            <td><strong>Yes.</strong> Extracts, consolidates, updates/deletes memories, and can optimize prompts.</td>
+            <td>Composable memory types, storage flexibility, background reflection, prompt learning.</td>
+            <td>Not turnkey; teams own persistence, scheduling, authorization, and operations.</td>
+            <td>Framework primitives for semantic, episodic, and procedural memory.</td>
+          </tr>
+          <tr>
+            <td>Amazon Web Services</td>
+            <td><a href="https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/memory.html">Amazon Bedrock AgentCore Memory</a></td>
+            <td><strong>No.</strong> Fully managed AWS service.</td>
+            <td>AWS-managed; the underlying database is not selectable.</td>
+            <td>Python/Boto3, AWS service APIs/SDKs, and Node CLI.</td>
+            <td><strong>Not as its memory store.</strong> A self-managed strategy can use Oracle externally, but AgentCore still stores memory records.</td>
+            <td><strong>Yes.</strong> Managed strategies extract, consolidate, summarize, and reflect asynchronously.</td>
+            <td>Managed scale, AWS security, built-in/custom strategies, actor/session scope.</td>
+            <td>AWS lock-in; strategies are not retroactive; customization restores operational work.</td>
+            <td>Managed event history and strategy-based long-term memory.</td>
+          </tr>
+          <tr class="oracle">
+            <td>Oracle</td>
+            <td><a href="https://docs.oracle.com/en/database/oracle/agent-memory/26.6/">Oracle AI Agent Memory 26.6 and <code>oracleagentmemory</code></a></td>
+            <td><strong>Mixed.</strong> The library is dual-licensed under Apache 2.0 or UPL 1.0; Oracle AI Database is commercial. No public product GitHub repository is currently listed.</td>
+            <td>Oracle AI Database 26ai or later through an application connection or pool.</td>
+            <td>Oracle Agent Memory libraries/SDKs; availability depends on release.</td>
+            <td><strong>Yes, natively.</strong> Oracle AI Database is the memory, vector, keyword, metadata, and governance backend.</td>
+            <td><strong>Yes.</strong> Inline/background extraction, summaries, configurable updates, and re-extraction.</td>
+            <td>Database-native hybrid retrieval, scope, SQL security, TTL, updates, deletion.</td>
+            <td>Requires Oracle AI Database 26ai+; teams configure models and policies; background work is best effort.</td>
+            <td>Governed short- and long-term memory on Oracle AI Database.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="updated">Comparison reviewed against official product documentation in July 2026. Verify current release notes, regional availability, pricing, and license terms before selecting a platform.</p>
+  </section>
+
+  <section id="how-to-read">
+    <h2>How to Read the Matrix</h2>
+    <h3>Open source can describe only part of the stack</h3>
+    <p>A project may publish an open-source client or engine while offering a proprietary managed control plane, storage engine, or enterprise governance layer. Decide whether your requirement is source access to the SDK, the complete server, the database layer, or the production service.</p>
+
+    <h3>“Database supported” changes the operating model</h3>
+    <p>A bring-your-own-store library offers portability but leaves schema design, backup, scaling, consistency, deletion, and security integration to the application team. A managed memory service removes much of that work but can limit storage choice and portability. A database-native memory layer keeps memory close to other enterprise data and policies but standardizes on that database.</p>
+
+    <h3>Memory is more than vector similarity</h3>
+    <p>Useful memory systems decide what to retain, organize it by user and agent, retrieve it when relevant, correct contradictions, and delete it when it expires or a subject requests removal. Vector search is one retrieval method. Exact identifiers, metadata filters, keyword matching, graph relationships, and temporal validity can be equally important.</p>
+  </section>
+
+  <section id="oracle">
+    <h2>What Is Distinctive About Oracle AI Agent Memory?</h2>
+    <p>Oracle AI Agent Memory treats memory as governed database state rather than a disconnected vector sidecar. The <code>oracleagentmemory</code> library persists messages, durable memories, profiles, facts, guidelines, chunks, and thread metadata using Oracle AI Database. Applications explicitly scope retrieval by user, agent, and thread.</p>
+    <p>Release 26.6 supports vector-only, keyword, and hybrid retrieval. Hybrid retrieval combines semantic and keyword matching with metadata filters, while <code>OracleDBEmbedder</code> can generate embeddings in the database. The same library manages memory extraction, background processing, summaries, context cards, expiration, record updates, and cascading thread deletion.</p>
+    <p class="callout"><strong>The architectural tradeoff:</strong> Oracle provides the strongest fit when the enterprise already uses Oracle AI Database or wants memory, operational data, security, transactions, vector search, and lifecycle controls in one governed data platform. Teams seeking a database-neutral abstraction or an agent runtime bundled with memory may prefer a different row in the matrix.</p>
+  </section>
+
+  <section id="selection">
+    <h2>How Should You Select an Agent Memory Platform?</h2>
+    <ol>
+      <li><strong>Define the memory types.</strong> Separate recent thread context, durable facts, episodic outcomes, procedural guidance, and source-of-truth business data.</li>
+      <li><strong>Define scope and authorization.</strong> Specify exactly which user, agent, team, tenant, and thread may write or retrieve each memory.</li>
+      <li><strong>Test correction and deletion.</strong> Measure how the product handles contradictions, expiration, user deletion, thread cleanup, and derived records.</li>
+      <li><strong>Evaluate retrieval.</strong> Test vector, keyword, metadata, graph, and temporal retrieval using your own questions and data, not only vendor examples.</li>
+      <li><strong>Inspect the storage boundary.</strong> Decide whether you want a managed opaque store, a pluggable database, or memory colocated with enterprise data.</li>
+      <li><strong>Measure the full workflow.</strong> Include extraction latency, background processing, token use, retrieval precision, context assembly, availability, backup, observability, and cost.</li>
+      <li><strong>Threat-model memory.</strong> Treat extracted and retrieved text as untrusted model-derived data. Memory must never authorize a privileged action by itself.</li>
+    </ol>
+  </section>
+
+  <section id="references">
+    <h2>Primary References</h2>
+    <ul>
+      <li><a href="https://docs.mem0.ai/platform/quickstart">Mem0 Platform quickstart</a>, <a href="https://docs.mem0.ai/core-concepts/memory-operations/add">memory extraction and conflict handling</a>, <a href="https://docs.mem0.ai/components/vectordbs/overview">supported vector databases</a>, and the <a href="https://github.com/mem0ai/mem0/commit/d6d89c987bddf580870db14c69db974edfc5263c">Oracle AI Vector Search provider merge</a></li>
+      <li><a href="https://help.getzep.com/zep-vs-graphiti">Zep versus Graphiti</a>, <a href="https://github.com/getzep/graphiti">Graphiti temporal and incremental learning model</a>, and <a href="https://help.getzep.com/v2/quickstart">Zep SDK quickstart</a></li>
+      <li><a href="https://github.com/letta-ai/letta">Letta open-source repository</a>, <a href="https://docs.letta.com/guides/core-concepts/memory/memory-blocks">agent-managed memory blocks</a>, and <a href="https://docs.letta.com/guides/docker/postgres/">PostgreSQL configuration</a></li>
+      <li><a href="https://langchain-ai.github.io/langmem/">LangMem documentation</a>, <a href="https://langchain-ai.github.io/langmem/concepts/conceptual_guide/">continual memory and prompt optimization concepts</a>, and <a href="https://github.com/langchain-ai/langmem">open-source repository</a></li>
+      <li><a href="https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/memory.html">Amazon Bedrock AgentCore Memory</a> and <a href="https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/memory-strategies.html">extraction and consolidation strategies</a></li>
+      <li><a href="https://www.oracle.com/database/ai-agent-memory/">Oracle Agent Memory overview</a>, <a href="https://docs.oracle.com/en/database/oracle/agent-memory/26.6/guide/whats-new.html">26.6 extraction and lifecycle capabilities</a>, and <a href="https://docs.oracle.com/en/database/oracle/agent-memory/26.6/guide/api/index.html">library API reference</a></li>
+    </ul>
+  </section>
+
+  <section id="faq">
+    <h2>Frequently Asked Questions</h2>
+
+    <h3>Is an agent memory platform just a vector database?</h3>
+    <p>No. A vector database can support semantic retrieval, but an agent memory platform also needs extraction, scope, context assembly, updates, contradiction handling, expiration, deletion, and integration with the agent runtime.</p>
+
+    <h3>Which of these platforms is completely open source?</h3>
+    <p>Mem0 OSS, Graphiti, Letta's core server, LangMem, and LangGraph OSS publish open-source code, but their associated managed services may not be open source. Oracle publishes a dual-licensed library while Oracle AI Database remains a commercial platform. AgentCore Memory is managed.</p>
+
+    <h3>Does Oracle AI Agent Memory require Oracle AI Database?</h3>
+    <p>Yes for its documented Oracle database-backed implementation. Release 26.6 requires Oracle AI Database 26ai or later and an application-provided connection or pool.</p>
+
+    <h3>What should be tested before production?</h3>
+    <p>Test retrieval accuracy, tenant isolation, stale-memory correction, deletion, retention, concurrency, model and embedding failures, latency, cost, auditability, and whether retrieved memory can improperly influence privileged actions.</p>
+  </section>
+</main>
+</body>
+</html>

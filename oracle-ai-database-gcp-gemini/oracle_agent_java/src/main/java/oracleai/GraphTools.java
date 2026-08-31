@@ -123,6 +123,62 @@ public class GraphTools {
              AND a.active_flag = 'Y'
             FETCH FIRST 1 ROW ONLY
             """;
+    private static final String RELATIONAL_GRAPH_QUERY = """
+            SELECT
+                s.supplier_name,
+                s.tier_level,
+                s.region_code AS supplier_region,
+                s.on_time_pct,
+                p.plant_name,
+                p.cycle_days,
+                p.utilization_pct,
+                po.port_name,
+                po.eta_hours,
+                po.delay_risk_score,
+                w.warehouse_name,
+                w.inventory_units,
+                w.fill_rate_pct,
+                pr.product_id,
+                pr.demand_change_pct,
+                pr.margin_pct,
+                a.alert_name,
+                a.lane_name,
+                a.risk_score AS alert_risk
+            FROM sc_suppliers s
+            JOIN sc_supplier_plant e1
+              ON e1.supplier_id = s.supplier_id
+             AND e1.is_current = 'Y'
+            JOIN sc_plants p
+              ON p.plant_id = e1.plant_id
+             AND p.active_flag = 'Y'
+            JOIN sc_plant_port e2
+              ON e2.plant_id = p.plant_id
+             AND e2.is_current = 'Y'
+            JOIN sc_ports po
+              ON po.port_id = e2.port_id
+             AND po.active_flag = 'Y'
+            JOIN sc_port_warehouse e3
+              ON e3.port_id = po.port_id
+             AND e3.is_current = 'Y'
+            JOIN sc_warehouses w
+              ON w.warehouse_id = e3.warehouse_id
+             AND w.active_flag = 'Y'
+            JOIN sc_warehouse_product e4
+              ON e4.warehouse_id = w.warehouse_id
+             AND e4.is_current = 'Y'
+            JOIN sc_products pr
+              ON pr.product_id = e4.product_id
+             AND pr.active_flag = 'Y'
+            LEFT JOIN sc_alert_port ap
+              ON ap.port_id = po.port_id
+             AND ap.is_current = 'Y'
+            LEFT JOIN sc_alerts a
+              ON a.alert_id = ap.alert_id
+             AND a.active_flag = 'Y'
+            WHERE s.active_flag = 'Y'
+              AND pr.product_id = ?
+            FETCH FIRST 1 ROW ONLY
+            """;
 
     public enum GraphDataMode {
         AUTO,
@@ -232,20 +288,29 @@ public class GraphTools {
 
     private static GraphResponse resolveDatabaseGraph(Environment environment, GraphRequest request) {
         String productId = resolveRequestedProductId(request);
-        try (
-                Connection connection = OracleJdbcSupport.openConnection(environment);
-                PreparedStatement statement = connection.prepareStatement(DATABASE_GRAPH_QUERY)
-        ) {
-            statement.setString(1, productId);
-
-            try (ResultSet resultSet = statement.executeQuery()) {
-                if (!resultSet.next()) {
-                    throw new IllegalArgumentException(
-                            "No Oracle graph path was found for productId " + productId + "."
+        try (Connection connection = OracleJdbcSupport.openConnection(environment)) {
+            try {
+                return queryGraphResponse(
+                        connection,
+                        DATABASE_GRAPH_QUERY,
+                        productId,
+                        "database",
+                        "Oracle Database property graph"
+                );
+            } catch (SQLException propertyGraphFailure) {
+                try {
+                    return queryGraphResponse(
+                            connection,
+                            RELATIONAL_GRAPH_QUERY,
+                            productId,
+                            "database-relational-fallback",
+                            "Oracle Database relational graph fallback; property graph unavailable: "
+                                    + propertyGraphFailure.getMessage()
                     );
+                } catch (SQLException relationalFailure) {
+                    propertyGraphFailure.addSuppressed(relationalFailure);
+                    throw propertyGraphFailure;
                 }
-
-                return graphResponseFromDatabaseRow(productId, resultSet);
             }
         } catch (SQLException e) {
             throw new IllegalStateException(
@@ -255,7 +320,32 @@ public class GraphTools {
         }
     }
 
-    private static GraphResponse graphResponseFromDatabaseRow(String productId, ResultSet resultSet)
+    private static GraphResponse queryGraphResponse(
+            Connection connection,
+            String sql,
+            String productId,
+            String sourceMode,
+            String sourceDetail
+    ) throws SQLException {
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, productId);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (!resultSet.next()) {
+                    throw new IllegalArgumentException(
+                            "No Oracle graph path was found for productId " + productId + "."
+                    );
+                }
+                return graphResponseFromDatabaseRow(productId, resultSet, sourceMode, sourceDetail);
+            }
+        }
+    }
+
+    private static GraphResponse graphResponseFromDatabaseRow(
+            String productId,
+            ResultSet resultSet,
+            String sourceMode,
+            String sourceDetail
+    )
             throws SQLException {
         String supplierName = resultSet.getString("supplier_name");
         String tierLevel = resultSet.getString("tier_level");
@@ -333,8 +423,8 @@ public class GraphTools {
                 productId,
                 nodes,
                 edges,
-                "database",
-                "Oracle Database property graph"
+                sourceMode,
+                sourceDetail
         );
     }
 

@@ -1,0 +1,314 @@
+1
+00:00:00,000 --> 00:00:08,000
+Follow Ava and Leo through durable memory, Deep Data Security,
+governed learning, accessible routing, transactional play,
+GraphRAG, and consented AR memory.
+
+2
+00:00:08,000 --> 00:00:16,000
+Begin Ava's visit: Click Reset, then Retain. Ava requests a
+quiet, mobility-friendly visit. Agent Memory stores messages
+and typed memories with embeddings, showing durable semantic
+and episodic memory.
+
+3
+00:00:16,000 --> 00:00:23,000
+retain() creates Ava's thread, stores the conversation,
+extracts typed records, and adds the earlier rainy-visit
+episode.
+
+4
+00:00:23,000 --> 00:00:30,000
+Conversation rows and durable memory rows are added. Each
+memory carries identity scope, metadata, and an embedding for
+later retrieval.
+
+5
+00:00:30,000 --> 00:00:38,000
+Personalize Ava's plan: Click Recall + Reuse. Scoped search
+retrieves Ava's breakfast, accessibility, entertainment, and
+prior-visit memories. Oracle AI Database ranks relevant
+records, showing scope before similarity.
+
+6
+00:00:38,000 --> 00:00:45,000
+recall() applies exact guest, agent, and thread scope before
+search ranking, then assembles the selected memories into
+reusable context.
+
+7
+00:00:45,000 --> 00:00:52,000
+The database reads Ava-scoped active records and ranks them by
+relevance. Recall is read-only, so no stored row changes.
+
+8
+00:00:52,000 --> 00:01:00,000
+Correct Ava's preference: Click Refine. Ava clarifies that she
+prefers the lantern show, not fireworks. The memory is updated
+while retaining provenance, demonstrating correction rather
+than silently preserving misinformation.
+
+9
+00:01:00,000 --> 00:01:07,000
+correct() finds the inaccurate record and calls the memory
+update operation with the corrected preference and correction
+provenance.
+
+10
+00:01:07,000 --> 00:01:14,000
+The active memory content and metadata change from fireworks
+to the lantern show while retaining its durable record
+identity and provenance.
+
+11
+00:01:14,000 --> 00:01:22,000
+Forget tonight's closure: Click Expire. The temporary
+garden-path closure becomes ineligible for future recall. TTL
+distinguishes short-lived operational conditions from Ava's
+durable accessibility and entertainment preferences.
+
+12
+00:01:22,000 --> 00:01:29,000
+expire() updates the temporary closure's expiration metadata,
+then verifies that normal search excludes the now-expired
+operational memory.
+
+13
+00:01:29,000 --> 00:01:36,000
+The closure row remains available for evidence, but its
+expiration state makes it ineligible for future active-memory
+searches.
+
+14
+00:01:36,000 --> 00:01:44,000
+Learn from rainy visits: Click Dream. Three synthetic,
+unscoped outcomes pass direct-identifier and scope checks
+before producing a pending rerouting guideline. The checks
+reduce risk but do not prove anonymity.
+
+15
+00:01:44,000 --> 00:01:51,000
+dream() requires three successful traces, rejects scoped or
+identifier-bearing evidence, and writes one pending guideline
+for human review.
+
+16
+00:01:51,000 --> 00:01:58,000
+Three synthetic trace rows remain separate. A pending
+guideline records the generalized procedure, evidence count,
+and required privacy review.
+
+17
+00:01:58,000 --> 00:02:06,000
+Govern the lesson: Click Approve. Ava acts as trip organizer.
+Oracle Deep Data Security authorizes the approval metadata
+update on the shared guideline; the participant role cannot
+perform it.
+
+18
+00:02:06,000 --> 00:02:13,000
+approve_guideline() executes as Ava. MEMORY_TRIP_ORGANIZER
+permits the metadata update on eligible shared learning rows
+in Oracle AI Database.
+
+19
+00:02:13,000 --> 00:02:20,000
+The live DDS panel proves role-specific visibility. Approval
+changes the guideline to approved and records Ava as approver
+under database enforcement.
+
+20
+00:02:20,000 --> 00:02:28,000
+Help Leo safely: Click Next guest and run the identity
+comparison. Leo receives the approved procedure, zero
+Ava-private rows, and zero raw traces. A deliberate query for
+Ava's rows is blocked in the database.
+
+21
+00:02:28,000 --> 00:02:35,000
+The app runs the same table query as each end user. Data roles
+and CREATE DATA GRANT predicates determine the rows before
+results leave Oracle AI Database.
+
+22
+00:02:35,000 --> 00:02:42,000
+The live proof shows Leo with one approved shared guideline,
+zero Ava-private rows, zero raw traces, and zero rows from the
+cross-user probe.
+
+23
+00:02:42,000 --> 00:02:50,000
+Prepare Memory Quest: Click Reset quest. Ava's previous
+progress, points, badge, and reward history disappear, while
+the park map, paths, clues, and quest definitions remain
+reusable.
+
+24
+00:02:50,000 --> 00:02:57,000
+reset() deletes only visitor-specific quest results in
+dependency-safe order and preserves the reusable park world
+and knowledge.
+
+25
+00:02:57,000 --> 00:03:04,000
+Progress, badge, and reward-audit tables become empty. Places,
+paths, quests, clues, graph relationships, and knowledge
+remain intact.
+
+26
+00:03:04,000 --> 00:03:12,000
+Plan Ava's accessible route: Click Plan route. Property Graph
+finds connected accessible paths; Oracle Spatial measures
+physical distance. Ava avoids Summit Steps and travels through
+covered, step-free locations.
+
+27
+00:03:12,000 --> 00:03:19,000
+plan() filters graph edges for open accessible paths, computes
+the permitted route, and asks Oracle Spatial for straight-line
+distance.
+
+28
+00:03:19,000 --> 00:03:26,000
+This is a read-only planning step. Graph topology supplies
+traversable paths and Spatial geometry supplies physical
+separation; no rows change.
+
+29
+00:03:26,000 --> 00:03:34,000
+Form the quest party: Click Start quest. Ava and Leo join
+Covered Constellations through consent-bounded party
+relationships. Transactional progress and audit rows start
+without combining their private memories.
+
+30
+00:03:34,000 --> 00:03:41,000
+start() validates the consented party and inserts quest
+progress plus the start audit event in one transaction.
+
+31
+00:03:41,000 --> 00:03:48,000
+A progress row starts at step zero with zero points, and a
+QUEST_STARTED audit row records the same committed
+transaction.
+
+32
+00:03:48,000 --> 00:03:56,000
+Find the breakfast clue: Click Complete checkpoint. Ava
+reaches Quiet Café and earns 50 points. The database
+atomically updates progress and audit evidence, preventing
+reward inconsistencies.
+
+33
+00:03:56,000 --> 00:04:03,000
+complete_next_step() locks Ava's progress, validates the next
+ordered checkpoint, adds 50 points, and writes the checkpoint
+audit atomically.
+
+34
+00:04:03,000 --> 00:04:10,000
+Progress advances to Quiet Cafe with 50 points. The matching
+CHECKPOINT_COMPLETED audit row records the same 50-point
+delta.
+
+35
+00:04:10,000 --> 00:04:18,000
+Discover the atrium mosaic: Click Complete checkpoint again.
+Ava follows the covered connector to the constellation
+artwork. Another transaction validates sequence, records the
+checkpoint, and awards 50 points.
+
+36
+00:04:18,000 --> 00:04:25,000
+The same transaction boundary validates checkpoint two,
+advances progress in sequence, adds 50 points, and appends
+audit evidence.
+
+37
+00:04:25,000 --> 00:04:32,000
+Progress advances to Covered Atrium with 100 total points. A
+second checkpoint audit row proves the ordered state
+transition.
+
+38
+00:04:32,000 --> 00:04:40,000
+Finish at Lantern Garden: Click Complete checkpoint a third
+time. Ava decodes the founder symbol, completes the quest,
+reaches 400 points, and receives the Lantern Pathfinder badge
+transactionally.
+
+39
+00:04:40,000 --> 00:04:47,000
+The final checkpoint transaction completes progress, awards
+the completion bonus, issues the badge, and records the final
+audit event together.
+
+40
+00:04:47,000 --> 00:04:54,000
+Ava's progress is completed at 400 points and the Lantern
+Pathfinder badge row is added without any partial reward
+state.
+
+41
+00:04:54,000 --> 00:05:02,000
+Expand the park story: Click Retrieve + expand. Vector Search
+finds quiet, rainy, accessible lore; Property Graph connects
+it to places, paths, and quests. GraphRAG explains
+relationships beyond similarity.
+
+42
+00:05:02,000 --> 00:05:09,000
+graph_rag() embeds the question, ranks grounded knowledge by
+vector distance, and expands each hit through explicit graph
+relationships.
+
+43
+00:05:09,000 --> 00:05:16,000
+This is a read-only retrieval step. Native vectors find
+semantic matches, while graph tables supply connected places,
+paths, and quest context.
+
+44
+00:05:16,000 --> 00:05:24,000
+Remember through AR: Configure consent, start an AR session,
+then confirm 'remember this.' The simulated glasses show route
+overlays while Agent Memory stores Ava's observation with
+guest scope, provenance, and TTL.
+
+45
+00:05:24,000 --> 00:05:31,000
+start_session() fixes privacy choices for the session.
+remember() stores only the confirmed observation with guest
+scope, AR provenance, and bounded retention.
+
+46
+00:05:31,000 --> 00:05:38,000
+The session and consent state are recorded, the observation
+becomes expirable guest memory, and the AR audit captures the
+authorized action.
+
+47
+00:05:38,000 --> 00:05:46,000
+Search opted-in media: Enable recording consent, index the
+atrium caption, then search for the constellation artwork.
+Oracle AI Database filters identity, consent, and expiration
+before vector ranking.
+
+48
+00:05:46,000 --> 00:05:53,000
+remember_media() indexes the consented description.
+search_media() filters guest, agent, thread, consent, and TTL
+before vector-distance ranking.
+
+49
+00:05:53,000 --> 00:06:00,000
+The media description, native vector, consent provenance, and
+expiration are stored. Scoped search returns one eligible
+constellation-mosaic result.
+
+50
+00:06:00,000 --> 00:06:09,000
+The experience combines scoped memory, Deep Data Security,
+human governance, graph, Spatial, vectors, transactions,
+gamification, and privacy-first AR without retraining model
+weights.

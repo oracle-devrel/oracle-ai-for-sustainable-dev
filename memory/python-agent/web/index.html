@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A live Oracle AI Agent Memory 26.6 demonstration using Oracle AI Database.">
+  <title>Memories Are the Magic | Agent Memory Demo</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="hero">
+    <nav>
+      <div class="brand">MEMORIES <span>ARE THE MAGIC</span></div>
+      <div class="status" id="status"><i></i><span>Connecting</span></div>
+    </nav>
+    <div class="hero-content">
+      <div>
+        <p class="eyebrow">Runnable reference implementation</p>
+        <h1>Oracle AI Agent Memory, live on Oracle AI Database.</h1>
+        <p class="lede">Oracle Agent Memory manages threads, messages, durable memories, exact scopes, search, updates, TTL, metadata filters, and reusable guidelines.</p>
+      </div>
+      <div class="sdk-card">
+        <div class="sdk-logo">AM</div>
+        <div><b>oracleagentmemory</b><span>26.6.0</span></div>
+        <code>SearchStrategy.KEYWORD</code>
+        <small>No external model key required</small>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="api-strip" aria-label="Oracle AI Agent Memory APIs used">
+      <span>create_thread()</span>
+      <span>add_messages()</span>
+      <span>add_memory()</span>
+      <span>search()</span>
+      <span>update_memory()</span>
+      <span>TTL + metadata</span>
+    </section>
+
+    <section class="demo">
+      <aside>
+        <p class="eyebrow dark">Scenario controls</p>
+        <h2>Flynn's Theme Park</h2>
+        <p class="aside-copy">Advance in order. Every button calls the public SDK and persists state in its managed Oracle schema.</p>
+        <div class="steps">
+          <button data-action="reset"><b>0</b><span><strong>Reset</strong>Cold start</span></button>
+          <button data-action="retain"><b>1</b><span><strong>Retain</strong>Thread and memories</span></button>
+          <button data-action="recall"><b>2</b><span><strong>Recall + Reuse</strong>Exact scoped search</span></button>
+          <button data-action="correct"><b>3</b><span><strong>Refine</strong>Update a fact</span></button>
+          <button data-action="expire"><b>4</b><span><strong>Expire</strong>Apply TTL</span></button>
+          <button data-action="dream"><b>5</b><span><strong>Dream</strong>Induce guideline</span></button>
+          <button data-action="approve"><b>6</b><span><strong>Approve</strong>Govern learning</span></button>
+          <button data-action="next-day"><b>7</b><span><strong>Next guest</strong>Prove isolation</span></button>
+        </div>
+      </aside>
+
+      <div class="workspace">
+        <section class="result" id="result">
+          <div>
+            <p class="eyebrow">Current proof</p>
+            <h2 id="result-title">Start with Reset</h2>
+          </div>
+          <p id="result-text">The managed memory store is connected and ready.</p>
+        </section>
+
+        <div class="metrics">
+          <article><span id="memory-count">0</span><p>active Ava memories</p></article>
+          <article><span id="trace-count">0</span><p>privacy-gated synthetic traces</p></article>
+          <article><span id="skill-count">0</span><p>shared guidelines</p></article>
+          <article class="isolation"><span id="leak-count">?</span><p>Ava memories visible to Leo</p></article>
+        </div>
+
+        <div class="grid">
+          <section class="panel context">
+            <header><div><p class="eyebrow dark">Read before</p><h3>Scoped context card</h3></div><span>AVA + CONCIERGE</span></header>
+            <p id="context-summary" class="summary">No recall has run.</p>
+            <div id="context-list" class="memory-list"><p class="empty">Search results will appear here.</p></div>
+            <blockquote id="context-response">The application assembles the prompt-ready card after scoped SDK search.</blockquote>
+          </section>
+
+          <section class="panel events">
+            <header><div><p class="eyebrow dark">Public SDK calls</p><h3>Execution trail</h3></div></header>
+            <div id="event-list"><p class="empty">No actions yet.</p></div>
+          </section>
+        </div>
+
+        <section class="panel ledger">
+          <header><div><p class="eyebrow dark">Oracle-managed records</p><h3>Durable memory ledger</h3></div><span id="strategy">KEYWORD</span></header>
+          <div id="memory-list" class="record-grid"><p class="empty">No Ava memories are currently searchable.</p></div>
+        </section>
+
+        <div class="grid lower">
+          <section class="panel">
+            <header><div><p class="eyebrow dark">Learning material</p><h3>Experience traces</h3></div></header>
+            <div id="trace-list"><p class="empty">No governed traces.</p></div>
+          </section>
+          <section class="panel skill">
+            <header><div><p class="eyebrow dark">Procedural memory</p><h3>Shared guideline</h3></div><span id="skill-status">NONE</span></header>
+            <pre id="skill-card">No guideline has been induced.</pre>
+          </section>
+        </div>
+      </div>
+    </section>
+
+    <section class="security-lab" aria-labelledby="security-title">
+      <div class="security-heading">
+        <div>
+          <p class="eyebrow">Database-enforced memory boundary</p>
+          <h2 id="security-title">Prove isolation with Oracle Deep Data Security.</h2>
+          <p>The app runs the same memory query as Ava and Leo. Oracle AI Database applies each end user's data role before returning rows.</p>
+        </div>
+        <button id="refresh-security">Run identity comparison</button>
+      </div>
+      <div id="security-status" class="security-status">Checking Deep Data Security...</div>
+      <div class="security-grid" id="security-identities"></div>
+      <div class="security-probe" id="security-probe">
+        <b>Cross-user probe</b>
+        <span>Waiting for database evidence.</span>
+      </div>
+      <p class="security-boundary"><strong>Important:</strong> DDS enforces row and column access and approval authority. It does not automatically de-identify traces, detect every PII value, prevent poisoned examples, or make embeddings anonymous. The privacy gate, aggregation threshold, human review, TTL, and audit remain separate controls.</p>
+    </section>
+
+    <section class="quest-lab" aria-labelledby="quest-title">
+      <div class="quest-heading">
+        <div>
+          <p class="eyebrow">Memory Quest lab</p>
+          <h2 id="quest-title">Turn remembered needs into a safe, playable park experience.</h2>
+          <p>This lane combines graph, Spatial, vector, transactional, and gamification operations against the same Oracle AI Database objects.</p>
+        </div>
+        <div class="quest-score"><strong id="quest-points">0</strong><span>audited points</span><b id="quest-badge">No badge yet</b></div>
+      </div>
+      <div class="quest-controls">
+        <button data-park-action="reset">Reset quest</button>
+        <button data-park-action="plan">1. Plan route</button>
+        <button data-park-action="start">2. Start quest</button>
+        <button class="primary" data-park-action="complete-step">3. Complete checkpoint</button>
+        <label><span>4. GraphRAG request</span><input id="park-query" value="Find a quiet accessible rainy route with founder stories"></label>
+        <button data-park-action="graphrag">Retrieve + expand</button>
+      </div>
+      <div class="quest-result" id="park-result">Plan the route, start the quest, complete three checkpoints, then run GraphRAG.</div>
+      <div class="quest-grid">
+        <section class="panel park-map-panel">
+          <header><div><p class="eyebrow dark">Graph + Spatial</p><h3>Interactive 2D park map</h3></div></header>
+          <svg id="park-map" viewBox="0 0 760 720" aria-label="Park graph and spatial locations"></svg>
+          <p id="route-explanation" class="map-note">Graph edges connect spatially positioned park places.</p>
+        </section>
+        <div class="quest-side">
+          <section class="panel"><header><div><p class="eyebrow dark">Social graph</p><h3>Consent-bounded party</h3></div></header><div id="park-party"></div></section>
+          <section class="panel"><header><div><p class="eyebrow dark">Gamification</p><h3>Covered Constellations</h3></div><span id="quest-status">NOT STARTED</span></header><ol id="quest-steps" class="quest-steps"></ol></section>
+          <section class="panel"><header><div><p class="eyebrow dark">Transaction evidence</p><h3>Reward audit</h3></div></header><div id="quest-audit"></div></section>
+        </div>
+      </div>
+      <section class="panel graphrag-panel"><header><div><p class="eyebrow dark">Vector + graph</p><h3>GraphRAG evidence</h3></div></header><p id="graphrag-answer">Run GraphRAG to retrieve grounded park knowledge.</p><div id="graphrag-hits" class="graphrag-hits"></div></section>
+    </section>
+
+    <section class="ar-lab" aria-labelledby="ar-title">
+      <div class="ar-heading">
+        <div><p class="eyebrow">Optional Spectacles experience</p><h2 id="ar-title">Try the governed AR memory walkthrough.</h2><p>This is an interactive browser simulation of what a visitor sees in smart glasses and what the agent stores in Oracle AI Database. Complete the four numbered steps from left to right.</p></div>
+        <div class="privacy-beacon"><i></i><b id="ar-privacy-label">Recording off</b><span>AR sensing status is always visible</span></div>
+      </div>
+      <div class="ar-explainer">
+        <strong>What you are seeing</strong>
+        <span><b>Left:</b> the visitor's simulated glasses view with route and clue overlays.</span>
+        <span><b>Right:</b> demonstration controls that stand in for voice, camera, and search actions.</span>
+        <span><b>Below:</b> database tables that prove what was retained, embedded, searched, and audited.</span>
+      </div>
+      <div class="ar-controls">
+        <span class="ar-step-number">1</span><div class="ar-step-copy"><b>Choose consent and retention</b><small>Recording and precise location are optional.</small></div>
+        <label><input id="ar-camera" type="checkbox" checked> Camera sensing</label>
+        <label><input id="ar-recording" type="checkbox"> Consent to media recording</label>
+        <label><input id="ar-location" type="checkbox"> Share precise location</label>
+        <label>Retention <select id="ar-retention"><option value="1">1 day</option><option value="7" selected>7 days</option><option value="30">30 days</option></select></label>
+        <button id="ar-start">Start private AR session</button><button id="ar-reset">Reset AR evidence</button>
+      </div>
+      <div class="ar-stage">
+        <div class="ar-world" role="img" aria-label="Simulated first-person Spectacles overlay at Lantern Garden">
+          <div class="ar-hud top"><span id="ar-session">NO ACTIVE SESSION</span><b id="ar-sensing">SENSING OFF</b></div>
+          <div class="ar-route"><span>↗</span><b>Covered Atrium</b><small>Accessible route · 120 m</small></div>
+          <div class="ar-clue"><b>Lantern clue</b><span>The founder symbol is near the step-free entrance.</span></div>
+          <div class="ar-hud bottom" id="ar-overlay">Start a consent-scoped session to enable memory actions.</div>
+        </div>
+        <div class="ar-actions panel">
+          <header><div><p class="eyebrow dark">Voice + media memory</p><h3>Actions represented in this simulation</h3></div></header>
+          <div class="ar-action-step"><span>2</span><div><b>Remember a confirmed observation</b><small>On glasses, the visitor says “remember this,” reviews the text, and confirms it.</small></div></div>
+          <label>Confirmed observation<textarea id="ar-memory-text">Remember that I enjoyed the quiet Lantern Garden entrance and want this route next visit.</textarea></label><button id="ar-remember">Remember confirmed observation</button>
+          <div class="ar-action-step"><span>3</span><div><b>Index opted-in media meaning</b><small>The demo stores a transcript or caption, not raw video by default.</small></div></div>
+          <label>Consented media description<textarea id="ar-media-text">A covered constellation mosaic appears beside the accessible atrium entrance.</textarea></label><button id="ar-index-media">Index consented description</button>
+          <div class="ar-action-step"><span>4</span><div><b>Search within the visitor's scope</b><small>Identity, consent, and expiration filter results before similarity ranking.</small></div></div>
+          <label>Natural-language search<input id="ar-search-text" value="Where was the accessible constellation artwork?"></label><button id="ar-search">Search my media memory</button>
+          <div class="ar-result-card" id="ar-result" aria-live="polite"><b>Ready to begin</b><span>Complete step 1 to start a private AR session.</span></div>
+        </div>
+      </div>
+      <p class="ar-disclaimer"><strong>This is a working service and database demo, plus a simulated glasses interface.</strong> The consent, memory, vector, TTL, and audit operations are live. Lens Studio Preview can model the overlay; ASR, camera frames, permissions, tracking, comfort, and outdoor performance still require Spectacles hardware.</p>
+    </section>
+
+    <section class="database-inspector">
+      <div class="database-inspector-heading"><div><p class="eyebrow dark">Database evidence</p><h2>See exactly what every action changed.</h2><p>Oracle Agent Memory owns its managed objects; the application owns the lifecycle, park, quest, and AR demonstration objects.</p></div><button id="refresh-database">Refresh table contents</button></div>
+      <div id="database-refresh-status" class="quest-result">Loading Oracle AI Database tables...</div>
+      <div id="database-tables" class="database-tables"></div>
+    </section>
+  </main>
+
+  <footer>
+    <b>Scope first.</b> Private Ava records use exact user and agent matching. Shared procedural memory is explicitly unscoped on user and separately approval filtered.
+  </footer>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="980" viewBox="0 0 1500 980" role="img" aria-labelledby="title desc">
+  <title id="title">Supply-chain demo entity and property graph model</title>
+  <desc id="desc">Oracle relational tables model products, warehouses, risk, geography, suppliers, plants, ports, alerts, and graph edge tables. A flattened view serves natural language inventory analysis and a property graph projects the supply chain topology.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#647887"/></marker>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="5" stdDeviation="7" flood-opacity=".12"/></filter>
+    <style>
+      .h1{font:750 29px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#fff}.sub{font:500 15px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#dbe4ea}.name{font:750 17px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#22313c}.field{font:500 13px "SFMono-Regular",Consolas,monospace;fill:#52636f}.key{font:700 12px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#c74634}.edge{font:700 12px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#365e7a}.line{stroke:#647887;stroke-width:2.5;fill:none;marker-end:url(#arrow)}.dash{stroke:#9d7124;stroke-width:2.5;stroke-dasharray:8 7;fill:none;marker-end:url(#arrow)}.table{fill:#fff;stroke:#cbd5dc;stroke-width:2}.risk{fill:#fff7f3;stroke:#e0a395;stroke-width:2}.graph{fill:#f2f7fb;stroke:#9ebace;stroke-width:2}.view{fill:#fffaf0;stroke:#d8b56f;stroke-width:2}
+    </style>
+  </defs>
+  <rect width="1500" height="980" fill="#f5f7f8"/>
+  <rect width="1500" height="95" fill="#1d2d36"/>
+  <text x="52" y="43" class="h1">Supply-chain inventory, spatial, and graph entity model</text>
+  <text x="52" y="71" class="sub">FINANCIAL schema · deterministic synthetic data · narrow Select AI object boundary</text>
+
+  <!-- graph nodes -->
+  <g filter="url(#shadow)"><rect x="45" y="145" width="210" height="125" rx="12" class="graph"/><text x="65" y="177" class="name">SC_SUPPLIERS</text><text x="65" y="205" class="key">PK supplier_id</text><text x="65" y="230" class="field">supplier_name</text><text x="65" y="252" class="field">reliability_score</text></g>
+  <g filter="url(#shadow)"><rect x="330" y="145" width="210" height="125" rx="12" class="graph"/><text x="350" y="177" class="name">SC_PLANTS</text><text x="350" y="205" class="key">PK plant_id</text><text x="350" y="230" class="field">plant_name</text><text x="350" y="252" class="field">utilization_pct</text></g>
+  <g filter="url(#shadow)"><rect x="615" y="145" width="210" height="125" rx="12" class="graph"/><text x="635" y="177" class="name">SC_PORTS</text><text x="635" y="205" class="key">PK port_id</text><text x="635" y="230" class="field">port_name</text><text x="635" y="252" class="field">delay_risk_score</text></g>
+  <g filter="url(#shadow)"><rect x="900" y="145" width="230" height="125" rx="12" class="graph"/><text x="920" y="177" class="name">SC_WAREHOUSES</text><text x="920" y="205" class="key">PK warehouse_id</text><text x="920" y="230" class="field">warehouse_name</text><text x="920" y="252" class="field">inventory_units · fill_rate</text></g>
+  <g filter="url(#shadow)"><rect x="1205" y="145" width="245" height="125" rx="12" class="graph"/><text x="1225" y="177" class="name">SC_PRODUCTS</text><text x="1225" y="205" class="key">PK product_id</text><text x="1225" y="230" class="field">product_name</text><text x="1225" y="252" class="field">demand_change · margin</text></g>
+  <g filter="url(#shadow)"><rect x="615" y="335" width="210" height="125" rx="12" class="graph"/><text x="635" y="367" class="name">SC_ALERTS</text><text x="635" y="395" class="key">PK alert_id</text><text x="635" y="420" class="field">alert_name · lane_name</text><text x="635" y="442" class="field">risk_score</text></g>
+
+  <path d="M255 207 L330 207" class="line"/><text x="270" y="193" class="edge">SUPPLIER_PLANT</text>
+  <path d="M540 207 L615 207" class="line"/><text x="558" y="193" class="edge">PLANT_PORT</text>
+  <path d="M825 207 L900 207" class="line"/><text x="834" y="193" class="edge">PORT_WAREHOUSE</text>
+  <path d="M1130 207 L1205 207" class="line"/><text x="1134" y="193" class="edge">WAREHOUSE_PRODUCT</text>
+  <path d="M720 335 L720 270" class="line"/><text x="731" y="313" class="edge">ALERT_PORT</text>
+
+  <rect x="45" y="500" width="1405" height="2" fill="#d6dde2"/>
+  <text x="45" y="540" class="key">INVENTORY RISK + SPATIAL PROJECTION</text>
+
+  <g filter="url(#shadow)"><rect x="55" y="575" width="290" height="190" rx="12" class="risk"/><text x="78" y="610" class="name">SC_INVENTORY_RISK_SUMMARY</text><text x="78" y="640" class="key">PK/FK product_id → PRODUCTS</text><text x="78" y="667" class="field">quarter_label · risk_level</text><text x="78" y="691" class="field">stockout_probability</text><text x="78" y="715" class="field">at_risk_units</text><text x="78" y="739" class="field">revenue_impact · primary_region</text></g>
+  <g filter="url(#shadow)"><rect x="410" y="575" width="315" height="215" rx="12" class="risk"/><text x="433" y="610" class="name">SC_WAREHOUSE_RISK_SNAPSHOT</text><text x="433" y="640" class="key">PK snapshot_id</text><text x="433" y="665" class="key">FK product_id · warehouse_id</text><text x="433" y="694" class="field">hotspot_rank · hotspot_score</text><text x="433" y="718" class="field">coverage_days · backlog_units</text><text x="433" y="742" class="field">service_level · at_risk_units</text><text x="433" y="766" class="field">recommended_role</text></g>
+  <g filter="url(#shadow)"><rect x="790" y="575" width="270" height="190" rx="12" class="risk"/><text x="813" y="610" class="name">SC_WAREHOUSE_GEO</text><text x="813" y="640" class="key">PK/FK warehouse_id</text><text x="813" y="667" class="field">warehouse_code</text><text x="813" y="691" class="field">county · state · region</text><text x="813" y="715" class="field">latitude · longitude</text><text x="813" y="739" class="field">WGS84 decimal degrees</text></g>
+  <g filter="url(#shadow)"><rect x="1125" y="575" width="315" height="190" rx="12" class="view"/><text x="1148" y="610" class="name">SC_INVENTORY_RISK_DEMO_V</text><text x="1148" y="640" class="edge">Flattened governed view</text><text x="1148" y="670" class="field">product + quarter risk</text><text x="1148" y="694" class="field">warehouse hotspot metrics</text><text x="1148" y="718" class="field">geography + recommended role</text><text x="1148" y="742" class="field">Select AI target object</text></g>
+
+  <path d="M345 670 L410 670" class="line"/><text x="356" y="655" class="edge">product</text>
+  <path d="M725 670 L790 670" class="line"/><text x="739" y="655" class="edge">warehouse</text>
+  <path d="M1060 670 L1125 670" class="line"/><text x="1071" y="655" class="edge">view</text>
+  <path d="M1328 270 C1328 390 260 410 200 575" class="dash"/><text x="1040" y="430" class="edge">product FK</text>
+  <path d="M1015 270 C1015 415 890 430 925 575" class="dash"/><text x="935" y="449" class="edge">warehouse FK</text>
+
+  <g filter="url(#shadow)"><rect x="360" y="850" width="780" height="82" rx="14" fill="#1d2d36"/><text x="390" y="883" class="sub">SUPPLY_CHAIN_GRAPH projects the six node tables and five edge tables above.</text><text x="390" y="909" class="sub">The Java graph agent uses equivalent relational joins until CREATE PROPERTY GRAPH is granted.</text></g>
+</svg>

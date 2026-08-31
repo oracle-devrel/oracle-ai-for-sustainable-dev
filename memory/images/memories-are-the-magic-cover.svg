@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Memories Are the Magic: an agent reads and writes governed memory in Oracle AI Database</title>
+  <desc id="desc">A technical architecture illustration showing an AI agent connected by read-before and write-after flows to working, episodic, semantic, and procedural memory stored and governed in Oracle AI Database.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#01040a"/>
+      <stop offset="1" stop-color="#071827"/>
+    </linearGradient>
+    <linearGradient id="db" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ff4f78"/>
+      <stop offset="1" stop-color="#7d163e"/>
+    </linearGradient>
+    <pattern id="grid" width="52" height="52" patternUnits="userSpaceOnUse">
+      <path d="M52 0H0V52" fill="none" stroke="#00e5ff" stroke-width="1" opacity=".08"/>
+    </pattern>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#00e5ff" flood-opacity=".18"/>
+    </filter>
+    <marker id="arrowLight" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#ffd166"/>
+    </marker>
+    <marker id="arrowRed" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#00e5ff"/>
+    </marker>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <rect width="1600" height="900" fill="url(#grid)"/>
+  <circle cx="1450" cy="70" r="250" fill="#7a31ff" opacity=".09"/>
+  <circle cx="70" cy="840" r="280" fill="#00e5ff" opacity=".055"/>
+
+  <text x="92" y="100" fill="#00e5ff" font-family="Arial, sans-serif" font-size="24" font-weight="700" letter-spacing="5">ORACLE AI DATABASE · AGENT MEMORY</text>
+  <text x="88" y="197" fill="#fff" font-family="Georgia, serif" font-size="76" font-weight="700">Memories Are the Magic</text>
+  <text x="92" y="250" fill="#9dcbd5" font-family="Arial, sans-serif" font-size="29">Build an agent that retains, recalls, reuses, and refines experience.</text>
+
+  <g filter="url(#shadow)">
+    <rect x="105" y="353" width="340" height="298" rx="22" fill="#06131e" stroke="#00e5ff" stroke-width="3"/>
+    <circle cx="275" cy="453" r="58" fill="#02070d" stroke="#00e5ff" stroke-width="3"/>
+    <circle cx="254" cy="445" r="7" fill="#ffd166"/>
+    <circle cx="296" cy="445" r="7" fill="#ffd166"/>
+    <path d="M248 474 Q275 494 302 474" fill="none" stroke="#00e5ff" stroke-width="7" stroke-linecap="round"/>
+    <path d="M275 395 V366 M226 411 L207 390 M324 411 L343 390" fill="none" stroke="#00e5ff" stroke-width="8" stroke-linecap="round"/>
+    <text x="275" y="565" text-anchor="middle" fill="#dffcff" font-family="Arial, sans-serif" font-size="31" font-weight="800" letter-spacing="3">AI AGENT</text>
+    <text x="275" y="603" text-anchor="middle" fill="#84aeb9" font-family="Arial, sans-serif" font-size="20">plan · act · observe</text>
+  </g>
+
+  <path d="M463 421 C590 350 680 355 790 417" fill="none" stroke="#ffd166" stroke-width="6" marker-end="url(#arrowLight)"/>
+  <text x="630" y="349" text-anchor="middle" fill="#ffd166" font-family="Arial, sans-serif" font-size="20" font-weight="700" letter-spacing="3">WRITE AFTER</text>
+  <path d="M790 588 C665 659 565 660 454 596" fill="none" stroke="#00e5ff" stroke-width="6" marker-end="url(#arrowRed)"/>
+  <text x="625" y="694" text-anchor="middle" fill="#00e5ff" font-family="Arial, sans-serif" font-size="20" font-weight="700" letter-spacing="3">READ BEFORE</text>
+
+  <g filter="url(#shadow)">
+    <rect x="810" y="319" width="680" height="415" rx="28" fill="#06131e" stroke="#00e5ff" stroke-width="3"/>
+    <rect x="810" y="319" width="680" height="106" rx="28" fill="url(#db)"/>
+    <rect x="810" y="380" width="680" height="45" fill="url(#db)"/>
+    <ellipse cx="1358" cy="372" rx="76" ry="25" fill="#00e5ff" opacity=".25"/>
+    <path d="M1282 371 V403 C1282 416 1316 427 1358 427 C1400 427 1434 416 1434 403 V371" fill="none" stroke="#fff" stroke-width="5" opacity=".9"/>
+    <text x="858" y="374" fill="#fff" font-family="Arial, sans-serif" font-size="29" font-weight="800">ORACLE AI DATABASE</text>
+    <text x="858" y="405" fill="#ffd9d2" font-family="Arial, sans-serif" font-size="18">trusted state · transactions · lifecycle · audit</text>
+
+    <g font-family="Arial, sans-serif">
+      <rect x="850" y="469" width="275" height="92" rx="8" fill="#0b1d2a" stroke="#ffd166"/>
+      <text x="875" y="505" fill="#ffd166" font-size="17" font-weight="800" letter-spacing="2">WORKING</text>
+      <text x="875" y="535" fill="#b9dce3" font-size="19">current turn context</text>
+
+      <rect x="1160" y="469" width="285" height="92" rx="8" fill="#0b1d2a" stroke="#00e5ff"/>
+      <text x="1185" y="505" fill="#00e5ff" font-size="17" font-weight="800" letter-spacing="2">EPISODIC</text>
+      <text x="1185" y="535" fill="#b9dce3" font-size="19">events and outcomes</text>
+
+      <rect x="850" y="590" width="275" height="92" rx="8" fill="#0b1d2a" stroke="#ff4f78"/>
+      <text x="875" y="626" fill="#ff7f9f" font-size="17" font-weight="800" letter-spacing="2">SEMANTIC</text>
+      <text x="875" y="656" fill="#b9dce3" font-size="19">facts and preferences</text>
+
+      <rect x="1160" y="590" width="285" height="92" rx="8" fill="#0b1d2a" stroke="#7a31ff"/>
+      <text x="1185" y="626" fill="#b28cff" font-size="17" font-weight="800" letter-spacing="2">PROCEDURAL</text>
+      <text x="1185" y="656" fill="#b9dce3" font-size="19">approved reusable skills</text>
+    </g>
+  </g>
+
+  <g transform="translate(100 790)" font-family="Arial, sans-serif">
+    <text fill="#ffd166" font-size="21" font-weight="800">RETAIN</text>
+    <circle cx="120" cy="-7" r="4" fill="#73888b"/>
+    <text x="145" fill="#00e5ff" font-size="21" font-weight="800">RECALL</text>
+    <circle cx="264" cy="-7" r="4" fill="#73888b"/>
+    <text x="288" fill="#ffd166" font-size="21" font-weight="800">REUSE</text>
+    <circle cx="390" cy="-7" r="4" fill="#73888b"/>
+    <text x="414" fill="#00e5ff" font-size="21" font-weight="800">REFINE</text>
+    <text x="720" fill="#9dcbd5" font-size="20">Scoped experience compounds. Private memory stays private.</text>
+  </g>
+</svg>

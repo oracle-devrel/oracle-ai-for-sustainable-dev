@@ -1,0 +1,153 @@
+{
+  "benchmark": "LongMemEval",
+  "variant": "oracle_common",
+  "format_note": "Common benchmark shape used by the Python and Java Oracle Agent Memory demos.",
+  "cases": [
+    {
+      "question_id": "oracle_001",
+      "question_type": "multi_preference_and_guideline",
+      "user_id": "user_benchmark_001",
+      "agent_id": "agent_benchmark",
+      "thread_id": "thread_benchmark_001",
+      "messages": [
+        {
+          "session_id": "session_001",
+          "role": "user",
+          "content": "My name is Ana. I live in Austin now. I prefer vegetarian meals and short morning workouts."
+        },
+        {
+          "session_id": "session_001",
+          "role": "assistant",
+          "content": "Understood. I will keep recommendations vegetarian and concise."
+        },
+        {
+          "session_id": "session_001",
+          "role": "user",
+          "content": "Please avoid dairy suggestions."
+        },
+        {
+          "session_id": "session_002",
+          "role": "user",
+          "content": "When you summarize, use bullet points instead of long paragraphs."
+        },
+        {
+          "session_id": "session_002",
+          "role": "assistant",
+          "content": "Got it. Future summaries will use bullet points."
+        },
+        {
+          "session_id": "session_003",
+          "role": "user",
+          "content": "Also, weekend workout ideas are better than weekday plans for me."
+        }
+      ],
+      "question": "What preferences and response instructions has the user expressed?",
+      "expected_answer": "The user prefers vegetarian meals, wants dairy avoided, likes short morning workouts and weekend workout ideas, and wants summaries in bullet points.",
+      "expected_memory_snippets": [
+        "vegetarian",
+        "dairy",
+        "bullet points",
+        "weekend"
+      ]
+    },
+    {
+      "question_id": "oracle_002",
+      "question_type": "knowledge_update_with_constraints",
+      "user_id": "user_benchmark_002",
+      "agent_id": "agent_benchmark",
+      "thread_id": "thread_benchmark_002",
+      "messages": [
+        {
+          "session_id": "session_010",
+          "role": "user",
+          "content": "I moved from Seattle to Austin last month."
+        },
+        {
+          "session_id": "session_010",
+          "role": "assistant",
+          "content": "Understood. I will use Austin as your current city."
+        },
+        {
+          "session_id": "session_011",
+          "role": "user",
+          "content": "Do not suggest rainy-day places from Seattle anymore."
+        },
+        {
+          "session_id": "session_011",
+          "role": "assistant",
+          "content": "Okay, I will stop using Seattle-specific rainy-day suggestions."
+        },
+        {
+          "session_id": "session_012",
+          "role": "user",
+          "content": "For local suggestions, keep them budget-friendly and focused on downtown Austin."
+        },
+        {
+          "session_id": "session_012",
+          "role": "assistant",
+          "content": "I will keep local recommendations budget-friendly and downtown-focused."
+        }
+      ],
+      "question": "What is the user's current city and what constraints should local recommendations follow?",
+      "expected_answer": "The user's current city is Austin, and local recommendations should avoid Seattle rainy-day references, stay budget-friendly, and focus on downtown Austin.",
+      "expected_memory_snippets": [
+        "Austin",
+        "Seattle",
+        "budget",
+        "downtown"
+      ]
+    },
+    {
+      "question_id": "oracle_003",
+      "question_type": "travel_context_with_profile",
+      "user_id": "user_benchmark_003",
+      "agent_id": "agent_benchmark",
+      "thread_id": "thread_benchmark_003",
+      "messages": [
+        {
+          "session_id": "session_020",
+          "role": "user",
+          "content": "I am planning a work trip to Tokyo next month."
+        },
+        {
+          "session_id": "session_020",
+          "role": "assistant",
+          "content": "Understood. I can help you plan the Tokyo trip."
+        },
+        {
+          "session_id": "session_021",
+          "role": "user",
+          "content": "For flights, I prefer window seats and overnight departures."
+        },
+        {
+          "session_id": "session_021",
+          "role": "assistant",
+          "content": "Noted. I will prioritize window seats and overnight flights."
+        },
+        {
+          "session_id": "session_022",
+          "role": "user",
+          "content": "Keep hotel suggestions close to the conference venue and under my team's budget guidelines."
+        },
+        {
+          "session_id": "session_022",
+          "role": "assistant",
+          "content": "Okay. Hotel options will stay near the venue and within budget."
+        },
+        {
+          "session_id": "session_023",
+          "role": "user",
+          "content": "When you reply, keep the answer in bullet points with the top three options only."
+        }
+      ],
+      "question": "How should the assistant plan and present travel recommendations for this user?",
+      "expected_answer": "The assistant should plan a Tokyo work trip, prefer window seats and overnight flights, keep hotels near the conference venue and within budget, and present only the top three options in bullet points.",
+      "expected_memory_snippets": [
+        "Tokyo",
+        "window",
+        "budget",
+        "bullet points"
+      ]
+    }
+  ]
+}

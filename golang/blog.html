@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Oracle AI Database Driver for Go: Official Native Go Connectivity</title>
+  <meta name="description" content="Learn how the official native go-oracledb driver connects Go applications to Oracle AI Database through database/sql without CGO or Oracle Client libraries.">
+  <style>
+    body { margin: 0; font-family: Arial, Helvetica, sans-serif; color: #1f2933; background: #f7f7f5; line-height: 1.6; }
+    article { max-width: 980px; margin: 0 auto; padding: 42px 24px 72px; background: #fff; }
+    h1 { font-size: 44px; line-height: 1.08; margin: 18px 0 12px; }
+    h2 { font-size: 29px; margin-top: 44px; border-top: 1px solid #d9dee3; padding-top: 26px; }
+    h3 { font-size: 21px; margin-top: 28px; }
+    .subtitle { font-size: 21px; color: #4b5563; margin-bottom: 28px; }
+    .eyebrow { color: #c74634; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; }
+    .takeaways, .faq { background: #f2f4f6; border-left: 5px solid #c74634; padding: 18px 24px; }
+    figure { margin: 30px 0; }
+    img { max-width: 100%; height: auto; border: 1px solid #d9dee3; }
+    figcaption { color: #5f6470; font-size: 14px; margin-top: 8px; }
+    code { background: #eef1f4; padding: 2px 5px; border-radius: 4px; }
+    pre { background: #111820; color: #f4f6f8; border-radius: 8px; padding: 18px; overflow-x: auto; white-space: pre; }
+    pre code { background: transparent; padding: 0; }
+    table { border-collapse: collapse; width: 100%; margin: 20px 0; }
+    th, td { border: 1px solid #d6dce3; padding: 10px; text-align: left; vertical-align: top; }
+    th { background: #eef2f6; }
+    a { color: #1f6fb2; }
+    .note { border-left: 4px solid #d59d2a; background: #fff8e7; padding: 14px 18px; }
+    @media (max-width: 700px) {
+      h1 { font-size: 34px; }
+      table { display: block; overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+<article>
+  <p class="eyebrow">Oracle AI Database and Go</p>
+  <h1>Oracle AI Database Driver for Go: Official Native Go Connectivity</h1>
+  <p class="subtitle">Build Oracle AI Database applications with Go's standard <code>database/sql</code> API, without CGO or an Oracle Client installation.</p>
+
+  <p>
+    Oracle AI Database Driver for Go, published as <code>go-oracledb</code>, gives Go developers an official native-Go path to Oracle AI Database. It implements Go's standard <code>database/sql</code> driver interface, supports Oracle AI Database 19c and later, and connects over TCP or TCPS without requiring CGO or Oracle Client libraries.
+  </p>
+  <p>
+    The immediate benefit is operational simplicity: fewer build dependencies, more reproducible containers, and an easier route to cross-platform Go deployments. The longer-term benefit is an Oracle-owned Go driver and public API direction for microservices, automation, AI services, and cloud-native back ends.
+  </p>
+  <p>
+    The complete driver source is available in the
+    <a href="https://github.com/oracle/go-oracledb">Oracle AI Database Driver for Go GitHub repository</a>.
+    Its <a href="https://github.com/oracle/go-oracledb/tree/main/examples">examples directory</a> provides runnable samples for common connection and database operations.
+  </p>
+
+  <figure>
+    <img src="images/oracle-database-go-driver-cover.svg" alt="Architecture diagram showing a Go service using database/sql and the native go-oracledb driver to connect to Oracle AI Database over TCP or TCPS.">
+    <figcaption>The official native-Go driver fits between Go's standard database API and Oracle AI Database.</figcaption>
+  </figure>
+
+  <section class="takeaways">
+    <h2>Key Takeaways</h2>
+    <ul>
+      <li><code>go-oracledb</code> is Oracle's native Go driver for the standard <code>database/sql</code> package.</li>
+      <li>It removes the runtime requirement for CGO and Oracle Client libraries.</li>
+      <li>The current <code>v26.0.0-beta</code> release is useful for evaluation, but teams should validate required features before production adoption.</li>
+      <li>Open work on vectors, OSON, REF CURSORs, Oracle object types, sessionless transactions, and token authentication shows the direction, not guaranteed delivery.</li>
+    </ul>
+  </section>
+
+  <h2>What Is Oracle AI Database Driver for Go?</h2>
+  <p>
+    <a href="https://github.com/oracle/go-oracledb">Oracle AI Database Driver for Go</a> is a native implementation of Go's <code>database/sql/driver</code> interface. The module is <code>github.com/oracle/go-oracledb/v26</code>, and the registered driver name is <code>oracledb</code>. Applications can continue using familiar <code>sql.DB</code>, context-aware queries, prepared statements, transactions, and connection pooling.
+  </p>
+  <p>
+    Oracle-specific public APIs are exposed through <code>github.com/oracle/go-oracledb/v26/oracle</code>. Packages below the internal driver tree are implementation details and should not become application dependencies.
+  </p>
+  <p class="note">
+    <strong>Release status:</strong> <a href="https://pkg.go.dev/github.com/oracle/go-oracledb/v26">pkg.go.dev currently lists v26.0.0-beta</a>. Treat the driver as a fast-moving beta and confirm the latest release before adopting it.
+  </p>
+
+  <h2>Connect to Oracle AI Database from Go</h2>
+  <p>Install the module through the standard Go module workflow:</p>
+  <pre><code>go get github.com/oracle/go-oracledb/v26@latest</code></pre>
+  <p>
+    Keep credentials outside source control. This example reads a complete driver DSN from <code>ORACLE_DATABASE_DSN</code>, opens the standard Go connection pool, verifies connectivity, and queries <code>DUAL</code>.
+  </p>
+  <pre><code>package main
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "log"
+    "os"
+    "time"
+
+    _ "github.com/oracle/go-oracledb/v26"
+)
+
+func main() {
+    dsn := os.Getenv("ORACLE_DATABASE_DSN")
+    if dsn == "" {
+        log.Fatal("ORACLE_DATABASE_DSN is required")
+    }
+
+    db, err := sql.Open("oracledb", dsn)
+    if err != nil {
+        log.Fatal(err)
+    }
+    defer db.Close()
+
+    ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+    defer cancel()
+
+    if err := db.PingContext(ctx); err != nil {
+        log.Fatal(err)
+    }
+
+    var value int
+    if err := db.QueryRowContext(ctx, "select 1 from dual").Scan(&amp;value); err != nil {
+        log.Fatal(err)
+    }
+    fmt.Println(value)
+}</code></pre>
+  <p>An Easy Connect DSN has this general shape:</p>
+  <pre><code>export ORACLE_DATABASE_DSN='app_user/&lt;password&gt;@tcps://db.example.com:1521/my_service?transport_connect_timeout=10'</code></pre>
+
+  <h2>Why Native Go Changes Deployment</h2>
+  <p>
+    Go teams often optimize for simple builds, reproducible containers, cross-compilation, and small deployment artifacts. A native-Go database driver follows that model because the application does not need a C toolchain during the build or Oracle Client libraries at runtime.
+  </p>
+  <p>
+    The driver also follows an operational pattern familiar from current
+    <a href="https://github.com/oracle/ojdbc">Java</a>,
+    <a href="https://github.com/oracle/python-oracledb">Python</a>, and
+    <a href="https://github.com/oracle/node-oracledb">Node.js</a> Oracle drivers: connect directly in the default thin-style path, with fewer external components between the application and database. For Go services, this can simplify developer laptops, CI/CD jobs, containers, and internal operational tools.
+  </p>
+
+  <h2>Compare the Oracle AI Database Drivers for Go</h2>
+  <table>
+    <thead>
+      <tr><th>Driver</th><th>Implementation</th><th>Strengths</th><th>Considerations</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a href="https://github.com/oracle/go-oracledb"><code>go-oracledb</code></a></td>
+        <td>Oracle-maintained native Go driver for <code>database/sql</code></td>
+        <td>Official Oracle direction; no CGO or Instant Client; standard Go APIs</td>
+        <td>Currently beta; feature coverage is still expanding</td>
+      </tr>
+      <tr>
+        <td><a href="https://github.com/godror/godror"><code>godror</code></a></td>
+        <td>CGO driver using ODPI-C and Oracle Client</td>
+        <td>Mature, established, and broad Oracle feature exposure</td>
+        <td>Requires CGO and Oracle Client libraries; deployment and cross-compilation are more involved</td>
+      </tr>
+      <tr>
+        <td><a href="https://github.com/sijms/go-ora"><code>go-ora</code></a></td>
+        <td>Community-maintained pure-Go driver</td>
+        <td>No CGO; broad existing features including wallets, advanced types, bulk operations, and failover</td>
+        <td>Not Oracle's official driver</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>
+    Existing <code>godror</code> and <code>go-ora</code> applications do not need to migrate simply because a new driver exists. The useful distinction is that <code>go-oracledb</code> combines official Oracle ownership, native Go implementation, and <code>database/sql</code> compatibility. Choose according to the features and operational constraints of the application.
+  </p>
+
+  <h2>Current Driver Capabilities</h2>
+  <p>The current public README documents the following foundation:</p>
+  <ul>
+    <li>Username and password authentication.</li>
+    <li>Easy Connect and TNS connect descriptors.</li>
+    <li>TCP and TCPS connections.</li>
+    <li>SQL statements and transactions.</li>
+    <li>Input, output, and PL/SQL input/output binds using <code>sql.Out</code>.</li>
+    <li>In-band notifications.</li>
+    <li>JSON returned as <code>string</code>, BLOB as <code>[]byte</code>, and CLOB as <code>string</code> or <code>[]byte</code>.</li>
+    <li>Configuration through DSN properties, environment variables, flags, or an Oracle connector.</li>
+    <li>Oracle and driver error codes through <code>oracle.SQLError</code>.</li>
+  </ul>
+
+  <h3>Preserve Oracle NUMBER precision</h3>
+  <p>
+    The driver returns scaled or unknown-scale Oracle <code>NUMBER</code> values as strings by default. Converting arbitrary decimal values directly to <code>float64</code> can lose precision. Returning a string preserves the value and lets the application choose an integer, decimal, floating-point, or domain-specific representation.
+  </p>
+
+  <h2>Features to Watch</h2>
+  <p>
+    The public repository has active pull requests for advanced Oracle capabilities. These items are development signals, not release commitments. Confirm their status in the repository before planning production work.
+  </p>
+  <table>
+    <thead><tr><th>Area</th><th>Public work</th><th>Potential value</th></tr></thead>
+    <tbody>
+      <tr><td>Oracle VECTOR</td><td><a href="https://github.com/oracle/go-oracledb/pull/12">Draft PR #12</a></td><td>Native dense vector binds and fetch mappings for AI and similarity-search applications.</td></tr>
+      <tr><td>OSON and JSON</td><td><a href="https://github.com/oracle/go-oracledb/pull/9">PR #9</a></td><td>Native OSON encoding and decoding, structured JSON access, and exact numeric handling.</td></tr>
+      <tr><td>REF CURSOR</td><td><a href="https://github.com/oracle/go-oracledb/pull/20">PR #20</a></td><td>Consume PL/SQL cursor results through public Go APIs.</td></tr>
+      <tr><td>ADT and VARRAY</td><td><a href="https://github.com/oracle/go-oracledb/pull/18">PR #18</a></td><td>Oracle named types and collection support.</td></tr>
+      <tr><td>Sessionless transactions</td><td><a href="https://github.com/oracle/go-oracledb/pull/10">Draft PR #10</a></td><td>Start, suspend, and resume transaction work independently of one session.</td></tr>
+      <tr><td>Token authentication</td><td><a href="https://github.com/oracle/go-oracledb/pull/27">PR #27</a> and <a href="https://github.com/oracle/go-oracledb/issues/21">issue #21</a></td><td>Additional token and IAM-oriented authentication options.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>When Should You Choose go-oracledb?</h2>
+  <p>
+    Put <code>go-oracledb</code> on the evaluation shortlist for a new Go service when official Oracle ownership, standard <code>database/sql</code> usage, and native-Go deployment simplicity matter. Straightforward SQL, transactions, common data types, and PL/SQL input/output calls are sensible evaluation targets.
+  </p>
+  <p>
+    Applications that depend on mature OCI behavior, advanced object types, queuing, specialized subscriptions, or extensively proven edge-case handling should compare their exact requirements with <code>godror</code> and <code>go-ora</code>. Beta status also means production teams should test failure behavior, performance, observability, and upgrade compatibility under their own workloads.
+  </p>
+
+  <h2>Plan a Safe Driver Evaluation or Migration</h2>
+  <ol>
+    <li><strong>Build a focused proof of concept.</strong> Connect, ping, query <code>DUAL</code>, run representative SQL, commit and roll back a transaction, and call one PL/SQL procedure.</li>
+    <li><strong>Inventory driver-specific behavior.</strong> Find driver imports, DSN builders, LOB handling, array binds, REF CURSOR wrappers, object types, wallet configuration, and authentication hooks.</li>
+    <li><strong>Test data mappings.</strong> Verify <code>NUMBER</code>, timestamps and time zones, CLOB/BLOB, JSON, empty strings and NULL, ROWID, and PL/SQL BOOLEAN behavior.</li>
+    <li><strong>Benchmark the real workload.</strong> Measure connection establishment, steady-state query latency, large result sets, memory use, cancellation, retries, and failover.</li>
+    <li><strong>Gate advanced features.</strong> Do not design against open pull requests until the required capability is merged, released, documented, and tested.</li>
+  </ol>
+
+  <h2>Conclusion</h2>
+  <p>
+    Oracle AI Database Driver for Go is an important step for the Go ecosystem. It provides an official native-Go route to Oracle AI Database, aligns with standard Go database APIs, and removes two common deployment dependencies: CGO and Oracle Client libraries.
+  </p>
+  <p>
+    Today, it is best approached as a promising beta for evaluation and new-service prototypes. Its architecture is already compelling: fewer moving parts, idiomatic Go APIs, and an Oracle-owned roadmap. As feature coverage and release maturity increase, it can become a natural foundation for Oracle-backed Go microservices and AI application infrastructure.
+  </p>
+
+  <h2>References</h2>
+  <ul>
+    <li><a href="https://github.com/oracle/go-oracledb">Oracle AI Database Driver for Go repository and README</a></li>
+    <li><a href="https://pkg.go.dev/github.com/oracle/go-oracledb/v26">go-oracledb module documentation</a></li>
+    <li><a href="https://pkg.go.dev/github.com/oracle/go-oracledb/v26/oracle">Oracle-specific public Go API</a></li>
+    <li><a href="https://go.dev/wiki/SQLDrivers">Go Wiki: SQL database drivers</a></li>
+    <li><a href="https://github.com/godror/godror">godror repository</a></li>
+    <li><a href="https://github.com/sijms/go-ora">go-ora repository</a></li>
+    <li><a href="https://github.com/oracle/python-oracledb">python-oracledb repository</a> and <a href="https://github.com/oracle/node-oracledb">node-oracledb repository</a></li>
+  </ul>
+
+  <section class="faq">
+    <h2>Frequently Asked Questions</h2>
+    <h3>Does go-oracledb require Oracle Instant Client?</h3>
+    <p>No. It is implemented natively in Go and does not require Oracle Client libraries.</p>
+    <h3>Does it work with Go's database/sql package?</h3>
+    <p>Yes. The driver implements the standard <code>database/sql/driver</code> interface and registers the name <code>oracledb</code>.</p>
+    <h3>Is go-oracledb production-ready?</h3>
+    <p>The currently published module is <code>v26.0.0-beta</code>. Evaluate it against your production requirements and confirm the latest release status before adoption.</p>
+    <h3>Should existing godror or go-ora applications migrate immediately?</h3>
+    <p>No. Compare required features, operational constraints, maturity, and test results. The official driver is a new option, not an automatic migration requirement.</p>
+  </section>
+</article>
+</body>
+</html>

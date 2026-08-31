@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1550" viewBox="0 0 1600 1550" role="img" aria-labelledby="title desc">
+  <title id="title">MCP App request and approval sequence</title>
+  <desc id="desc">A human supply-chain planner asks an MCP Apps-capable host process for a dashboard. The host invokes a Node MCP server process and loads its UI resource in a sandboxed iframe process. The server calls a Java service JVM, a Toolkit JVM, and Oracle AI Database. Selection updates model context, and approval travels through the host bridge and an app-only MCP tool to the governed database operation.</desc>
+  <defs>
+    <marker id="arrowBlue" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#167da6"/></marker>
+    <marker id="arrowGreen" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#008f83"/></marker>
+    <style>
+      .title{font:700 40px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#193653}.subtitle{font:24px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#43596d}.actor{fill:#eef5f8;stroke:#a9c4d2;stroke-width:2}.actorText{font:700 21px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#193653;text-anchor:middle}.processBadge{fill:#193653}.processText{font:700 11px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#fff;text-anchor:middle;letter-spacing:.35px}.lane{stroke:#a9bcc7;stroke-width:2}.call{stroke:#167da6;stroke-width:3;marker-end:url(#arrowBlue)}.return{stroke:#008f83;stroke-width:3;stroke-dasharray:8 7;marker-end:url(#arrowGreen)}.label{font:600 17px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#20313f;text-anchor:middle}.note{fill:#fff5ef;stroke:#efad80;stroke-width:2}.noteText{font:600 17px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#9d4521;text-anchor:middle}
+    </style>
+  </defs>
+  <rect width="1600" height="1550" fill="#ffffff"/>
+  <text x="55" y="70" class="title">MCP App sequence</text>
+  <text x="55" y="110" class="subtitle">The host loads supplied web code instead of interpreting an A2UI component declaration.</text>
+
+  <g>
+    <rect x="82" y="120" width="110" height="22" rx="11" class="processBadge"/><text x="137" y="136" class="processText">HUMAN</text>
+    <rect x="307" y="120" width="200" height="22" rx="11" class="processBadge"/><text x="407" y="136" class="processText">HOST CLIENT PROCESS</text>
+    <rect x="575" y="120" width="204" height="22" rx="11" class="processBadge"/><text x="677" y="136" class="processText">NODE MCP SERVER PROCESS</text>
+    <rect x="845" y="120" width="204" height="22" rx="11" class="processBadge"/><text x="947" y="136" class="processText">SANDBOXED IFRAME PROCESS</text>
+    <rect x="1110" y="120" width="200" height="22" rx="11" class="processBadge"/><text x="1210" y="136" class="processText">JAVA SERVICE JVM</text>
+    <rect x="1362" y="120" width="210" height="22" rx="11" class="processBadge"/><text x="1467" y="136" class="processText">TOOLKIT JVM + DB SERVICE</text>
+    <circle cx="137" cy="154" r="13" fill="none" stroke="#193653" stroke-width="3"/>
+    <line x1="137" y1="167" x2="137" y2="195" stroke="#193653" stroke-width="3"/>
+    <line x1="118" y1="177" x2="156" y2="177" stroke="#193653" stroke-width="3"/>
+    <line x1="137" y1="195" x2="121" y2="214" stroke="#193653" stroke-width="3"/>
+    <line x1="137" y1="195" x2="153" y2="214" stroke="#193653" stroke-width="3"/>
+    <text x="137" y="240" class="actorText">Supply-chain planner</text>
+    <rect x="295" y="145" width="225" height="70" rx="10" class="actor"/><text x="407" y="176" class="actorText">MCP Apps host</text><text x="407" y="201" class="actorText">+ model</text>
+    <rect x="565" y="145" width="225" height="70" rx="10" class="actor"/><text x="677" y="176" class="actorText">Node MCP App</text><text x="677" y="201" class="actorText">server</text>
+    <rect x="835" y="145" width="225" height="70" rx="10" class="actor"/><text x="947" y="176" class="actorText">Sandboxed MCP</text><text x="947" y="201" class="actorText">App iframe</text>
+    <rect x="1105" y="145" width="210" height="70" rx="10" class="actor"/><text x="1210" y="188" class="actorText">Agent service</text>
+    <rect x="1360" y="145" width="215" height="70" rx="10" class="actor"/><text x="1467" y="176" class="actorText">MCP Toolkit +</text><text x="1467" y="201" class="actorText">Oracle Database</text>
+    <line x1="137" y1="250" x2="137" y2="1500" class="lane"/><line x1="407" y1="215" x2="407" y2="1500" class="lane"/><line x1="677" y1="215" x2="677" y2="1500" class="lane"/><line x1="947" y1="215" x2="947" y2="1500" class="lane"/><line x1="1210" y1="215" x2="1210" y2="1500" class="lane"/><line x1="1467" y1="215" x2="1467" y2="1500" class="lane"/>
+  </g>
+
+  <line x1="137" y1="270" x2="407" y2="270" class="call"/><text x="272" y="255" class="label">Show transfer dashboard</text>
+  <line x1="407" y1="335" x2="677" y2="335" class="call"/><text x="542" y="320" class="label">tools/call show dashboard</text>
+  <line x1="677" y1="400" x2="1210" y2="400" class="call"/><text x="943" y="385" class="label">POST /api/reviews</text>
+  <line x1="1210" y1="465" x2="1467" y2="465" class="call"/><text x="1338" y="450" class="label">Find recommendations</text>
+  <line x1="1467" y1="525" x2="677" y2="525" class="return"/><text x="1072" y="510" class="label">Recommendations + approval ID</text>
+  <line x1="677" y1="585" x2="407" y2="585" class="return"/><text x="542" y="570" class="label">structuredContent + widget metadata</text>
+  <line x1="407" y1="645" x2="677" y2="645" class="call"/><text x="542" y="630" class="label">resources/read ui:// exchange</text>
+  <line x1="677" y1="705" x2="407" y2="705" class="return"/><text x="542" y="690" class="label">MCP App HTML</text>
+  <line x1="407" y1="765" x2="947" y2="765" class="call"/><text x="677" y="750" class="label">Load HTML and deliver tool result</text>
+  <line x1="947" y1="825" x2="137" y2="825" class="return"/><text x="542" y="810" class="label">Render recommendation dashboard</text>
+  <line x1="137" y1="885" x2="947" y2="885" class="call"/><text x="542" y="870" class="label">Select recommendation</text>
+  <line x1="947" y1="945" x2="407" y2="945" class="return"/><text x="677" y="930" class="label">updateModelContext with selected transfer</text>
+  <line x1="137" y1="1005" x2="947" y2="1005" class="call"/><text x="542" y="990" class="label">Click Approve and execute</text>
+  <line x1="947" y1="1065" x2="407" y2="1065" class="return"/><text x="677" y="1050" class="label">Host bridge: callServerTool</text>
+  <line x1="407" y1="1125" x2="677" y2="1125" class="call"/><text x="542" y="1110" class="label">tools/call approve transfer</text>
+  <line x1="677" y1="1185" x2="1210" y2="1185" class="call"/><text x="943" y="1170" class="label">POST /api/approve</text>
+  <line x1="1210" y1="1245" x2="1467" y2="1245" class="call"/><text x="1338" y="1230" class="label">Revalidate, audit, and commit</text>
+  <line x1="1467" y1="1305" x2="1210" y2="1305" class="return"/><text x="1338" y="1290" class="label">Audited transfer result</text>
+  <line x1="1210" y1="1365" x2="677" y2="1365" class="return"/><text x="943" y="1350" class="label">Transfer ID and approval status</text>
+  <line x1="677" y1="1425" x2="407" y2="1425" class="return"/><text x="542" y="1410" class="label">MCP tool result</text>
+  <line x1="407" y1="1480" x2="947" y2="1480" class="call"/><text x="677" y="1465" class="label">Deliver result through app bridge</text>
+  <line x1="947" y1="1525" x2="137" y2="1525" class="return"/><text x="542" y="1510" class="label">Display transfer ID and approval status</text>
+</svg>

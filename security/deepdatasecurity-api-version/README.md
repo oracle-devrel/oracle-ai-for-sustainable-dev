@@ -9,9 +9,11 @@ Its public query endpoint intentionally matches the provider-version demo:
 this API version receives `OAuth2AuthorizedClient` in the controller so app code
 can explicitly pass the signed-in user's token into Oracle JDBC.
 
-The app uses Oracle UCP for pooling. HikariCP is excluded from the JDBC starter
-so the API and provider demos use the same Oracle-aware pool while comparing the
-explicit API and provider/SPI Deep Data Security approaches.
+The app uses Oracle UCP for pooling. Spring Boot creates and configures the pool
+from `spring.datasource` properties in `application.yaml`; the explicit part of
+this demo is the `EndUserSecurityContext` lifecycle in service code. HikariCP is
+excluded from the JDBC starter so the API and provider demos use the same
+Oracle-aware pool.
 
 It covers the Microsoft Entra ID setup, Oracle AI Database/Oracle Database Free external authentication SQL, HR sample and Deep Data Security SQL scripts, Spring Boot configuration, and running the app.
 

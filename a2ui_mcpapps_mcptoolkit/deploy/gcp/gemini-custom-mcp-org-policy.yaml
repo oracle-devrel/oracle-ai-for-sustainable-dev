@@ -1,0 +1,7 @@
+# Apply only through an authorized Oracle Org Policy Administrator. The role
+# cannot be granted on the project itself; the resulting override is scoped to
+# this project resource.
+name: projects/1093068138027/policies/discoveryengine.managed.disableCustomMcpServerConnector
+spec:
+  rules:
+    - enforce: false

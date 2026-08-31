@@ -1,0 +1,20 @@
+diff --git a/src/oracle-db-mcp-java-toolkit/pom.xml b/src/oracle-db-mcp-java-toolkit/pom.xml
+index 0ea12d1..a45e6a2 100644
+--- a/src/oracle-db-mcp-java-toolkit/pom.xml
++++ b/src/oracle-db-mcp-java-toolkit/pom.xml
+@@ -59,8 +59,15 @@
+         <dependency>
+             <groupId>com.oracle.database.jdbc</groupId>
+             <artifactId>ucp17</artifactId>
+             <version>${ojdbc.version}</version>
+         </dependency>
+ 
++        <dependency>
++            <groupId>com.oracle.database.jdbc</groupId>
++            <artifactId>ojdbc17-production</artifactId>
++            <version>${ojdbc.version}</version>
++            <type>pom</type>
++        </dependency>
++
+         <dependency>
+             <groupId>org.yaml</groupId>

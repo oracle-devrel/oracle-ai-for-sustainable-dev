@@ -1,0 +1,90 @@
+{
+  "benchmark": "LongMemEval",
+  "variant": "oracle_common",
+  "format_note": "Keeps the benchmark shape close to LongMemEval: chat history, question type, question, and expected answer. expected_memory_snippets is added only to support a simple retrieval check in these demo runners.",
+  "cases": [
+    {
+      "question_id": "oracle_001",
+      "question_type": "preference",
+      "user_id": "user_benchmark_1",
+      "agent_id": "agent_benchmark_1",
+      "thread_id": "thread_benchmark_1",
+      "messages": [
+        {
+          "session_id": "session_1",
+          "role": "user",
+          "content": "My name is Ana. I prefer vegetarian meals and short morning workouts."
+        },
+        {
+          "session_id": "session_1",
+          "role": "assistant",
+          "content": "Got it. I will keep recommendations vegetarian and concise."
+        },
+        {
+          "session_id": "session_2",
+          "role": "user",
+          "content": "Please avoid dairy suggestions."
+        }
+      ],
+      "question": "What food preferences has the user expressed?",
+      "expected_answer": "The user prefers vegetarian meals and wants to avoid dairy suggestions.",
+      "expected_memory_snippets": [
+        "vegetarian",
+        "dairy"
+      ]
+    },
+    {
+      "question_id": "oracle_002",
+      "question_type": "knowledge_update",
+      "user_id": "user_benchmark_2",
+      "agent_id": "agent_benchmark_2",
+      "thread_id": "thread_benchmark_2",
+      "messages": [
+        {
+          "session_id": "session_1",
+          "role": "user",
+          "content": "I moved from Seattle to Austin last month."
+        },
+        {
+          "session_id": "session_1",
+          "role": "assistant",
+          "content": "Understood. I will use Austin as your current city."
+        },
+        {
+          "session_id": "session_2",
+          "role": "user",
+          "content": "Please do not suggest rainy-day places from Seattle anymore."
+        }
+      ],
+      "question": "What is the user's current city?",
+      "expected_answer": "The user's current city is Austin.",
+      "expected_memory_snippets": [
+        "Austin"
+      ]
+    },
+    {
+      "question_id": "oracle_003",
+      "question_type": "guideline",
+      "user_id": "user_benchmark_3",
+      "agent_id": "agent_benchmark_3",
+      "thread_id": "thread_benchmark_3",
+      "messages": [
+        {
+          "session_id": "session_1",
+          "role": "user",
+          "content": "When you answer, please keep the response to bullet points."
+        },
+        {
+          "session_id": "session_1",
+          "role": "assistant",
+          "content": "Understood. I will answer with bullet points."
+        }
+      ],
+      "question": "How should the assistant format future answers?",
+      "expected_answer": "The assistant should answer with bullet points.",
+      "expected_memory_snippets": [
+        "bullet points"
+      ]
+    }
+  ]
+}

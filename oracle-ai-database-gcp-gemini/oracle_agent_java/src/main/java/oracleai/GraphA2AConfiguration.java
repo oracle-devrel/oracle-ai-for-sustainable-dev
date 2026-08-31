@@ -6,7 +6,9 @@ import io.a2a.server.events.EventQueue;
 import io.a2a.server.tasks.TaskUpdater;
 import io.a2a.spec.AgentCapabilities;
 import io.a2a.spec.AgentCard;
+import io.a2a.spec.AgentExtension;
 import io.a2a.spec.AgentSkill;
+import io.a2a.spec.DataPart;
 import io.a2a.spec.FilePart;
 import io.a2a.spec.FileWithBytes;
 import io.a2a.spec.JSONRPCError;
@@ -85,9 +87,19 @@ public class GraphA2AConfiguration {
                 null,
                 "0.1.0",
                 null,
-                new AgentCapabilities(false, false, false, List.of()),
-                List.of("text/plain"),
-                List.of("image/png", "text/plain"),
+                new AgentCapabilities(
+                        true,
+                        false,
+                        false,
+                        List.of(new AgentExtension(
+                                "Provides agent driven UI using the A2UI JSON format.",
+                                Map.of("supportedCatalogIds", List.of(GraphA2uiPayloads.STANDARD_CATALOG)),
+                                false,
+                                GraphA2uiPayloads.EXTENSION_URI
+                        ))
+                ),
+                List.of("text/plain", "application/json+a2ui"),
+                List.of("image/png", "text/plain", "application/json+a2ui"),
                 List.of(
                         new AgentSkill(
                                 "oracle_graph_agent",
@@ -110,8 +122,8 @@ public class GraphA2AConfiguration {
                                         "Visualize the upstream supplier path and highlight the risky node.",
                                         "Map the dependency relationships from supplier to warehouse to retailer."
                                 ),
-                                List.of("text/plain"),
-                                List.of("image/png", "text/plain"),
+                                List.of("text/plain", "application/json+a2ui"),
+                                List.of("image/png", "text/plain", "application/json+a2ui"),
                                 null
                         ),
                         new AgentSkill(
@@ -133,8 +145,8 @@ public class GraphA2AConfiguration {
                                         "Show the Oracle graph path for a product.",
                                         "Find the supply chain dependencies for a product."
                                 ),
-                                List.of("text/plain"),
-                                List.of("image/png"),
+                                List.of("text/plain", "application/json+a2ui"),
+                                List.of("image/png", "application/json+a2ui"),
                                 null
                         )
                 ),
@@ -225,14 +237,24 @@ public class GraphA2AConfiguration {
                         );
                     }
 
+                    List<Part<?>> responseParts = new ArrayList<>();
+                    responseParts.add(new TextPart(responseText));
+                    for (Map<String, Object> message : GraphA2uiPayloads.graphExplorerMessages(graphResponse)) {
+                        responseParts.add(new DataPart(
+                                message,
+                                Map.of("mimeType", GraphA2uiPayloads.MIME_TYPE)
+                        ));
+                    }
+
                     updater.complete(
                             updater.newAgentMessage(
-                                    List.of(new TextPart(responseText)),
+                                    responseParts,
                                     Map.of(
                                             "tool", "getSupplyChainDependencies",
                                             "artifactName", "supply-chain-graph.png",
                                             "sourceMode", graphResponse.sourceMode(),
-                                            "visualRenderer", geminiVisualRenderer.renderMode().name().toLowerCase()
+                                            "visualRenderer", geminiVisualRenderer.renderMode().name().toLowerCase(),
+                                            "a2uiVersion", GraphA2uiPayloads.VERSION
                                     )
                             )
                     );

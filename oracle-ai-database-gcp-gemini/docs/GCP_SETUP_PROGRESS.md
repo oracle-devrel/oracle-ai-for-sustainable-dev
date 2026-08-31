@@ -11,8 +11,8 @@ This log records the actual migration work toward recreating the Oracle AI Datab
 - Updated the graph card builder so the graph agent advertises `/graph` as its execution URL.
 - Kept the legacy root graph surface available as a backward-compatibility fallback.
 - Rebuilt the Java runtime locally and confirmed the project still compiles successfully.
-- Backed up the current shared environment file to:
-  - `oracle-ai-database-gcp-gemini/.env_adb=pm=prod`
+- Consolidated the local runtime settings into the ignored
+  `oracle-ai-database-gcp-gemini/.env` file.
 
 ### GCP access checks performed from this workstation
 

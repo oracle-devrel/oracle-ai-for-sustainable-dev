@@ -20,7 +20,7 @@ public class AdditionalAgentCardController {
     }
 
     @GetMapping(
-            value = {"/agent-card-graph.json", "/graph/.well-known/agent-card.json"},
+            value = "/agent-card-graph.json",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     AgentCard graphAgentCard() {
@@ -30,8 +30,7 @@ public class AdditionalAgentCardController {
     @GetMapping(
             value = {
                     "/agent-card-spatial.json",
-                    "/spatial-agent-card.json",
-                    "/spatial/.well-known/agent-card.json"
+                    "/spatial-agent-card.json"
             },
             produces = MediaType.APPLICATION_JSON_VALUE
     )

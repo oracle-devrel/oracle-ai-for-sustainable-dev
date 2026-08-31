@@ -1,0 +1,485 @@
+{
+  "parts": [
+    {
+      "kind": "text",
+      "text": "Supply-chain dependency graph for SKU-500. Active alert: Port delay is increasing risk on the supplier-to-warehouse path."
+    },
+    {
+      "kind": "data",
+      "metadata": {
+        "mimeType": "application/json+a2ui"
+      },
+      "data": {
+        "beginRendering": {
+          "surfaceId": "supply-chain-graph-example",
+          "root": "root"
+        }
+      }
+    },
+    {
+      "kind": "data",
+      "metadata": {
+        "mimeType": "application/json+a2ui"
+      },
+      "data": {
+        "surfaceUpdate": {
+          "surfaceId": "supply-chain-graph-example",
+          "components": [
+            {
+              "id": "root",
+              "component": {
+                "Column": {
+                  "children": {
+                    "explicitList": [
+                      "title",
+                      "source",
+                      "summary",
+                      "path-card",
+                      "nodes-title",
+                      "node-card-1",
+                      "node-card-2",
+                      "node-card-3"
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "id": "title",
+              "component": {
+                "Text": {
+                  "text": {
+                    "literalString": "Supply-chain dependency graph for SKU-500"
+                  },
+                  "usageHint": "h2"
+                }
+              }
+            },
+            {
+              "id": "source",
+              "component": {
+                "Text": {
+                  "text": {
+                    "literalString": "Live Oracle AI Database graph result rendered as native A2UI controls."
+                  },
+                  "usageHint": "caption"
+                }
+              }
+            },
+            {
+              "id": "summary",
+              "component": {
+                "Text": {
+                  "text": {
+                    "literalString": "SKU-500 depends on supplier, plant, port, and warehouse nodes. The active alert highlights port delay risk before downstream fulfillment."
+                  }
+                }
+              }
+            },
+            {
+              "id": "path-card",
+              "component": {
+                "Card": {
+                  "child": "path-content"
+                }
+              }
+            },
+            {
+              "id": "path-content",
+              "component": {
+                "Column": {
+                  "children": {
+                    "explicitList": [
+                      "path-title",
+                      "path-text"
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "id": "path-title",
+              "component": {
+                "Text": {
+                  "text": {
+                    "literalString": "Dependency path"
+                  },
+                  "usageHint": "h3"
+                }
+              }
+            },
+            {
+              "id": "path-text",
+              "component": {
+                "Text": {
+                  "text": {
+                    "literalString": "supplier-01 -> plant-01 (SUPPLIES)\nplant-01 -> port-01 (SHIPS_THROUGH)\nport-01 -> warehouse-01 (REPLENISHES)\nwarehouse-01 -> SKU-500 (STOCKS)"
+                  }
+                }
+              }
+            },
+            {
+              "id": "nodes-title",
+              "component": {
+                "Text": {
+                  "text": {
+                    "literalString": "Click a node to inspect the governed graph facts"
+                  },
+                  "usageHint": "h3"
+                }
+              }
+            },
+            {
+              "id": "node-card-1",
+              "component": {
+                "Card": {
+                  "child": "node-content-1"
+                }
+              }
+            },
+            {
+              "id": "node-content-1",
+              "component": {
+                "Column": {
+                  "children": {
+                    "explicitList": [
+                      "node-label-1",
+                      "node-type-1",
+                      "node-detail-1",
+                      "node-metric-1",
+                      "inspect-node-1"
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "id": "node-label-1",
+              "component": {
+                "Text": {
+                  "text": {
+                    "literalString": "Pacific Components"
+                  },
+                  "usageHint": "h3"
+                }
+              }
+            },
+            {
+              "id": "node-type-1",
+              "component": {
+                "Text": {
+                  "text": {
+                    "literalString": "SUPPLIER"
+                  },
+                  "usageHint": "caption"
+                }
+              }
+            },
+            {
+              "id": "node-detail-1",
+              "component": {
+                "Text": {
+                  "text": {
+                    "literalString": "Primary upstream supplier for SKU-500."
+                  }
+                }
+              }
+            },
+            {
+              "id": "node-metric-1",
+              "component": {
+                "Text": {
+                  "text": {
+                    "literalString": "Reliability score 0.91"
+                  }
+                }
+              }
+            },
+            {
+              "id": "inspect-node-1",
+              "component": {
+                "Button": {
+                  "child": "inspect-node-text-1",
+                  "primary": false,
+                  "action": {
+                    "name": "inspectGraphNode",
+                    "context": [
+                      {
+                        "key": "productId",
+                        "value": {
+                          "literalString": "SKU-500"
+                        }
+                      },
+                      {
+                        "key": "nodeId",
+                        "value": {
+                          "literalString": "supplier-01"
+                        }
+                      },
+                      {
+                        "key": "nodeType",
+                        "value": {
+                          "literalString": "SUPPLIER"
+                        }
+                      },
+                      {
+                        "key": "nodeLabel",
+                        "value": {
+                          "literalString": "Pacific Components"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "id": "inspect-node-text-1",
+              "component": {
+                "Text": {
+                  "text": {
+                    "literalString": "Inspect this node"
+                  }
+                }
+              }
+            },
+            {
+              "id": "node-card-2",
+              "component": {
+                "Card": {
+                  "child": "node-content-2"
+                }
+              }
+            },
+            {
+              "id": "node-content-2",
+              "component": {
+                "Column": {
+                  "children": {
+                    "explicitList": [
+                      "node-label-2",
+                      "node-type-2",
+                      "node-detail-2",
+                      "node-metric-2",
+                      "inspect-node-2"
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "id": "node-label-2",
+              "component": {
+                "Text": {
+                  "text": {
+                    "literalString": "Port of Seattle"
+                  },
+                  "usageHint": "h3"
+                }
+              }
+            },
+            {
+              "id": "node-type-2",
+              "component": {
+                "Text": {
+                  "text": {
+                    "literalString": "PORT"
+                  },
+                  "usageHint": "caption"
+                }
+              }
+            },
+            {
+              "id": "node-detail-2",
+              "component": {
+                "Text": {
+                  "text": {
+                    "literalString": "Current delay risk on the inbound lane."
+                  }
+                }
+              }
+            },
+            {
+              "id": "node-metric-2",
+              "component": {
+                "Text": {
+                  "text": {
+                    "literalString": "Delay risk HIGH"
+                  }
+                }
+              }
+            },
+            {
+              "id": "inspect-node-2",
+              "component": {
+                "Button": {
+                  "child": "inspect-node-text-2",
+                  "primary": false,
+                  "action": {
+                    "name": "inspectGraphNode",
+                    "context": [
+                      {
+                        "key": "productId",
+                        "value": {
+                          "literalString": "SKU-500"
+                        }
+                      },
+                      {
+                        "key": "nodeId",
+                        "value": {
+                          "literalString": "port-01"
+                        }
+                      },
+                      {
+                        "key": "nodeType",
+                        "value": {
+                          "literalString": "PORT"
+                        }
+                      },
+                      {
+                        "key": "nodeLabel",
+                        "value": {
+                          "literalString": "Port of Seattle"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "id": "inspect-node-text-2",
+              "component": {
+                "Text": {
+                  "text": {
+                    "literalString": "Inspect this node"
+                  }
+                }
+              }
+            },
+            {
+              "id": "node-card-3",
+              "component": {
+                "Card": {
+                  "child": "node-content-3"
+                }
+              }
+            },
+            {
+              "id": "node-content-3",
+              "component": {
+                "Column": {
+                  "children": {
+                    "explicitList": [
+                      "node-label-3",
+                      "node-type-3",
+                      "node-detail-3",
+                      "node-metric-3",
+                      "inspect-node-3"
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "id": "node-label-3",
+              "component": {
+                "Text": {
+                  "text": {
+                    "literalString": "Newark Inventory Hub"
+                  },
+                  "usageHint": "h3"
+                }
+              }
+            },
+            {
+              "id": "node-type-3",
+              "component": {
+                "Text": {
+                  "text": {
+                    "literalString": "WAREHOUSE"
+                  },
+                  "usageHint": "caption"
+                }
+              }
+            },
+            {
+              "id": "node-detail-3",
+              "component": {
+                "Text": {
+                  "text": {
+                    "literalString": "Downstream inventory hub with low coverage days."
+                  }
+                }
+              }
+            },
+            {
+              "id": "node-metric-3",
+              "component": {
+                "Text": {
+                  "text": {
+                    "literalString": "Coverage 4.2 days"
+                  }
+                }
+              }
+            },
+            {
+              "id": "inspect-node-3",
+              "component": {
+                "Button": {
+                  "child": "inspect-node-text-3",
+                  "primary": false,
+                  "action": {
+                    "name": "inspectGraphNode",
+                    "context": [
+                      {
+                        "key": "productId",
+                        "value": {
+                          "literalString": "SKU-500"
+                        }
+                      },
+                      {
+                        "key": "nodeId",
+                        "value": {
+                          "literalString": "warehouse-01"
+                        }
+                      },
+                      {
+                        "key": "nodeType",
+                        "value": {
+                          "literalString": "WAREHOUSE"
+                        }
+                      },
+                      {
+                        "key": "nodeLabel",
+                        "value": {
+                          "literalString": "Newark Inventory Hub"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "id": "inspect-node-text-3",
+              "component": {
+                "Text": {
+                  "text": {
+                    "literalString": "Inspect this node"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "tool": "getSupplyChainDependencies",
+    "a2uiVersion": "v0.8",
+    "mimeType": "application/json+a2ui",
+    "sourceOfTruth": "Oracle AI Database graph result"
+  }
+}

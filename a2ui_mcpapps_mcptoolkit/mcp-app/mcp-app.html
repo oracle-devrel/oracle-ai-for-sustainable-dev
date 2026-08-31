@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Supply-Chain Inventory Exchange</title>
+  <style>
+    :root { color-scheme: light dark; font-family: ui-sans-serif, system-ui, sans-serif; }
+    body { margin: 0; padding: 18px; background: Canvas; color: CanvasText; }
+    .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .brand img { width: 126px; height: auto; }
+    h1 { margin: 0 0 4px; font-size: 1.35rem; } p { color: GrayText; }
+    #source { padding: 8px 10px; border-left: 4px solid #c74634; background: color-mix(in srgb, #c74634 10%, Canvas); }
+    .mode { margin: 10px 0 0; padding: 8px 10px; border-radius: 7px; background: color-mix(in srgb, CanvasText 7%, Canvas); color: CanvasText; }
+    .metrics, .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .metric, .recommendation { padding: 12px; border: 1px solid color-mix(in srgb, CanvasText 18%, transparent); border-radius: 10px; }
+    .metric strong { display: block; font-size: 1.3rem; } .grid { margin-top: 12px; }
+    .bar { height: 8px; margin-top: 8px; border-radius: 4px; background: #d7d9dc; overflow: hidden; }
+    .bar span { display: block; height: 100%; background: #c74634; }
+    .recommendation.selected { outline: 3px solid color-mix(in srgb, #c74634 55%, transparent); }
+    .decision { display: grid; gap: 10px; margin-top: 16px; padding: 14px; border: 1px solid color-mix(in srgb, CanvasText 18%, transparent); border-radius: 10px; }
+    .decision[hidden] { display: none; }
+    textarea { min-height: 72px; padding: 8px; border: 1px solid color-mix(in srgb, CanvasText 28%, transparent); border-radius: 7px; font: inherit; }
+    .actions { display: flex; flex-wrap: wrap; gap: 8px; }
+    .secondary { background: transparent; color: CanvasText; border: 1px solid color-mix(in srgb, CanvasText 35%, transparent); }
+    .status { margin: 0; font-weight: 650; color: CanvasText; }
+    button { margin-top: 12px; padding: 8px 12px; border: 0; border-radius: 7px; background: #c74634; color: white; font: inherit; font-weight: 700; }
+    button:disabled { opacity: .55; cursor: not-allowed; }
+    @media (max-width: 640px) { .metrics, .grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="brand">
+    <img src="https://www.oracle.com/a/ocom/img/oracle-logo.svg" alt="Oracle">
+    <strong>Oracle AI Database</strong>
+  </div>
+  <h1>Supply-chain inventory exchange</h1>
+  <p>Structured, governed stockout and transfer data delivered by an MCP tool.</p>
+  <p id="source">Waiting for governed Toolkit results.</p>
+  <p id="mode" class="mode" aria-live="polite">Waiting for host capabilities.</p>
+  <div id="metrics" class="metrics"></div>
+  <div id="recommendations" class="grid"></div>
+  <section id="decision" class="decision" hidden>
+    <strong id="selection">Select a recommendation to review.</strong>
+    <label for="approval-notes">Approval notes</label>
+    <textarea id="approval-notes">Approve the database-recommended transfer to reduce stockout exposure.</textarea>
+    <div class="actions">
+      <button id="approve" type="button">Approve and execute transfer</button>
+      <button id="cancel" class="secondary" type="button">Cancel review</button>
+    </div>
+    <p id="status" class="status" aria-live="polite"></p>
+  </section>
+  <script type="module" src="/src/mcp-app.ts"></script>
+</body>
+</html>

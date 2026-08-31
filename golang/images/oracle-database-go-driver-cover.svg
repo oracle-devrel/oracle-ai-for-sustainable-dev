@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Oracle AI Database Driver for Go architecture</title>
+  <desc id="desc">A Go service uses the standard database/sql API, the native go-oracledb driver, and TCP or TCPS to connect to Oracle AI Database.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#111820"/>
+      <stop offset="1" stop-color="#263746"/>
+    </linearGradient>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0,0 L12,6 L0,12 Z" fill="#f3a59d"/>
+    </marker>
+  </defs>
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <text x="92" y="118" fill="#f3a59d" font-family="Arial, sans-serif" font-size="30" font-weight="700" letter-spacing="4">OFFICIAL NATIVE GO CONNECTIVITY</text>
+  <text x="92" y="200" fill="#ffffff" font-family="Arial, sans-serif" font-size="58" font-weight="700">Oracle AI Database Driver for Go</text>
+  <text x="92" y="257" fill="#d6dde5" font-family="Arial, sans-serif" font-size="30">Standard database/sql APIs with no CGO or Oracle Client dependency</text>
+  <g font-family="Arial, sans-serif">
+    <rect x="92" y="380" width="300" height="220" rx="26" fill="#1e2b37" stroke="#6f8293" stroke-width="3"/>
+    <text x="242" y="465" fill="#ffffff" font-size="36" font-weight="700" text-anchor="middle">Go service</text>
+    <text x="242" y="515" fill="#cfd8e2" font-size="25" text-anchor="middle">Context-aware SQL</text>
+    <text x="242" y="555" fill="#cfd8e2" font-size="25" text-anchor="middle">Transactions and pooling</text>
+    <rect x="500" y="380" width="300" height="220" rx="26" fill="#1e2b37" stroke="#6f8293" stroke-width="3"/>
+    <text x="650" y="465" fill="#ffffff" font-size="36" font-weight="700" text-anchor="middle">database/sql</text>
+    <text x="650" y="515" fill="#cfd8e2" font-size="25" text-anchor="middle">Standard Go interface</text>
+    <text x="650" y="555" fill="#cfd8e2" font-size="25" text-anchor="middle">sql.DB connection pool</text>
+    <rect x="908" y="380" width="300" height="220" rx="26" fill="#c74634" stroke="#f3a59d" stroke-width="3"/>
+    <text x="1058" y="465" fill="#ffffff" font-size="34" font-weight="700" text-anchor="middle">go-oracledb</text>
+    <text x="1058" y="515" fill="#ffffff" font-size="25" text-anchor="middle">Native Go driver</text>
+    <text x="1058" y="555" fill="#ffffff" font-size="25" text-anchor="middle">TCP and TCPS</text>
+    <path d="M392 490 H485" stroke="#f3a59d" stroke-width="8" marker-end="url(#arrow)"/>
+    <path d="M800 490 H893" stroke="#f3a59d" stroke-width="8" marker-end="url(#arrow)"/>
+    <path d="M1208 490 H1301" stroke="#f3a59d" stroke-width="8" marker-end="url(#arrow)"/>
+    <ellipse cx="1415" cy="410" rx="110" ry="44" fill="#334858" stroke="#9dafbd" stroke-width="3"/>
+    <path d="M1305 410 V565 C1305 589 1354 608 1415 608 C1476 608 1525 589 1525 565 V410" fill="#334858" stroke="#9dafbd" stroke-width="3"/>
+    <ellipse cx="1415" cy="565" rx="110" ry="44" fill="#334858" stroke="#9dafbd" stroke-width="3"/>
+    <text x="1415" y="476" fill="#ffffff" font-size="31" font-weight="700" text-anchor="middle">Oracle</text>
+    <text x="1415" y="516" fill="#ffffff" font-size="31" font-weight="700" text-anchor="middle">Database</text>
+    <text x="92" y="762" fill="#ffffff" font-size="28" font-weight="700">Fewer deployment dependencies</text>
+    <text x="540" y="762" fill="#ffffff" font-size="28" font-weight="700">Idiomatic Go APIs</text>
+    <text x="908" y="762" fill="#ffffff" font-size="28" font-weight="700">Oracle-owned roadmap</text>
+  </g>
+</svg>

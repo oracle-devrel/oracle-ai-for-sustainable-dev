@@ -1,0 +1,9 @@
+.env
+.runtime/
+agent-service/target/
+mcp-app/dist/
+mcp-app/node_modules/
+gemini-enterprise-a2a/.venv/
+gemini-enterprise-a2a/__pycache__/
+gemini-enterprise-a2a/tests/__pycache__/
+*.log

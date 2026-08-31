@@ -1,0 +1,31 @@
+# Future Micronaut integration sample.
+# This is the shape an ojdbc-agent-memory-micronaut artifact could expose after
+# conditional bean configuration is contributed or published.
+#
+# With a Micronaut integration artifact, an application should only provide
+# configuration. The integration would create OracleAgentMemory when a
+# DataSource is available and no user bean already exists.
+datasources:
+  default:
+    url: jdbc:oracle:thin:@localhost:1521/freepdb1
+    username: scott
+    password: tiger
+    driver-class-name: oracle.jdbc.OracleDriver
+    dialect: ORACLE
+
+ojdbc:
+  agentmemory:
+    enabled: true
+    schema:
+      auto-create: true
+      table-prefix: OAMJ_
+    embedding:
+      provider: database
+      model: allminilm
+    llm:
+      provider: ollama
+      base-url: http://localhost:11434
+      model: llama3.2:latest
+      temperature: 0.0
+    memory:
+      extract-memories: true

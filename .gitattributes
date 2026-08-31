@@ -1,0 +1,2 @@
+oracle-ai-database-gcp-gemini/*.sh text eol=lf
+oracle-ai-database-gcp-gemini/**/*.sh text eol=lf

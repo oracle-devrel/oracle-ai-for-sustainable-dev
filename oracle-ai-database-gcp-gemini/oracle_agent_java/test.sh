@@ -43,7 +43,7 @@ echo -e "\n"
 echo "-----------------------------------------------"
 echo "STEP 2: Testing Action (A2A JSON-RPC)"
 echo "-----------------------------------------------"
-ACTION_RESPONSE="$(curl -sS -X POST "$TARGET_URL/" \
+ACTION_RESPONSE="$(curl -sS -X POST "$TARGET_URL" \
   -H "Content-Type: application/json" \
   -d '{
     "jsonrpc": "2.0",

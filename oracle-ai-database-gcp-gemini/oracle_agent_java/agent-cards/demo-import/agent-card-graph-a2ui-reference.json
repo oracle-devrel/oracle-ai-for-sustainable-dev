@@ -1,0 +1,100 @@
+{
+  "name": "Oracle Database Property Graph Agent",
+  "description": "Oracle Database property graph specialist for product SKUs such as SKU-500. Generates Oracle-backed supply chain dependency graphs, supplier-to-warehouse paths, upstream and downstream relationship analysis, and active disruption alerts as a text summary, PNG image, and A2UI graph-inspection controls.",
+  "url": "https://34.186.79.96/graph",
+  "version": "0.1.0",
+  "capabilities": {
+    "streaming": true,
+    "pushNotifications": false,
+    "stateTransitionHistory": false,
+    "extensions": [
+      {
+        "uri": "https://a2ui.org/a2a-extension/a2ui/v0.8",
+        "description": "Provides agent driven UI using the A2UI JSON format.",
+        "required": false,
+        "params": {
+          "supportedCatalogIds": [
+            "https://a2ui.org/specification/v0_8/standard_catalog_definition.json"
+          ]
+        }
+      }
+    ]
+  },
+  "defaultInputModes": [
+    "text/plain",
+    "application/json+a2ui"
+  ],
+  "defaultOutputModes": [
+    "image/png",
+    "text/plain",
+    "application/json+a2ui"
+  ],
+  "skills": [
+    {
+      "id": "oracle_graph_agent",
+      "name": "supply-chain-dependency-graph-specialist",
+      "description": "Specialist in Oracle Graph dependency analysis for product SKUs such as SKU-500. Use this when a user asks for a supply chain dependency graph, supplier-to-warehouse path, upstream or downstream relationships, or active disruption alerts for a product.",
+      "tags": [
+        "llm",
+        "oracle",
+        "database",
+        "property-graph",
+        "supply-chain",
+        "dependencies",
+        "sku",
+        "image",
+        "a2ui"
+      ],
+      "examples": [
+        "Show the supply chain dependency graph for SKU-500 and explain the active alert.",
+        "Use the Oracle Database property graph to show supply chain dependencies for SKU-500 and render the graph as A2UI.",
+        "For SKU-500, show the supplier-to-warehouse dependency graph and provide interactive graph node controls.",
+        "Visualize the upstream supplier path for SKU-500 and highlight the risky node.",
+        "For SKU-500, map the dependency relationships from supplier to warehouse to retailer."
+      ],
+      "inputModes": [
+        "text/plain",
+        "application/json+a2ui"
+      ],
+      "outputModes": [
+        "image/png",
+        "text/plain",
+        "application/json+a2ui"
+      ]
+    },
+    {
+      "id": "oracle_graph_agent-getSupplyChainDependencies",
+      "name": "getSupplyChainDependencies",
+      "description": "Fetches Oracle Property Graph supply chain dependencies and active alert context for a specific product ID such as SKU-500.",
+      "tags": [
+        "llm",
+        "tools",
+        "oracle",
+        "database",
+        "property-graph",
+        "sku",
+        "dependencies",
+        "a2ui"
+      ],
+      "examples": [
+        "Get the dependency graph for SKU-500.",
+        "Use Oracle Database property graph data for SKU-500.",
+        "Show the Oracle graph path for SKU-500.",
+        "Find the supply chain dependencies for SKU-500."
+      ],
+      "inputModes": [
+        "text/plain",
+        "application/json+a2ui"
+      ],
+      "outputModes": [
+        "image/png",
+        "text/plain",
+        "application/json+a2ui"
+      ]
+    }
+  ],
+  "supportsAuthenticatedExtendedCard": false,
+  "additionalInterfaces": [],
+  "preferredTransport": "JSONRPC",
+  "protocolVersion": "0.3.0"
+}

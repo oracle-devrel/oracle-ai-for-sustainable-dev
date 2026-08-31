@@ -1,0 +1,11 @@
+[Unit]
+Description=Check the short-lived Oracle A2A TLS certificate twice daily
+
+[Timer]
+OnCalendar=*-*-* 00,12:17:00
+RandomizedDelaySec=45m
+Persistent=true
+Unit=certbot-oracle-graph-agent-ip.service
+
+[Install]
+WantedBy=timers.target

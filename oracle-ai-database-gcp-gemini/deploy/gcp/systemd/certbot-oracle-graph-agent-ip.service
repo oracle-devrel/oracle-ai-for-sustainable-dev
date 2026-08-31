@@ -1,0 +1,8 @@
+[Unit]
+Description=Renew the short-lived TLS certificate for 34.48.146.146
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/certbot renew --cert-name oracle-graph-agent-ip --non-interactive --quiet --no-random-sleep-on-renew

@@ -1,0 +1,125 @@
+# Compatible with Oracle Database MCP Java Toolkit 1.0.0.
+# Credentials are resolved from the standalone Toolkit process environment, not stored here.
+dataSources:
+  financial-db:
+    url: ${DB_URL}
+    user: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+tools:
+  find-stockout-transfer-recommendations:
+    dataSource: financial-db
+    description: Returns bounded, governed inventory-transfer recommendations for locations at or above the requested stockout-risk score.
+    parameters:
+      - name: minimumStockoutRisk
+        type: number
+        description: Minimum calculated stockout-risk score from 0 through 100.
+        required: true
+      - name: maximumRows
+        type: integer
+        description: Maximum number of recommendations from 1 through 50; validated by the agent service.
+        required: true
+    statement: >-
+      SELECT * FROM (
+        SELECT recommendation_id, product_id, sku, product_name, category_name,
+               source_location_id, source_location_code, source_location_name,
+               target_location_id, target_location_code, target_location_name,
+               source_available_qty, target_available_qty, forecast_7d_qty,
+               safety_stock_qty, shortage_qty, recommended_transfer_qty,
+               transit_days, unit_transfer_cost, stockout_risk_score,
+               risk_level, rationale
+          FROM FINANCIAL.stockout_transfer_recommendation_v
+         WHERE stockout_risk_score >= :minimumStockoutRisk
+         ORDER BY stockout_risk_score DESC, shortage_qty DESC
+      ) WHERE ROWNUM <= :maximumRows
+
+  get-stockout-transfer-details:
+    dataSource: financial-db
+    description: Returns one current governed transfer recommendation by its product, source, and target locations.
+    parameters:
+      - name: productId
+        type: integer
+        description: Product identifier from the governed result.
+        required: true
+      - name: sourceLocationId
+        type: integer
+        description: Recommended source-location identifier.
+        required: true
+      - name: targetLocationId
+        type: integer
+        description: At-risk target-location identifier.
+        required: true
+    statement: >-
+      SELECT recommendation_id, product_id, sku, product_name, category_name,
+             source_location_id, source_location_code, source_location_name,
+             target_location_id, target_location_code, target_location_name,
+             source_available_qty, target_available_qty, forecast_7d_qty,
+             safety_stock_qty, shortage_qty, recommended_transfer_qty,
+             transit_days, unit_transfer_cost, stockout_risk_score,
+             risk_level, rationale
+        FROM FINANCIAL.stockout_transfer_recommendation_v
+       WHERE product_id = :productId
+         AND source_location_id = :sourceLocationId
+         AND target_location_id = :targetLocationId
+
+  reserve-inventory-transfer-id:
+    dataSource: financial-db
+    description: Reserves one database-generated identifier for an approved inventory transfer.
+    parameters: []
+    statement: SELECT FINANCIAL.inventory_transfer_mcp_seq.NEXTVAL AS transfer_id FROM dual
+
+  approve-inventory-transfer:
+    dataSource: financial-db
+    description: Revalidates, reserves, and audits one approved inventory transfer through a dedicated stored procedure.
+    parameters:
+      - name: transferId
+        type: integer
+        description: Identifier previously reserved with reserve-inventory-transfer-id.
+        required: true
+      - name: productId
+        type: integer
+        description: Product identifier from the approved governed recommendation.
+        required: true
+      - name: sourceLocationId
+        type: integer
+        description: Source-location identifier from the recommendation.
+        required: true
+      - name: targetLocationId
+        type: integer
+        description: Target-location identifier from the recommendation.
+        required: true
+      - name: transferQuantity
+        type: integer
+        description: Recommended transfer quantity bound to the approval.
+        required: true
+      - name: approvalNotes
+        type: string
+        description: Human-supplied approval notes containing 3 through 2000 characters.
+        required: true
+      - name: requestedBy
+        type: string
+        description: Authenticated actor recorded for auditing.
+        required: true
+    statement: >-
+      BEGIN
+        FINANCIAL.approve_inventory_transfer_mcp(
+          :transferId, :productId, :sourceLocationId, :targetLocationId,
+          :transferQuantity, :approvalNotes, :requestedBy);
+      END;
+
+  count-inventory-transfers:
+    dataSource: financial-db
+    description: Returns the number of audited inventory transfers for verification.
+    parameters: []
+    statement: SELECT COUNT(*) AS transfer_count FROM FINANCIAL.inventory_transfers
+
+toolsets:
+  supply-chain-exchange-read:
+    - find-stockout-transfer-recommendations
+    - get-stockout-transfer-details
+  supply-chain-exchange:
+    - find-stockout-transfer-recommendations
+    - get-stockout-transfer-details
+    - reserve-inventory-transfer-id
+    - approve-inventory-transfer
+    - count-inventory-transfers

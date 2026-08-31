@@ -1,0 +1,39 @@
+1
+00:00:00,200 --> 00:00:11,800
+Follow stockout risk from relational analysis through graph, spatial, governed action, and interactive review.
+
+2
+00:00:12,200 --> 00:00:23,800
+Registration makes agents available, but Core Assistant does not automatically delegate to every listed agent.
+
+3
+00:00:24,200 --> 00:00:35,800
+The managed database agent, or the labeled custom fallback, uses a narrow Select AI profile and SQL_TOOL over allowlisted views.
+
+4
+00:00:36,200 --> 00:00:47,800
+The graph specialist traverses supplier, plant, port, warehouse, product, and active alert relationships stored in Oracle AI Database.
+
+5
+00:00:48,200 --> 00:00:59,800
+The spatial specialist joins warehouse coordinates to governed risk snapshots and identifies Newark pressure with DFW as the relief source.
+
+6
+00:01:00,200 --> 00:01:11,800
+The coordinator gathers graph, spatial, and external evidence, drafts a DFW-to-Newark transfer, and states that approval is required.
+
+7
+00:01:12,200 --> 00:01:23,800
+Select Oracle Supply-Chain A2UI, submit the bounded prompt, review the Oracle result, enter notes, and choose approve or cancel.
+
+8
+00:01:24,200 --> 00:01:35,800
+Enable the private OAuth-backed MCP connector and call show-inventory-transfer-dashboard. Confirm tool discovery before presenting the widget as validated.
+
+9
+00:01:36,200 --> 00:01:47,800
+Authenticated database identities and Deep Data Security can restrict rows before any agent, host, UI, or model receives them.
+
+10
+00:01:48,200 --> 00:01:59,800
+Gemini Enterprise hosts the conversation. A2A connects specialists. Oracle AI Database governs relational, graph, spatial, AI, security, and transaction work.
