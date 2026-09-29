@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Passwordless Java Connections to Oracle AI Database with OCI IAM and Microsoft Entra ID</title>
-  <meta name="description" content="Combine Oracle JDBC token authentication with the 23c JDBC provider extensions for short-lived OCI IAM and Microsoft Entra ID database access tokens.">
+  <title>Passwordless Java Connections to Oracle AI Database 26ai with OCI IAM and Microsoft Entra ID</title>
+  <meta name="description" content="Use Oracle AI Database 26ai and Oracle JDBC token authentication with OCI IAM or Microsoft Entra ID, including file-based tokens and JDBC provider extensions.">
   <meta name="author" content="Paul Parkinson">
   <style>
     :root {
@@ -53,8 +53,8 @@
 <body>
 <main>
   <p class="eyebrow">Oracle AI Database &middot; Java &middot; JDBC &middot; Identity</p>
-  <h1>Passwordless Java Connections to Oracle AI Database with OCI IAM and Microsoft Entra ID</h1>
-  <p class="subtitle">Use JDBC token authentication directly, or let the 23c JDBC provider extensions obtain and refresh OCI IAM or Microsoft Entra ID access tokens for you.</p>
+  <h1>Passwordless Java Connections to Oracle AI Database 26ai with OCI IAM and Microsoft Entra ID</h1>
+  <p class="subtitle">Use 26ai JDBC token authentication directly, or let the Oracle JDBC provider extensions obtain and refresh OCI IAM or Microsoft Entra ID access tokens.</p>
   <p class="updated">By Paul Parkinson &middot; September 2026 &middot; Technical references checked September 28, 2026</p>
 
   <figure class="cover">
@@ -65,29 +65,31 @@
   <section id="key-takeaways">
     <h2>Key Takeaways</h2>
     <ul>
-      <li>Oracle JDBC can authenticate to Autonomous AI Database with short-lived OCI IAM or Microsoft Entra ID tokens instead of a database password.</li>
-      <li>The file-based <code>OCI_TOKEN</code> flow remains useful for tokens produced by the OCI CLI, while 23c JDBC provider extensions can acquire tokens through OCI and Azure SDK credentials.</li>
+      <li>Oracle JDBC can authenticate to Oracle AI Database 26ai and Autonomous AI Database with short-lived OCI IAM or Microsoft Entra ID tokens instead of a database password.</li>
+      <li>The file-based <code>OCI_TOKEN</code> flow remains useful for tokens produced by the OCI CLI, while JDBC provider extensions can acquire tokens through OCI and Microsoft identity SDK credentials.</li>
       <li>OCI IAM uses a token plus a proof-of-possession private key; an Entra token uses the database application audience and a configured Azure credential.</li>
       <li>Token authentication does not replace TLS, database-side identity mapping, least-privilege policies, or pool lifecycle testing.</li>
     </ul>
   </section>
 
-  <p class="lead">Yes. A Java application can connect to Oracle AI Database without putting a database password in its JDBC call. With OCI IAM, the application can use an OCI database token and its proof-of-possession key. With Microsoft Entra ID, it can use an access token issued for the database application. In both cases, Oracle JDBC sends the token during authentication and the database validates it against its configured identity provider and user mapping.</p>
-  <p>The current implementation choice is between two layers. The JDBC driver can read a token from a file or accept a token value supplied by the application. Starting with the 23c driver, service-provider extensions can obtain tokens through the OCI or Azure SDK and expose them to JDBC, so an existing <code>OracleDataSource</code>-based application may only need dependency and connection-property changes. The provider modules also cache tokens and refresh them before expiry.</p>
+  <p class="lead">Yes. A Java application can connect to Oracle AI Database 26ai without putting a database password in its JDBC call. With OCI IAM, the application can use an OCI database token and its proof-of-possession key. With Microsoft Entra ID, it can use an access token issued for the database application. In both cases, Oracle JDBC sends the token during authentication and the database validates it against its configured identity provider and user mapping.</p>
+  <p>The current implementation choice is between two layers. The JDBC driver can read a token from a file, accept a token value supplied by the application, or obtain one from a configured provider. For 26ai-compatible Oracle JDBC releases, service-provider extensions can acquire tokens through OCI or Microsoft identity SDK credentials, so an existing <code>OracleDataSource</code>-based application may only need a provider dependency and connection-property changes. The provider modules cache tokens and refresh them before expiry.</p>
+  <div class="note"><strong>Version naming:</strong> The database product is Oracle AI Database 26ai. JDBC artifacts use their own release numbers: the current JDK 17 production bundle is <code>23.26.3.0.0</code>, and the OCI/Azure provider modules are <code>1.1.0</code>. The <code>23.26</code> prefix is the JDBC artifact version, not the database product name. Use the published artifact version in Maven rather than inventing a <code>26ai</code> artifact version.</div>
+  <p>When the application owns token acquisition, the 26ai JDBC API also accepts an application-supplied token through <code>OracleConnectionBuilder.accessToken(...)</code> or a thread-safe <code>OracleDataSource.setTokenSupplier(...)</code>. Use the token supplier and JDBC token cache when physical connections may be created over time. Do not configure a token supplier together with a database username or password on the same data source.</p>
 
-  <h2>What Changed Since the Original IAM Token Example?</h2>
-  <p>The original Oracle Developers walkthrough showed how to generate an IAM database token with the OCI CLI or SDK, point JDBC at the token directory, and refresh the token for a connection pool. That pattern is still valid, but the current JDBC line adds more choices:</p>
+  <h2>26ai JDBC Token Authentication Options</h2>
+  <p>The original Oracle Developers walkthrough showed how to generate an IAM database token with the OCI CLI or SDK, point JDBC at the token directory, and refresh the token for a connection pool. That pattern remains valid in 26ai. Current JDBC drivers also support direct token properties and provider modules that obtain tokens through cloud SDK credentials:</p>
   <div class="table-wrap">
     <table>
       <thead><tr><th>Approach</th><th>Token acquisition</th><th>Best fit</th></tr></thead>
       <tbody>
         <tr><td><strong>File-based <code>OCI_TOKEN</code></strong></td><td>OCI CLI or application code writes <code>token</code> and <code>oci_db_key.pem</code> to a directory.</td><td>Simple automation, existing OCI CLI workflows, and applications that already manage a token refresh job.</td></tr>
         <tr><td><strong>JDBC provider for OCI</strong></td><td><code>ojdbc-provider-oci</code> uses OCI SDK credentials such as an API-key config file, instance principal, resource principal, Cloud Shell, or interactive login.</td><td>OCI-hosted workloads and Java applications that should not implement token acquisition code.</td></tr>
-        <tr><td><strong>JDBC provider for Azure</strong></td><td><code>ojdbc-provider-azure</code> uses Azure SDK credentials such as a service principal, certificate, managed identity, device code, or interactive login.</td><td>Azure-hosted workloads, Entra service principals, and interactive Java clients.</td></tr>
+        <tr><td><strong>JDBC provider for Microsoft Entra ID</strong></td><td><code>ojdbc-provider-azure</code> uses Azure Identity credentials such as a service principal, certificate, managed identity, device code, or interactive login.</td><td>Azure-hosted workloads, Entra service principals, and interactive Java clients.</td></tr>
       </tbody>
     </table>
   </div>
-  <p>The provider route does not remove configuration work: the database must trust the identity provider, the principal must be mapped to a database user, the token scope must identify the database resource, and the application must include compatible JDBC and provider artifacts.</p>
+  <p>The provider route does not remove configuration work: the database must trust the identity provider, the principal must be mapped to a database user, the token scope must identify the database resource, and the application must include compatible JDBC and provider artifacts. The current <code>ojdbc-provider-oci</code> and <code>ojdbc-provider-azure</code> releases are 1.1.0; check Maven Central before pinning versions in a new application.</p>
 
   <h2>Prerequisites and Database Configuration</h2>
   <p>Complete the identity-provider setup before debugging Java code. The exact SQL and console steps vary by Autonomous AI Database service and identity provider, so use the current <a href="https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/manage-users-iam.html">Autonomous AI Database IAM authentication guide</a> and the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/26/jjdbc/client-side-security.html">JDBC client-side security guide</a> as the authoritative setup references.</p>
@@ -137,7 +139,7 @@ try (Connection connection = dataSource.getConnection()) {
   <p>The <a href="https://github.com/oracle/ojdbc-extensions/tree/main/ojdbc-provider-oci">OCI JDBC provider</a> exposes an access-token resource provider named <code>ojdbc-provider-oci-token</code>. It supports OCI SDK authentication methods including an OCI configuration file, instance principal, resource principal, Cloud Shell, and interactive authentication. The provider accepts a least-privilege database scope such as a compartment-and-database URN and refreshes the cached JWT before it expires.</p>
   <p>Add the provider alongside the Oracle JDBC driver. The versions below are a concrete example; pin a compatible driver/provider pair for your application and verify the current release in Maven Central.</p>
   <pre><code class="language-xml">&lt;properties&gt;
-  &lt;oracle.jdbc.version&gt;23.26.2.0.0&lt;/oracle.jdbc.version&gt;
+  &lt;oracle.jdbc.version&gt;23.26.3.0.0&lt;/oracle.jdbc.version&gt;
   &lt;ojdbc.extensions.version&gt;1.1.0&lt;/ojdbc.extensions.version&gt;
 &lt;/properties&gt;
 
@@ -151,8 +153,9 @@ try (Connection connection = dataSource.getConnection()) {
   &lt;groupId&gt;com.oracle.database.jdbc&lt;/groupId&gt;
   &lt;artifactId&gt;ojdbc-provider-oci&lt;/artifactId&gt;
   &lt;version&gt;${ojdbc.extensions.version}&lt;/version&gt;
+  &lt;scope&gt;runtime&lt;/scope&gt;
 &lt;/dependency&gt;</code></pre>
-  <p>Configure the provider in the same <code>Properties</code> object used by the data source:</p>
+  <p>This example uses the OCI provider. For Microsoft Entra ID, use <code>ojdbc-provider-azure</code> at the same provider version instead and configure an Azure Identity-supported credential. Configure the selected provider in the same <code>Properties</code> object used by the data source:</p>
   <pre><code class="language-java">Properties properties = new Properties();
 properties.setProperty(
     "oracle.jdbc.provider.accessToken",
@@ -179,8 +182,8 @@ try (Connection connection = dataSource.getConnection()) {
 }</code></pre>
   <p>For an OCI compute workload, change <code>authenticationMethod</code> to <code>instance-principal</code> or <code>resource-principal</code> when the runtime actually provides that identity. The provider's <code>scope</code> should be as narrow as possible: a single database is less privileged than a compartment, and a compartment is less privileged than the tenancy-wide wildcard.</p>
 
-  <h2>Option 3: Let the Azure JDBC Provider Obtain an Entra ID Token</h2>
-  <p>The <a href="https://github.com/oracle/ojdbc-extensions/tree/main/ojdbc-provider-azure">Azure JDBC provider</a> exposes <code>ojdbc-provider-azure-token</code>. Its scope is the application ID URI of the database resource followed by a named scope or <code>/.default</code>. The provider uses Azure SDK credentials and can cache the token, refreshing it before expiration.</p>
+  <h2>Option 3: Let the JDBC Provider Obtain a Microsoft Entra ID Token</h2>
+  <p>The <a href="https://github.com/oracle/ojdbc-extensions/tree/main/ojdbc-provider-azure">Microsoft Entra JDBC provider</a> exposes <code>ojdbc-provider-azure-token</code>. Its scope is the application ID URI of the database resource followed by a named scope or <code>/.default</code>. The provider uses Azure Identity credentials and can cache the token, refreshing it before expiration.</p>
   <p>For an application service principal, configure the provider with environment variables or a secret/certificate manager. Prefer a certificate or workload identity where that is supported by your deployment instead of embedding a client secret in source code.</p>
   <pre><code>export AZURE_TENANT_ID=&lt;tenant-id&gt;
 export AZURE_CLIENT_ID=&lt;database-application-client-id&gt;
@@ -244,14 +247,14 @@ try (Connection connection = dataSource.getConnection()) {
   </div>
 
   <h2>Summary</h2>
-  <p>The 2022 IAM-token pattern still provides a clear, portable baseline: generate a short-lived token, give JDBC the token directory, and refresh it before creating new pooled connections. The 23c JDBC provider extensions make the same design easier to operate by moving cloud-specific token acquisition into supported OCI and Azure provider modules. The right choice depends on where the Java process runs and which identity it is allowed to use.</p>
+  <p>The IAM-token pattern still provides a clear, portable baseline: generate a short-lived token, give JDBC the token directory, and refresh it before creating new pooled connections. The 26ai-compatible JDBC provider extensions make the same design easier to operate by moving cloud-specific token acquisition into supported OCI and Microsoft Entra provider modules. The right choice depends on where the Java process runs and which identity it is allowed to use.</p>
   <p>Whichever path you select, keep the security boundary explicit: the cloud identity obtains a database-scoped token, Oracle AI Database maps that identity to a database principal, the JDBC driver protects the network connection, and database grants determine what that principal can do.</p>
 
   <section id="resources" class="sources">
     <h2>Relevant Links and Further Reading</h2>
     <ul>
       <li><a href="https://blogs.oracle.com/developers/accessing-autonomous-database-with-iam-token-using-java">Oracle Developers: Accessing Autonomous Database with IAM token using Java</a></li>
-      <li><a href="https://blogs.oracle.com/developers/23c-jdbc-extensions-for-oci-iam-azure-ad">Oracle Developers: 23c JDBC seamless authentication with OCI IAM and Azure AD</a></li>
+      <li><a href="https://blogs.oracle.com/developers/23c-jdbc-extensions-for-oci-iam-azure-ad">Oracle Developers: JDBC token authentication with OCI IAM and Microsoft Entra ID</a> (original provider walkthrough)</li>
       <li><a href="https://docs.oracle.com/en/database/oracle/oracle-database/26/jjdbc/client-side-security.html">Oracle AI Database 26ai JDBC client-side security features</a></li>
       <li><a href="https://docs.oracle.com/en/database/oracle/oracle-database/26/jajdb/oracle/jdbc/OracleConnection.html">Oracle AI Database 26ai OracleConnection API reference</a></li>
       <li><a href="https://github.com/oracle/ojdbc-extensions">Oracle JDBC Driver Extensions</a></li>
