@@ -80,7 +80,7 @@ business implementation.
 
 ## MCP App in ChatGPT, Claude, and Gemini Enterprise
 
-The port-8080 web application demonstrates AG-UI and A2UI; it does not embed the MCP App. The separate `mcp-app/` package demonstrates the MCP Apps extension inside a compatible host. `server.ts` registers the model-visible `show-inventory-transfer-dashboard` tool, the app-only approve and reject tools, and the `ui://oracle-supply-chain/inventory-exchange-v2` resource, while `src/mcp-app.ts` implements the dashboard.
+The port-8080 web application demonstrates AG-UI and A2UI; it does not embed the MCP App. The separate `mcp-app/` package demonstrates the MCP Apps extension inside a compatible host. `server.ts` registers the model-visible `show-inventory-transfer-dashboard` and `show-inventory-spatial-hotspots` tools, the app-only approve and reject tools, and the corresponding `ui://` resources, while `src/mcp-app.ts` implements the transfer dashboard and MapLibre spatial view.
 
 The model-visible MCP App tool calls the Java service's `/api/reviews` adapter.
 That adapter invokes `find-stockout-transfer-recommendations`, binds a
@@ -89,6 +89,12 @@ handle in widget-only result metadata. The iframe can call two app-only tools:
 `approve-inventory-transfer` and `reject-inventory-transfer-review`. The model
 cannot invoke either action tool. The iframe never receives database
 credentials or a direct database connection.
+
+The same connector's read-only `show-inventory-spatial-hotspots` tool calls the
+Oracle Database MCP Java Toolkit's `get-inventory-spatial-hotspots` operation,
+converts the returned warehouse coordinates into GeoJSON, and renders source
+and destination markers plus the recommended relief route with MapLibre GL JS.
+It cannot approve or execute a transfer.
 
 With Node.js 20.19+ or 22.12+ installed:
 

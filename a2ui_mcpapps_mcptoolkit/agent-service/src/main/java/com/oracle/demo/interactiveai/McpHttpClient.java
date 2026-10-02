@@ -71,7 +71,8 @@ final class McpHttpClient implements AutoCloseable {
         }
         JsonNode structured = result.path("structuredContent");
         if (!structured.isObject()) {
-            throw new IllegalStateException("Oracle Database MCP tool did not return structuredContent: " + name);
+            throw new IllegalStateException("Oracle Database MCP tool did not return structuredContent: " + name
+                    + "; content=" + result.path("content"));
         }
         return new ToolResult(structured);
     }

@@ -6,6 +6,8 @@ CREATE TABLE supply_locations (
     location_name     VARCHAR2(200) NOT NULL,
     region_name       VARCHAR2(100) NOT NULL,
     location_type     VARCHAR2(30) NOT NULL,
+    latitude          NUMBER(9,6) NOT NULL,
+    longitude         NUMBER(9,6) NOT NULL,
     CONSTRAINT ck_supply_location_type
         CHECK (location_type IN ('DISTRIBUTION_CENTER', 'STORE', 'FULFILLMENT_CENTER'))
 );

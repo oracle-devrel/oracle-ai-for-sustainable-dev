@@ -3,6 +3,7 @@ package com.oracle.demo.interactiveai;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Stream;
 import java.util.concurrent.atomic.AtomicLong;
 
 /** In-memory test fixture; it is not packaged with the running application. */
@@ -61,6 +62,25 @@ final class DemoSupplyChainRepository implements SupplyChainRepository {
                 .sorted(Comparator.comparingDouble(
                                 TransferRecommendation::stockoutRiskScore)
                         .reversed())
+                .limit(maximumRows)
+                .toList();
+    }
+
+    @Override
+    public List<SpatialHotspot> findSpatialHotspots(String sku, int maximumRows) {
+        return RECOMMENDATIONS.stream()
+                .filter(recommendation -> recommendation.sku().equalsIgnoreCase(sku))
+                .flatMap(recommendation -> Stream.of(
+                        new SpatialHotspot(recommendation.productId(), recommendation.sku(),
+                                recommendation.sourceLocationId(), recommendation.sourceLocationCode(),
+                                recommendation.sourceLocationName(), 33.4484, -112.0740,
+                                recommendation.stockoutRiskScore(), recommendation.riskLevel(),
+                                recommendation.recommendedTransferQuantity(), "SOURCE"),
+                        new SpatialHotspot(recommendation.productId(), recommendation.sku(),
+                                recommendation.targetLocationId(), recommendation.targetLocationCode(),
+                                recommendation.targetLocationName(), 33.7490, -84.3880,
+                                recommendation.stockoutRiskScore(), recommendation.riskLevel(),
+                                recommendation.recommendedTransferQuantity(), "DESTINATION")))
                 .limit(maximumRows)
                 .toList();
     }

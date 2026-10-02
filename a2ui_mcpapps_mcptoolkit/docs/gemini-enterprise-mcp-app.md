@@ -134,7 +134,8 @@ override for an authorized administrator to apply.
 1. Wait for the new data store status to become **Active**.
 2. Open its **Actions** tab.
 3. Select **Reload custom actions**.
-4. Select `show-inventory-transfer-dashboard` and choose **Enable actions**.
+4. Select `show-inventory-transfer-dashboard` and
+   `show-inventory-spatial-hotspots`, then choose **Enable actions**.
 5. Connect the data store to the `Inventory System` Gemini Enterprise app if
    the creation flow did not do so automatically.
 

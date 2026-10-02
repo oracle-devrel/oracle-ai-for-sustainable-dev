@@ -12,6 +12,7 @@ import {
 import { z } from "zod";
 
 const resourceUri = "ui://oracle-supply-chain/inventory-exchange-v2";
+const spatialResourceUri = "ui://oracle-supply-chain/spatial-hotspots-v1";
 const agentServiceUrl =
   process.env.AGENT_SERVICE_URL ?? "http://127.0.0.1:8080";
 const agentServiceTimeoutMs =
@@ -60,6 +61,24 @@ const TransferResultSchema = z.object({
 const RejectionResultSchema = z.object({
   status: z.literal("REJECTED")
 });
+const SpatialHotspotSchema = z.object({
+  productId: z.number(),
+  sku: z.string(),
+  locationId: z.number(),
+  locationCode: z.string(),
+  locationName: z.string(),
+  latitude: z.number(),
+  longitude: z.number(),
+  stockoutRiskScore: z.number(),
+  riskLevel: z.string(),
+  recommendedTransferQuantity: z.number(),
+  recommendedRole: z.string()
+});
+const SpatialResponseSchema = z.object({
+  source: z.literal("oracle-db-mcp-java-toolkit"),
+  sku: z.string(),
+  hotspots: z.array(SpatialHotspotSchema)
+});
 
 async function agentFormRequest(
   pathName: string,
@@ -102,6 +121,56 @@ async function loadGovernedReview(
       maximumRows
     })
   );
+}
+
+async function loadSpatialHotspots(sku: string, maximumRows: number) {
+  const endpoint = new URL("/api/spatial", agentServiceUrl);
+  endpoint.searchParams.set("sku", sku);
+  endpoint.searchParams.set("maximumRows", String(maximumRows));
+  const response = await fetch(endpoint, {
+    signal: AbortSignal.timeout(agentServiceTimeoutMs)
+  });
+  const payload: unknown = await response.json();
+  if (!response.ok) {
+    console.error("Spatial backend request failed", {
+      path: "/api/spatial",
+      status: response.status,
+      payload
+    });
+    throw new Error(`Spatial request failed with HTTP ${response.status}`);
+  }
+  return SpatialResponseSchema.parse(payload);
+}
+
+function spatialGeoJson(hotspots: z.infer<typeof SpatialHotspotSchema>[]) {
+  const features = hotspots.map((hotspot) => ({
+    type: "Feature",
+    geometry: {
+      type: "Point",
+      coordinates: [hotspot.longitude, hotspot.latitude]
+    },
+    properties: hotspot
+  }));
+  const source = hotspots.find((hotspot) => hotspot.recommendedRole === "SOURCE");
+  const destination = hotspots.find((hotspot) => hotspot.recommendedRole === "DESTINATION");
+  if (source && destination) {
+    features.push({
+      type: "Feature",
+      geometry: {
+        type: "LineString",
+        coordinates: [
+          [source.longitude, source.latitude],
+          [destination.longitude, destination.latitude]
+        ]
+      },
+      properties: {
+        kind: "relief-route",
+        sourceLocationCode: source.locationCode,
+        targetLocationCode: destination.locationCode
+      }
+    } as unknown as typeof features[number]);
+  }
+  return { type: "FeatureCollection", features };
 }
 
 const server = new McpServer({
@@ -156,6 +225,43 @@ registerAppTool(server, "show-inventory-transfer-dashboard", {
       maximumRows
     },
     _meta: writesEnabled ? { approvalId: review.approvalId } : {}
+  };
+});
+
+registerAppTool(server, "show-inventory-spatial-hotspots", {
+  title: "Show inventory spatial hotspots",
+  description:
+    "Shows Oracle Database warehouse hotspot coordinates and the recommended relief route as an interactive MapLibre map.",
+  inputSchema: {
+    sku: z.string().min(1).max(40).default("SKU-500")
+      .describe("Product SKU to map"),
+    maximumRows: z.number().int().min(2).max(50).default(20)
+      .describe("Maximum governed hotspot features")
+  },
+  _meta: {
+    ui: {
+      resourceUri: spatialResourceUri,
+      visibility: ["model", "app"]
+    }
+  },
+  annotations: {
+    readOnlyHint: true,
+    openWorldHint: false
+  }
+}, async ({ sku, maximumRows }) => {
+  const response = await loadSpatialHotspots(sku, maximumRows);
+  return {
+    content: [{
+      type: "text",
+      text: `Oracle Database returned ${response.hotspots.length} spatial hotspot features for ${sku}.`
+    }],
+    structuredContent: {
+      view: "spatial-hotspots",
+      source: response.source,
+      sku: response.sku,
+      hotspots: response.hotspots,
+      geojson: spatialGeoJson(response.hotspots)
+    }
   };
 });
 
@@ -248,6 +354,35 @@ registerAppResource(
           csp: {
             connectDomains: [],
             resourceDomains: ["https://www.oracle.com"]
+          }
+        }
+      }
+    }]
+  })
+);
+
+registerAppResource(
+  server,
+  spatialResourceUri,
+  spatialResourceUri,
+  { mimeType: RESOURCE_MIME_TYPE },
+  async () => ({
+    contents: [{
+      uri: spatialResourceUri,
+      mimeType: RESOURCE_MIME_TYPE,
+      text: await readFile(
+        path.join(import.meta.dirname, "dist", "mcp-app.html"),
+        "utf8"
+      ),
+      _meta: {
+        ui: {
+          prefersBorder: true,
+          csp: {
+            connectDomains: [],
+            resourceDomains: [
+              "https://www.oracle.com",
+              "https://unpkg.com"
+            ]
           }
         }
       }

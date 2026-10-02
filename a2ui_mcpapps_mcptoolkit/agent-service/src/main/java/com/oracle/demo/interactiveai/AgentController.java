@@ -80,6 +80,20 @@ final class AgentController {
                 runtime.repository(profile).writesAllowed()));
     }
 
+    @GetMapping(value = "/spatial", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<String> spatial(
+            @RequestParam(defaultValue = "SKU-500") String sku,
+            @RequestParam(defaultValue = "20") int maximumRows,
+            @RequestParam(defaultValue = "full") String accessProfile) {
+        if (sku.isBlank()) throw new IllegalArgumentException("sku is required");
+        if (maximumRows < 1 || maximumRows > 50) {
+            throw new IllegalArgumentException("maximumRows must be between 1 and 50");
+        }
+        String profile = runtime.accessProfile(Map.of("accessProfile", accessProfile));
+        return noStore(Main.spatialJson(
+                sku, runtime.repository(profile).findSpatialHotspots(sku, maximumRows)));
+    }
+
     @PostMapping(
             value = "/approve",
             consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE,

@@ -1,9 +1,9 @@
 WHENEVER SQLERROR EXIT SQL.SQLCODE ROLLBACK
 
-INSERT INTO supply_locations VALUES (101, 'ATL-DC', 'Atlanta Distribution Center', 'Southeast', 'DISTRIBUTION_CENTER');
-INSERT INTO supply_locations VALUES (102, 'PHX-DC', 'Phoenix Distribution Center', 'Southwest', 'DISTRIBUTION_CENTER');
-INSERT INTO supply_locations VALUES (103, 'CHI-FC', 'Chicago Fulfillment Center', 'Midwest', 'FULFILLMENT_CENTER');
-INSERT INTO supply_locations VALUES (104, 'SEA-FC', 'Seattle Fulfillment Center', 'Northwest', 'FULFILLMENT_CENTER');
+INSERT INTO supply_locations VALUES (101, 'ATL-DC', 'Atlanta Distribution Center', 'Southeast', 'DISTRIBUTION_CENTER', 33.7490, -84.3880);
+INSERT INTO supply_locations VALUES (102, 'PHX-DC', 'Phoenix Distribution Center', 'Southwest', 'DISTRIBUTION_CENTER', 33.4484, -112.0740);
+INSERT INTO supply_locations VALUES (103, 'CHI-FC', 'Chicago Fulfillment Center', 'Midwest', 'FULFILLMENT_CENTER', 41.8781, -87.6298);
+INSERT INTO supply_locations VALUES (104, 'SEA-FC', 'Seattle Fulfillment Center', 'Northwest', 'FULFILLMENT_CENTER', 47.6062, -122.3321);
 
 INSERT INTO supply_products VALUES (1001, 'BAT-48V', '48V Solar Battery Pack', 'Energy Storage', 1299.00);
 INSERT INTO supply_products VALUES (1002, 'THERM-PRO', 'Smart Thermostat Pro', 'Building Controls', 189.00);

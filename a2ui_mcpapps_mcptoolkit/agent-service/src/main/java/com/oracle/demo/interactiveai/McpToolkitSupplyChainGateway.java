@@ -14,12 +14,14 @@ public final class McpToolkitSupplyChainGateway implements SupplyChainRepository
     private static final Set<String> WRITE_TOOLS = Set.of(
             "find-stockout-transfer-recommendations",
             "get-stockout-transfer-details",
+            "get-inventory-spatial-hotspots",
             "reserve-inventory-transfer-id",
             "approve-inventory-transfer",
             "count-inventory-transfers");
     private static final Set<String> READ_TOOLS = Set.of(
             "find-stockout-transfer-recommendations",
-            "get-stockout-transfer-details");
+            "get-stockout-transfer-details",
+            "get-inventory-spatial-hotspots");
 
     private final McpHttpClient client;
     private final boolean writesAllowed;
@@ -94,6 +96,32 @@ public final class McpToolkitSupplyChainGateway implements SupplyChainRepository
                         doubleValue(row, "STOCKOUT_RISK_SCORE"),
                         stringValue(row, "RISK_LEVEL"),
                         stringValue(row, "RATIONALE")))
+                .toList();
+    }
+
+    @Override
+    public List<SpatialHotspot> findSpatialHotspots(String sku, int maximumRows) {
+        if (sku == null || sku.isBlank()) {
+            throw new IllegalArgumentException("sku is required");
+        }
+        if (maximumRows < 1 || maximumRows > 50) {
+            throw new IllegalArgumentException("maximumRows must be between 1 and 50");
+        }
+        return rows(client.callTool("get-inventory-spatial-hotspots", Map.of(
+                "sku", sku,
+                "maximumRows", maximumRows))).stream()
+                .map(row -> new SpatialHotspot(
+                        longValue(row, "PRODUCT_ID"),
+                        stringValue(row, "SKU"),
+                        longValue(row, "LOCATION_ID"),
+                        stringValue(row, "LOCATION_CODE"),
+                        stringValue(row, "LOCATION_NAME"),
+                        doubleValue(row, "LATITUDE"),
+                        doubleValue(row, "LONGITUDE"),
+                        doubleValue(row, "STOCKOUT_RISK_SCORE"),
+                        stringValue(row, "RISK_LEVEL"),
+                        longValue(row, "RECOMMENDED_TRANSFER_QTY"),
+                        stringValue(row, "RECOMMENDED_ROLE")))
                 .toList();
     }
 

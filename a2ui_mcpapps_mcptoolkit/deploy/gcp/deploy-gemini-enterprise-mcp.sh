@@ -82,4 +82,4 @@ service_uri="$(gcloud run services describe "$SERVICE_NAME" \
 echo "Gemini Enterprise private MCP service: $service_uri"
 echo "Gemini Enterprise MCP endpoint: $service_uri/mcp"
 echo "Discovery Engine invoker: $DISCOVERY_ENGINE_SERVICE_AGENT"
-echo "Writes are disabled; only the dashboard tool is registered."
+echo "Writes are disabled; transfer dashboard and spatial hotspot tools are registered."

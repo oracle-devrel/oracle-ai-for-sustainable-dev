@@ -1,5 +1,18 @@
 import { App } from "@modelcontextprotocol/ext-apps";
 
+declare const maplibregl: {
+  Map: new (options: Record<string, unknown>) => MapLibreMap;
+};
+
+type MapLibreMap = {
+  addSource: (id: string, source: Record<string, unknown>) => void;
+  addLayer: (layer: Record<string, unknown>) => void;
+  fitBounds: (bounds: MapLibreBounds, options?: Record<string, unknown>) => void;
+  on: (...args: unknown[]) => void;
+};
+type MapLibreBounds = { extend: (coordinate: [number, number]) => MapLibreBounds };
+type MapLibreEvent = { features?: Array<{ properties?: Record<string, unknown> }> };
+
 type TransferRecommendation = {
   recommendationId: string;
   sku: string;
@@ -39,11 +52,30 @@ const cancelElement =
   document.querySelector<HTMLButtonElement>("#cancel")!;
 const statusElement =
   document.querySelector<HTMLParagraphElement>("#status")!;
+const spatialView = document.querySelector<HTMLElement>("#spatial-view")!;
+const spatialSource = document.querySelector<HTMLParagraphElement>("#spatial-source")!;
+const spatialMap = document.querySelector<HTMLDivElement>("#spatial-map")!;
 
 let approvalId: string | undefined;
 let selectedRecommendation: TransferRecommendation | undefined;
 
 app.ontoolresult = (result) => {
+  const rawPayload = result.structuredContent as {
+    view?: string;
+    source?: string;
+    sku?: string;
+    geojson?: { type: string; features: unknown[] };
+    hotspots?: unknown[];
+  } | undefined;
+  if (rawPayload?.view === "spatial-hotspots" && rawPayload.geojson) {
+    renderSpatial({
+      source: rawPayload.source,
+      sku: rawPayload.sku,
+      geojson: rawPayload.geojson
+    });
+    return;
+  }
+  spatialView.hidden = true;
   const payload = result.structuredContent as {
     recommendations?: TransferRecommendation[];
     source?: string;
@@ -61,6 +93,64 @@ app.ontoolresult = (result) => {
       : "Waiting for governed Toolkit results.";
   render(payload?.recommendations ?? []);
 };
+
+function renderSpatial(payload: {
+  source?: string;
+  sku?: string;
+  geojson: { type: string; features: unknown[] };
+}) {
+  document.querySelector<HTMLElement>("#metrics")!.replaceChildren();
+  document.querySelector<HTMLElement>("#recommendations")!.replaceChildren();
+  document.querySelector<HTMLElement>("#decision")!.hidden = true;
+  spatialView.hidden = false;
+  spatialSource.textContent =
+    `${payload.source ?? "Oracle Database"} · ${payload.sku ?? "inventory"} · read-only spatial evidence`;
+  spatialMap.replaceChildren();
+  if (typeof maplibregl === "undefined") {
+    spatialMap.textContent = "MapLibre GL JS could not be loaded by this host.";
+    return;
+  }
+  const map = new maplibregl.Map({
+    container: spatialMap,
+    attributionControl: true,
+    style: {
+      version: 8,
+      sources: {},
+      layers: [{ id: "background", type: "background", paint: { "background-color": "#eef3f6" } }]
+    },
+    center: [-96, 38],
+    zoom: 3
+  });
+  map.on("load", () => {
+    map.addSource("inventory-spatial", { type: "geojson", data: payload.geojson });
+    map.addLayer({
+      id: "relief-route",
+      type: "line",
+      source: "inventory-spatial",
+      filter: ["==", ["get", "kind"], "relief-route"],
+      paint: { "line-color": "#1769aa", "line-width": 4, "line-dasharray": [2, 1] }
+    });
+    map.addLayer({
+      id: "hotspots",
+      type: "circle",
+      source: "inventory-spatial",
+      filter: ["has", "locationCode"],
+      paint: {
+        "circle-color": ["match", ["get", "recommendedRole"], "SOURCE", "#2f7d32", "#c74634"],
+        "circle-radius": ["interpolate", ["linear"], ["get", "stockoutRiskScore"], 0, 8, 100, 24],
+        "circle-stroke-color": "#ffffff",
+        "circle-stroke-width": 2,
+        "circle-opacity": 0.85
+      }
+    });
+    map.on("click", "hotspots", (event: MapLibreEvent) => {
+      const properties = event.features?.[0]?.properties ?? {};
+      spatialSource.textContent =
+        `${properties.locationCode ?? "Warehouse"} · ${properties.locationName ?? ""} · `
+        + `${properties.recommendedRole ?? ""} · risk ${properties.stockoutRiskScore ?? "n/a"}`;
+    });
+  });
+}
 
 async function connectApp() {
   try {

@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Supply-Chain Inventory Exchange</title>
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.2/dist/maplibre-gl.css">
   <style>
     :root { color-scheme: light dark; font-family: ui-sans-serif, system-ui, sans-serif; }
     body { margin: 0; padding: 18px; background: Canvas; color: CanvasText; }
@@ -24,6 +25,11 @@
     .actions { display: flex; flex-wrap: wrap; gap: 8px; }
     .secondary { background: transparent; color: CanvasText; border: 1px solid color-mix(in srgb, CanvasText 35%, transparent); }
     .status { margin: 0; font-weight: 650; color: CanvasText; }
+    #spatial-view[hidden] { display: none; }
+    #spatial-map { height: 420px; margin-top: 14px; border-radius: 10px; overflow: hidden; }
+    .spatial-legend { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 10px; font-size: .9rem; }
+    .spatial-legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; background: currentColor; }
+    .spatial-legend .route::before { border-radius: 2px; width: 18px; height: 3px; }
     button { margin-top: 12px; padding: 8px 12px; border: 0; border-radius: 7px; background: #c74634; color: white; font: inherit; font-weight: 700; }
     button:disabled { opacity: .55; cursor: not-allowed; }
     @media (max-width: 640px) { .metrics, .grid { grid-template-columns: 1fr; } }
@@ -40,6 +46,15 @@
   <p id="mode" class="mode" aria-live="polite">Waiting for host capabilities.</p>
   <div id="metrics" class="metrics"></div>
   <div id="recommendations" class="grid"></div>
+  <section id="spatial-view" hidden>
+    <p id="spatial-source" class="mode"></p>
+    <div id="spatial-map" role="img" aria-label="Inventory spatial hotspot map"></div>
+    <div class="spatial-legend">
+      <span style="color:#c74634">Destination hotspot</span>
+      <span style="color:#2f7d32">Source warehouse</span>
+      <span class="route" style="color:#1769aa">Recommended relief route</span>
+    </div>
+  </section>
   <section id="decision" class="decision" hidden>
     <strong id="selection">Select a recommendation to review.</strong>
     <label for="approval-notes">Approval notes</label>
@@ -50,6 +65,7 @@
     </div>
     <p id="status" class="status" aria-live="polite"></p>
   </section>
+  <script src="https://unpkg.com/maplibre-gl@5.6.2/dist/maplibre-gl.js"></script>
   <script type="module" src="/src/mcp-app.ts"></script>
 </body>
 </html>
