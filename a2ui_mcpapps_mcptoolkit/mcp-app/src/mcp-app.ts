@@ -8,6 +8,7 @@ type MapLibreMap = {
   addSource: (id: string, source: Record<string, unknown>) => void;
   addLayer: (layer: Record<string, unknown>) => void;
   fitBounds: (bounds: [[number, number], [number, number]], options?: Record<string, unknown>) => void;
+  project: (coordinate: [number, number]) => { x: number; y: number };
   resize: () => void;
   on: (...args: unknown[]) => void;
 };
@@ -210,6 +211,7 @@ function renderSpatial(payload: {
         [[Math.min(...longitudes), Math.min(...latitudes)], [Math.max(...longitudes), Math.max(...latitudes)]],
         { padding: 48, maxZoom: 7, duration: 0 }
       );
+      installSpatialOverlay(map, pointFeatures, routeFeatures);
       modeElement.textContent =
         `Map rendered ${pointFeatures.length} Oracle hotspot points and ${routeFeatures.length} route. `
         + "Click a point for warehouse details.";
@@ -226,6 +228,71 @@ function renderSpatial(payload: {
     map.on("click", "source-hotspot", showWarehouseDetails);
     map.on("click", "destination-hotspot", showWarehouseDetails);
   });
+}
+
+function installSpatialOverlay(
+  map: MapLibreMap,
+  pointFeatures: SpatialFeature[],
+  routeFeatures: SpatialFeature[]
+) {
+  // Some embedded enterprise browser hosts expose MapLibre's camera and DOM
+  // but suppress WebGL feature painting. Keep MapLibre as the map/camera and
+  // mirror the returned GeoJSON in a lightweight SVG overlay for that case.
+  const namespace = "http://www.w3.org/2000/svg";
+  const overlay = document.createElementNS(namespace, "svg");
+  overlay.setAttribute("aria-hidden", "true");
+  overlay.style.position = "absolute";
+  overlay.style.inset = "0";
+  overlay.style.width = "100%";
+  overlay.style.height = "100%";
+  overlay.style.pointerEvents = "none";
+  overlay.style.zIndex = "2";
+  spatialMap.append(overlay);
+
+  const redraw = () => {
+    const width = spatialMap.clientWidth;
+    const height = spatialMap.clientHeight;
+    overlay.setAttribute("viewBox", `0 0 ${width} ${height}`);
+    overlay.replaceChildren();
+    for (const feature of routeFeatures) {
+      const coordinates = feature.geometry?.coordinates;
+      if (!Array.isArray(coordinates)) continue;
+      const points = coordinates
+        .filter((coordinate): coordinate is [number, number] =>
+          Array.isArray(coordinate)
+          && typeof coordinate[0] === "number"
+          && typeof coordinate[1] === "number"
+        )
+        .map(([longitude, latitude]) => {
+          const point = map.project([longitude, latitude]);
+          return `${point.x},${point.y}`;
+        })
+        .join(" ");
+      const line = document.createElementNS(namespace, "polyline");
+      line.setAttribute("points", points);
+      line.setAttribute("fill", "none");
+      line.setAttribute("stroke", "#1769aa");
+      line.setAttribute("stroke-width", "5");
+      line.setAttribute("stroke-linecap", "round");
+      overlay.append(line);
+    }
+    for (const feature of pointFeatures) {
+      const coordinate = feature.geometry?.coordinates;
+      if (!Array.isArray(coordinate) || typeof coordinate[0] !== "number" || typeof coordinate[1] !== "number") continue;
+      const point = map.project([coordinate[0], coordinate[1]]);
+      const circle = document.createElementNS(namespace, "circle");
+      circle.setAttribute("cx", String(point.x));
+      circle.setAttribute("cy", String(point.y));
+      circle.setAttribute("r", "11");
+      circle.setAttribute("fill", feature.properties?.recommendedRole === "SOURCE" ? "#2f7d32" : "#c74634");
+      circle.setAttribute("stroke", "#ffffff");
+      circle.setAttribute("stroke-width", "3");
+      overlay.append(circle);
+    }
+  };
+  map.on("move", redraw);
+  map.on("resize", redraw);
+  redraw();
 }
 
 function collectCoordinates(features: SpatialFeature[]): Array<[number, number]> {
