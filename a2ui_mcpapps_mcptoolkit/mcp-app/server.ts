@@ -369,11 +369,11 @@ registerAppResource(
         ui: {
           prefersBorder: true,
           csp: {
-            connectDomains: ["https://a.basemaps.cartocdn.com"],
+            connectDomains: ["https://tile.openstreetmap.org"],
             resourceDomains: [
               "https://www.oracle.com",
               "https://unpkg.com",
-              "https://a.basemaps.cartocdn.com"
+              "https://tile.openstreetmap.org"
             ]
           }
         }
@@ -399,11 +399,11 @@ registerAppResource(
         ui: {
           prefersBorder: true,
           csp: {
-            connectDomains: ["https://a.basemaps.cartocdn.com"],
+            connectDomains: ["https://tile.openstreetmap.org"],
             resourceDomains: [
               "https://www.oracle.com",
               "https://unpkg.com",
-              "https://a.basemaps.cartocdn.com"
+              "https://tile.openstreetmap.org"
             ]
           }
         }
