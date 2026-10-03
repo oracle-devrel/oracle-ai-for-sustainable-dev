@@ -62,7 +62,7 @@ const statusElement =
   document.querySelector<HTMLParagraphElement>("#status")!;
 const spatialView = document.querySelector<HTMLElement>("#spatial-view")!;
 const spatialSource = document.querySelector<HTMLParagraphElement>("#spatial-source")!;
-const spatialMap = document.querySelector<HTMLDivElement>("#spatial-map")!;
+  const spatialMap = document.querySelector<HTMLDivElement>("#spatial-map")!;
 
 let approvalId: string | undefined;
 let selectedRecommendation: TransferRecommendation | undefined;
@@ -129,8 +129,21 @@ function renderSpatial(payload: {
     attributionControl: true,
     style: {
       version: 8,
-      sources: {},
-      layers: [{ id: "background", type: "background", paint: { "background-color": "#eef3f6" } }]
+      sources: {
+        // OpenStreetMap is intentionally explicit here: Gemini Enterprise's
+        // MCP App sandbox only permits network calls declared by the resource
+        // CSP in server.ts.
+        openstreetmap: {
+          type: "raster",
+          tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
+          tileSize: 256,
+          attribution: "© OpenStreetMap contributors"
+        }
+      },
+      layers: [
+        { id: "background", type: "background", paint: { "background-color": "#eef3f6" } },
+        { id: "openstreetmap-tiles", type: "raster", source: "openstreetmap" }
+      ]
     },
     center: [-96, 38],
     zoom: 3

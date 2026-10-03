@@ -383,7 +383,8 @@ registerAppResource(
             connectDomains: [],
             resourceDomains: [
               "https://www.oracle.com",
-              "https://unpkg.com"
+              "https://unpkg.com",
+              "https://tile.openstreetmap.org"
             ]
           }
         }
