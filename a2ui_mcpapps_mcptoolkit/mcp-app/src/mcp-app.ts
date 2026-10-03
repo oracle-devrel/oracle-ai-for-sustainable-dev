@@ -8,7 +8,6 @@ type MapLibreMap = {
   addSource: (id: string, source: Record<string, unknown>) => void;
   addLayer: (layer: Record<string, unknown>) => void;
   fitBounds: (bounds: [[number, number], [number, number]], options?: Record<string, unknown>) => void;
-  project: (coordinate: [number, number]) => { x: number; y: number };
   resize: () => void;
   on: (...args: unknown[]) => void;
 };
@@ -248,6 +247,19 @@ function installSpatialOverlay(
   overlay.style.pointerEvents = "none";
   overlay.style.zIndex = "2";
   spatialMap.append(overlay);
+  const allCoordinates = collectCoordinates([...pointFeatures, ...routeFeatures]);
+  const longitudes = allCoordinates.map(([longitude]) => longitude);
+  const latitudes = allCoordinates.map(([, latitude]) => latitude);
+  const minLongitude = Math.min(...longitudes);
+  const maxLongitude = Math.max(...longitudes);
+  const minLatitude = Math.min(...latitudes);
+  const maxLatitude = Math.max(...latitudes);
+  const longitudeSpan = Math.max(0.0001, maxLongitude - minLongitude);
+  const latitudeSpan = Math.max(0.0001, maxLatitude - minLatitude);
+  const toViewport = ([longitude, latitude]: [number, number]) => ({
+    x: 40 + ((longitude - minLongitude) / longitudeSpan) * Math.max(1, spatialMap.clientWidth - 80),
+    y: 40 + ((maxLatitude - latitude) / latitudeSpan) * Math.max(1, spatialMap.clientHeight - 80)
+  });
 
   const redraw = () => {
     const width = spatialMap.clientWidth;
@@ -264,7 +276,7 @@ function installSpatialOverlay(
           && typeof coordinate[1] === "number"
         )
         .map(([longitude, latitude]) => {
-          const point = map.project([longitude, latitude]);
+          const point = toViewport([longitude, latitude]);
           return `${point.x},${point.y}`;
         })
         .join(" ");
@@ -279,7 +291,7 @@ function installSpatialOverlay(
     for (const feature of pointFeatures) {
       const coordinate = feature.geometry?.coordinates;
       if (!Array.isArray(coordinate) || typeof coordinate[0] !== "number" || typeof coordinate[1] !== "number") continue;
-      const point = map.project([coordinate[0], coordinate[1]]);
+      const point = toViewport([coordinate[0], coordinate[1]]);
       const circle = document.createElementNS(namespace, "circle");
       circle.setAttribute("cx", String(point.x));
       circle.setAttribute("cy", String(point.y));
