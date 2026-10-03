@@ -15,6 +15,9 @@ const resourceUri = "ui://oracle-supply-chain/inventory-exchange-v2";
 // Bump the resource URI when the embedded bundle changes so Gemini Enterprise
 // does not reuse a cached MCP App document from the previous revision.
 const spatialResourceUri = "ui://oracle-supply-chain/spatial-hotspots-v3";
+// Keep the previous URI alive so hosts that cached v2 receive the corrected
+// bundle instead of the old OpenStreetMap/CSP configuration.
+const legacySpatialResourceUri = "ui://oracle-supply-chain/spatial-hotspots-v2";
 const agentServiceUrl =
   process.env.AGENT_SERVICE_URL ?? "http://127.0.0.1:8080";
 const agentServiceTimeoutMs =
@@ -357,6 +360,36 @@ registerAppResource(
   async () => ({
     contents: [{
       uri: spatialResourceUri,
+      mimeType: RESOURCE_MIME_TYPE,
+      text: await readFile(
+        path.join(import.meta.dirname, "dist", "mcp-app.html"),
+        "utf8"
+      ),
+      _meta: {
+        ui: {
+          prefersBorder: true,
+          csp: {
+            connectDomains: ["https://a.basemaps.cartocdn.com"],
+            resourceDomains: [
+              "https://www.oracle.com",
+              "https://unpkg.com",
+              "https://a.basemaps.cartocdn.com"
+            ]
+          }
+        }
+      }
+    }]
+  })
+);
+
+registerAppResource(
+  server,
+  legacySpatialResourceUri,
+  legacySpatialResourceUri,
+  { mimeType: RESOURCE_MIME_TYPE },
+  async () => ({
+    contents: [{
+      uri: legacySpatialResourceUri,
       mimeType: RESOURCE_MIME_TYPE,
       text: await readFile(
         path.join(import.meta.dirname, "dist", "mcp-app.html"),
