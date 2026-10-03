@@ -18,6 +18,7 @@ type SpatialFeature = {
     type?: string;
     coordinates?: unknown;
   };
+  properties?: Record<string, unknown>;
 };
 
 type TransferRecommendation = {
@@ -77,6 +78,8 @@ app.ontoolresult = (result) => {
   if (rawPayload?.view === "spatial-hotspots" && rawPayload.geojson) {
     sourceElement.textContent =
       `Oracle Database spatial evidence received from ${rawPayload.source ?? "the connected MCP tool"}.`;
+    modeElement.textContent =
+      "Connected to the MCP host; rendering Oracle spatial evidence.";
     statusElement.textContent =
       "Connected to the MCP host; rendering Oracle spatial evidence.";
     renderSpatial({
@@ -140,6 +143,7 @@ function renderSpatial(payload: {
     console.error("MapLibre spatial map error", event.error);
     if (event.error?.message) {
       spatialMap.dataset.error = event.error.message;
+      modeElement.textContent = `MapLibre error: ${event.error.message}`;
     }
   });
   map.on("load", () => {
@@ -147,12 +151,22 @@ function renderSpatial(payload: {
     const pointFeatures = features.filter(
       feature => feature.geometry?.type === "Point"
     );
+    const sourceFeatures = pointFeatures.filter(
+      feature => feature.properties?.recommendedRole === "SOURCE"
+    );
+    const destinationFeatures = pointFeatures.filter(
+      feature => feature.properties?.recommendedRole !== "SOURCE"
+    );
     const routeFeatures = features.filter(
       feature => feature.geometry?.type === "LineString"
     );
-    map.addSource("inventory-spatial-points", {
+    map.addSource("inventory-spatial-source", {
       type: "geojson",
-      data: { type: "FeatureCollection", features: pointFeatures }
+      data: { type: "FeatureCollection", features: sourceFeatures }
+    });
+    map.addSource("inventory-spatial-destination", {
+      type: "geojson",
+      data: { type: "FeatureCollection", features: destinationFeatures }
     });
     map.addSource("inventory-spatial-route", {
       type: "geojson",
@@ -165,15 +179,27 @@ function renderSpatial(payload: {
       paint: { "line-color": "#1769aa", "line-width": 4, "line-dasharray": [2, 1] }
     });
     map.addLayer({
-      id: "hotspots",
+      id: "source-hotspot",
       type: "circle",
-      source: "inventory-spatial-points",
+      source: "inventory-spatial-source",
       paint: {
-        "circle-color": ["match", ["get", "recommendedRole"], "SOURCE", "#2f7d32", "#c74634"],
-        "circle-radius": ["interpolate", ["linear"], ["get", "stockoutRiskScore"], 0, 8, 100, 24],
+        "circle-color": "#2f7d32",
+        "circle-radius": 14,
         "circle-stroke-color": "#ffffff",
         "circle-stroke-width": 2,
-        "circle-opacity": 0.85
+        "circle-opacity": 0.9
+      }
+    });
+    map.addLayer({
+      id: "destination-hotspot",
+      type: "circle",
+      source: "inventory-spatial-destination",
+      paint: {
+        "circle-color": "#c74634",
+        "circle-radius": 14,
+        "circle-stroke-color": "#ffffff",
+        "circle-stroke-width": 2,
+        "circle-opacity": 0.9
       }
     });
     const coordinates = collectCoordinates(features);
@@ -184,19 +210,21 @@ function renderSpatial(payload: {
         [[Math.min(...longitudes), Math.min(...latitudes)], [Math.max(...longitudes), Math.max(...latitudes)]],
         { padding: 48, maxZoom: 7, duration: 0 }
       );
-      statusElement.textContent =
+      modeElement.textContent =
         `Map rendered ${pointFeatures.length} Oracle hotspot points and ${routeFeatures.length} route. `
         + "Click a point for warehouse details.";
     } else {
       statusElement.textContent =
         "The Oracle spatial tool returned no drawable coordinates.";
     }
-    map.on("click", "hotspots", (event: MapLibreEvent) => {
+    const showWarehouseDetails = (event: MapLibreEvent) => {
       const properties = event.features?.[0]?.properties ?? {};
       spatialSource.textContent =
         `${properties.locationCode ?? "Warehouse"} · ${properties.locationName ?? ""} · `
         + `${properties.recommendedRole ?? ""} · risk ${properties.stockoutRiskScore ?? "n/a"}`;
-    });
+    };
+    map.on("click", "source-hotspot", showWarehouseDetails);
+    map.on("click", "destination-hotspot", showWarehouseDetails);
   });
 }
 
