@@ -76,11 +76,6 @@ const SpatialHotspotSchema = z.object({
   recommendedTransferQuantity: z.number(),
   recommendedRole: z.string()
 });
-const SpatialResponseSchema = z.object({
-  source: z.literal("oracle-db-mcp-java-toolkit"),
-  sku: z.string(),
-  hotspots: z.array(SpatialHotspotSchema)
-});
 const OracleAgentSpatialEvidenceSchema = z.object({
   source: z.literal("oracle-ai-database-agent"),
   sku: z.string(),
@@ -128,25 +123,6 @@ async function loadGovernedReview(
       maximumRows
     })
   );
-}
-
-async function loadSpatialHotspots(sku: string, maximumRows: number) {
-  const endpoint = new URL("/api/spatial", agentServiceUrl);
-  endpoint.searchParams.set("sku", sku);
-  endpoint.searchParams.set("maximumRows", String(maximumRows));
-  const response = await fetch(endpoint, {
-    signal: AbortSignal.timeout(agentServiceTimeoutMs)
-  });
-  const payload: unknown = await response.json();
-  if (!response.ok) {
-    console.error("Spatial backend request failed", {
-      path: "/api/spatial",
-      status: response.status,
-      payload
-    });
-    throw new Error(`Spatial request failed with HTTP ${response.status}`);
-  }
-  return SpatialResponseSchema.parse(payload);
 }
 
 function spatialGeoJson(hotspots: z.infer<typeof SpatialHotspotSchema>[]) {
@@ -244,10 +220,10 @@ registerAppTool(server, "show-inventory-spatial-hotspots", {
       .describe("Product SKU to map"),
     maximumRows: z.number().int().min(2).max(50).default(20)
       .describe("Maximum governed hotspot features"),
-    oracleAgentEvidence: OracleAgentSpatialEvidenceSchema.optional()
+    oracleAgentEvidence: OracleAgentSpatialEvidenceSchema
       .describe(
         "Structured spatial evidence returned by the managed Oracle AI Database Agent. "
-        + "Gemini Enterprise should provide this after calling that agent; omit only for local fallback validation."
+        + "Gemini Enterprise must call that agent first and provide this evidence."
       )
   },
   _meta: {
@@ -261,9 +237,7 @@ registerAppTool(server, "show-inventory-spatial-hotspots", {
     openWorldHint: false
   }
 }, async ({ sku, maximumRows, oracleAgentEvidence }) => {
-  const response = oracleAgentEvidence
-    ? OracleAgentSpatialEvidenceSchema.parse(oracleAgentEvidence)
-    : await loadSpatialHotspots(sku, maximumRows);
+  const response = OracleAgentSpatialEvidenceSchema.parse(oracleAgentEvidence);
   return {
     content: [{
       type: "text",

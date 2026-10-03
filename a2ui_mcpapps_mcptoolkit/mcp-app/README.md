@@ -23,7 +23,7 @@ approval button inside the MCP App.
 
 ## Gemini Enterprise read handoff
 
-The intended Gemini Enterprise read path is:
+The required Gemini Enterprise read path is:
 
 ```text
 Gemini Enterprise → managed Oracle AI Database Agent →
@@ -38,9 +38,9 @@ that shape, and pass that object to the MCP App tool. The app then labels the
 evidence source as the managed agent instead of implying that the MCP Toolkit
 was the read authority.
 
-If `oracleAgentEvidence` is omitted, the tool uses the Java Toolkit spatial
-endpoint as a local fallback for validation and labels that result
-`oracle-db-mcp-java-toolkit`. The later A2UI transfer path remains separate:
+There is deliberately no spatial Toolkit fallback. If Gemini Enterprise does
+not provide `oracleAgentEvidence`, schema validation fails and the MCP App does
+not render a misleading result. The later A2UI transfer path remains separate:
 after explicit review and approval, its app-only action calls the MCP Java
 Toolkit to perform the write.
 
