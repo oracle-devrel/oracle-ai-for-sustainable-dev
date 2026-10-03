@@ -366,11 +366,11 @@ registerAppResource(
         ui: {
           prefersBorder: true,
           csp: {
-            connectDomains: [],
+            connectDomains: ["https://a.basemaps.cartocdn.com"],
             resourceDomains: [
               "https://www.oracle.com",
               "https://unpkg.com",
-              "https://tile.openstreetmap.org"
+              "https://a.basemaps.cartocdn.com"
             ]
           }
         }

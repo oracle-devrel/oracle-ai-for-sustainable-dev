@@ -130,19 +130,19 @@ function renderSpatial(payload: {
     style: {
       version: 8,
       sources: {
-        // OpenStreetMap is intentionally explicit here: Gemini Enterprise's
-        // MCP App sandbox only permits network calls declared by the resource
-        // CSP in server.ts.
-        openstreetmap: {
+        // CARTO's public raster tiles are intentionally explicit here:
+        // Gemini Enterprise's MCP App sandbox only permits network calls
+        // declared by the resource CSP in server.ts.
+        carto: {
           type: "raster",
-          tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
+          tiles: ["https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png"],
           tileSize: 256,
-          attribution: "© OpenStreetMap contributors"
+          attribution: "© OpenStreetMap contributors © CARTO"
         }
       },
       layers: [
         { id: "background", type: "background", paint: { "background-color": "#eef3f6" } },
-        { id: "openstreetmap-tiles", type: "raster", source: "openstreetmap" }
+        { id: "carto-tiles", type: "raster", source: "carto" }
       ]
     },
     center: [-96, 38],
