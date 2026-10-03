@@ -7,11 +7,18 @@ declare const maplibregl: {
 type MapLibreMap = {
   addSource: (id: string, source: Record<string, unknown>) => void;
   addLayer: (layer: Record<string, unknown>) => void;
-  fitBounds: (bounds: MapLibreBounds, options?: Record<string, unknown>) => void;
+  fitBounds: (bounds: [[number, number], [number, number]], options?: Record<string, unknown>) => void;
+  resize: () => void;
   on: (...args: unknown[]) => void;
 };
-type MapLibreBounds = { extend: (coordinate: [number, number]) => MapLibreBounds };
 type MapLibreEvent = { features?: Array<{ properties?: Record<string, unknown> }> };
+
+type SpatialFeature = {
+  geometry?: {
+    type?: string;
+    coordinates?: unknown;
+  };
+};
 
 type TransferRecommendation = {
   recommendationId: string;
@@ -121,6 +128,16 @@ function renderSpatial(payload: {
     center: [-96, 38],
     zoom: 3
   });
+  // MCP App hosts can reveal a previously hidden iframe after the map is
+  // constructed. Resize once immediately and again after layout settles.
+  map.resize();
+  window.setTimeout(() => map.resize(), 0);
+  map.on("error", (event: { error?: { message?: string } }) => {
+    console.error("MapLibre spatial map error", event.error);
+    if (event.error?.message) {
+      spatialMap.dataset.error = event.error.message;
+    }
+  });
   map.on("load", () => {
     map.addSource("inventory-spatial", { type: "geojson", data: payload.geojson });
     map.addLayer({
@@ -143,6 +160,15 @@ function renderSpatial(payload: {
         "circle-opacity": 0.85
       }
     });
+    const coordinates = collectCoordinates(payload.geojson.features as SpatialFeature[]);
+    if (coordinates.length > 0) {
+      const longitudes = coordinates.map(([longitude]) => longitude);
+      const latitudes = coordinates.map(([, latitude]) => latitude);
+      map.fitBounds(
+        [[Math.min(...longitudes), Math.min(...latitudes)], [Math.max(...longitudes), Math.max(...latitudes)]],
+        { padding: 48, maxZoom: 7, duration: 0 }
+      );
+    }
     map.on("click", "hotspots", (event: MapLibreEvent) => {
       const properties = event.features?.[0]?.properties ?? {};
       spatialSource.textContent =
@@ -150,6 +176,31 @@ function renderSpatial(payload: {
         + `${properties.recommendedRole ?? ""} · risk ${properties.stockoutRiskScore ?? "n/a"}`;
     });
   });
+}
+
+function collectCoordinates(features: SpatialFeature[]): Array<[number, number]> {
+  const coordinates: Array<[number, number]> = [];
+  for (const feature of features) {
+    const geometry = feature.geometry;
+    if (!geometry?.coordinates) continue;
+    collectCoordinatePairs(geometry.coordinates, coordinates);
+  }
+  return coordinates;
+}
+
+function collectCoordinatePairs(value: unknown, output: Array<[number, number]>): void {
+  if (
+    Array.isArray(value) &&
+    value.length >= 2 &&
+    typeof value[0] === "number" &&
+    typeof value[1] === "number"
+  ) {
+    output.push([value[0], value[1]]);
+    return;
+  }
+  if (Array.isArray(value)) {
+    for (const child of value) collectCoordinatePairs(child, output);
+  }
 }
 
 async function connectApp() {
