@@ -75,6 +75,8 @@ app.ontoolresult = (result) => {
     hotspots?: unknown[];
   } | undefined;
   if (rawPayload?.view === "spatial-hotspots" && rawPayload.geojson) {
+    sourceElement.textContent =
+      `Oracle Database spatial evidence received from ${rawPayload.source ?? "the connected MCP tool"}.`;
     statusElement.textContent =
       "Connected to the MCP host; rendering Oracle spatial evidence.";
     renderSpatial({
