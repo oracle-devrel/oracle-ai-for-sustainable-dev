@@ -12,7 +12,9 @@ import {
 import { z } from "zod";
 
 const resourceUri = "ui://oracle-supply-chain/inventory-exchange-v2";
-const spatialResourceUri = "ui://oracle-supply-chain/spatial-hotspots-v1";
+// Bump the resource URI when the embedded bundle changes so Gemini Enterprise
+// does not reuse a cached MCP App document from the previous revision.
+const spatialResourceUri = "ui://oracle-supply-chain/spatial-hotspots-v2";
 const agentServiceUrl =
   process.env.AGENT_SERVICE_URL ?? "http://127.0.0.1:8080";
 const agentServiceTimeoutMs =
