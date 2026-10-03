@@ -75,6 +75,8 @@ app.ontoolresult = (result) => {
     hotspots?: unknown[];
   } | undefined;
   if (rawPayload?.view === "spatial-hotspots" && rawPayload.geojson) {
+    statusElement.textContent =
+      "Connected to the MCP host; rendering Oracle spatial evidence.";
     renderSpatial({
       source: rawPayload.source,
       sku: rawPayload.sku,
@@ -139,19 +141,31 @@ function renderSpatial(payload: {
     }
   });
   map.on("load", () => {
-    map.addSource("inventory-spatial", { type: "geojson", data: payload.geojson });
+    const features = payload.geojson.features as SpatialFeature[];
+    const pointFeatures = features.filter(
+      feature => feature.geometry?.type === "Point"
+    );
+    const routeFeatures = features.filter(
+      feature => feature.geometry?.type === "LineString"
+    );
+    map.addSource("inventory-spatial-points", {
+      type: "geojson",
+      data: { type: "FeatureCollection", features: pointFeatures }
+    });
+    map.addSource("inventory-spatial-route", {
+      type: "geojson",
+      data: { type: "FeatureCollection", features: routeFeatures }
+    });
     map.addLayer({
       id: "relief-route",
       type: "line",
-      source: "inventory-spatial",
-      filter: ["==", ["get", "kind"], "relief-route"],
+      source: "inventory-spatial-route",
       paint: { "line-color": "#1769aa", "line-width": 4, "line-dasharray": [2, 1] }
     });
     map.addLayer({
       id: "hotspots",
       type: "circle",
-      source: "inventory-spatial",
-      filter: ["has", "locationCode"],
+      source: "inventory-spatial-points",
       paint: {
         "circle-color": ["match", ["get", "recommendedRole"], "SOURCE", "#2f7d32", "#c74634"],
         "circle-radius": ["interpolate", ["linear"], ["get", "stockoutRiskScore"], 0, 8, 100, 24],
@@ -160,7 +174,7 @@ function renderSpatial(payload: {
         "circle-opacity": 0.85
       }
     });
-    const coordinates = collectCoordinates(payload.geojson.features as SpatialFeature[]);
+    const coordinates = collectCoordinates(features);
     if (coordinates.length > 0) {
       const longitudes = coordinates.map(([longitude]) => longitude);
       const latitudes = coordinates.map(([, latitude]) => latitude);
@@ -168,6 +182,12 @@ function renderSpatial(payload: {
         [[Math.min(...longitudes), Math.min(...latitudes)], [Math.max(...longitudes), Math.max(...latitudes)]],
         { padding: 48, maxZoom: 7, duration: 0 }
       );
+      statusElement.textContent =
+        `Map rendered ${pointFeatures.length} Oracle hotspot points and ${routeFeatures.length} route. `
+        + "Click a point for warehouse details.";
+    } else {
+      statusElement.textContent =
+        "The Oracle spatial tool returned no drawable coordinates.";
     }
     map.on("click", "hotspots", (event: MapLibreEvent) => {
       const properties = event.features?.[0]?.properties ?? {};
