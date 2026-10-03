@@ -21,6 +21,29 @@ The model cannot call the approve or reject tools. The person must select a
 card, inspect the route and quantity, review the notes, and click the explicit
 approval button inside the MCP App.
 
+## Gemini Enterprise read handoff
+
+The intended Gemini Enterprise read path is:
+
+```text
+Gemini Enterprise → managed Oracle AI Database Agent →
+show-inventory-spatial-hotspots(oracleAgentEvidence) → MCP App / MapLibre
+```
+
+The spatial tool accepts a strict `oracleAgentEvidence` object with the same
+hotspot fields used by the map. Its source must be
+`oracle-ai-database-agent`. Configure the Gemini Enterprise agent instructions
+to call the managed Oracle AI Database Agent first, ask it for governed JSON in
+that shape, and pass that object to the MCP App tool. The app then labels the
+evidence source as the managed agent instead of implying that the MCP Toolkit
+was the read authority.
+
+If `oracleAgentEvidence` is omitted, the tool uses the Java Toolkit spatial
+endpoint as a local fallback for validation and labels that result
+`oracle-db-mcp-java-toolkit`. The later A2UI transfer path remains separate:
+after explicit review and approval, its app-only action calls the MCP Java
+Toolkit to perform the write.
+
 Requires Node.js 20.19+ or 22.12+:
 
 ```bash

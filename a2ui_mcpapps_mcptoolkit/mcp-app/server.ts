@@ -81,6 +81,11 @@ const SpatialResponseSchema = z.object({
   sku: z.string(),
   hotspots: z.array(SpatialHotspotSchema)
 });
+const OracleAgentSpatialEvidenceSchema = z.object({
+  source: z.literal("oracle-ai-database-agent"),
+  sku: z.string(),
+  hotspots: z.array(SpatialHotspotSchema)
+});
 
 async function agentFormRequest(
   pathName: string,
@@ -238,7 +243,12 @@ registerAppTool(server, "show-inventory-spatial-hotspots", {
     sku: z.string().min(1).max(40).default("SKU-500")
       .describe("Product SKU to map"),
     maximumRows: z.number().int().min(2).max(50).default(20)
-      .describe("Maximum governed hotspot features")
+      .describe("Maximum governed hotspot features"),
+    oracleAgentEvidence: OracleAgentSpatialEvidenceSchema.optional()
+      .describe(
+        "Structured spatial evidence returned by the managed Oracle AI Database Agent. "
+        + "Gemini Enterprise should provide this after calling that agent; omit only for local fallback validation."
+      )
   },
   _meta: {
     ui: {
@@ -250,12 +260,14 @@ registerAppTool(server, "show-inventory-spatial-hotspots", {
     readOnlyHint: true,
     openWorldHint: false
   }
-}, async ({ sku, maximumRows }) => {
-  const response = await loadSpatialHotspots(sku, maximumRows);
+}, async ({ sku, maximumRows, oracleAgentEvidence }) => {
+  const response = oracleAgentEvidence
+    ? OracleAgentSpatialEvidenceSchema.parse(oracleAgentEvidence)
+    : await loadSpatialHotspots(sku, maximumRows);
   return {
     content: [{
       type: "text",
-      text: `Oracle Database returned ${response.hotspots.length} spatial hotspot features for ${sku}.`
+      text: `${response.source} returned ${response.hotspots.length} spatial hotspot features for ${response.sku}.`
     }],
     structuredContent: {
       view: "spatial-hotspots",
