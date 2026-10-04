@@ -166,14 +166,18 @@ function renderSpatial(payload: {
       feature => feature.geometry?.type === "Point"
     );
     const sourceFeatures = pointFeatures.filter(
-      feature => feature.properties?.recommendedRole === "SOURCE"
+      feature => String(feature.properties?.recommendedRole ?? "")
+        .toUpperCase().includes("SOURCE")
     );
     const destinationFeatures = pointFeatures.filter(
       feature => feature.properties?.recommendedRole !== "SOURCE"
     );
-    const routeFeatures = features.filter(
+    const returnedRouteFeatures = features.filter(
       feature => feature.geometry?.type === "LineString"
     );
+    const routeFeatures = returnedRouteFeatures.length > 0
+      ? returnedRouteFeatures
+      : buildReliefRoute(pointFeatures);
     map.addSource("inventory-spatial-source", {
       type: "geojson",
       data: { type: "FeatureCollection", features: sourceFeatures }
@@ -317,6 +321,38 @@ function installSpatialOverlay(
   map.on("move", redraw);
   map.on("resize", redraw);
   redraw();
+}
+
+function buildReliefRoute(pointFeatures: SpatialFeature[]): SpatialFeature[] {
+  const source = pointFeatures.find(feature =>
+    String(feature.properties?.recommendedRole ?? "").toUpperCase().includes("SOURCE")
+  );
+  const destination = pointFeatures.find(feature =>
+    !String(feature.properties?.recommendedRole ?? "").toUpperCase().includes("SOURCE")
+  );
+  const sourceCoordinates = source?.geometry?.coordinates;
+  const destinationCoordinates = destination?.geometry?.coordinates;
+  if (
+    !Array.isArray(sourceCoordinates)
+    || !Array.isArray(destinationCoordinates)
+    || typeof sourceCoordinates[0] !== "number"
+    || typeof sourceCoordinates[1] !== "number"
+    || typeof destinationCoordinates[0] !== "number"
+    || typeof destinationCoordinates[1] !== "number"
+  ) {
+    return [];
+  }
+  return [{
+    geometry: {
+      type: "LineString",
+      coordinates: [sourceCoordinates, destinationCoordinates]
+    },
+    properties: {
+      kind: "relief-route",
+      sourceLocationCode: source?.properties?.locationCode,
+      targetLocationCode: destination?.properties?.locationCode
+    }
+  }];
 }
 
 function collectCoordinates(features: SpatialFeature[]): Array<[number, number]> {
