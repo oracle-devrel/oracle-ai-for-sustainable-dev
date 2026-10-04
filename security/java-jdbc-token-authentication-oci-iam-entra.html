@@ -1,12 +1,13 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Passwordless Java Connections to Oracle AI Database 26ai with OCI IAM and Microsoft Entra ID</title>
-  <meta name="description" content="Use Oracle AI Database 26ai and Oracle JDBC token authentication with OCI IAM or Microsoft Entra ID, with runnable JDBC and UCP applications, full Java code, IAM and Entra setup, file tokens, SDK suppliers, and provider extensions.">
-  <meta name="author" content="Paul Parkinson">
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Passwordless Java Connections to Oracle AI Database 26ai with OCI IAM and Microsoft Entra ID</title>
+<meta content="Use Oracle AI Database 26ai and Oracle JDBC token authentication with OCI IAM or Microsoft Entra ID, with runnable JDBC and UCP applications, full Java code, IAM and Entra setup, file tokens, SDK suppliers, and provider extensions." name="description"/>
+<meta content="Paul Parkinson" name="author"/>
+<style>
     :root {
       color-scheme: light;
       --ink: #202a33;
@@ -63,7 +64,7 @@
 <h1>Passwordless Java Connections to Oracle AI Database 26ai with OCI IAM and Microsoft Entra ID</h1>
 <p class="subtitle">A complete, runnable guide to CLI tokens, OCI SDK suppliers, JDBC providers and connection pools—with database setup and Microsoft Entra identity configuration.</p>
 <p class="updated">By Paul Parkinson · Updated October 4, 2026 · Dependencies and references checked October 4, 2026</p>
-<figure class="cover"><img src="images/e2e-security-cover.svg" width="1400" height="660" alt="Oracle AI Database security architecture connecting user and workload identities through an application and JDBC to database token validation and least-privilege authorization."><figcaption>Cloud identity, database mapping, TLS and token lifecycle work together to authenticate each new physical connection.</figcaption></figure>
+<figure class="cover"><img alt="Oracle AI Database security architecture connecting user and workload identities through an application and JDBC to database token validation and least-privilege authorization." height="660" src="images/e2e-security-cover.svg" width="1400"/><figcaption>Cloud identity, database mapping, TLS and token lifecycle work together to authenticate each new physical connection.</figcaption></figure>
 <h2 id="key-takeaways">Key Takeaways</h2>
 <ul>
 <li>Run the same read-only Java application with OCI token files, an OCI SDK token supplier, or OCI and Microsoft Entra JDBC providers.</li>
@@ -421,7 +422,7 @@ oracle.jdbc.provider.accessToken.redirectUri=http://localhost:8400
 </code></pre>
 <p>The providers are documented in Oracle's <a href="https://github.com/oracle/ojdbc-extensions/tree/main/ojdbc-provider-oci">OCI module</a> and <a href="https://github.com/oracle/ojdbc-extensions/tree/main/ojdbc-provider-azure">Azure module</a>. “Passwordless database access” does not necessarily mean “no secrets anywhere”: an API-key or client-secret flow still has an upstream identity credential. Workload identities can remove that application-managed credential where the deployment supports them.</p>
 <h2 id="ucp-share-the-supplier-and-test-physical-connection-replacement">UCP: share the supplier and test physical connection replacement</h2>
-<p>The application configures one pool, two maximum physical connections, a bounded wait, and validation on borrow. Provider/file properties pass through to JDBC; SDK mode supplies the cached token supplier instead. Here is the actual pool setup method:</p>
+<p>The application configures one pool, two maximum physical connections, a bounded wait (20 seconds normally, 60 seconds for diagnostic replacement), and validation on borrow. Provider/file properties pass through to JDBC; SDK mode supplies the cached token supplier instead. Here is the actual pool setup method:</p>
 <pre><code class="language-java">    static PoolDataSource pool(Settings config, Supplier&lt;? extends AccessToken&gt; tokens, boolean fresh) throws SQLException {
         PoolDataSource ds = PoolDataSourceFactory.getPoolDataSource();
         ds.setConnectionPoolName("TokenAuthDemo");
@@ -431,7 +432,7 @@ oracle.jdbc.provider.accessToken.redirectUri=http://localhost:8400
         ds.setInitialPoolSize(0);
         ds.setMinPoolSize(0);
         ds.setMaxPoolSize(2);
-        ds.setConnectionWaitTimeout(20);
+        ds.setConnectionWaitDuration(java.time.Duration.ofSeconds(fresh ? 60 : 20));
         ds.setValidateConnectionOnBorrow(true);
         if (tokens != null) ds.setTokenSupplier(tokens);
         // Diagnostic mode forces replacement physical connections after each borrow.
@@ -449,7 +450,11 @@ oracle.jdbc.provider.accessToken.redirectUri=http://localhost:8400
                 final int current = round;
                 List&lt;Callable&lt;Void&gt;&gt; tasks = new ArrayList&lt;&gt;();
                 for (int i = 0; i &lt; 4; i++) tasks.add(() -&gt; {
-                    try (Connection c = ds.getConnection()) { query(c, current); }
+                    try (Connection c = ds.getConnection()) {
+                        query(c, current);
+                        // Explicit invalidation retires this physical session on return.
+                        if (fresh) ((oracle.ucp.jdbc.ValidConnection) c).setInvalid();
+                    }
                     return null;
                 });
                 for (var result : executor.invokeAll(tasks)) result.get();
@@ -469,7 +474,7 @@ oracle.jdbc.provider.accessToken.redirectUri=http://localhost:8400
 ./run.sh config/oci-config-file.properties ucp-fresh 75 60
 # Or use config/oci-sdk.properties / config/entra-service-principal.properties.
 </code></pre>
-<p>Token expiry governs creation of new authenticated connections. A still-open pooled session can keep working after its login token expires, so repeated borrows alone do not prove refresh. <code>ucp-fresh</code> sets <code>MaxConnectionReuseCount=1</code> for diagnostic purposes. Output includes session IDs to make new physical connections visible. Run longer than the actual issuer token lifetime; no unit test proves cloud refresh.</p>
+<p>Token expiry governs creation of new authenticated connections. A still-open pooled session can keep working after its login token expires, so repeated borrows alone do not prove refresh. <code>ucp-fresh</code> sets <code>MaxConnectionReuseCount=1</code> and explicitly marks each connection invalid before returning it, so UCP retires the physical session. It allows a bounded 60-second replacement wait. Output includes session IDs for diagnosis, although the server can recycle those IDs. Run longer than the actual issuer token lifetime; no unit test proves cloud refresh.</p>
 <p>Illustrative successful output (values depend on your identity/server):</p>
 <pre><code class="language-text">round=1 user=TOKEN_DEMO identity=&lt;mapped-principal&gt; authentication=&lt;server-reported-method&gt; sid=&lt;session-id&gt;
 </code></pre>
@@ -563,7 +568,7 @@ public final class TokenAuthDemo {
         ds.setInitialPoolSize(0);
         ds.setMinPoolSize(0);
         ds.setMaxPoolSize(2);
-        ds.setConnectionWaitTimeout(20);
+        ds.setConnectionWaitDuration(java.time.Duration.ofSeconds(fresh ? 60 : 20));
         ds.setValidateConnectionOnBorrow(true);
         if (tokens != null) ds.setTokenSupplier(tokens);
         // Diagnostic mode forces replacement physical connections after each borrow.
@@ -580,7 +585,11 @@ public final class TokenAuthDemo {
                 final int current = round;
                 List&lt;Callable&lt;Void&gt;&gt; tasks = new ArrayList&lt;&gt;();
                 for (int i = 0; i &lt; 4; i++) tasks.add(() -&gt; {
-                    try (Connection c = ds.getConnection()) { query(c, current); }
+                    try (Connection c = ds.getConnection()) {
+                        query(c, current);
+                        // Explicit invalidation retires this physical session on return.
+                        if (fresh) ((oracle.ucp.jdbc.ValidConnection) c).setInvalid();
+                    }
                     return null;
                 });
                 for (var result : executor.invokeAll(tasks)) result.get();
@@ -702,16 +711,20 @@ public final class TokenAuthDemo {
 </table></div>
 <p>The CLI emits exception type and Oracle numeric code, not full exception payloads. Inspect detailed diagnostics only in a controlled environment: SDK logging may include identity/request information. Do not paste live tokens into online decoders. Identity query output contains principal names; redact them before sharing logs.</p>
 <h2 id="what-was-validated">What was validated</h2>
+
+
+
 <p>Date: October 4, 2026.</p>
 <ul>
-<li>Local build and tests: Oracle GraalVM JDK 21, Java 17 release target, Maven 3.9.9. See CI for independent JDK 17/21 runs.</li>
+<li>Local build and 11 tests pass on Oracle GraalVM JDK 21, Java 17 release target, Maven 3.9.9. The initial GitHub build also passed on JDK 17 and 21.</li>
 <li>Checks cover environment substitution, transport restrictions, token-mode conflicts, all 11 profiles, pool configuration, released provider discovery, and concurrent JDBC token-cache access using a locally signed synthetic token.</li>
-<li>Packaged CLI help and configuration-only checks run without cloud credentials.</li>
-<li>A separate read-only preflight connected through a supplied mTLS wallet to Oracle AI Database 26ai, server version 23.26.3.3.0, using database-password authentication. The supplied account has CREATE SESSION; querying the external-provider parameter was not permitted. No schema or identity configuration was changed.</li>
-<li>Live OCI/Entra token login and refresh across expiration have <strong>not</strong> been validated. They require a configured cloud identity, matching database mapping, and the appropriate privileges. The password preflight is not evidence of token authentication. Follow the live acceptance procedure in troubleshooting.md.</li>
+<li>All 11 packaged configuration-only checks pass without cloud credentials.</li>
+<li>Live tests used Oracle AI Database 26ai, server version 23.26.3.3.0, through an mTLS wallet. After explicit owner approval, ADMIN enabled OCI_IAM and created a dedicated TOKEN_DEMO mapping to the tested IAM identity with CREATE SESSION only. Existing password-based schemas were not altered.</li>
+<li>Successful live authentication: OCI CLI file tokens with JDBC and UCP; OCI SDK direct connection builder, cached JDBC supplier, and concurrent UCP; OCI resource provider with UCP physical-connection replacement. Each run reported SESSION_USER=TOKEN_DEMO and AUTHENTICATION_METHOD=TOKEN_GLOBAL. Queries only read DUAL; no application data was modified.</li>
+<li>The first forced-replacement run encountered a pool wait failure. Diagnostic mode now explicitly calls ValidConnection.setInvalid() before returning each connection and allows a bounded 60-second replacement wait. The corrected two-round, eight-borrow provider run passed. MaxConnectionReuseCount alone is not used as proof of replacement; server SIDs can also be recycled.</li>
+<li>Refresh across actual token expiration, Entra authentication, OCI workload identities, and interactive/session-token flows remain <strong>unverified</strong>. These short successful OCI API-key runs do not establish those results. Follow the extended live acceptance procedure in troubleshooting.md.</li>
 </ul>
-<p>No wallet, database password, private key, cloud account identifier, or live token is included in this repository.</p>
-<h2 id="cleanup">Cleanup</h2>
+<p>No wallet, database password, private key, cloud account identifier, or live token is included in this repository. Temporary CLI token files used for validation were removed afterward.</p><h2 id="cleanup">Cleanup</h2>
 <p>The Java program makes no persistent data changes. Close it to destroy its connection pool. Remove the dedicated demo user's CREATE SESSION grant or drop that dedicated user only after confirming it owns no needed objects. Remove demo-only IAM policies, group membership, app-role assignments and client credentials in their respective consoles. Do not disable a database's identity integration if other users depend on it.</p>
 <h2 id="faq">FAQ</h2>
 <h3 id="do-i-still-need-a-wallet-when-i-use-a-token">Do I still need a wallet when I use a token?</h3>
