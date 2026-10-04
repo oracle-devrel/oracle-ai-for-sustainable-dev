@@ -62,41 +62,6 @@ tools:
          AND source_location_id = :sourceLocationId
          AND target_location_id = :targetLocationId
 
-  get-inventory-spatial-hotspots:
-    dataSource: financial-db
-    description: Returns governed warehouse hotspot points for one SKU, including coordinates, risk, and source or destination role for MapLibre visualization.
-    parameters:
-      - name: sku
-        type: string
-        description: Product SKU to map, such as SKU-500.
-        required: true
-      - name: maximumRows
-        type: integer
-        description: Maximum number of hotspot points from 1 through 50.
-        required: true
-    statement: >-
-      SELECT * FROM (
-        SELECT r.product_id, r.sku, r.stockout_risk_score, r.risk_level,
-               r.recommended_transfer_qty, role_name.recommended_role,
-               CASE role_name.recommended_role WHEN 'SOURCE' THEN source.location_id ELSE target.location_id END AS location_id,
-               CASE role_name.recommended_role WHEN 'SOURCE' THEN source.location_code ELSE target.location_code END AS location_code,
-               CASE role_name.recommended_role WHEN 'SOURCE' THEN source.location_name ELSE target.location_name END AS location_name,
-               CASE role_name.recommended_role WHEN 'SOURCE' THEN source.latitude ELSE target.latitude END AS latitude,
-               CASE role_name.recommended_role WHEN 'SOURCE' THEN source.longitude ELSE target.longitude END AS longitude
-          FROM FINANCIAL.stockout_transfer_recommendation_v r
-          JOIN FINANCIAL.supply_locations source
-            ON source.location_id = r.source_location_id
-          JOIN FINANCIAL.supply_locations target
-            ON target.location_id = r.target_location_id
-         CROSS JOIN (
-           SELECT 'SOURCE' AS recommended_role FROM dual
-           UNION ALL
-           SELECT 'DESTINATION' AS recommended_role FROM dual
-         ) role_name
-         WHERE r.sku = :sku
-         ORDER BY r.stockout_risk_score DESC, location_id
-      ) WHERE ROWNUM <= :maximumRows
-
   reserve-inventory-transfer-id:
     dataSource: financial-db
     description: Reserves one database-generated identifier for an approved inventory transfer.
@@ -152,11 +117,9 @@ toolsets:
   supply-chain-exchange-read:
     - find-stockout-transfer-recommendations
     - get-stockout-transfer-details
-    - get-inventory-spatial-hotspots
   supply-chain-exchange:
     - find-stockout-transfer-recommendations
     - get-stockout-transfer-details
-    - get-inventory-spatial-hotspots
     - reserve-inventory-transfer-id
     - approve-inventory-transfer
     - count-inventory-transfers

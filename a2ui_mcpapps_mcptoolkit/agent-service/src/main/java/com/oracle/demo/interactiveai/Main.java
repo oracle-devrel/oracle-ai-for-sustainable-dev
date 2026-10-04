@@ -35,22 +35,4 @@ public class Main {
                 "recommendations",
                 recommendations.stream().map(Json::recommendationMap).toList()));
     }
-
-    static String spatialJson(String sku, List<SpatialHotspot> hotspots) {
-        return Json.value(Map.of(
-                "source", "oracle-db-mcp-java-toolkit",
-                "sku", sku,
-                "hotspots", hotspots.stream().map(hotspot -> Map.ofEntries(
-                        Map.entry("productId", hotspot.productId()),
-                        Map.entry("sku", hotspot.sku()),
-                        Map.entry("locationId", hotspot.locationId()),
-                        Map.entry("locationCode", hotspot.locationCode()),
-                        Map.entry("locationName", hotspot.locationName()),
-                        Map.entry("latitude", hotspot.latitude()),
-                        Map.entry("longitude", hotspot.longitude()),
-                        Map.entry("stockoutRiskScore", hotspot.stockoutRiskScore()),
-                        Map.entry("riskLevel", hotspot.riskLevel()),
-                        Map.entry("recommendedTransferQuantity", hotspot.recommendedTransferQuantity()),
-                        Map.entry("recommendedRole", hotspot.recommendedRole()))).toList()));
-    }
 }

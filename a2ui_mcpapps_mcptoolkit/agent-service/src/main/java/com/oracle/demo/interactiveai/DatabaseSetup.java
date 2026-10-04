@@ -56,11 +56,9 @@ public final class DatabaseSetup {
         try (Connection connection = dataSource.getConnection()) {
             Set<String> existing = existingCoreObjects(connection);
             if (existing.equals(CORE_OBJECTS)) {
-                ensureSpatialCoordinates(connection);
-                executeSqlScript(connection, databaseRoot.resolve("08-normalize-inventory-demo.sql"));
                 System.out.println(
                         "Supply-chain exchange database objects already exist; "
-                                + "spatial extension verified.");
+                                + "no setup changes were made.");
                 return;
             }
 
@@ -99,9 +97,6 @@ public final class DatabaseSetup {
             executePlsqlScript(
                     connection,
                     databaseRoot.resolve("06-mcp-procedure.sql"));
-            executeSqlScript(
-                    connection,
-                    databaseRoot.resolve("08-normalize-inventory-demo.sql"));
 
             Set<String> installed = existingCoreObjects(connection);
             if (!installed.equals(CORE_OBJECTS)) {
@@ -162,35 +157,6 @@ public final class DatabaseSetup {
         return true;
     }
 
-    private static void ensureSpatialCoordinates(Connection connection)
-            throws SQLException {
-        Set<String> columns = new LinkedHashSet<>();
-        try (PreparedStatement statement = connection.prepareStatement(
-                "SELECT column_name FROM user_tab_columns "
-                        + "WHERE table_name = 'SUPPLY_LOCATIONS'")) {
-            try (ResultSet rows = statement.executeQuery()) {
-                while (rows.next()) columns.add(rows.getString(1));
-            }
-        }
-        try (Statement statement = connection.createStatement()) {
-            if (!columns.contains("LATITUDE")) {
-                statement.execute("ALTER TABLE supply_locations ADD latitude NUMBER(9,6)");
-            }
-            if (!columns.contains("LONGITUDE")) {
-                statement.execute("ALTER TABLE supply_locations ADD longitude NUMBER(9,6)");
-            }
-            statement.execute("UPDATE supply_locations SET latitude = CASE location_code "
-                    + "WHEN 'ATL-DC' THEN 33.7490 WHEN 'PHX-DC' THEN 33.4484 "
-                    + "WHEN 'CHI-FC' THEN 41.8781 WHEN 'SEA-FC' THEN 47.6062 "
-                    + "WHEN 'DFW-HUB' THEN 32.8998 WHEN 'EWR-HUB' THEN 40.7357 END, "
-                    + "longitude = CASE location_code WHEN 'ATL-DC' THEN -84.3880 "
-                    + "WHEN 'PHX-DC' THEN -112.0740 WHEN 'CHI-FC' THEN -87.6298 "
-                    + "WHEN 'SEA-FC' THEN -122.3321 WHEN 'DFW-HUB' THEN -97.0403 "
-                    + "WHEN 'EWR-HUB' THEN -74.1724 END "
-                    + "WHERE latitude IS NULL OR longitude IS NULL");
-        }
-    }
-
     private static void executeSqlScript(
             Connection connection,
             Path script) throws IOException, SQLException {
@@ -217,8 +183,7 @@ public final class DatabaseSetup {
         for (String line : Files.readAllLines(script)) {
             String trimmed =
                     line.stripLeading().toUpperCase(Locale.ROOT);
-            if (trimmed.startsWith("--")
-                    || trimmed.startsWith("WHENEVER SQLERROR")
+            if (trimmed.startsWith("WHENEVER SQLERROR")
                     || trimmed.startsWith("PROMPT ")) {
                 continue;
             }

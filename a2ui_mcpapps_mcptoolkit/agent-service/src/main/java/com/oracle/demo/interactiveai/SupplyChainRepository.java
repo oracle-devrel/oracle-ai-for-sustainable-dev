@@ -11,8 +11,6 @@ public interface SupplyChainRepository {
             double minimumStockoutRisk,
             int maximumRows);
 
-    List<SpatialHotspot> findSpatialHotspots(String sku, int maximumRows);
-
     TransferResult approveTransfer(
             TransferRecommendation recommendation,
             String approvalNotes,

@@ -12,12 +12,6 @@ import {
 import { z } from "zod";
 
 const resourceUri = "ui://oracle-supply-chain/inventory-exchange-v2";
-// Bump the resource URI when the embedded bundle changes so Gemini Enterprise
-// does not reuse a cached MCP App document from the previous revision.
-const spatialResourceUri = "ui://oracle-supply-chain/spatial-hotspots-v5";
-// Keep the previous URI alive so hosts that cached v2 receive the corrected
-// bundle instead of the old OpenStreetMap/CSP configuration.
-const legacySpatialResourceUri = "ui://oracle-supply-chain/spatial-hotspots-v2";
 const agentServiceUrl =
   process.env.AGENT_SERVICE_URL ?? "http://127.0.0.1:8080";
 const agentServiceTimeoutMs =
@@ -66,24 +60,6 @@ const TransferResultSchema = z.object({
 const RejectionResultSchema = z.object({
   status: z.literal("REJECTED")
 });
-const SpatialHotspotSchema = z.object({
-  productId: z.number(),
-  sku: z.string(),
-  locationId: z.number(),
-  locationCode: z.string(),
-  locationName: z.string(),
-  latitude: z.number(),
-  longitude: z.number(),
-  stockoutRiskScore: z.number(),
-  riskLevel: z.string(),
-  recommendedTransferQuantity: z.number(),
-  recommendedRole: z.string()
-});
-const OracleAgentSpatialEvidenceSchema = z.object({
-  source: z.literal("oracle-ai-database-agent"),
-  sku: z.string(),
-  hotspots: z.array(SpatialHotspotSchema)
-});
 
 async function agentFormRequest(
   pathName: string,
@@ -126,43 +102,6 @@ async function loadGovernedReview(
       maximumRows
     })
   );
-}
-
-function spatialGeoJson(hotspots: z.infer<typeof SpatialHotspotSchema>[]) {
-  const features = hotspots.map((hotspot) => ({
-    type: "Feature",
-    geometry: {
-      type: "Point",
-      coordinates: [hotspot.longitude, hotspot.latitude]
-    },
-    properties: hotspot
-  }));
-  const source = hotspots.find((hotspot) =>
-    hotspot.recommendedRole.toUpperCase().includes("SOURCE")
-  );
-  const destination = hotspots.find((hotspot) =>
-    ["DESTINATION", "TARGET", "RECEIVING"].some((role) =>
-      hotspot.recommendedRole.toUpperCase().includes(role)
-    )
-  );
-  if (source && destination) {
-    features.push({
-      type: "Feature",
-      geometry: {
-        type: "LineString",
-        coordinates: [
-          [source.longitude, source.latitude],
-          [destination.longitude, destination.latitude]
-        ]
-      },
-      properties: {
-        kind: "relief-route",
-        sourceLocationCode: source.locationCode,
-        targetLocationCode: destination.locationCode
-      }
-    } as unknown as typeof features[number]);
-  }
-  return { type: "FeatureCollection", features };
 }
 
 const server = new McpServer({
@@ -217,48 +156,6 @@ registerAppTool(server, "show-inventory-transfer-dashboard", {
       maximumRows
     },
     _meta: writesEnabled ? { approvalId: review.approvalId } : {}
-  };
-});
-
-registerAppTool(server, "show-inventory-spatial-hotspots", {
-  title: "Show inventory spatial hotspots",
-  description:
-    "Shows Oracle Database warehouse hotspot coordinates and the recommended relief route as an interactive MapLibre map.",
-  inputSchema: {
-    sku: z.string().min(1).max(40).default("SKU-500")
-      .describe("Product SKU to map"),
-    maximumRows: z.number().int().min(2).max(50).default(20)
-      .describe("Maximum governed hotspot features"),
-    oracleAgentEvidence: OracleAgentSpatialEvidenceSchema
-      .describe(
-        "Structured spatial evidence returned by the managed Oracle AI Database Agent. "
-        + "Gemini Enterprise must call that agent first and provide this evidence."
-      )
-  },
-  _meta: {
-    ui: {
-      resourceUri: spatialResourceUri,
-      visibility: ["model", "app"]
-    }
-  },
-  annotations: {
-    readOnlyHint: true,
-    openWorldHint: false
-  }
-}, async ({ sku, maximumRows, oracleAgentEvidence }) => {
-  const response = OracleAgentSpatialEvidenceSchema.parse(oracleAgentEvidence);
-  return {
-    content: [{
-      type: "text",
-      text: `${response.source} returned ${response.hotspots.length} spatial hotspot features for ${response.sku}.`
-    }],
-    structuredContent: {
-      view: "spatial-hotspots",
-      source: response.source,
-      sku: response.sku,
-      hotspots: response.hotspots,
-      geojson: spatialGeoJson(response.hotspots)
-    }
   };
 });
 
@@ -351,66 +248,6 @@ registerAppResource(
           csp: {
             connectDomains: [],
             resourceDomains: ["https://www.oracle.com"]
-          }
-        }
-      }
-    }]
-  })
-);
-
-registerAppResource(
-  server,
-  spatialResourceUri,
-  spatialResourceUri,
-  { mimeType: RESOURCE_MIME_TYPE },
-  async () => ({
-    contents: [{
-      uri: spatialResourceUri,
-      mimeType: RESOURCE_MIME_TYPE,
-      text: await readFile(
-        path.join(import.meta.dirname, "dist", "mcp-app.html"),
-        "utf8"
-      ),
-      _meta: {
-        ui: {
-          prefersBorder: true,
-          csp: {
-            connectDomains: ["https://tile.openstreetmap.org"],
-            resourceDomains: [
-              "https://www.oracle.com",
-              "https://unpkg.com",
-              "https://tile.openstreetmap.org"
-            ]
-          }
-        }
-      }
-    }]
-  })
-);
-
-registerAppResource(
-  server,
-  legacySpatialResourceUri,
-  legacySpatialResourceUri,
-  { mimeType: RESOURCE_MIME_TYPE },
-  async () => ({
-    contents: [{
-      uri: legacySpatialResourceUri,
-      mimeType: RESOURCE_MIME_TYPE,
-      text: await readFile(
-        path.join(import.meta.dirname, "dist", "mcp-app.html"),
-        "utf8"
-      ),
-      _meta: {
-        ui: {
-          prefersBorder: true,
-          csp: {
-            connectDomains: ["https://tile.openstreetmap.org"],
-            resourceDomains: [
-              "https://www.oracle.com",
-              "https://unpkg.com",
-              "https://tile.openstreetmap.org"
-            ]
           }
         }
       }

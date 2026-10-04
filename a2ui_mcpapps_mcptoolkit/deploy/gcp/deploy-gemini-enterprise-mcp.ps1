@@ -141,5 +141,5 @@ if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($serviceUri)) {
 Write-Host "Gemini Enterprise private MCP service: $serviceUri"
 Write-Host "Gemini Enterprise MCP endpoint: $serviceUri/mcp"
 Write-Host "Discovery Engine invoker: $discoveryEngineServiceAgent"
-Write-Host "Writes remain disabled; transfer dashboard and spatial hotspot tools are registered."
+Write-Host "Writes remain disabled; only the dashboard tool is registered."
 Write-Host "Continue with docs/gemini-enterprise-mcp-app.md."

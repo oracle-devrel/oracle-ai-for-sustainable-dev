@@ -11,18 +11,15 @@ USING (
            'DFW-HUB' AS location_code,
            'DFW Hub' AS location_name,
            'South Central' AS region_name,
-           'DISTRIBUTION_CENTER' AS location_type,
-           32.8998 AS latitude,
-           -97.0403 AS longitude
+           'DISTRIBUTION_CENTER' AS location_type
       FROM dual
 ) source
 ON (target.location_id = source.location_id)
 WHEN NOT MATCHED THEN INSERT (
-    location_id, location_code, location_name, region_name, location_type,
-    latitude, longitude
+    location_id, location_code, location_name, region_name, location_type
 ) VALUES (
     source.location_id, source.location_code, source.location_name,
-    source.region_name, source.location_type, source.latitude, source.longitude
+    source.region_name, source.location_type
 );
 
 MERGE INTO supply_locations target
@@ -31,18 +28,15 @@ USING (
            'EWR-HUB' AS location_code,
            'Newark Inventory Hub' AS location_name,
            'Northeast' AS region_name,
-           'FULFILLMENT_CENTER' AS location_type,
-           40.7357 AS latitude,
-           -74.1724 AS longitude
+           'FULFILLMENT_CENTER' AS location_type
       FROM dual
 ) source
 ON (target.location_id = source.location_id)
 WHEN NOT MATCHED THEN INSERT (
-    location_id, location_code, location_name, region_name, location_type,
-    latitude, longitude
+    location_id, location_code, location_name, region_name, location_type
 ) VALUES (
     source.location_id, source.location_code, source.location_name,
-    source.region_name, source.location_type, source.latitude, source.longitude
+    source.region_name, source.location_type
 );
 
 MERGE INTO supply_products target
