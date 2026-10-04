@@ -14,7 +14,7 @@ import { z } from "zod";
 const resourceUri = "ui://oracle-supply-chain/inventory-exchange-v2";
 // Bump the resource URI when the embedded bundle changes so Gemini Enterprise
 // does not reuse a cached MCP App document from the previous revision.
-const spatialResourceUri = "ui://oracle-supply-chain/spatial-hotspots-v3";
+const spatialResourceUri = "ui://oracle-supply-chain/spatial-hotspots-v4";
 // Keep the previous URI alive so hosts that cached v2 receive the corrected
 // bundle instead of the old OpenStreetMap/CSP configuration.
 const legacySpatialResourceUri = "ui://oracle-supply-chain/spatial-hotspots-v2";
@@ -138,7 +138,9 @@ function spatialGeoJson(hotspots: z.infer<typeof SpatialHotspotSchema>[]) {
     properties: hotspot
   }));
   const source = hotspots.find((hotspot) => hotspot.recommendedRole === "SOURCE");
-  const destination = hotspots.find((hotspot) => hotspot.recommendedRole === "DESTINATION");
+  const destination = hotspots.find((hotspot) =>
+    ["DESTINATION", "TARGET", "RECEIVING"].includes(hotspot.recommendedRole.toUpperCase())
+  );
   if (source && destination) {
     features.push({
       type: "Feature",

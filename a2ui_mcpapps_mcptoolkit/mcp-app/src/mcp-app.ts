@@ -8,6 +8,7 @@ type MapLibreMap = {
   addSource: (id: string, source: Record<string, unknown>) => void;
   addLayer: (layer: Record<string, unknown>) => void;
   fitBounds: (bounds: [[number, number], [number, number]], options?: Record<string, unknown>) => void;
+  project: (coordinate: [number, number]) => { x: number; y: number };
   resize: () => void;
   on: (...args: unknown[]) => void;
 };
@@ -260,19 +261,8 @@ function installSpatialOverlay(
   overlay.style.pointerEvents = "none";
   overlay.style.zIndex = "2";
   spatialMap.append(overlay);
-  const allCoordinates = collectCoordinates([...pointFeatures, ...routeFeatures]);
-  const longitudes = allCoordinates.map(([longitude]) => longitude);
-  const latitudes = allCoordinates.map(([, latitude]) => latitude);
-  const minLongitude = Math.min(...longitudes);
-  const maxLongitude = Math.max(...longitudes);
-  const minLatitude = Math.min(...latitudes);
-  const maxLatitude = Math.max(...latitudes);
-  const longitudeSpan = Math.max(0.0001, maxLongitude - minLongitude);
-  const latitudeSpan = Math.max(0.0001, maxLatitude - minLatitude);
-  const toViewport = ([longitude, latitude]: [number, number]) => ({
-    x: 40 + ((longitude - minLongitude) / longitudeSpan) * Math.max(1, spatialMap.clientWidth - 80),
-    y: 40 + ((maxLatitude - latitude) / latitudeSpan) * Math.max(1, spatialMap.clientHeight - 80)
-  });
+  const toViewport = ([longitude, latitude]: [number, number]) =>
+    map.project([longitude, latitude]);
 
   const redraw = () => {
     const width = spatialMap.clientWidth;
@@ -312,6 +302,15 @@ function installSpatialOverlay(
       circle.setAttribute("fill", feature.properties?.recommendedRole === "SOURCE" ? "#2f7d32" : "#c74634");
       circle.setAttribute("stroke", "#ffffff");
       circle.setAttribute("stroke-width", "3");
+      circle.style.pointerEvents = "all";
+      circle.style.cursor = "pointer";
+      circle.addEventListener("click", (event) => {
+        event.stopPropagation();
+        const properties = feature.properties ?? {};
+        spatialSource.textContent =
+          `${properties.locationCode ?? "Warehouse"} · ${properties.locationName ?? ""} · `
+          + `${properties.recommendedRole ?? ""} · risk ${properties.stockoutRiskScore ?? "n/a"}`;
+      });
       overlay.append(circle);
     }
   };
