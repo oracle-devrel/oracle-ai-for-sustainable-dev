@@ -64,6 +64,7 @@
 <h1>Passwordless Java Connections to Oracle AI Database 26ai with OCI IAM and Microsoft Entra ID</h1>
 <p class="subtitle">A complete, runnable guide to CLI tokens, OCI SDK suppliers, JDBC providers and connection pools—with database setup and Microsoft Entra identity configuration.</p>
 <p class="updated">By Paul Parkinson · Updated October 4, 2026 · Dependencies and references checked October 4, 2026</p>
+<p class="note"><strong>GitHub repositories:</strong> <a href="https://github.com/paulparkinson/oracle-jdbc-token-auth-demo">Runnable JDBC token-authentication examples</a> · <a href="https://github.com/oracle/ojdbc-extensions">Oracle JDBC provider extensions</a> · <a href="https://github.com/paulparkinson/oracle-ai-for-sustainable-dev">Blog source and companion examples</a>.</p>
 <figure class="cover"><img alt="Oracle AI Database security architecture connecting user and workload identities through an application and JDBC to database token validation and least-privilege authorization." height="660" src="images/e2e-security-cover.svg" width="1400"/><figcaption>Cloud identity, database mapping, TLS and token lifecycle work together to authenticate each new physical connection.</figcaption></figure>
 <h2 id="key-takeaways">Key Takeaways</h2>
 <ul>
@@ -116,45 +117,64 @@
 <p>The older extension article uses values such as <code>OCI_API_KEY</code>, <code>OCI_INSTANCE_PRINCIPAL</code>, <code>OCI_INTERACTIVE</code>, <code>AZURE_SERVICE_PRINCIPAL</code>, <code>AZURE_MANAGED_IDENTITY</code> and <code>AZURE_INTERACTIVE</code> under <code>oracle.jdbc.tokenAuthentication</code>. The examples here consistently use the resource-provider namespace, <code>oracle.jdbc.provider.accessToken</code>, with explicit provider parameters. Do not combine the two styles on one data source. File-based <code>OCI_TOKEN</code> remains a distinct supported path.</p>
 <h2 id="prerequisites-and-tested-dependency-versions">Prerequisites and tested dependency versions</h2>
 <p>Use JDK 17 or 21, Maven 3.9+, a reachable Autonomous Database, and an identity administrator who can configure the intended mapping. The demo needs only CREATE SESSION after setup and queries DUAL; it creates no application tables. You will also need OCI CLI for file examples and the actual hosting environment for workload identities.</p>
-<p>The project pins <code>ojdbc17</code> and <code>ucp17</code> to <strong>23.26.3.0.0</strong>, the OCI and Azure providers to <strong>1.1.0</strong>, and OCI SDK to <strong>3.86.2</strong>. These versions were resolved from Maven Central and built together. The JDBC artifact version is not the database product name. The POM excludes the providers' transitive <code>ojdbc8</code>, retaining one JDBC driver, and preserves separate dependency JARs so their service registrations are available.</p>
-<p>Here is the complete build file, including Oracle PKI for wallet use and the runtime dependency copy step:</p>
-<pre><code class="language-xml">&lt;project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"&gt;
-  &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
-  &lt;groupId&gt;io.github.paulparkinson&lt;/groupId&gt;
-  &lt;artifactId&gt;oracle-jdbc-token-auth-demo&lt;/artifactId&gt;
-  &lt;version&gt;1.0.0&lt;/version&gt;
-  &lt;properties&gt;
-    &lt;maven.compiler.release&gt;17&lt;/maven.compiler.release&gt;
-    &lt;project.build.sourceEncoding&gt;UTF-8&lt;/project.build.sourceEncoding&gt;
-    &lt;jdbc.version&gt;23.26.3.0.0&lt;/jdbc.version&gt;
-    &lt;providers.version&gt;1.1.0&lt;/providers.version&gt;
-    &lt;oci.version&gt;3.86.2&lt;/oci.version&gt;
-  &lt;/properties&gt;
-  &lt;dependencyManagement&gt;&lt;dependencies&gt;
-    &lt;dependency&gt;&lt;groupId&gt;com.oracle.oci.sdk&lt;/groupId&gt;&lt;artifactId&gt;oci-java-sdk-bom&lt;/artifactId&gt;&lt;version&gt;${oci.version}&lt;/version&gt;&lt;type&gt;pom&lt;/type&gt;&lt;scope&gt;import&lt;/scope&gt;&lt;/dependency&gt;
-  &lt;/dependencies&gt;&lt;/dependencyManagement&gt;
-  &lt;dependencies&gt;
-    &lt;dependency&gt;&lt;groupId&gt;com.oracle.database.jdbc&lt;/groupId&gt;&lt;artifactId&gt;ojdbc17&lt;/artifactId&gt;&lt;version&gt;${jdbc.version}&lt;/version&gt;&lt;/dependency&gt;
-    &lt;dependency&gt;&lt;groupId&gt;com.oracle.database.jdbc&lt;/groupId&gt;&lt;artifactId&gt;ucp17&lt;/artifactId&gt;&lt;version&gt;${jdbc.version}&lt;/version&gt;&lt;/dependency&gt;
-    &lt;dependency&gt;&lt;groupId&gt;com.oracle.database.security&lt;/groupId&gt;&lt;artifactId&gt;oraclepki&lt;/artifactId&gt;&lt;version&gt;${jdbc.version}&lt;/version&gt;&lt;/dependency&gt;
-    &lt;dependency&gt;&lt;groupId&gt;com.oracle.database.jdbc&lt;/groupId&gt;&lt;artifactId&gt;ojdbc-provider-oci&lt;/artifactId&gt;&lt;version&gt;${providers.version}&lt;/version&gt;&lt;scope&gt;runtime&lt;/scope&gt;
-      &lt;exclusions&gt;&lt;exclusion&gt;&lt;groupId&gt;com.oracle.database.jdbc&lt;/groupId&gt;&lt;artifactId&gt;ojdbc8&lt;/artifactId&gt;&lt;/exclusion&gt;&lt;/exclusions&gt;
-    &lt;/dependency&gt;
-    &lt;dependency&gt;&lt;groupId&gt;com.oracle.database.jdbc&lt;/groupId&gt;&lt;artifactId&gt;ojdbc-provider-azure&lt;/artifactId&gt;&lt;version&gt;${providers.version}&lt;/version&gt;&lt;scope&gt;runtime&lt;/scope&gt;
-      &lt;exclusions&gt;&lt;exclusion&gt;&lt;groupId&gt;com.oracle.database.jdbc&lt;/groupId&gt;&lt;artifactId&gt;ojdbc8&lt;/artifactId&gt;&lt;/exclusion&gt;&lt;/exclusions&gt;
-    &lt;/dependency&gt;
-    &lt;dependency&gt;&lt;groupId&gt;com.oracle.oci.sdk&lt;/groupId&gt;&lt;artifactId&gt;oci-java-sdk-identitydataplane&lt;/artifactId&gt;&lt;/dependency&gt;
-    &lt;dependency&gt;&lt;groupId&gt;com.oracle.oci.sdk&lt;/groupId&gt;&lt;artifactId&gt;oci-java-sdk-common-httpclient-jersey&lt;/artifactId&gt;&lt;scope&gt;runtime&lt;/scope&gt;&lt;/dependency&gt;
-    &lt;dependency&gt;&lt;groupId&gt;org.junit.jupiter&lt;/groupId&gt;&lt;artifactId&gt;junit-jupiter&lt;/artifactId&gt;&lt;version&gt;5.11.4&lt;/version&gt;&lt;scope&gt;test&lt;/scope&gt;&lt;/dependency&gt;
-  &lt;/dependencies&gt;
-  &lt;build&gt;&lt;plugins&gt;
-    &lt;plugin&gt;&lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;&lt;artifactId&gt;maven-compiler-plugin&lt;/artifactId&gt;&lt;version&gt;3.13.0&lt;/version&gt;&lt;/plugin&gt;
-    &lt;plugin&gt;&lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;&lt;artifactId&gt;maven-surefire-plugin&lt;/artifactId&gt;&lt;version&gt;3.5.2&lt;/version&gt;&lt;/plugin&gt;
-    &lt;plugin&gt;&lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;&lt;artifactId&gt;maven-jar-plugin&lt;/artifactId&gt;&lt;version&gt;3.4.2&lt;/version&gt;&lt;/plugin&gt;
-    &lt;plugin&gt;&lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;&lt;artifactId&gt;maven-dependency-plugin&lt;/artifactId&gt;&lt;version&gt;3.8.1&lt;/version&gt;&lt;executions&gt;&lt;execution&gt;&lt;id&gt;runtime-libraries&lt;/id&gt;&lt;phase&gt;package&lt;/phase&gt;&lt;goals&gt;&lt;goal&gt;copy-dependencies&lt;/goal&gt;&lt;/goals&gt;&lt;configuration&gt;&lt;includeScope&gt;runtime&lt;/includeScope&gt;&lt;outputDirectory&gt;${project.build.directory}/lib&lt;/outputDirectory&gt;&lt;/configuration&gt;&lt;/execution&gt;&lt;/executions&gt;&lt;/plugin&gt;
-  &lt;/plugins&gt;&lt;/build&gt;
-&lt;/project&gt;
-</code></pre>
+<p>The examples use JDBC and UCP <strong>23.26.3.0.0</strong>, the OCI and Azure providers <strong>1.1.0</strong>, and OCI SDK <strong>3.86.2</strong>. These versions were built and tested together. The JDBC artifact version is separate from the database product name.</p>
+<h3>JDBC, pooling and wallet support</h3>
+<p>Add these dependencies to your Maven project. Keep <code>ucp17</code> for the pooling examples and <code>oraclepki</code> for the wallet-based connections used here.</p>
+<pre><code class="language-xml">&lt;dependencies&gt;
+  &lt;!-- JDBC driver --&gt;
+  &lt;dependency&gt;
+    &lt;groupId&gt;com.oracle.database.jdbc&lt;/groupId&gt;
+    &lt;artifactId&gt;ojdbc17&lt;/artifactId&gt;
+    &lt;version&gt;23.26.3.0.0&lt;/version&gt;
+  &lt;/dependency&gt;
+  &lt;!-- For the UCP examples --&gt;
+  &lt;dependency&gt;
+    &lt;groupId&gt;com.oracle.database.jdbc&lt;/groupId&gt;
+    &lt;artifactId&gt;ucp17&lt;/artifactId&gt;
+    &lt;version&gt;23.26.3.0.0&lt;/version&gt;
+  &lt;/dependency&gt;
+  &lt;!-- For Oracle wallet support --&gt;
+  &lt;dependency&gt;
+    &lt;groupId&gt;com.oracle.database.security&lt;/groupId&gt;
+    &lt;artifactId&gt;oraclepki&lt;/artifactId&gt;
+    &lt;version&gt;23.26.3.0.0&lt;/version&gt;
+  &lt;/dependency&gt;
+&lt;/dependencies&gt;</code></pre>
+<h3>Add the provider for your identity service</h3>
+<p>Choose OCI, Microsoft Entra ID, or both if you are running all the examples. The provider dependencies include their cloud SDKs and are loaded at runtime.</p>
+<pre><code class="language-xml">&lt;dependencies&gt;
+  &lt;!-- OCI IAM --&gt;
+  &lt;dependency&gt;
+    &lt;groupId&gt;com.oracle.database.jdbc&lt;/groupId&gt;
+    &lt;artifactId&gt;ojdbc-provider-oci&lt;/artifactId&gt;
+    &lt;version&gt;1.1.0&lt;/version&gt;
+    &lt;scope&gt;runtime&lt;/scope&gt;
+  &lt;/dependency&gt;
+  &lt;!-- Microsoft Entra ID --&gt;
+  &lt;dependency&gt;
+    &lt;groupId&gt;com.oracle.database.jdbc&lt;/groupId&gt;
+    &lt;artifactId&gt;ojdbc-provider-azure&lt;/artifactId&gt;
+    &lt;version&gt;1.1.0&lt;/version&gt;
+    &lt;scope&gt;runtime&lt;/scope&gt;
+  &lt;/dependency&gt;
+&lt;/dependencies&gt;</code></pre>
+<p>No <code>ojdbc8</code> exclusion is needed: these provider releases declare it with Maven's <code>provided</code> scope, so it is not added to your application's dependencies. The application uses the explicitly declared <code>ojdbc17</code> driver above.</p>
+<h3>Additional dependencies for direct OCI SDK calls</h3>
+<p>Only the application-managed SDK example (<code>OciTokens.java</code>) needs these declarations. The first makes the token-request API available when compiling Java; the second supplies its HTTP transport at runtime. Provider-only applications can omit them.</p>
+<pre><code class="language-xml">&lt;dependencies&gt;
+  &lt;dependency&gt;
+    &lt;groupId&gt;com.oracle.oci.sdk&lt;/groupId&gt;
+    &lt;artifactId&gt;oci-java-sdk-identitydataplane&lt;/artifactId&gt;
+    &lt;version&gt;3.86.2&lt;/version&gt;
+  &lt;/dependency&gt;
+  &lt;dependency&gt;
+    &lt;groupId&gt;com.oracle.oci.sdk&lt;/groupId&gt;
+    &lt;artifactId&gt;oci-java-sdk-common-httpclient-jersey&lt;/artifactId&gt;
+    &lt;version&gt;3.86.2&lt;/version&gt;
+    &lt;scope&gt;runtime&lt;/scope&gt;
+  &lt;/dependency&gt;
+&lt;/dependencies&gt;</code></pre>
+<p>Combine the dependencies you need into your existing <code>&lt;dependencies&gt;</code> section. The <a href="https://github.com/paulparkinson/oracle-jdbc-token-auth-demo/blob/main/pom.xml">repository's complete pom.xml</a> also contains SDK version alignment and the build configuration used to compile, test and package the runnable demo.</p>
 <h2 id="configure-the-database-and-identity">Configure the database and identity</h2>
 <p>These examples target Autonomous AI Database Serverless. A JDBC release number does not enable identity integration on a database. Other Oracle Database deployments require their own supported server configuration. Use a lab database and an administrator for setup; the Java demo needs only CREATE SESSION and reads DUAL.</p>
 <p>OCI IAM and Entra are alternative external identity provider configurations. Use separate lab databases to demonstrate both. The SQL scripts omit forced replacement and stop on errors. They are first-time setup scripts, not repeatable migrations. If TOKEN_DEMO already exists, inspect its mapping rather than dropping it.</p>
@@ -735,4 +755,5 @@ public final class TokenAuthDemo {
 <p>An existing authenticated physical session can remain usable. Expiry is relevant when a new physical connection authenticates. The demo's <code>ucp-fresh</code> mode forces replacement connections so a long run can expose refresh failures; normal repeated borrows are insufficient evidence.</p>
 <h3 id="can-i-use-the-oci-and-entra-profiles-against-the-same-database-interchangeably">Can I use the OCI and Entra profiles against the same database interchangeably?</h3>
 <p>Only if the database is configured for the selected provider at the time of connection. This walkthrough uses separate lab configurations and does not force an existing provider to be replaced. Both flows require a cloud-authorized principal mapped to a database schema with CREATE SESSION.</p>
+<p class="note"><strong>GitHub repositories:</strong> <a href="https://github.com/paulparkinson/oracle-jdbc-token-auth-demo">Runnable JDBC token-authentication examples</a> · <a href="https://github.com/oracle/ojdbc-extensions">Oracle JDBC provider extensions</a> · <a href="https://github.com/paulparkinson/oracle-ai-for-sustainable-dev">Blog source and companion examples</a>.</p>
 </main></body></html>
