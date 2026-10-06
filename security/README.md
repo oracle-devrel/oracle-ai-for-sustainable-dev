@@ -1,5 +1,9 @@
 # Security Demos
 
+## Articles
+
+- [Security Best Practices with the Oracle JDBC driver](oracle-jdbc-security-best-practices.html): password-less connections, SQL injection prevention, TLS, least privilege, diagnostics, resource management, and dependency hygiene. Includes the original examples and references; the source's unfinished Azure token-authentication note is retained explicitly.
+
 ## Oracle Deep Data Security
 
 The Deep Data Security demo now includes Spring Boot, Micronaut, and Helidon

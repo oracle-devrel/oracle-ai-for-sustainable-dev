@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Security best practices for Oracle JDBC: password-less connections, SQL injection prevention, TLS, least privilege, safe diagnostics, resource management, and dependencies.">
+  <title>Security Best Practices with the Oracle JDBC driver</title>
+  <style>
+    :root { color-scheme: light; --ink: #202a33; --muted: #526572; --accent: #a93628; --line: #d7e0e4; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #f5f7f8; color: var(--ink); font: 18px/1.65 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    main { max-width: 1040px; margin: 0 auto; padding: 52px 48px 72px; background: #fff; }
+    h1, h2, h3 { line-height: 1.22; color: #24383b; text-wrap: balance; }
+    h1 { margin: 0 0 18px; font-size: clamp(2rem, 4.5vw, 3rem); letter-spacing: -.035em; }
+    h2 { margin: 48px 0 18px; font-size: 1.7rem; padding-top: 22px; border-top: 1px solid var(--line); }
+    h3 { margin: 30px 0 14px; font-size: 1.25rem; }
+    p { margin: 0 0 20px; }
+    a { color: #145879; text-underline-offset: .18em; overflow-wrap: anywhere; }
+    a:hover { color: var(--accent); }
+    a:focus-visible, pre:focus-visible { outline: 3px solid #c74634; outline-offset: 4px; }
+    .subtitle { color: var(--muted); font-size: 1.18rem; line-height: 1.55; }
+    figure { margin: 28px 0; }
+    figure img { display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: 8px; }
+    figcaption { margin-top: 10px; font-size: .88rem; color: var(--muted); }
+    .takeaways { border-left: 4px solid #c74634; padding: 22px 26px; margin: 30px 0; background: #f5f7f8; }
+    .takeaways h2 { border: 0; margin: 0 0 12px; padding: 0; font-size: 1.35rem; }
+    ul, ol { padding-left: 26px; margin: 0 0 22px; }
+    li { margin: 8px 0; }
+    .takeaways ul { margin-bottom: 0; }
+    nav { margin: 30px 0; padding: 22px 26px; border: 1px solid var(--line); border-radius: 8px; }
+    nav h2 { border: 0; margin: 0 0 12px; padding: 0; font-size: 1.25rem; }
+    nav ul { margin-bottom: 0; }
+    nav > ul { list-style: none; padding-left: 0; }
+    nav li { margin: 5px 0; }
+    code { font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace; font-size: .88em; }
+    :not(pre) > code { padding: .12em .28em; background: #eef2f4; border-radius: 3px; overflow-wrap: anywhere; }
+    pre { max-width: 100%; overflow-x: auto; margin: 22px 0; padding: 22px; background: #182629; color: #f3f6f7; border-radius: 8px; line-height: 1.6; tab-size: 2; }
+    pre code { font-size: 14px; white-space: pre; }
+    .editorial-note { border-left: 4px solid #b67519; background: #fff7e9; padding: 14px 18px; }
+    .editorial-note small { display: block; color: #645339; }
+    [id] { scroll-margin-top: 24px; }
+    @media (max-width: 640px) { body { font-size: 16px; } main { padding: 28px 20px 48px; } h2 { font-size: 1.45rem; } nav, .takeaways { padding: 18px; } pre { padding: 16px; } }
+    @media print { body, main { background: #fff; } main { max-width: none; padding: 0; } pre { white-space: pre-wrap; overflow-wrap: anywhere; } pre code { white-space: pre-wrap; } h2, h3 { break-after: avoid; } }
+  </style>
+</head>
+<body>
+<main>
+<article>
+  <header>
+    <h1>Security Best Practices with the Oracle JDBC driver</h1>
+    <p class="subtitle">Protect database access with password-less connections, safe SQL, encrypted transport, and least-privilege controls.</p>
+    <figure>
+      <img src="images/oracle-jdbc-security-best-practices-cover.svg" width="1400" height="660" alt="Oracle JDBC security controls across workload identity, the JDBC Thin driver, and Oracle AI Database: vault secrets or scoped tokens, bound SQL values, TCPS server validation, least privilege, and lifecycle safeguards.">
+      <figcaption>Secure the connection end to end: identity, application input, database privileges, and resource lifecycle.</figcaption>
+    </figure>
+  </header>
+
+  <section class="takeaways" aria-labelledby="takeaways">
+    <h2 id="takeaways">Key Takeaways</h2>
+    <ul>
+      <li>Keep database passwords out of application configuration with vault providers, or use short-lived identity tokens.</li>
+      <li>Bind SQL values, allowlist dynamic identifiers, and keep TLS server identity validation enabled.</li>
+      <li>Limit database and vault permissions, and protect credentials in logs and diagnostics.</li>
+      <li>Manage timeouts, pooled connections, and dependency updates as part of the security boundary.</li>
+    </ul>
+  </section>
+
+  <p>The Oracle JDBC driver sits at an important security boundary: it carries database credentials, sends application input to SQL, and often runs inside a cloud workload with access to valuable data. A strong design combines identity-based authentication, encrypted transport, parameterized SQL, least privilege, and careful handling of driver resources.</p>
+  <p>This article uses the JDBC Thin driver. Every connection URL below uses <a href="https://docs.oracle.com/en/database/oracle/oracle-database/26/netag/support-easy-connect-plus.html">Easy Connect Plus</a>, for example:</p>
+  <pre tabindex="0" aria-label="Java: Easy Connect Plus URL"><code class="language-java">String url = "jdbc:oracle:thin:@tcps://db.example.com:1522/appdb?enable=true";</code></pre>
+  <p>Easy Connect Plus removes the need for a <code>tnsnames.ora</code> alias and can carry connection properties after <code>?</code>. The examples keep provider configuration in a <code>Properties</code> object instead of putting secrets or tokens in the URL. This reduces the chance that a URL copied into a log, metric, or exception will expose sensitive data.</p>
+
+  <nav aria-labelledby="contents">
+    <h2 id="contents">In this article</h2>
+    <ul>
+      <li><a href="#passwordless">1. Password-less connection</a>
+        <ul>
+          <li><a href="#oci-vault">OCI Vault password</a></li>
+          <li><a href="#azure-vault">Azure Key Vault password</a></li>
+          <li><a href="#oci-token">OCI token authentication with instance or resource principal</a></li>
+        </ul>
+      </li>
+      <li><a href="#sql-injection">2. Prevent SQL injection</a>
+        <ul>
+          <li><a href="#bind-values">Bind values with <code>PreparedStatement</code></a></li>
+          <li><a href="#identifiers">Treat identifiers separately</a></li>
+        </ul>
+      </li>
+      <li><a href="#transport">3. Encrypt the connection and validate the server</a></li>
+      <li><a href="#least-privilege">4. Apply least privilege at the database boundary</a></li>
+      <li><a href="#diagnostics">5. Protect credentials, tokens, and diagnostics</a></li>
+      <li><a href="#resources">6. Bound work and clean up resources</a></li>
+      <li><a href="#dependencies">7. Keep the dependency and runtime chain current</a></li>
+      <li><a href="#checklist">Practical review checklist</a></li>
+      <li><a href="#reading">Further reading</a></li>
+      <li><a href="#faq">FAQ</a></li>
+    </ul>
+  </nav>
+
+  <h2 id="passwordless">1. Password-less connection</h2>
+  <p>There are two useful password-less patterns:</p>
+  <ol>
+    <li>Retrieve a traditional database password from OCI Vault or Azure Key Vault at connection time. The application still authenticates to the database with a password, but the password is not stored in source code, an environment variable, or an application configuration file.</li>
+    <li>Use a short-lived identity token, such as an OCI IAM database token. This removes the database password from the application flow altogether.</li>
+  </ol>
+  <p>For the vault and token provider examples below, add the Oracle JDBC provider extension that matches the cloud:</p>
+  <pre tabindex="0" aria-label="XML: JDBC and provider dependencies"><code class="language-xml">&lt;dependency&gt;
+  &lt;groupId&gt;com.oracle.database.jdbc&lt;/groupId&gt;
+  &lt;artifactId&gt;ojdbc11&lt;/artifactId&gt;
+  &lt;version&gt;${ojdbc.version}&lt;/version&gt;
+&lt;/dependency&gt;
+
+&lt;!-- Use a version compatible with the ojdbc driver in the application. --&gt;
+&lt;dependency&gt;
+  &lt;groupId&gt;com.oracle.database.jdbc&lt;/groupId&gt;
+  &lt;artifactId&gt;ojdbc-provider-oci&lt;/artifactId&gt;
+  &lt;version&gt;${ojdbc.providers.version}&lt;/version&gt;
+&lt;/dependency&gt;
+
+&lt;!-- Add this instead of, or in addition to, the OCI provider when needed. --&gt;
+&lt;dependency&gt;
+  &lt;groupId&gt;com.oracle.database.jdbc&lt;/groupId&gt;
+  &lt;artifactId&gt;ojdbc-provider-azure&lt;/artifactId&gt;
+  &lt;version&gt;${ojdbc.providers.version}&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+  <p>The provider artifacts implement Oracle JDBC service-provider interfaces. Pin them to versions that are tested with the application’s <code>ojdbc</code> version; do not silently float a security-sensitive dependency.</p>
+
+  <h3 id="oci-vault">OCI Vault password</h3>
+  <p>Store the password as an OCI Vault secret and grant the workload identity permission to read that specific secret. The OCI resource provider then supplies the password to the driver when the connection is opened:</p>
+  <pre tabindex="0" aria-label="Java: OCI Vault password provider"><code class="language-java">import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.Properties;
+
+String url = "jdbc:oracle:thin:@tcps:db.example.com:1522/appdb";
+
+Properties properties = new Properties();
+properties.setProperty("user", "APP_USER");
+properties.setProperty(
+    "oracle.jdbc.provider.password",
+    "ojdbc-provider-oci-vault-password");
+properties.setProperty(
+    "oracle.jdbc.provider.password.ocid",
+    "ocid1.vaultsecret.oc1..example");
+properties.setProperty(
+    "oracle.jdbc.provider.password.authenticationMethod",
+    "instance-principal");
+
+try (Connection connection = DriverManager.getConnection(url, properties)) {
+  // The application never contains or passes the database password.
+}</code></pre>
+  <p>Use <code>resource-principal</code> instead of <code>instance-principal</code> when the application runs as an OCI resource principal, for example in a serverless or managed workload. The identity still needs a narrowly scoped policy to read the secret.</p>
+
+  <h3 id="azure-vault">Azure Key Vault password</h3>
+  <p>The equivalent Azure provider reads a Key Vault secret. Managed identity avoids placing a client secret in the application:</p>
+  <pre tabindex="0" aria-label="Java: Azure Key Vault password provider"><code class="language-java">String url = "jdbc:oracle:thin:@tcps:db.example.com:1522/appdb";
+
+Properties properties = new Properties();
+properties.setProperty("user", "APP_USER");
+properties.setProperty(
+    "oracle.jdbc.provider.password",
+    "ojdbc-provider-azure-key-vault-password");
+properties.setProperty(
+    "oracle.jdbc.provider.password.vaultUrl",
+    "https://app-secrets.vault.azure.net/");
+properties.setProperty(
+    "oracle.jdbc.provider.password.secretName",
+    "oracle-app-password");
+properties.setProperty(
+    "oracle.jdbc.provider.password.authenticationMethod",
+    "managed-identity");
+
+try (Connection connection = DriverManager.getConnection(url, properties)) {
+  // Use the connection; do not log the resolved password.
+}</code></pre>
+  <p>If a service principal is required, prefer certificate-based authentication and keep the certificate private key outside the application image. In either cloud, use secret versioning and rotation, test rotation before changing the active version, and grant the workload only the get/read permission it needs.</p>
+
+  <h3 id="oci-token">OCI token authentication with instance or resource principal</h3>
+  <p>An OCI access-token provider can obtain a database token using the workload identity and pass it to the JDBC driver. The database user must be mapped to the corresponding IAM identity, and the OCI policy must authorize database access.</p>
+  <pre tabindex="0" aria-label="Java: OCI instance principal token authentication"><code class="language-java">import java.sql.SQLException;
+import java.sql.Statement;
+
+public class WhoAmI {
+
+  public static void main(String[] args) throws SQLException {
+    try (
+      Connection connection =
+        DriverManager.getConnection("jdbc:oracle:thin:@tcps:db.example.com:1522/appdb?token_auth=OCI_INSTANCE_PRINCIPAL&amp;oci_database=ocid1.autonomousdatabase.oc1.phx.xyz&amp;oci_compartment=ocid1.compartment.oc1..ijklm");
+      Statement statement = connection.createStatement();
+    ) {
+
+      try (
+        ResultSet resultSet = statement.executeQuery(
+          "SELECT"
+            + " SYS_CONTEXT('USERENV', 'SESSION_USER')          AS database_user,"
+            + " SYS_CONTEXT('USERENV', 'AUTHENTICATED_IDENTITY') AS external_identity,"
+            + " SYS_CONTEXT('USERENV', 'AUTHENTICATION_METHOD')  AS authentication_method,"
+            + " SYS_CONTEXT('USERENV', 'IDENTIFICATION_TYPE')    AS identification_type,"
+            + " SYS_CONTEXT('USERENV', 'OS_USER')                AS os_user"
+            + " FROM sys.dual")
+      ) {
+        ResultSetMetaData metaData = resultSet.getMetaData();
+
+        while (resultSet.next()) {
+          for (int i = 0; i &lt; metaData.getColumnCount(); i++) {
+            System.out.println(
+              metaData.getColumnName(i + 1)
+                + " : "
+                + resultSet.getString(i + 1));
+          }
+        }
+      }
+    }
+  }
+}</code></pre>
+  <p>Instead of an instance principal, you can also use resource principal by changing the value of the property "<code>token_auth</code>" from "<code>OCI_INSTANCE_PRINCIPAL</code>" to "<code>OCI_RESOURCE_PRINCIPAL</code>".</p>
+  <p>Use the narrowest token scope possible—ideally one database rather than an entire compartment. Tokens are short-lived, so make sure the provider and connection pool can refresh them without requiring an application restart. Do not place a token in the URL or in a URL query parameter; URLs are frequently recorded by infrastructure and observability systems.</p>
+  <aside class="editorial-note" aria-label="Unfinished source note"><p>TODO: Add Azure</p><small>Editorial note retained from the source document; an Azure token-authentication example was not supplied.</small></aside>
+
+  <h2 id="sql-injection">2. Prevent SQL injection</h2>
+  <h3 id="bind-values">Bind values with <code>PreparedStatement</code></h3>
+  <p>Never concatenate request data into SQL. A bind variable keeps data separate from the SQL grammar, and it also lets the driver and database reuse parsed statements:</p>
+  <pre tabindex="0" aria-label="Java: bind request values with PreparedStatement"><code class="language-java">String url = "jdbc:oracle:thin:@tcps:db.example.com:1522/appdb";
+
+Properties properties = new Properties();
+properties.setProperty("user", "APP_USER");
+
+String sql = "select order_id, total "
+    + "from orders "
+    + "where customer_id = ? and status = ?";
+
+try (Connection connection = DriverManager.getConnection(url, properties);
+     PreparedStatement statement = connection.prepareStatement(sql)) {
+  statement.setLong(1, customerId);
+  statement.setString(2, status);
+
+  try (ResultSet results = statement.executeQuery()) {
+    while (results.next()) {
+      // Process the row.
+    }
+  }
+}</code></pre>
+  <p>The same rule applies to <code>INSERT</code>, <code>UPDATE</code>, <code>DELETE</code>, PL/SQL calls, dates, numbers, JSON, and <code>LIKE</code> patterns. If a value is optional, add a known SQL fragment in application code and continue to bind the value; do not build a fragment by concatenating the raw request.</p>
+
+  <h3 id="identifiers">Treat identifiers separately</h3>
+  <p>JDBC bind variables represent values, not table names, column names, sort directions, or SQL keywords. For dynamic identifiers:</p>
+  <ol>
+    <li>Prefer a fixed mapping or allowlist.</li>
+    <li>Reject anything outside that allowlist.</li>
+    <li>Use <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/java/sql/Statement.html"><code>Statement.enquoteIdentifier</code></a> to produce a valid delimited identifier.</li>
+    <li>Continue using bind variables for every parameter value in the statement.</li>
+  </ol>
+  <pre tabindex="0" aria-label="Java: allowlist and quote dynamic identifiers"><code class="language-java">import java.sql.Statement;
+import java.util.Locale;
+import java.util.Set;
+
+private static final Set&lt;String&gt; ALLOWED_TABLES =
+    Set.of("ORDERS", "ORDERS_ARCHIVE");
+
+static String safeTableName(Connection connection, String requested)
+    throws SQLException {
+  String canonical = requested.toUpperCase(Locale.ROOT);
+  if (!ALLOWED_TABLES.contains(canonical)) {
+    throw new IllegalArgumentException("Unsupported table");
+  }
+
+  try (Statement statement = connection.createStatement()) {
+    return statement.enquoteIdentifier(canonical, false);
+  }
+}
+
+String url = "jdbc:oracle:thin:@tcps:db.example.com:1522/appdb"
+    + "?ssl_server_dn_match=true";
+Properties properties = new Properties();
+properties.setProperty("user", "APP_USER");
+
+try (Connection connection = DriverManager.getConnection(url, properties)) {
+  String table = safeTableName(connection, requestedTable);
+  String sql = "select order_id, total from " + table
+      + " where customer_id = ?";
+
+  try (PreparedStatement statement = connection.prepareStatement(sql)) {
+    statement.setLong(1, customerId);
+    try (ResultSet results = statement.executeQuery()) {
+      // Process the row.
+    }
+  }
+}</code></pre>
+  <p><code>enquoteIdentifier</code> protects the SQL syntax of the identifier, but it does not decide whether the caller should be allowed to access that table. The allowlist remains essential. Do not use <code>enquoteLiteral</code> as a substitute for a <code>PreparedStatement</code>; bind values instead.</p>
+
+  <h2 id="transport">3. Encrypt the connection and validate the server</h2>
+  <p>Use TCPS in the Easy Connect Plus URL for connections that cross a host or network boundary. Keep server certificate and distinguished-name validation enabled (it's the default):</p>
+  <pre tabindex="0" aria-label="Java: TCPS connection URL"><code class="language-java">String url = "jdbc:oracle:thin:@tcps://db.example.com:1522/appdb"
+    + "?connect_timeout=10";</code></pre>
+  <p>Do not disable certificate validation to work around a wallet or hostname problem. Fix the trust configuration, and explicitly configure the expected server DN when the deployment requires it. For Autonomous Database mTLS, store the wallet in a managed secret store and use the cloud provider’s wallet provider rather than committing a wallet to the repository or container image.</p>
+
+  <h2 id="least-privilege">4. Apply least privilege at the database boundary</h2>
+  <p>Create a dedicated database account or schema for each application or trust boundary. Grant only the tables, views, packages, and operations that application needs. In particular:</p>
+  <ul>
+    <li>Never run application traffic as <code>SYS</code>, <code>SYSTEM</code>, or another administrative account.</li>
+    <li>Prefer views and stored procedures when they provide a smaller, clearer data boundary.</li>
+    <li>Separate read-only and read/write identities.</li>
+    <li>Restrict database-network access with private endpoints, firewalls, security lists, and security groups.</li>
+    <li>Treat a vault read permission and a database grant as separate controls; an application should not receive either one broadly.</li>
+  </ul>
+
+  <h2 id="diagnostics">5. Protect credentials, tokens, and diagnostics</h2>
+  <ul>
+    <li>Do not log JDBC URLs, <code>Properties</code>, connection strings, access tokens, secret values, or complete SQL statements containing sensitive data.</li>
+    <li>Redact <code>SQLException</code> details before returning them to a caller. Keep detailed diagnostics in access-controlled logs.</li>
+    <li>Do not put <code>oracle.jdbc.accessToken</code>, passwords, or wallet material in an Easy Connect Plus query string.</li>
+    <li>Use short-lived tokens and rotate vault secrets. Revoke and replace credentials when a workload, image, or identity is decommissioned.</li>
+    <li>Lock down configuration files with operating-system permissions when a file-based provider is unavoidable.</li>
+    <li>Disable verbose driver tracing in production unless it is needed for a controlled incident, and verify that the logging pipeline redacts connection properties.</li>
+  </ul>
+
+  <h2 id="resources">6. Bound work and clean up resources</h2>
+  <p>Use try-with-resources for <code>Connection</code>, <code>PreparedStatement</code>, <code>Statement</code>, and <code>ResultSet</code>. Set application-appropriate query and network timeouts so a stalled database or network path cannot consume every request thread. Use a maintained connection pool for production workloads, configure a maximum connection lifetime, validate connections when they are borrowed, and reset session state before returning them to the pool.</p>
+  <p>Keep transactions short, commit deliberately, and roll back on failure. Never share a JDBC <code>Connection</code> or mutable statement object across request threads. These practices limit the impact of abandoned sessions, reduce resource-exhaustion risks, and prevent one request’s session state from leaking into another.</p>
+
+  <h2 id="dependencies">7. Keep the dependency and runtime chain current</h2>
+  <p>Use a supported JDK and a current Oracle JDBC driver/provider combination. Review driver and provider release notes, scan the dependency graph, verify artifacts in the build pipeline, and remove unused JDBC extensions. A secure database connection is only as strong as the application, provider library, cloud identity, TLS trust configuration, and database grants that surround it.</p>
+
+  <h2 id="checklist">Practical review checklist</h2>
+  <p>Before shipping a JDBC integration, verify that:</p>
+  <ul>
+    <li>The URL is Easy Connect Plus and uses <code>tcps</code> for remote traffic.</li>
+    <li>The application has no database password, token, wallet, or secret value in source control.</li>
+    <li>Vault access uses a workload identity with the smallest possible read permission.</li>
+    <li>Token authentication uses an explicit, narrow scope and a database/IAM mapping.</li>
+    <li>All request-controlled values use <code>PreparedStatement</code> bind variables.</li>
+    <li>Dynamic identifiers are allowlisted and passed through <code>enquoteIdentifier</code>.</li>
+    <li>TLS server identity validation remains enabled.</li>
+    <li>Database privileges, network access, logs, pool settings, and timeouts have been reviewed together.</li>
+  </ul>
+
+  <h2 id="reading">Further reading</h2>
+  <ul>
+    <li><a href="https://docs.oracle.com/en/database/oracle/oracle-database/26/jjdbc/data-sources-and-URLs.html">Oracle JDBC data sources and URLs</a></li>
+    <li><a href="https://docs.oracle.com/en/database/oracle/oracle-database/21/jjdbc/client-side-security.html">Oracle JDBC client-side security features</a></li>
+    <li><a href="https://docs.oracle.com/en/database/oracle/oracle-database/26/jjdbc/JDBC-service-provider-extensions.html">Oracle JDBC service-provider extensions</a></li>
+    <li><a href="https://github.com/oracle/ojdbc-extensions/tree/main/ojdbc-provider-oci">Oracle JDBC providers for OCI</a></li>
+    <li><a href="https://github.com/oracle/ojdbc-extensions/tree/main/ojdbc-provider-azure">Oracle JDBC providers for Azure</a></li>
+    <li><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/java/sql/Statement.html">Java SE <code>Statement</code> API</a></li>
+  </ul>
+
+  <section aria-labelledby="faq">
+    <h2 id="faq">FAQ</h2>
+    <h3>Does retrieving a password from a vault eliminate database passwords?</h3>
+    <p>No. A vault provider keeps the password out of the application’s source and configuration, but the database still uses password authentication. A short-lived identity token removes the database password from that application flow.</p>
+    <h3>Can bind variables protect dynamic table and column names?</h3>
+    <p>Bind variables protect values, not SQL identifiers. Use a fixed mapping or allowlist for identifiers, quote them with <code>Statement.enquoteIdentifier</code>, and continue binding every parameter value.</p>
+    <h3>Should certificate validation be disabled when a connection fails?</h3>
+    <p>No. Fix the trust, wallet, or hostname configuration. Keep server certificate and distinguished-name validation enabled, and configure the expected server DN when required.</p>
+    <h3>What else belongs in a JDBC security review?</h3>
+    <p>Review database grants, network access, vault permissions, logging, token and secret rotation, pool settings, timeouts, and supported driver/provider and JDK versions together.</p>
+  </section>
+</article>
+</main>
+</body>
+</html>

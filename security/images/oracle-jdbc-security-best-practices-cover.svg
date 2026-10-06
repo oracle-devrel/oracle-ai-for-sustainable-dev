@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="660" viewBox="0 0 1400 660" role="img" aria-labelledby="title desc">
+  <title id="title">Security Best Practices with the Oracle JDBC driver</title>
+  <desc id="desc">Security controls span workload identity, the JDBC Thin driver, and Oracle AI Database. Vault secrets or scoped tokens, safe SQL, TCPS, least privilege, and lifecycle controls protect the connection end to end.</desc>
+  <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#526572"/></marker></defs>
+  <rect width="1400" height="660" fill="#f5f7f8"/>
+  <rect width="1400" height="165" fill="#24383b"/>
+  <g font-family="Arial,sans-serif">
+    <text x="48" y="46" fill="#f4b5a9" font-size="19" font-weight="bold">ORACLE AI DATABASE</text>
+    <text x="48" y="96" fill="white" font-size="36" font-weight="bold">Security Best Practices with the Oracle JDBC driver</text>
+    <text x="48" y="135" fill="#d9e4e6" font-size="21">Protect identity, SQL input, transport, and database access</text>
+    <rect x="48" y="214" width="402" height="285" rx="16" fill="white" stroke="#c8d3dc" stroke-width="2"/>
+    <rect x="48" y="214" width="402" height="7" fill="#c74634"/>
+    <text x="72" y="268" fill="#202a33" font-size="26" font-weight="bold">Workload identity</text>
+    <text x="72" y="318" fill="#526572" font-size="21">OCI Vault / Azure Key Vault</text>
+    <text x="72" y="357" fill="#526572" font-size="21">Instance / resource principal</text>
+    <text x="72" y="396" fill="#526572" font-size="21">Short-lived, scoped tokens</text>
+    <text x="72" y="435" fill="#526572" font-size="21">Narrow secret-read permissions</text>
+    <path d="M455,354 L491,354" stroke="#526572" stroke-width="3" marker-end="url(#arrow)"/>
+    <rect x="498" y="214" width="402" height="285" rx="16" fill="white" stroke="#c8d3dc" stroke-width="2"/>
+    <rect x="498" y="214" width="402" height="7" fill="#c74634"/>
+    <text x="522" y="268" fill="#202a33" font-size="26" font-weight="bold">JDBC Thin driver</text>
+    <text x="522" y="318" fill="#526572" font-size="21">Bind request-controlled values</text>
+    <text x="522" y="357" fill="#526572" font-size="21">Allowlist and quote identifiers</text>
+    <text x="522" y="396" fill="#526572" font-size="21">TCPS and server validation</text>
+    <text x="522" y="435" fill="#526572" font-size="21">Protect sensitive diagnostics</text>
+    <path d="M905,354 L941,354" stroke="#526572" stroke-width="3" marker-end="url(#arrow)"/>
+    <rect x="948" y="214" width="402" height="285" rx="16" fill="white" stroke="#c8d3dc" stroke-width="2"/>
+    <rect x="948" y="214" width="402" height="7" fill="#c74634"/>
+    <text x="972" y="268" fill="#202a33" font-size="26" font-weight="bold">Oracle AI Database</text>
+    <text x="972" y="318" fill="#526572" font-size="21">Dedicated application identity</text>
+    <text x="972" y="357" fill="#526572" font-size="21">Least-privilege database grants</text>
+    <text x="972" y="396" fill="#526572" font-size="21">Read-only / read-write separation</text>
+    <text x="972" y="435" fill="#526572" font-size="21">Restricted network access</text>
+    <text x="48" y="559" fill="#24383b" font-size="22" font-weight="bold">Maintain the whole security boundary</text>
+    <text x="48" y="601" fill="#526572" font-size="21">Rotate secrets and tokens · Bound work · Clean up resources · Keep dependencies current</text>
+  </g>
+</svg>
