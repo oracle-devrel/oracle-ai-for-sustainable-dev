@@ -62,62 +62,34 @@
 <body><main>
 <p class="eyebrow">Oracle AI Database · Java · JDBC · Identity</p>
 <h1>Passwordless Java Connections to Oracle AI Database 26ai with OCI IAM and Microsoft Entra ID</h1>
-<p class="subtitle">A complete, runnable guide to CLI tokens, OCI SDK suppliers, JDBC providers and connection pools—with database setup and Microsoft Entra identity configuration.</p>
-<p class="updated">By Paul Parkinson · Updated October 4, 2026 · Dependencies and references checked October 4, 2026</p>
-<p class="note"><strong>GitHub repositories:</strong> <a href="https://github.com/paulparkinson/oracle-jdbc-token-auth-demo">Runnable JDBC token-authentication examples</a> · <a href="https://github.com/oracle/ojdbc-extensions">Oracle JDBC provider extensions</a> · <a href="https://github.com/paulparkinson/oracle-ai-for-sustainable-dev">Blog source and companion examples</a>.</p>
+<p class="subtitle">A complete, runnable guide to OCI and Entra token files and SDK suppliers, JDBC providers and connection pools—with database setup and Microsoft Entra identity configuration.</p>
+<p class="updated">By Paul Parkinson · Updated October 6, 2026 · Dependencies and references checked October 6, 2026</p>
 <figure class="cover"><img alt="Oracle AI Database security architecture connecting user and workload identities through an application and JDBC to database token validation and least-privilege authorization." height="660" src="images/e2e-security-cover.svg" width="1400"/><figcaption>Cloud identity, database mapping, TLS and token lifecycle work together to authenticate each new physical connection.</figcaption></figure>
 <h2 id="key-takeaways">Key Takeaways</h2>
 <ul>
-<li>Run the same read-only Java application with OCI token files, an OCI SDK token supplier, or OCI and Microsoft Entra JDBC providers.</li>
+<li>Run the same read-only Java application with OCI or Entra token files, application-owned SDK suppliers, or JDBC providers.</li>
 <li>Database trust, principal-to-schema mapping, cloud authorization and TCPS must all agree before a token login can succeed.</li>
-<li>The repository contains complete source, 11 configuration profiles, SQL setup templates, concurrent UCP examples and automated tests.</li>
+<li>The repository contains complete source, 13 configuration profiles, SQL setup templates, concurrent UCP examples and automated tests.</li>
 <li>Verify token refresh with newly created physical connections; reusing an existing pooled session does not prove that refresh works.</li>
 </ul>
 <p>A Java application can authenticate to Oracle AI Database with an OCI IAM or Microsoft Entra ID token instead of passing a database password. For OCI IAM, JDBC proves possession of a private key associated with the token. For Entra ID, it presents an access token intended for the database resource. The database validates that identity and maps it to an authorized schema.</p>
 <p>This walkthrough combines the original IAM CLI/SDK and pooling examples with the JDBC extension approach, using a runnable application throughout. The concrete server setup targets <strong>Autonomous AI Database Serverless</strong>; other Oracle Database deployments need their own supported identity integration. The Java examples use current, pinned JDBC releases, while the database product is named Oracle AI Database 26ai.</p>
-<p><strong>Get the complete application:</strong> <a href="https://github.com/paulparkinson/oracle-jdbc-token-auth-demo">oracle-jdbc-token-auth-demo</a>. Start with the setup for one identity provider, build the project, and choose a configuration profile. None of the Java token flows passes a database username or password.</p>
-<nav aria-label="Article sections"><strong>In this walkthrough</strong><ul><li><a href="#key-takeaways">Key Takeaways</a></li><li><a href="#what-this-update-restores-from-the-original-articles">What this update restores from the original articles</a></li><li><a href="#prerequisites-and-tested-dependency-versions">Prerequisites and tested dependency versions</a></li><li><a href="#configure-the-database-and-identity">Configure the database and identity</a></li><li><a href="#clone-build-and-run-the-application">Clone, build and run the application</a></li><li><a href="#option-1-oci-cli-token-files">Option 1: OCI CLI token files</a></li><li><a href="#option-2-generate-and-cache-oci-tokens-with-the-sdk">Option 2: Generate and cache OCI tokens with the SDK</a></li><li><a href="#option-3-let-the-oci-provider-acquire-the-token">Option 3: Let the OCI provider acquire the token</a></li><li><a href="#option-4-let-the-entra-provider-acquire-the-token">Option 4: Let the Entra provider acquire the token</a></li><li><a href="#ucp-share-the-supplier-and-test-physical-connection-replacement">UCP: share the supplier and test physical connection replacement</a></li><li><a href="#verify-the-database-identity">Verify the database identity</a></li><li><a href="#complete-executable-and-source-map">Complete executable and source map</a></li><li><a href="#troubleshooting">Troubleshooting</a></li><li><a href="#what-was-validated">What was validated</a></li><li><a href="#cleanup">Cleanup</a></li><li><a href="#faq">FAQ</a></li></ul></nav><h2 id="what-this-update-restores-from-the-original-articles">What this update restores from the original articles</h2>
-<p>The 2022 article by Jean de Lavarene, Michael McMahon and Nirmala Sundarappa, <a href="https://blogs.oracle.com/developers/accessing-autonomous-database-with-iam-token-using-java">Accessing Autonomous Database with IAM token using Java</a>, introduced CLI tokens, SDK acquisition, proof-of-possession keys, direct JDBC connections and cached token suppliers for UCP. The 2023 article by Jean de Lavarene, <a href="https://blogs.oracle.com/developers/23c-jdbc-extensions-for-oci-iam-azure-ad">23c JDBC seamless authentication with OCI IAM and Azure AD</a>, added provider-based user and workload identities. This update restores executable implementations of both approaches, with current dependency versions and Entra terminology.</p>
-<div class="table-wrap"><table>
-<thead>
-<tr>
-<th>Flow</th>
-<th>Who obtains the token?</th>
-<th>Who handles replacement?</th>
-<th>Example</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>OCI file token</td>
-<td>OCI CLI or external producer</td>
-<td>External producer</td>
-<td><code>oci-file.properties</code></td>
-</tr>
-<tr>
-<td>OCI SDK</td>
-<td>Application calling the identity data plane</td>
-<td>JDBC token cache around the supplier</td>
-<td><code>oci-sdk.properties</code></td>
-</tr>
-<tr>
-<td>OCI provider</td>
-<td>OCI JDBC provider and SDK</td>
-<td>Provider/cache</td>
-<td><code>oci-config-file.properties</code> and workload profiles</td>
-</tr>
-<tr>
-<td>Entra provider</td>
-<td>Azure JDBC provider and Azure Identity</td>
-<td>Provider/cache</td>
-<td><code>entra-service-principal.properties</code> and other profiles</td>
-</tr>
-</tbody>
-</table></div>
-<p>The older extension article uses values such as <code>OCI_API_KEY</code>, <code>OCI_INSTANCE_PRINCIPAL</code>, <code>OCI_INTERACTIVE</code>, <code>AZURE_SERVICE_PRINCIPAL</code>, <code>AZURE_MANAGED_IDENTITY</code> and <code>AZURE_INTERACTIVE</code> under <code>oracle.jdbc.tokenAuthentication</code>. The examples here consistently use the resource-provider namespace, <code>oracle.jdbc.provider.accessToken</code>, with explicit provider parameters. Do not combine the two styles on one data source. File-based <code>OCI_TOKEN</code> remains a distinct supported path.</p>
+<p>Start with the setup for one identity provider, build the companion Java application, and choose a configuration profile. None of the Java token flows passes a database username or password.</p>
+<nav aria-label="Article sections"><strong>In this walkthrough</strong><ul><li><a href="#key-takeaways">Key Takeaways</a></li><li><a href="#choose-a-token-acquisition-path">Choose a token acquisition path</a></li><li><a href="#prerequisites-and-tested-dependency-versions">Prerequisites and tested dependency versions</a></li><li><a href="#configure-the-database-and-identity">Configure the database and identity</a></li><li><a href="#clone-build-and-run-the-application">Build and run the application</a></li><li><a href="#option-1-oci-cli-token-files">Option 1: OCI CLI token files</a></li><li><a href="#option-2-generate-and-cache-oci-tokens-with-the-sdk">Option 2: Generate and cache OCI tokens with the SDK</a></li><li><a href="#option-3-let-the-oci-provider-acquire-the-token">Option 3: Let the OCI provider acquire the token</a></li><li><a href="#option-4-let-the-entra-provider-acquire-the-token">Option 4: Let the Entra provider acquire the token</a></li><li><a href="#entra-files-and-sdk">Entra alternatives: token files and SDK suppliers</a></li><li><a href="#ucp-share-the-supplier-and-test-physical-connection-replacement">UCP: share the supplier and test physical connection replacement</a></li><li><a href="#verify-the-database-identity">Verify the database identity</a></li><li><a href="#complete-executable-and-source-map">Complete executable and source map</a></li><li><a href="#troubleshooting">Troubleshooting</a></li><li><a href="#faq">FAQ</a></li></ul></nav><h2 id="choose-a-token-acquisition-path">Choose a token acquisition path</h2>
+<p>OCI and Entra each support external token files, application-owned SDK acquisition, and driver-selected providers. Their token formats differ: OCI uses a proof-of-possession private key; Entra uses a bearer JWT. Do not pass an OCI key to an Entra connection.</p>
+<div class="table-wrap"><table><thead><tr><th>Flow</th><th>Token acquisition</th><th>Replacement responsibility</th><th>Demo profile</th></tr></thead><tbody>
+<tr><td>OCI file</td><td>OCI CLI/external producer</td><td>Producer replaces token and matching PoP key coherently</td><td><code>oci-file.properties</code></td></tr>
+<tr><td>Entra file</td><td>Approved Azure CLI/SDK/external producer</td><td>Producer replaces a private JWT file</td><td><code>entra-file.properties</code></td></tr>
+<tr><td>OCI SDK</td><td>Application calls OCI identity data plane</td><td>JDBC cache around the acquisition supplier</td><td><code>oci-sdk.properties</code></td></tr>
+<tr><td>Entra SDK</td><td>Application calls Azure Identity</td><td>JDBC cache around the acquisition supplier</td><td><code>entra-sdk.properties</code></td></tr>
+<tr><td>OCI provider</td><td>Driver-selected OCI extension</td><td>Provider/cache</td><td><code>oci-config-file.properties</code> and identity-specific profiles</td></tr>
+<tr><td>Entra provider</td><td>Driver-selected Azure extension</td><td>Provider/cache</td><td><code>entra-service-principal.properties</code> and identity-specific profiles</td></tr>
+</tbody></table></div>
+<p>The provider examples use <code>oracle.jdbc.tokenAuthentication=OCI_*</code> or <code>AZURE_*</code>. These settings select the corresponding extension; keep the provider JAR, but omit explicit <code>oracle.jdbc.provider.accessToken</code> settings. File modes use <code>OCI_TOKEN</code> or <code>OAUTH</code>; application-owned SDK modes attach a token supplier instead. Do not combine acquisition mechanisms on one data source. See the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/26/jajdb/oracle/jdbc/OracleConnection.html">JDBC connection-property reference</a>.</p>
+<p>Background: <a href="https://blogs.oracle.com/developers/accessing-autonomous-database-with-iam-token-using-java">Accessing Autonomous Database with IAM token using Java</a> (Jean de Lavarene, Michael McMahon and Nirmala Sundarappa) and <a href="https://blogs.oracle.com/developers/23c-jdbc-extensions-for-oci-iam-azure-ad">23c JDBC seamless authentication with OCI IAM and Azure AD</a> (Jean de Lavarene).</p>
 <h2 id="prerequisites-and-tested-dependency-versions">Prerequisites and tested dependency versions</h2>
 <p>Use JDK 17 or 21, Maven 3.9+, a reachable Autonomous Database, and an identity administrator who can configure the intended mapping. The demo needs only CREATE SESSION after setup and queries DUAL; it creates no application tables. You will also need OCI CLI for file examples and the actual hosting environment for workload identities.</p>
-<p>The examples use JDBC and UCP <strong>23.26.3.0.0</strong>, the OCI and Azure providers <strong>1.1.0</strong>, and OCI SDK <strong>3.86.2</strong>. These versions were built and tested together. The JDBC artifact version is separate from the database product name.</p>
+<p>The examples use JDBC and UCP <strong>23.26.3.0.0</strong>, the OCI and Azure providers <strong>1.1.0</strong>, OCI SDK <strong>3.86.2</strong>, and Azure Identity <strong>1.18.0</strong>. These versions were built and tested together. The JDBC artifact version is separate from the database product name.</p>
 <h3>JDBC, pooling and wallet support</h3>
 <p>Add these dependencies to your Maven project. Keep <code>ucp17</code> for the pooling examples and <code>oraclepki</code> for the wallet-based connections used here.</p>
 <pre><code class="language-xml">&lt;dependencies&gt;
@@ -174,7 +146,15 @@
     &lt;scope&gt;runtime&lt;/scope&gt;
   &lt;/dependency&gt;
 &lt;/dependencies&gt;</code></pre>
-<p>Combine the dependencies you need into your existing <code>&lt;dependencies&gt;</code> section. The <a href="https://github.com/paulparkinson/oracle-jdbc-token-auth-demo/blob/main/pom.xml">repository's complete pom.xml</a> also contains SDK version alignment and the build configuration used to compile, test and package the runnable demo.</p>
+<p>Combine the dependencies you need into your existing <code>&lt;dependencies&gt;</code> section. The repository's complete pom.xml also contains SDK version alignment and the build configuration used to compile, test and package the runnable demo.</p>
+<h3>Additional dependency for direct Entra SDK calls</h3>
+<p><code>EntraTokens.java</code> uses Azure Identity directly, so make it a compile-time dependency as well as a transitive runtime dependency of the provider:</p>
+<pre><code class="language-xml">&lt;dependency&gt;
+  &lt;groupId&gt;com.azure&lt;/groupId&gt;
+  &lt;artifactId&gt;azure-identity&lt;/artifactId&gt;
+  &lt;version&gt;1.18.0&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+
 <h2 id="configure-the-database-and-identity">Configure the database and identity</h2>
 <p>These examples target Autonomous AI Database Serverless. A JDBC release number does not enable identity integration on a database. Other Oracle Database deployments require their own supported server configuration. Use a lab database and an administrator for setup; the Java demo needs only CREATE SESSION and reads DUAL.</p>
 <p>OCI IAM and Entra are alternative external identity provider configurations. Use separate lab databases to demonstrate both. The SQL scripts omit forced replacement and stop on errors. They are first-time setup scripts, not repeatable migrations. If TOKEN_DEMO already exists, inspect its mapping rather than dropping it.</p>
@@ -209,10 +189,11 @@ SELECT name, value FROM v$parameter WHERE name = 'identity_provider_type';
 <ol>
 <li>Register the <strong>database resource application</strong> in the Entra tenant. Record its application ID and Application ID URI. Expose a delegated database scope such as <code>session:scope:connect</code> for interactive clients. The URI identifies the database resource; it is not the Java client's ID.</li>
 <li>On that database registration, define the app-role <strong>value</strong> <code>TokenDemo.Connect</code> (the display name can differ). Allow Applications for client credentials and Users/Groups for interactive users, according to the intended scenarios.</li>
-<li>Register the <strong>Java client application</strong> separately. For service-principal authentication, add the database app's Application permission <code>TokenDemo.Connect</code> and grant administrator consent. Configure a certificate or create a client secret. <code>AZURE_CLIENT_ID</code> identifies this Java client, whereas <code>ENTRA_DB_SCOPE</code> identifies the database resource followed by <code>/.default</code>.</li>
+<li>Register the <strong>Java client application</strong> separately. For service-principal authentication, add the database app's Application permission <code>TokenDemo.Connect</code> and grant administrator consent. Configure a certificate or create a client secret. <code>AZURE_CLIENT_ID</code> identifies this Java client, whereas <code>ENTRA_DB_APP_ID_URI</code> identifies the bare database resource. SDK/file acquisition uses the full <code>ENTRA_DB_SCOPE</code>, ending in <code>/.default</code> for a workload.</li>
 <li>For browser authentication, configure the client as a public/native client and register <code>http://localhost:8400</code> as its redirect URI. Give it the delegated database permission and any required consent. Assign the user/group to the database application's role. For device-code authentication enable the appropriate public-client flow. These flows are subject to tenant Conditional Access policy. For v2 interactive tokens, configure the <code>upn</code> optional claim as described in Oracle's guide.</li>
 <li>For managed identity, assign the database app role to the managed identity's service principal; enabling an Azure VM identity alone does not grant database access. Use the identity's client ID for a user-assigned identity. Unset <code>AZURE_CLIENT_ID</code> for a system-assigned identity so an unrelated application ID is not selected.</li>
 <li>As ADMIN on the Entra lab database, run <code>@sql/entra-setup.sql</code>. Supply the tenant and <strong>database</strong> registration values. The script enables <code>AZURE_AD</code>, maps <code>AZURE_ROLE=TokenDemo.Connect</code> to TOKEN_DEMO, and grants CREATE SESSION. The SQL provider identifier remains AZURE_AD even though the product is now called Entra ID.</li>
+<li>If the database already trusts the intended Entra resource, preserve that provider configuration and existing DDS roles. Add only the dedicated demo role/assignment and, after checking that TOKEN_DEMO does not already exist, the CREATE USER and GRANT statements. Do not rerun first-time enablement on an existing integration.</li>
 <li>For a v1 token, match the registered database Application ID URI. For v2, follow Oracle's audience configuration guidance; the token audience is the application ID. Verify the token version and resource configuration with the administrators rather than substituting a Microsoft Graph scope.</li>
 </ol>
 <p>Sources: <a href="https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/autonomous-azure-ad-enable.html">registration, roles, consent, token versions, and server setup</a>, <a href="https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/autonomous-azure-ad-role-schema-map.html">schema mapping</a>, <a href="https://learn.microsoft.com/en-us/entra/identity/managed-identities-azure-resources/assign-app-role-managed-identity-azure-cli">managed identity app-role assignment</a>.</p>
@@ -232,25 +213,27 @@ GRANT CREATE SESSION TO token_demo;
 </code></pre>
 <p>The two enablement procedures are alternatives. Do not run both against the same database as if they were additive configuration. The supplied scripts stop when an incompatible provider is already enabled, leaving the administrator to choose a separate lab database or plan a deliberate migration.</p>
 <h3 id="tls-and-wallet-configuration">TLS and wallet configuration</h3>
-<p>Copy the connection descriptor for the chosen database service from Database Connection in OCI. Preserve TCPS, host, port, service name, and security attributes. Set <code>ADB_JDBC_URL</code> to <code>jdbc:oracle:thin:@</code> followed by that descriptor. This demo accepts explicit TCPS descriptors or <code>tcps://</code> URLs; it deliberately rejects URL query parameters and TNS aliases so transport requirements remain visible. Use <code>(protocol=tcps)</code> without spaces around <code>=</code> in the descriptor.</p>
-<p>For mTLS, extract the wallet to a private directory outside the checkout, copy a profile to an ignored <code>*.local.properties</code> file, and add:</p>
-<pre><code class="language-properties">oracle.net.tns_admin=${ADB_WALLET_DIR}
-oracle.net.wallet_location=(SOURCE=(METHOD=FILE)(METHOD_DATA=(DIRECTORY=${ADB_WALLET_DIR})))
-</code></pre>
-<p>Set <code>ADB_WALLET_DIR</code> to the absolute path. The POM includes Oracle PKI support. If the wallet needs a password, inject <code>oracle.net.wallet_password=${ADB_WALLET_PASSWORD}</code> in the local file; never put a literal password there. TLS-only connections do not need a client wallet when the service supports them and the JVM trusts the server CA. The token directory is not a TLS wallet. Server identity matching remains enabled.</p>
-<h2 id="clone-build-and-run-the-application">Clone, build and run the application</h2>
-<pre><code class="language-bash">git clone https://github.com/paulparkinson/oracle-jdbc-token-auth-demo.git
-cd oracle-jdbc-token-auth-demo
+<p>Use EZConnect+ with the database's TCPS host, port and service. The pinned JDBC driver enables server identity matching by default; no redundant DN-match URL flag is necessary. Do not disable validation or use a naming alias.</p>
+<pre><code class="language-text">jdbc:oracle:thin:@tcps://&lt;adb-host&gt;:1522/&lt;service&gt;?connect_timeout=20</code></pre>
+
+<p>For mTLS, store the wallet outside the checkout and add this property to an ignored local profile. Set the directory environment variable to its absolute path:</p>
+<pre><code class="language-properties">oracle.net.wallet_location=(SOURCE=(METHOD=FILE)(METHOD_DATA=(DIRECTORY=${ADB_WALLET_DIR})))</code></pre>
+
+<p>If required, inject <code>oracle.net.wallet_password</code> through the runtime secret facility. The wallet is a TLS credential, not the OCI token directory or Entra JWT file. TLS-only endpoints need no client wallet when the JVM trusts the server CA. Preserve the deployment's transport requirements.</p>
+<h2 id="clone-build-and-run-the-application">Build and run the application</h2>
+<pre><code class="language-bash">cd oracle-jdbc-token-auth-demo
 mvn -B verify
 ./run.sh --help
 
-# Replace these placeholders. Copy the descriptor from Database Connection.
-export ADB_JDBC_URL='jdbc:oracle:thin:@(description=(address=(protocol=tcps)(host=&lt;adb-host&gt;)(port=1522))(connect_data=(service_name=&lt;service&gt;)))'
+# Replace with the host, TCPS port and service from Database Connection.
+export ADB_JDBC_URL='jdbc:oracle:thin:@tcps://&lt;adb-host&gt;:1522/&lt;service&gt;'
+export OCI_COMPARTMENT_ID='&lt;compartment-ocid&gt;'
+export OCI_DATABASE_ID='&lt;database-ocid&gt;'
 export OCI_CONFIG_FILE="$HOME/.oci/config"
 export OCI_PROFILE=DEFAULT
 export OCI_DB_SCOPE='urn:oracle:db::id::&lt;compartment-ocid&gt;::&lt;database-ocid&gt;'
 </code></pre>
-<p>Use the actual TCPS port and descriptor for your database. For mTLS add wallet properties to an ignored local copy of a profile as explained in <a href="https://github.com/paulparkinson/oracle-jdbc-token-auth-demo/blob/main/docs/setup.md#tls-and-wallets">setup</a>. The demo loads <code>${VARIABLE}</code> placeholders itself and rejects missing variables without logging their values. It does not load <code>.env</code> files automatically.</p>
+<p>Use the actual TCPS host, port and service for your database. For mTLS add wallet properties to an ignored local copy of a profile as explained in setup. The demo loads <code>${VARIABLE}</code> placeholders itself and rejects missing variables without logging their values. It does not load <code>.env</code> files automatically.</p>
 <pre><code class="language-bash">./run.sh config/oci-config-file.properties check
 ./run.sh config/oci-config-file.properties jdbc
 ./run.sh config/oci-config-file.properties ucp
@@ -271,7 +254,7 @@ oci --auth security_token --profile SESSION iam db-token get
 </code></pre>
 <p>The directory must contain <code>token</code> and its matching <code>oci_db_key.pem</code>. JDBC reads them with <code>oracle.jdbc.tokenAuthentication=OCI_TOKEN</code> and <code>oracle.jdbc.tokenLocation</code>. These are a database token and PoP key, not the API signing key or TLS wallet. File mode does <strong>not</strong> invoke the CLI or acquire replacements. For this demo, stop the application, regenerate the pair, and restart. A long-lived producer needs coordinated reads/writes of both files: replacing two files individually is not an atomic pair update. Prefer SDK/provider mode for a continuously running service.</p>
 <p>The file profile is complete and can be passed directly to the launcher:</p>
-<pre><code class="language-properties"># Copy a TCPS descriptor from Autonomous Database &gt; Database Connection.
+<pre><code class="language-properties"># Use an EZConnect+ TCPS URL with the host, port, and service from Database Connection.
 app.url=${ADB_JDBC_URL}
 app.mode=file
 oracle.jdbc.tokenAuthentication=OCI_TOKEN
@@ -283,7 +266,6 @@ ds.setURL(System.getenv("ADB_JDBC_URL"));
 Properties properties = new Properties();
 properties.setProperty("oracle.jdbc.tokenAuthentication", "OCI_TOKEN");
 properties.setProperty("oracle.jdbc.tokenLocation", System.getenv("OCI_DB_TOKEN_DIR"));
-properties.setProperty("oracle.net.ssl_server_dn_match", "true");
 ds.setConnectionProperties(properties);
 try (Connection connection = ds.getConnection()) {
     // Execute the read-only identity query shown below.
@@ -294,7 +276,7 @@ try (Connection connection = ds.getConnection()) {
 ./run.sh config/oci-sdk.properties jdbc 3
 ./run.sh config/oci-sdk.properties ucp
 </code></pre>
-<p><a href="https://github.com/paulparkinson/oracle-jdbc-token-auth-demo/blob/main/src/main/java/demo/OciTokens.java">OciTokens.java</a> generates a 2048-bit RSA pair, sends the public key and database scope to the OCI identity data plane, and constructs <code>AccessToken.createJsonWebToken(jwt, privateKey)</code>. It keeps the private key in memory. <code>builder</code> supplies one newly acquired token through <code>createConnectionBuilder().accessToken(...)</code>; <code>jdbc</code> and <code>ucp</code> attach a cached supplier created by <code>AccessToken.createJsonWebTokenCache(...)</code> to the data source. No custom refresh scheduler is required.</p>
+<p>OciTokens.java generates a 2048-bit RSA pair, sends the public key and database scope to the OCI identity data plane, and constructs <code>AccessToken.createJsonWebToken(jwt, privateKey)</code>. It keeps the private key in memory. <code>builder</code> supplies one newly acquired token through <code>createConnectionBuilder().accessToken(...)</code>; <code>jdbc</code> and <code>ucp</code> attach a cached supplier created by <code>AccessToken.createJsonWebTokenCache(...)</code> to the data source. No custom refresh scheduler is required.</p>
 <p>For other SDK identities copy the profile to <code>config/oci-sdk.local.properties</code>, change <code>app.oci.authentication</code> to <code>session-token</code>, <code>instance-principal</code>, or <code>resource-principal</code>, and remove unused <code>app.oci.configFile</code> and <code>app.oci.profile</code> lines for workload identities. Session credentials must remain valid for future token requests. Do not combine the supplier with username/password or an access-token provider on the same data source.</p>
 <p>Here is the complete supplier implementation used by the application:</p>
 <pre><code class="language-java">package demo;
@@ -384,23 +366,33 @@ try (Connection c = reusable.getConnection()) {
 ./run.sh config/oci-cloud-shell.properties jdbc
 ./run.sh config/oci-interactive.properties jdbc
 </code></pre>
-<p>Run the applicable command in its intended environment. The shared setting is <code>oracle.jdbc.provider.accessToken=ojdbc-provider-oci-token</code>; each file selects an explicit <code>authenticationMethod</code>. The provider acquires and caches tokens. Cloud Shell uses its managed session; interactive authentication opens a browser and requires a usable desktop callback. The config-file provider path is for API-key configuration; use SDK <code>session-token</code> mode for an OCI CLI session-token profile.</p>
+<p>Run the applicable command in its intended environment. Set <code>oracle.jdbc.tokenAuthentication</code> to <code>OCI_API_KEY</code>, <code>OCI_INSTANCE_PRINCIPAL</code>, <code>OCI_RESOURCE_PRINCIPAL</code>, <code>OCI_DELEGATION_TOKEN</code> (Cloud Shell), or <code>OCI_INTERACTIVE</code>. The driver selects the extension automatically, without explicit access-token-provider properties. The provider acquires and caches tokens. Cloud Shell uses its managed session; interactive authentication opens a browser and requires a usable desktop callback. The config-file provider path is for API-key configuration; use SDK <code>session-token</code> mode for an OCI CLI session-token profile.</p>
 <p>The API-key profile supplies all provider properties:</p>
-<pre><code class="language-properties"># Copy a TCPS descriptor from Autonomous Database &gt; Database Connection.
+<pre><code class="language-properties"># EZConnect+: jdbc:oracle:thin:@tcps://host:port/service
 app.url=${ADB_JDBC_URL}
 app.mode=provider
-oracle.jdbc.provider.accessToken=ojdbc-provider-oci-token
-oracle.jdbc.provider.accessToken.authenticationMethod=config-file
-oracle.jdbc.provider.accessToken.scope=${OCI_DB_SCOPE}
-oracle.jdbc.provider.accessToken.configFile=${OCI_CONFIG_FILE}
-oracle.jdbc.provider.accessToken.profile=${OCI_PROFILE}
+oracle.jdbc.tokenAuthentication=OCI_API_KEY
+oracle.jdbc.ociCompartment=${OCI_COMPARTMENT_ID}
+oracle.jdbc.ociDatabase=${OCI_DATABASE_ID}
+oracle.jdbc.ociConfigFile=${OCI_CONFIG_FILE}
+oracle.jdbc.ociProfile=${OCI_PROFILE}
 </code></pre>
-<p>For instance or resource principals, the matching profiles change <code>authenticationMethod</code> and omit file/profile settings. For an existing Java application, load these <code>oracle.jdbc.*</code> properties into its <code>OracleDataSource</code> or UCP data source and add the OCI provider dependency. The SQL/query code remains the same. The demo-specific <code>app.*</code> keys and <code>${...}</code> interpolation are implemented by this project's <code>Settings</code> class; Oracle JDBC does not automatically interpret that file format for you.</p>
+<p>For instance or resource principals, the matching profiles change <code>oracle.jdbc.tokenAuthentication</code> and omit file/profile settings. For an existing Java application, load these <code>oracle.jdbc.*</code> properties into its <code>OracleDataSource</code> or UCP data source and add the OCI provider dependency. The SQL/query code remains the same. The demo-specific <code>app.*</code> keys and <code>${...}</code> interpolation are implemented by this project's <code>Settings</code> class; Oracle JDBC does not automatically interpret that file format for you.</p>
+<p>The OCI interactive profile uses the same database scope and simply selects <code>OCI_INTERACTIVE</code>:</p>
+<pre><code class="language-properties"># EZConnect+: jdbc:oracle:thin:@tcps://host:port/service
+app.url=${ADB_JDBC_URL}
+app.mode=provider
+oracle.jdbc.tokenAuthentication=OCI_INTERACTIVE
+oracle.jdbc.ociCompartment=${OCI_COMPARTMENT_ID}
+oracle.jdbc.ociDatabase=${OCI_DATABASE_ID}
+</code></pre>
 <h2 id="option-4-let-the-entra-provider-acquire-the-token">Option 4: Let the Entra provider acquire the token</h2>
 <p>Use the URL of the <strong>Entra-configured</strong> database. Set these non-secret identifiers:</p>
 <pre><code class="language-bash">export AZURE_TENANT_ID='&lt;tenant-id&gt;'
 export AZURE_CLIENT_ID='&lt;java-client-application-id&gt;'
-export ENTRA_DB_SCOPE='https://&lt;tenant-domain&gt;/&lt;database-application-id&gt;/.default'
+export ENTRA_DB_APP_ID_URI='https://&lt;tenant-domain&gt;/&lt;database-application-id&gt;'
+# Full scope for SDK/file acquisition; provider profiles use the bare URI.
+export ENTRA_DB_SCOPE="${ENTRA_DB_APP_ID_URI}/.default"
 </code></pre>
 <p>For a client secret, inject <code>AZURE_CLIENT_SECRET</code> through the runtime's secret facility. For a local Bash demonstration, read it without terminal echo or a literal in shell history:</p>
 <pre><code class="language-bash">read -r -s -p 'Client secret: ' AZURE_CLIENT_SECRET; echo
@@ -416,31 +408,113 @@ unset AZURE_CLIENT_SECRET
 ./run.sh config/entra-managed-identity.properties ucp
 
 # Public client with delegated permission, user role assignment and redirect URI:
-export ENTRA_DB_SCOPE='https://&lt;tenant-domain&gt;/&lt;database-application-id&gt;/session:scope:connect'
+# Keep ENTRA_DB_APP_ID_URI as the bare resource URI for provider profiles.
 ./run.sh config/entra-interactive.properties jdbc
 ./run.sh config/entra-device-code.properties jdbc
 </code></pre>
-<p>Browser/device-code paths authenticate a human; service-principal/managed-identity paths authenticate a workload. Never use the database resource ID as the Java client's ID. See <a href="https://github.com/paulparkinson/oracle-jdbc-token-auth-demo/blob/main/docs/setup.md#microsoft-entra-id">setup</a> for registration, roles, consent and token-version details.</p>
-<p>The service-principal profile is:</p>
-<pre><code class="language-properties"># Copy a TCPS descriptor from Autonomous Database &gt; Database Connection.
+<p>Browser/device-code paths authenticate a human; service-principal/managed-identity paths authenticate a workload. Never use the database resource ID as the Java client's ID. See setup for registration, roles, consent and token-version details.</p>
+<p>The profiles select <code>AZURE_SERVICE_PRINCIPAL</code>, <code>AZURE_MANAGED_IDENTITY</code>, <code>AZURE_INTERACTIVE</code>, or <code>AZURE_DEVICE_CODE</code>. Set <code>oracle.jdbc.azureDatabaseApplicationIdUri</code> to the resource URI without <code>/.default</code> or <code>/session:scope:connect</code>. The service-principal profile is:</p>
+<pre><code class="language-properties"># EZConnect+: jdbc:oracle:thin:@tcps://host:port/service
 app.url=${ADB_JDBC_URL}
 app.mode=provider
-oracle.jdbc.provider.accessToken=ojdbc-provider-azure-token
-oracle.jdbc.provider.accessToken.authenticationMethod=service-principal
-oracle.jdbc.provider.accessToken.scope=${ENTRA_DB_SCOPE}
+oracle.jdbc.tokenAuthentication=AZURE_SERVICE_PRINCIPAL
+# Database application URI, without /.default or /session:scope:connect.
+oracle.jdbc.azureDatabaseApplicationIdUri=${ENTRA_DB_APP_ID_URI}
 </code></pre>
 <p>The browser profile makes the client, tenant and callback explicit:</p>
-<pre><code class="language-properties"># Copy a TCPS descriptor from Autonomous Database &gt; Database Connection.
+<pre><code class="language-properties"># EZConnect+: jdbc:oracle:thin:@tcps://host:port/service
 app.url=${ADB_JDBC_URL}
 app.mode=provider
-oracle.jdbc.provider.accessToken=ojdbc-provider-azure-token
-oracle.jdbc.provider.accessToken.authenticationMethod=interactive
-oracle.jdbc.provider.accessToken.scope=${ENTRA_DB_SCOPE}
-oracle.jdbc.provider.accessToken.tenantId=${AZURE_TENANT_ID}
-oracle.jdbc.provider.accessToken.clientId=${AZURE_CLIENT_ID}
-oracle.jdbc.provider.accessToken.redirectUri=http://localhost:8400
+oracle.jdbc.tokenAuthentication=AZURE_INTERACTIVE
+# Database application URI, without /.default or /session:scope:connect.
+oracle.jdbc.azureDatabaseApplicationIdUri=${ENTRA_DB_APP_ID_URI}
+oracle.jdbc.tenantId=${AZURE_TENANT_ID}
+oracle.jdbc.clientId=${AZURE_CLIENT_ID}
+oracle.jdbc.redirectUri=http://localhost:8400
 </code></pre>
 <p>The providers are documented in Oracle's <a href="https://github.com/oracle/ojdbc-extensions/tree/main/ojdbc-provider-oci">OCI module</a> and <a href="https://github.com/oracle/ojdbc-extensions/tree/main/ojdbc-provider-azure">Azure module</a>. “Passwordless database access” does not necessarily mean “no secrets anywhere”: an API-key or client-secret flow still has an upstream identity credential. Workload identities can remove that application-managed credential where the deployment supports them.</p>
+<h2 id="entra-files-and-sdk">Entra alternatives: token files and SDK suppliers</h2>
+<h3>External Entra token file</h3>
+<p>An authorized external producer can write the database access token as a UTF-8 JWT file. Unlike OCI file mode, Entra needs no proof-of-possession key. The producer must request the database resource, not Microsoft Graph, and is responsible for renewal. Protect the directory, use file mode <code>0600</code>, and replace a completed temporary file atomically. Do not print the JWT or commit it.</p>
+<pre><code class="language-properties">app.url=${ADB_JDBC_URL}
+app.mode=file
+oracle.jdbc.tokenAuthentication=OAUTH
+oracle.jdbc.tokenLocation=${ENTRA_DB_TOKEN_FILE}</code></pre>
+
+<pre><code class="language-bash">export ENTRA_DB_TOKEN_FILE='/private/path/to/entra-db-token'
+./run.sh config/entra-file.properties jdbc
+./run.sh config/entra-file.properties ucp</code></pre>
+
+<p>An Azure CLI producer with the necessary database consent can use <code>az account get-access-token --resource "$ENTRA_DB_APP_ID_URI" --query accessToken -o tsv</code>, redirected to that protected temporary file. CLI sign-in is not itself proof of database permission. An SDK producer can also write a token, as in the file-flow test. JDBC file mode does not invoke either producer.</p>
+<h3>Application-owned Azure Identity acquisition</h3>
+<p>The SDK flow uses <code>AccessToken.createJsonWebToken(jwt.toCharArray())</code>, without the OCI private-key argument. Builder mode passes one token; JDBC and UCP use <code>AccessToken.createJsonWebTokenCache</code> around the acquisition supplier. Re-inject the service-principal credential if you unset it after the provider example.</p>
+<pre><code class="language-properties">app.url=${ADB_JDBC_URL}
+app.mode=entra-sdk
+app.entra.authentication=service-principal
+app.entra.scope=${ENTRA_DB_SCOPE}</code></pre>
+
+<pre><code class="language-bash">./run.sh config/entra-sdk.properties builder 2
+./run.sh config/entra-sdk.properties jdbc 2
+./run.sh config/entra-sdk.properties ucp</code></pre>
+
+<p>In an ignored local profile, select <code>managed-identity</code>, <code>interactive</code>, <code>device-code</code>, or <code>azure-cli</code> for another Azure Identity credential. Human SDK flows use the delegated database scope; interactive/device-code require <code>app.entra.tenantId</code> and <code>app.entra.clientId</code>, while Azure CLI requires the tenant. Browser login also needs its registered redirect. These are explicit credential choices, not an automatic fallback chain.</p>
+<details><summary>Show complete EntraTokens.java</summary>
+<pre><code class="language-java">package demo;
+
+import com.azure.core.credential.TokenCredential;
+import com.azure.core.credential.TokenRequestContext;
+import com.azure.identity.*;
+import oracle.jdbc.AccessToken;
+import java.time.Duration;
+import java.util.Properties;
+import java.util.function.Supplier;
+
+/** Explicit Azure Identity acquisition; no database password or OCI PoP key. */
+public final class EntraTokens {
+    private EntraTokens() {}
+
+    public static Supplier&lt;? extends AccessToken&gt; cached(Properties settings) {
+        return AccessToken.createJsonWebTokenCache(supplier(settings));
+    }
+
+    static Supplier&lt;AccessToken&gt; supplier(Properties settings) {
+        TokenCredential credential = switch (Settings.required(settings, "app.entra.authentication")) {
+            // Azure Identity reads AZURE_TENANT_ID, AZURE_CLIENT_ID and secret/certificate from the environment.
+            case "service-principal" -&gt; new EnvironmentCredentialBuilder().build();
+            case "managed-identity" -&gt; {
+                var builder = new ManagedIdentityCredentialBuilder();
+                String clientId = System.getenv("AZURE_CLIENT_ID");
+                if (clientId != null &amp;&amp; !clientId.isBlank()) builder.clientId(clientId);
+                yield builder.build();
+            }
+            case "interactive" -&gt; new InteractiveBrowserCredentialBuilder()
+                    .tenantId(Settings.required(settings, "app.entra.tenantId"))
+                    .clientId(Settings.required(settings, "app.entra.clientId"))
+                    .redirectUrl(settings.getProperty("app.entra.redirectUri", "http://localhost:8400"))
+                    .build();
+            case "device-code" -&gt; new DeviceCodeCredentialBuilder()
+                    .tenantId(Settings.required(settings, "app.entra.tenantId"))
+                    .clientId(Settings.required(settings, "app.entra.clientId"))
+                    .challengeConsumer(c -&gt; System.out.println(c.getMessage())).build();
+            case "azure-cli" -&gt; new AzureCliCredentialBuilder()
+                    .tenantId(Settings.required(settings, "app.entra.tenantId")).build();
+            default -&gt; throw new IllegalArgumentException("Unsupported app.entra.authentication");
+        };
+        String scope = Settings.required(settings, "app.entra.scope");
+        return () -&gt; {
+            try {
+                var token = credential.getToken(new TokenRequestContext().addScopes(scope))
+                        .block(Duration.ofSeconds(120));
+                if (token == null) throw new IllegalStateException("No Entra token returned");
+                return AccessToken.createJsonWebToken(token.getToken().toCharArray());
+            } catch (Exception failure) {
+                throw new IllegalStateException("Entra token acquisition failed", failure);
+            }
+        };
+    }
+}
+</code></pre>
+</details>
 <h2 id="ucp-share-the-supplier-and-test-physical-connection-replacement">UCP: share the supplier and test physical connection replacement</h2>
 <p>The application configures one pool, two maximum physical connections, a bounded wait (20 seconds normally, 60 seconds for diagnostic replacement), and validation on borrow. Provider/file properties pass through to JDBC; SDK mode supplies the cached token supplier instead. Here is the actual pool setup method:</p>
 <pre><code class="language-java">    static PoolDataSource pool(Settings config, Supplier&lt;? extends AccessToken&gt; tokens, boolean fresh) throws SQLException {
@@ -455,12 +529,12 @@ oracle.jdbc.provider.accessToken.redirectUri=http://localhost:8400
         ds.setConnectionWaitDuration(java.time.Duration.ofSeconds(fresh ? 60 : 20));
         ds.setValidateConnectionOnBorrow(true);
         if (tokens != null) ds.setTokenSupplier(tokens);
-        // Diagnostic mode forces replacement physical connections after each borrow.
-        if (fresh) ds.setMaxConnectionReuseCount(1);
+        // Diagnostic mode purges only between completed rounds, with no borrowers.
         return ds;
     }
+
 </code></pre>
-<p>Four tasks run through that pool in each round. Worker exceptions are observed, every borrowed connection is closed, and the pool is destroyed on exit:</p>
+<p>Four tasks run through that pool in each round. Diagnostic mode purges only after all four have returned their connections, and verifies that the pool is empty before the next round. Worker exceptions are observed, every borrowed connection is closed, and the pool is destroyed on exit:</p>
 <pre><code class="language-java">    private static void runPool(Settings config, Supplier&lt;? extends AccessToken&gt; tokens,
                                 boolean fresh, int rounds, int pause) throws Exception {
         PoolDataSource ds = pool(config, tokens, fresh);
@@ -472,12 +546,19 @@ oracle.jdbc.provider.accessToken.redirectUri=http://localhost:8400
                 for (int i = 0; i &lt; 4; i++) tasks.add(() -&gt; {
                     try (Connection c = ds.getConnection()) {
                         query(c, current);
-                        // Explicit invalidation retires this physical session on return.
-                        if (fresh) ((oracle.ucp.jdbc.ValidConnection) c).setInvalid();
                     }
                     return null;
                 });
                 for (var result : executor.invokeAll(tasks)) result.get();
+                if (fresh) {
+                    // Keep the same data source/token cache, but retire all physical
+                    // sessions after all workers have returned their connections.
+                    UniversalConnectionPoolManagerImpl.getUniversalConnectionPoolManager()
+                            .purgeConnectionPool(ds.getConnectionPoolName());
+                    if (ds.getAvailableConnectionsCount() != 0 || ds.getBorrowedConnectionsCount() != 0)
+                        throw new IllegalStateException("Diagnostic purge did not empty the pool");
+                    System.out.println("round=" + round + " poolPurged=true available=0 borrowed=0");
+                }
                 if (round &lt; rounds) Thread.sleep(pause * 1000L);
             }
         } finally {
@@ -488,13 +569,14 @@ oracle.jdbc.provider.accessToken.redirectUri=http://localhost:8400
                         .destroyConnectionPool(ds.getConnectionPoolName());
         }
     }
+
 </code></pre>
-<pre><code class="language-bash"># Four tasks per round; recycle physical sessions after every borrow.
+<pre><code class="language-bash"># Four tasks per round; purge physical sessions between completed rounds.
 # About 74 minutes between first and final rounds, spanning a typical OCI token lifetime.
 ./run.sh config/oci-config-file.properties ucp-fresh 75 60
 # Or use config/oci-sdk.properties / config/entra-service-principal.properties.
 </code></pre>
-<p>Token expiry governs creation of new authenticated connections. A still-open pooled session can keep working after its login token expires, so repeated borrows alone do not prove refresh. <code>ucp-fresh</code> sets <code>MaxConnectionReuseCount=1</code> and explicitly marks each connection invalid before returning it, so UCP retires the physical session. It allows a bounded 60-second replacement wait. Output includes session IDs for diagnosis, although the server can recycle those IDs. Run longer than the actual issuer token lifetime; no unit test proves cloud refresh.</p>
+<p>Token expiry governs creation of new authenticated connections. A still-open pooled session can keep working after its login token expires, so repeated borrows alone do not prove refresh. <code>ucp-fresh</code> purges all physical connections between completed rounds, with no active borrowers, and checks that available/borrowed counts are zero. The same data source and token cache remain in use; the next round must establish new database sessions. It allows a bounded 60-second replacement wait. Output includes session IDs for diagnosis, although the server can recycle those IDs. Run longer than the actual issuer token lifetime; no unit test proves cloud refresh.</p>
 <p>Illustrative successful output (values depend on your identity/server):</p>
 <pre><code class="language-text">round=1 user=TOKEN_DEMO identity=&lt;mapped-principal&gt; authentication=&lt;server-reported-method&gt; sid=&lt;session-id&gt;
 </code></pre>
@@ -542,13 +624,17 @@ public final class TokenAuthDemo {
             if (rounds &lt; 1 || rounds &gt; 10000 || pause &lt; 0 || pause &gt; 86400)
                 throw new IllegalArgumentException("rounds: 1..10000; pauseSeconds: 0..86400");
             Settings config = Settings.load(Path.of(args[0]), System.getenv());
-            if (action.equals("builder") &amp;&amp; !config.mode().equals("sdk"))
+            if (action.equals("builder") &amp;&amp; !java.util.Set.of("sdk", "entra-sdk").contains(config.mode()))
                 throw new IllegalArgumentException("builder requires SDK mode");
             if (action.equals("check")) {
                 System.out.println("Configuration valid: mode=" + config.mode() + "; no cloud or database connection attempted");
                 return;
             }
-            Supplier&lt;? extends AccessToken&gt; tokens = config.mode().equals("sdk") ? OciTokens.cached(config.app()) : null;
+            Supplier&lt;? extends AccessToken&gt; tokens = switch (config.mode()) {
+                case "sdk" -&gt; OciTokens.cached(config.app());
+                case "entra-sdk" -&gt; action.equals("builder") ? EntraTokens.supplier(config.app()) : EntraTokens.cached(config.app());
+                default -&gt; null;
+            };
             if (action.startsWith("ucp")) runPool(config, tokens, action.equals("ucp-fresh"), rounds, pause);
             else {
                 OracleDataSource ds = new OracleDataSource();
@@ -557,7 +643,8 @@ public final class TokenAuthDemo {
                 if (tokens != null &amp;&amp; !action.equals("builder")) ds.setTokenSupplier(tokens);
                 for (int round = 1; round &lt;= rounds; round++) {
                     try (Connection c = action.equals("builder")
-                            ? ds.createConnectionBuilder().accessToken(OciTokens.request(config.app())).build()
+                            ? ds.createConnectionBuilder().accessToken(config.mode().equals("sdk")
+                                ? OciTokens.request(config.app()) : tokens.get()).build()
                             : ds.getConnection()) {
                         query(c, round);
                     }
@@ -573,6 +660,8 @@ public final class TokenAuthDemo {
                 System.err.println("Run failed: " + cause.getClass().getSimpleName());
                 if (cause instanceof SQLException sql)
                     System.err.println("Oracle error code=" + sql.getErrorCode() + "; SQLState=" + sql.getSQLState());
+                if (cause instanceof oracle.ucp.UniversalConnectionPoolException poolFailure)
+                    System.err.println("UCP error code=" + poolFailure.getErrorCode());
                 System.err.println("See docs/troubleshooting.md. Credential values and exception payloads are not logged.");
             }
             System.exit(1);
@@ -591,8 +680,7 @@ public final class TokenAuthDemo {
         ds.setConnectionWaitDuration(java.time.Duration.ofSeconds(fresh ? 60 : 20));
         ds.setValidateConnectionOnBorrow(true);
         if (tokens != null) ds.setTokenSupplier(tokens);
-        // Diagnostic mode forces replacement physical connections after each borrow.
-        if (fresh) ds.setMaxConnectionReuseCount(1);
+        // Diagnostic mode purges only between completed rounds, with no borrowers.
         return ds;
     }
 
@@ -607,12 +695,19 @@ public final class TokenAuthDemo {
                 for (int i = 0; i &lt; 4; i++) tasks.add(() -&gt; {
                     try (Connection c = ds.getConnection()) {
                         query(c, current);
-                        // Explicit invalidation retires this physical session on return.
-                        if (fresh) ((oracle.ucp.jdbc.ValidConnection) c).setInvalid();
                     }
                     return null;
                 });
                 for (var result : executor.invokeAll(tasks)) result.get();
+                if (fresh) {
+                    // Keep the same data source/token cache, but retire all physical
+                    // sessions after all workers have returned their connections.
+                    UniversalConnectionPoolManagerImpl.getUniversalConnectionPoolManager()
+                            .purgeConnectionPool(ds.getConnectionPoolName());
+                    if (ds.getAvailableConnectionsCount() != 0 || ds.getBorrowedConnectionsCount() != 0)
+                        throw new IllegalStateException("Diagnostic purge did not empty the pool");
+                    System.out.println("round=" + round + " poolPurged=true available=0 borrowed=0");
+                }
                 if (round &lt; rounds) Thread.sleep(pause * 1000L);
             }
         } finally {
@@ -652,32 +747,36 @@ public final class TokenAuthDemo {
 </thead>
 <tbody>
 <tr>
-<td><a href="https://github.com/paulparkinson/oracle-jdbc-token-auth-demo/blob/main/src/main/java/demo/TokenAuthDemo.java">TokenAuthDemo.java</a></td>
+<td>TokenAuthDemo.java</td>
 <td>Executable JDBC/builder/UCP flows, concurrent tasks, read-only query and shutdown</td>
 </tr>
 <tr>
-<td><a href="https://github.com/paulparkinson/oracle-jdbc-token-auth-demo/blob/main/src/main/java/demo/OciTokens.java">OciTokens.java</a></td>
+<td>OciTokens.java</td>
 <td>SDK identity selection, scoped token request, PoP key, cached supplier</td>
 </tr>
 <tr>
-<td><a href="https://github.com/paulparkinson/oracle-jdbc-token-auth-demo/blob/main/src/main/java/demo/Settings.java">Settings.java</a></td>
+<td>EntraTokens.java</td>
+<td>Explicit Azure Identity credential, database scope, bearer JWT, cached supplier</td>
+</tr>
+<tr>
+<td>Settings.java</td>
 <td>Environment substitution, TCPS and token-mode validation</td>
 </tr>
 <tr>
-<td><a href="https://github.com/paulparkinson/oracle-jdbc-token-auth-demo/blob/main/config">config</a></td>
-<td>11 complete profiles for file, SDK, OCI and Entra methods</td>
+<td>config</td>
+<td>13 complete profiles for file, SDK, OCI and Entra methods</td>
 </tr>
 <tr>
-<td><a href="https://github.com/paulparkinson/oracle-jdbc-token-auth-demo/blob/main/sql">sql</a></td>
+<td>sql</td>
 <td>Administrator setup templates for each identity provider</td>
 </tr>
 <tr>
-<td><a href="https://github.com/paulparkinson/oracle-jdbc-token-auth-demo/blob/main/docs/troubleshooting.md">troubleshooting</a></td>
+<td>troubleshooting</td>
 <td>Failure diagnosis and live acceptance procedure</td>
 </tr>
 </tbody>
 </table></div>
-<p><code>mvn verify</code> checks configuration security boundaries, all shipped profiles, UCP settings and discovery of the actual released OCI/Azure providers. CI runs JDK 17 and 21. Cloud tests require configured external identities; see <a href="https://github.com/paulparkinson/oracle-jdbc-token-auth-demo/blob/main/docs/validation.md">validation</a> for exactly what was run.</p>
+<p><code>mvn verify</code> checks configuration security boundaries, all shipped profiles, UCP settings and discovery of the actual released OCI/Azure providers. CI runs JDK 17 and 21. Cloud tests require configured external identities. Supported configuration profiles are not proof that every identity method has been exercised.</p>
 <h2 id="troubleshooting">Troubleshooting</h2>
 <div class="table-wrap"><table>
 <thead>
@@ -689,7 +788,7 @@ public final class TokenAuthDemo {
 <tbody>
 <tr>
 <td>Configuration check fails</td>
-<td>Set each named environment variable; use a TCPS descriptor; choose one acquisition method. The check does not validate cloud credentials.</td>
+<td>Set each named environment variable; use an EZConnect+ TCPS URL; choose one acquisition method. The check does not validate cloud credentials.</td>
 </tr>
 <tr>
 <td>Missing provider / class not found</td>
@@ -729,23 +828,7 @@ public final class TokenAuthDemo {
 </tr>
 </tbody>
 </table></div>
-<p>The CLI emits exception type and Oracle numeric code, not full exception payloads. Inspect detailed diagnostics only in a controlled environment: SDK logging may include identity/request information. Do not paste live tokens into online decoders. Identity query output contains principal names; redact them before sharing logs.</p>
-<h2 id="what-was-validated">What was validated</h2>
-
-
-
-<p>Date: October 4, 2026.</p>
-<ul>
-<li>Local build and 11 tests pass on Oracle GraalVM JDK 21, Java 17 release target, Maven 3.9.9. The initial GitHub build also passed on JDK 17 and 21.</li>
-<li>Checks cover environment substitution, transport restrictions, token-mode conflicts, all 11 profiles, pool configuration, released provider discovery, and concurrent JDBC token-cache access using a locally signed synthetic token.</li>
-<li>All 11 packaged configuration-only checks pass without cloud credentials.</li>
-<li>Live tests used Oracle AI Database 26ai, server version 23.26.3.3.0, through an mTLS wallet. After explicit owner approval, ADMIN enabled OCI_IAM and created a dedicated TOKEN_DEMO mapping to the tested IAM identity with CREATE SESSION only. Existing password-based schemas were not altered.</li>
-<li>Successful live authentication: OCI CLI file tokens with JDBC and UCP; OCI SDK direct connection builder, cached JDBC supplier, and concurrent UCP; OCI resource provider with UCP physical-connection replacement. Each run reported SESSION_USER=TOKEN_DEMO and AUTHENTICATION_METHOD=TOKEN_GLOBAL. Queries only read DUAL; no application data was modified.</li>
-<li>The first forced-replacement run encountered a pool wait failure. Diagnostic mode now explicitly calls ValidConnection.setInvalid() before returning each connection and allows a bounded 60-second replacement wait. The corrected two-round, eight-borrow provider run passed. MaxConnectionReuseCount alone is not used as proof of replacement; server SIDs can also be recycled.</li>
-<li>Refresh across actual token expiration, Entra authentication, OCI workload identities, and interactive/session-token flows remain <strong>unverified</strong>. These short successful OCI API-key runs do not establish those results. Follow the extended live acceptance procedure in troubleshooting.md.</li>
-</ul>
-<p>No wallet, database password, private key, cloud account identifier, or live token is included in this repository. Temporary CLI token files used for validation were removed afterward.</p><h2 id="cleanup">Cleanup</h2>
-<p>The Java program makes no persistent data changes. Close it to destroy its connection pool. Remove the dedicated demo user's CREATE SESSION grant or drop that dedicated user only after confirming it owns no needed objects. Remove demo-only IAM policies, group membership, app-role assignments and client credentials in their respective consoles. Do not disable a database's identity integration if other users depend on it.</p>
+<p>The CLI emits exception type and Oracle/UCP numeric codes, not full exception payloads. Inspect detailed diagnostics only in a controlled environment: SDK logging may include identity/request information. Do not paste live tokens into online decoders. Identity query output contains principal names; redact them before sharing logs.</p>
 <h2 id="faq">FAQ</h2>
 <h3 id="do-i-still-need-a-wallet-when-i-use-a-token">Do I still need a wallet when I use a token?</h3>
 <p>Token authentication and TLS are separate. An mTLS database endpoint still needs its client wallet. A supported TLS-only endpoint can avoid a client wallet when the JVM trusts the server certificate chain. Keep server identity verification enabled in either case.</p>
@@ -755,5 +838,4 @@ public final class TokenAuthDemo {
 <p>An existing authenticated physical session can remain usable. Expiry is relevant when a new physical connection authenticates. The demo's <code>ucp-fresh</code> mode forces replacement connections so a long run can expose refresh failures; normal repeated borrows are insufficient evidence.</p>
 <h3 id="can-i-use-the-oci-and-entra-profiles-against-the-same-database-interchangeably">Can I use the OCI and Entra profiles against the same database interchangeably?</h3>
 <p>Only if the database is configured for the selected provider at the time of connection. This walkthrough uses separate lab configurations and does not force an existing provider to be replaced. Both flows require a cloud-authorized principal mapped to a database schema with CREATE SESSION.</p>
-<p class="note"><strong>GitHub repositories:</strong> <a href="https://github.com/paulparkinson/oracle-jdbc-token-auth-demo">Runnable JDBC token-authentication examples</a> · <a href="https://github.com/oracle/ojdbc-extensions">Oracle JDBC provider extensions</a> · <a href="https://github.com/paulparkinson/oracle-ai-for-sustainable-dev">Blog source and companion examples</a>.</p>
 </main></body></html>

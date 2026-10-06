@@ -2,7 +2,8 @@
 
 ## Articles
 
-- [Security Best Practices with the Oracle JDBC driver](oracle-jdbc-security-best-practices.html): password-less connections, SQL injection prevention, TLS, least privilege, diagnostics, resource management, and dependency hygiene. Includes the original examples and references; the source's unfinished Azure token-authentication note is retained explicitly.
+- [Security Best Practices with the Oracle JDBC driver](oracle-jdbc-security-best-practices.html): OCI IAM/Entra tokens, vault password providers across five platforms, centralized configuration, safe SQL, TLS, least privilege, diagnostics, and resource management. All database address examples use EZConnect+.
+- [Passwordless Java Connections with OCI IAM and Microsoft Entra ID](java-jdbc-token-authentication-oci-iam-entra.html): database setup, file tokens, SDK suppliers, simplified provider properties, UCP, and authenticated-identity checks for both identity services.
 
 ## Oracle Deep Data Security
 
