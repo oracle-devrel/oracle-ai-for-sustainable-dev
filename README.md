@@ -6,10 +6,10 @@ You can also contact Paul Parkinson with any questions [here](https://www.linked
 
 ## Content
 
-1. **Develop A2A Agentic AI with Oracle AI Database and Gemini Enterprise**: [Blog](https://paulparkinson.github.io/oracle-ai-for-sustainable-dev/oracle-ai-database-gcp-gemini/blog.html) | [Source](oracle-ai-database-gcp-gemini/)
+1. **Develop A2A Agentic AI with Oracle AI Database and Gemini Enterprise**: [Blog](https://paulparkinson.github.io/oracle-ai-database-gcp-gemini/blog.html) | [Source](https://github.com/paulparkinson/oracle-ai-database-gcp-gemini)
 2. **Develop A2UI and MCP Apps running in Gemini Enterprise, ChatGPT, and Claude, using Oracle AI Database and Java MCP Toolkit**: [Blog](https://paulparkinson.github.io/oracle-ai-for-sustainable-dev/a2ui_mcpapps_mcptoolkit/blog.html) | [Source](a2ui_mcpapps_mcptoolkit/)
 3. **End-to-End Agentic AI Observability: Tracing from Agents INTO the Oracle AI Database**: [Blog](https://paulparkinson.github.io/oracle-ai-for-sustainable-dev/observability/blog.html) | [Source](observability/)
-4. **Develop Database-Enforced End-User Auth with Oracle AI Database Deep Data Security and Java**: [Blog](https://paulparkinson.github.io/oracle-ai-for-sustainable-dev/security/blog.html) | [Source](security/)
+4. **Develop Database-Enforced End-User Auth with Oracle AI Database Deep Data Security and Java**: [Article](https://github.com/paulparkinson/oracledb-java-security/blob/main/deepdatasecurity/blog.html) | [Source and JDBC security guides](https://github.com/paulparkinson/oracledb-java-security/tree/main/deepdatasecurity) (repository access required)
 5. **Build a Spring Boot Lakehouse App with Oracle AI Database, Oracle JDBC, and Iceberg Tables**: [Blog](https://paulparkinson.github.io/oracle-ai-for-sustainable-dev/lakehouse/blog.html) | [Source](lakehouse/)
 6. **Memories Are the Magic: Build Governed AI Agent Memory with Oracle AI Database**: [Blog](https://paulparkinson.github.io/oracle-ai-for-sustainable-dev/memory/blog.html)
 7. **Develop Agentic AI Workflows with LangFlow and Oracle Database**: [Source](https://github.com/paulparkinson/langflow-agenticai-oracle-mcp-vector-nl2sql) | [Blog](https://www.linkedin.com/pulse/develop-agentic-ai-workflows-langflow-oracle-database-paul-parkinson-axb4e) | [Video](https://www.youtube.com/watch?v=Jw23lukIqRc)
@@ -20,8 +20,6 @@ You can also contact Paul Parkinson with any questions [here](https://www.linked
 12. **Develop with Oracle AI and Database Services: Healthcare (Open Source Version)**: [Source](health/) | [Workshop](https://apexapps.oracle.com/pls/apex/r/dbpm/livelabs/view-workshop?wid=3876)
 13. **Develop with Oracle Autonomous Database and GraalVM Native Image using Spring Boot, Micronaut, Helidon, and Quarkus**: [Source](graalvm-nativeimage/) | [Workshop](https://apexapps.oracle.com/pls/apex/r/dbpm/livelabs/run-workshop?p210_wid=4091)
 14. **Develop with WasmEdge, Wasmtime, and Wasmer Invoking MongoDB, Kafka, and Oracle: WASI Cycles, an Open Source, 3D WebXR Game**: [Source](https://github.com/paulparkinson/wasi-cycles) | [Blog](https://www.linkedin.com/pulse/develop-wasmedge-wasmtime-wasmer-invoking-mongodb-kafka-parkinson-wajde) | [Video](https://www.youtube.com/watch?v=KD3XFh72Vyo)
-
-
 15. **Oracle AI Database and Amazon Bedrock**: [Source and documentation](https://github.com/paulparkinson/oracle-ai-database-aws-bedrock) | [Blog](https://paulparkinson.github.io/oracle-ai-database-aws-bedrock/blog.html). Maintained in its dedicated repository.
 
 ___________
@@ -39,3 +37,13 @@ Licensed under the Universal Permissive License (UPL), Version 1.0.
 See [LICENSE](LICENSE) for more details.
 
 ORACLE AND ITS AFFILIATES DO NOT PROVIDE ANY WARRANTY WHATSOEVER, EXPRESS OR IMPLIED, FOR ANY SOFTWARE, MATERIAL OR CONTENT OF ANY KIND CONTAINED OR PRODUCED WITHIN THIS REPOSITORY, AND IN PARTICULAR SPECIFICALLY DISCLAIM ANY AND ALL IMPLIED WARRANTIES OF TITLE, NON-INFRINGEMENT, MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.  FURTHERMORE, ORACLE AND ITS AFFILIATES DO NOT REPRESENT THAT ANY CUSTOMARY SECURITY REVIEW HAS BEEN PERFORMED WITH RESPECT TO ANY SOFTWARE, MATERIAL OR CONTENT CONTAINED OR PRODUCED WITHIN THIS REPOSITORY. IN ADDITION, AND WITHOUT LIMITING THE FOREGOING, THIRD PARTIES MAY HAVE POSTED SOFTWARE, MATERIAL OR CONTENT TO THIS REPOSITORY WITHOUT ANY REVIEW. USE AT YOUR OWN RISK. 
+
+## Standalone repositories
+
+These projects are now maintained in their own repositories. Follow these links for current source and documentation; moving source does not change running deployments.
+
+- [Oracle AI Database and Google Gemini](https://github.com/paulparkinson/oracle-ai-database-gcp-gemini)
+- [Oracle AI Database and Amazon Bedrock](https://github.com/paulparkinson/oracle-ai-database-aws-bedrock)
+- [AI Fullstack Toolkit](https://github.com/paulparkinson/ai-fullstack-toolkit)
+- [Oracle Database Java Security](https://github.com/paulparkinson/oracledb-java-security): the former `security/` directory is now [`deepdatasecurity/`](https://github.com/paulparkinson/oracledb-java-security/tree/main/deepdatasecurity), alongside the OKE workload-identity investigation. This repository is currently private; access is required and no public replacement blog URL is claimed.
+- [Oracle JDBC token authentication examples](https://github.com/paulparkinson/oracle-db-examples/tree/main/java/jdbc-token-auth): OCI IAM and Microsoft Entra ID examples.

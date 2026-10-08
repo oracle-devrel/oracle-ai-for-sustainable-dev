@@ -1,8 +1,0 @@
-[server]
-# Bind to all network interfaces (allows external access)
-address = "0.0.0.0"
-port = 8501
-
-# Disable CORS protection (enable if needed)
-enableCORS = false
-enableXsrfProtection = false
