@@ -22,6 +22,8 @@ You can also contact Paul Parkinson with any questions [here](https://www.linked
 14. **Develop with WasmEdge, Wasmtime, and Wasmer Invoking MongoDB, Kafka, and Oracle: WASI Cycles, an Open Source, 3D WebXR Game**: [Source](https://github.com/paulparkinson/wasi-cycles) | [Blog](https://www.linkedin.com/pulse/develop-wasmedge-wasmtime-wasmer-invoking-mongodb-kafka-parkinson-wajde) | [Video](https://www.youtube.com/watch?v=KD3XFh72Vyo)
 
 
+15. **Oracle AI Database and Amazon Bedrock**: [Source and documentation](https://github.com/paulparkinson/oracle-ai-database-aws-bedrock) | [Blog](https://paulparkinson.github.io/oracle-ai-database-aws-bedrock/blog.html). Maintained in its dedicated repository.
+
 ___________
 
 ![Oracle AI for Sustainable Development](bit.ly_pauloracledev.png)
