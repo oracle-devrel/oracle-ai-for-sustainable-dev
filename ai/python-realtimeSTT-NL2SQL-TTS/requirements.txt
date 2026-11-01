@@ -1,7 +1,7 @@
 websockets==11.0.3; python_version >= "3.7"
 websockets==9.1; python_version == "3.6"
 aiohttp~=3.10.10
-certifi==2024.8.30
+certifi==2026.10.18
 cffi==1.17.1
 circuitbreaker==2.0.0
 cryptography==44.0.1
